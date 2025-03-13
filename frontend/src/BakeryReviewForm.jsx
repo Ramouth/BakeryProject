@@ -1,4 +1,4 @@
-import { useState} from "react";
+import { useState } from "react";
 
 const BakeryReviewForm = ({ existingReview = {}, updateCallback, contacts, bakeries }) => {
   const [review, setReview] = useState(existingReview.review || "");
@@ -7,8 +7,8 @@ const BakeryReviewForm = ({ existingReview = {}, updateCallback, contacts, baker
   const [priceRating, setPriceRating] = useState(existingReview.priceRating || 1);
   const [atmosphereRating, setAtmosphereRating] = useState(existingReview.atmosphereRating || 1);
   const [locationRating, setLocationRating] = useState(existingReview.locationRating || 1);
-  const [contactId, setContactId] = useState(existingReview.contactId || "");
-  const [bakeryId, setBakeryId] = useState(existingReview.bakeryId || "");
+  const [contactId, setContactId] = useState(existingReview.contactId || ""); // Contact ID
+  const [bakeryId, setBakeryId] = useState(existingReview.bakeryId || "");  // Bakery ID
 
   const updating = Object.entries(existingReview).length !== 0;
 
@@ -29,24 +29,21 @@ const BakeryReviewForm = ({ existingReview = {}, updateCallback, contacts, baker
     const url =
       "http://127.0.0.1:5000/" +
       (updating ? `update_bakeryreview/${existingReview.id}` : "create_bakeryreview");
+
     const options = {
       method: updating ? "PATCH" : "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      data: JSON.stringify(data),
+      body: JSON.stringify(data),
     };
 
-    try {
-      const response = await fetch(url, options);
-      if (response.status !== 201 && response.status !== 200) {
-        alert(response.data.message);
-      } else {
-        updateCallback();
-      }
-    } catch (error) {
-      console.error("Error creating or updating review:", error);
-      alert("An error occurred. Please try again later.");
+    const response = await fetch(url, options);
+    if (response.status !== 201 && response.status !== 200) {
+      const data = await response.json();
+      alert(data.message);
+    } else {
+      updateCallback();
     }
   };
 
@@ -110,12 +107,15 @@ const BakeryReviewForm = ({ existingReview = {}, updateCallback, contacts, baker
           onChange={(e) => setLocationRating(e.target.value)}
         />
       </div>
+      
+      {/* Dropdown to select an existing contact (user) */}
       <div>
         <label>Contact:</label>
         <select
           value={contactId}
           onChange={(e) => setContactId(e.target.value)}
         >
+          <option value="">--Select a Contact--</option>
           {contacts.map((contact) => (
             <option key={contact.id} value={contact.id}>
               {contact.firstName} {contact.lastName}
@@ -123,12 +123,15 @@ const BakeryReviewForm = ({ existingReview = {}, updateCallback, contacts, baker
           ))}
         </select>
       </div>
+
+      {/* Dropdown to select an existing bakery */}
       <div>
         <label>Bakery:</label>
         <select
           value={bakeryId}
           onChange={(e) => setBakeryId(e.target.value)}
         >
+          <option value="">--Select a Bakery--</option>
           {bakeries.map((bakery) => (
             <option key={bakery.id} value={bakery.id}>
               {bakery.name}
@@ -136,6 +139,7 @@ const BakeryReviewForm = ({ existingReview = {}, updateCallback, contacts, baker
           ))}
         </select>
       </div>
+
       <button type="submit">{updating ? "Update Review" : "Create Review"}</button>
     </form>
   );
