@@ -5,24 +5,21 @@ import BakeryReviewForm from "./BakeryReviewForm";
 const BakeryReviewSection = ({ updateCallback }) => {
   const [reviews, setReviews] = useState([]);
   const [bakeries, setBakeries] = useState([]);
-  const [contacts, setContacts] = useState([]); // Added state for contacts
+  const [contacts, setContacts] = useState([]);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [currentReview, setCurrentReview] = useState({});
 
-  // Fetching reviews, bakeries, and contacts when component loads
   useEffect(() => {
     fetchReviews();
     fetchBakeriesAndContacts();
   }, []);
 
-  // Fetch reviews from the server
   const fetchReviews = async () => {
     const response = await fetch("http://127.0.0.1:5000/bakeryreviews");
     const data = await response.json();
     setReviews(data.bakeryreviews);
   };
 
-  // Fetch bakeries and contacts data
   const fetchBakeriesAndContacts = async () => {
     const bakeryResponse = await fetch("http://127.0.0.1:5000/bakeries");
     const bakeryData = await bakeryResponse.json();
@@ -33,25 +30,21 @@ const BakeryReviewSection = ({ updateCallback }) => {
     setContacts(contactData.contacts || []);
   };
 
-  // Close the review modal
   const closeReviewModal = () => {
     setIsReviewModalOpen(false);
     setCurrentReview({});
   };
 
-  // Open the modal for creating a new review
   const openCreateReviewModal = () => {
     setCurrentReview({});
     setIsReviewModalOpen(true);
   };
 
-  // Open the modal to edit an existing review
   const openEditReviewModal = (review) => {
     setCurrentReview(review);
     setIsReviewModalOpen(true);
   };
 
-  // Update reviews after a new review is created or updated
   const onReviewUpdate = () => {
     closeReviewModal();
     fetchReviews();
@@ -75,8 +68,8 @@ const BakeryReviewSection = ({ updateCallback }) => {
             </span>
             <BakeryReviewForm 
               existingReview={currentReview} 
-              bakeries={bakeries} // Pass bakeries to the form
-              contacts={contacts} // Pass contacts to the form
+              bakeries={bakeries} // Passing bakeries
+              contacts={contacts} // Passing contacts
               updateCallback={onReviewUpdate} 
             />
           </div>
