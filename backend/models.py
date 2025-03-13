@@ -26,3 +26,15 @@ class Bakery(db.Model):
             "name": self.name,
             "zipCode": self.zip_code,
         }
+    
+class Pastry(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    bakery_id = db.Column(db.Integer, db.ForeignKey('bakery.id'), nullable=False)
+    name = db.Column(db.String(80), unique=False, nullable=False)
+    
+    def to_json(self):
+        return {
+            "id": self.id,
+            "bakeryId": self.bakery_id,
+            "name": self.name,
+        }
