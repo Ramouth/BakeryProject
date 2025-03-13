@@ -38,3 +38,32 @@ class Pastry(db.Model):
             "bakeryId": self.bakery_id,
             "name": self.name,
         }
+
+class BakeryReview(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    review = db.Column(db.String(500), nullable=False)
+    overallRating = db.Column(db.Integer, nullable=False)  # 1-5 rating scale
+    serviceRating = db.Column(db.Integer, nullable=False)  # 1-5 rating scale
+    priceRating = db.Column(db.Integer, nullable=False)  # 1-5 rating scale
+    atmosphereRating = db.Column(db.Integer, nullable=False)  # 1-5 rating scale
+    locationRating = db.Column(db.Integer, nullable=False)  # 1-5 rating scale
+    contact_id = db.Column(db.Integer, db.ForeignKey('contact.id'), nullable=False)  # Foreign key for Contact
+    contact = db.relationship('Contact', backref='bakeryreviews')  # Relationship to Contact
+
+    bakery_id = db.Column(db.Integer, db.ForeignKey('bakery.id'), nullable=False)  # Foreign key for Bakery
+    bakery = db.relationship('Bakery', backref='bakeryreviews')  # Relationship to Bakery
+
+    def to_json(self):
+        return {
+            "id": self.id,
+            "review": self.review,
+            "overallRating": self.overallRating,
+            "serviceRating": self.serviceRating,
+            "priceRating": self.priceRating,
+            "atmosphereRating": self.atmosphereRating,
+            "locationRating": self.locationRating,
+            "contact_id": self.contact_id,
+            "contact_name": f"{self.contact.first_name} {self.contact.last_name}",
+            "bakery_id": self.bakery.id,
+            "bakery_name": self.bakery.name,
+        }
