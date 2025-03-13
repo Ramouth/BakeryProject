@@ -118,8 +118,18 @@ def delete_bakery(bakery_id):
 @app.route("/pastries", methods=["GET"])
 def get_pastries():
     pastries = Pastry.query.all()
-    json_pastries = list(map(lambda x: x.to_json(), pastries))
-    return jsonify({"pastries": json_pastries})
+    pastries_with_bakery = []
+
+    for pastry in pastries:
+        bakery = Bakery.query.get(pastry.bakery_id)  # Get the bakery associated with the pastry
+        pastries_with_bakery.append({
+            "id": pastry.id,
+            "name": pastry.name,
+            "bakery": {"id": bakery.id, "name": bakery.name},  # Include bakery details
+        })
+
+    return jsonify({"pastries": pastries_with_bakery})
+
 
 @app.route("/create_pastry", methods=["POST"])
 def create_pastry():

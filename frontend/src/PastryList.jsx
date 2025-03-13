@@ -32,7 +32,7 @@ const PastryList = ({ pastries, updatePastry, updateCallback }) => {
           {pastries.map((pastry) => (
             <tr key={pastry.id}>
               <td>{pastry.name}</td>
-              <td>{pastry.bakery.name}</td> {/* Display Bakery name associated with the pastry */}
+              <td>{pastry.bakery ? pastry.bakery.name : 'No Bakery'}</td> {/* Check if bakery exists */}
               <td>
                 <button onClick={() => updatePastry(pastry)}>Update</button>
                 <button onClick={() => onDelete(pastry.id)}>Delete</button>
