@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 const PastryForm = ({ existingPastry = {}, updateCallback }) => {
   const [name, setName] = useState(existingPastry.name || "");
-  const [bakeryId, setBakeryId] = useState(existingPastry.bakeryId || ""); // For selecting the bakery
+  const [bakery_Id, setBakery_Id] = useState(existingPastry.bakery_Id || ""); // For selecting the bakery
   const [bakeries, setBakeries] = useState([]); // To store the list of bakeries
 
   const updating = Object.entries(existingPastry).length !== 0;
@@ -23,7 +23,7 @@ const PastryForm = ({ existingPastry = {}, updateCallback }) => {
 
     const data = {
       name,
-      bakeryId, // Use the bakeryId for associating the pastry
+      bakery_Id, 
     };
 
     const url =
@@ -64,8 +64,8 @@ const PastryForm = ({ existingPastry = {}, updateCallback }) => {
         <label htmlFor="bakery">Select Bakery:</label>
         <select
           id="bakery"
-          value={bakeryId}
-          onChange={(e) => setBakeryId(e.target.value)}
+          value={bakery_Id}
+          onChange={(e) => setBakery_Id(e.target.value)}
         >
           <option value="">--Select a Bakery--</option>
           {bakeries.map((bakery) => (
