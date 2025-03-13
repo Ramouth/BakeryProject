@@ -1,6 +1,6 @@
 import { useState } from "react";
-import BakerySection from "./components/BakerySection";
-import ContactSection from "./components/ContactSection";
+import BakerySection from "./Bakerysection";
+import ContactSection from "./ContactSection";
 import "./App.css";
 
 function App() {
