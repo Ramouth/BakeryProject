@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from config import app, db
-from models import Contact, Bakery
+from models import Contact, Bakery, Pastry
 
 
 @app.route("/contacts", methods=["GET"])
@@ -115,6 +115,59 @@ def delete_bakery(bakery_id):
 
     return jsonify({"message": "Bakery deleted!"}), 200
 
+@app.route("/pastries", methods=["GET"])
+def get_pastries():
+    pastries = Pastry.query.all()
+    json_pastries = list(map(lambda x: x.to_json(), pastries))
+    return jsonify({"pastries": json_pastries})
+
+@app.route("/create_pastry", methods=["POST"])
+def create_pastry():
+    name = request.json.get("name")
+    bakery_id = request.json.get("bakeryId")
+
+    if not name or not bakery_id:
+        return (
+            jsonify({"message": "You must include a name and bakery"}),
+            400,
+        )
+
+    new_pastry = Pastry(name=name, bakery_id=bakery_id)
+    try:
+        db.session.add(new_pastry)
+        db.session.commit()
+    except Exception as e:
+        return jsonify({"message": str(e)}), 400
+
+    return jsonify({"message": "Pastry created!"}), 201
+
+@app.route("/update_pastry/<int:pastry_id>", methods=["PATCH"])
+def update_pastry(pastry_id):
+    pastry = Pastry.query.get(pastry_id)
+
+    if not pastry:
+        return jsonify({"message": "Pastry not found"}), 404
+
+    data = request.json
+    pastry.name = data.get("name", pastry.name)
+    pastry.bakery_id = data.get("bakery_id", pastry.bakery_id)
+
+    db.session.commit()
+
+    return jsonify({"message": "Pastry updated."}), 200
+
+
+@app.route("/delete_pastry/<int:pastry_id>", methods=["DELETE"])
+def delete_pastry(pastry_id):
+    pastry = Pastry.query.get(pastry_id)
+
+    if not pastry:
+        return jsonify({"message": "Pastry not found"}), 404
+
+    db.session.delete(pastry)
+    db.session.commit()
+
+    return jsonify({"message": "Pastry deleted!"}), 200
 
 
 if __name__ == "__main__":
