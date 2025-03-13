@@ -1,55 +1,57 @@
-
 import { useState, useEffect } from "react";
-import ContactList from "./ContactList";
+import BakeryList from "./BakeryList";
 import "./App.css";
-import ContactForm from "./ContactForm";
+import BakeryForm from "./BakeryForm";
 
 function App() {
-  const [contacts, setContacts] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [currentContact, setCurrentContact] = useState({})
+  const [bakeries, setBakeries] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentBakery, setCurrentBakery] = useState({});
 
   useEffect(() => {
-    fetchContacts()
+    fetchBakeries();
   }, []);
 
-  const fetchContacts = async () => {
-    const response = await fetch("http://127.0.0.1:5000/contacts");
+  const fetchBakeries = async () => {
+    const response = await fetch("http://127.0.0.1:5000/bakeries");
     const data = await response.json();
-    setContacts(data.contacts);
+    setBakeries(data.bakeries);
   };
 
   const closeModal = () => {
-    setIsModalOpen(false)
-    setCurrentContact({})
-  }
+    setIsModalOpen(false);
+    setCurrentBakery({});
+  };
 
   const openCreateModal = () => {
-    if (!isModalOpen) setIsModalOpen(true)
-  }
+    if (!isModalOpen) setIsModalOpen(true);
+  };
 
-  const openEditModal = (contact) => {
-    if (isModalOpen) return
-    setCurrentContact(contact)
-    setIsModalOpen(true)
-  }
+  const openEditModal = (bakery) => {
+    if (isModalOpen) return;
+    setCurrentBakery(bakery);
+    setIsModalOpen(true);
+  };
 
   const onUpdate = () => {
-    closeModal()
-    fetchContacts()
-  }
+    closeModal();
+    fetchBakeries();
+  };
 
   return (
     <>
-      <ContactList contacts={contacts} updateContact={openEditModal} updateCallback={onUpdate} />
-      <button onClick={openCreateModal}>Create New Contact</button>
-      {isModalOpen && <div className="modal">
-        <div className="modal-content">
-          <span className="close" onClick={closeModal}>&times;</span>
-          <ContactForm existingContact={currentContact} updateCallback={onUpdate} />
+      <BakeryList bakeries={bakeries} updateBakery={openEditModal} updateCallback={onUpdate} />
+      <button onClick={openCreateModal}>Create New Bakery</button>
+      {isModalOpen && (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close" onClick={closeModal}>
+              &times;
+            </span>
+            <BakeryForm existingBakery={currentBakery} updateCallback={onUpdate} />
+          </div>
         </div>
-      </div>
-      }
+      )}
     </>
   );
 }

@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from config import app, db
-from models import Contact
+from models import Contact, Bakery
 
 
 @app.route("/contacts", methods=["GET"])
@@ -60,6 +60,33 @@ def delete_contact(user_id):
     db.session.commit()
 
     return jsonify({"message": "User deleted!"}), 200
+
+@app.route("/bakeries", methods=["GET"])
+def get_bakeries():
+    bakeries = Bakery.query.all()
+    json_bakeries = list(map(lambda x: x.to_json(), bakeries))
+    return jsonify({"bakeries": json_bakeries})
+
+@app.route("/create_bakery", methods=["POST"])
+def create_bakery():
+    name = request.json.get("name")
+    zip_code = request.json.get("zipCode")
+
+    if not name or not zip_code:
+        return (
+            jsonify({"message": "You must include a name and zip code"}),
+            400,
+        )
+
+    new_bakery = Bakery(name=name, zip_code=zip_code)
+    try:
+        db.session.add(new_bakery)
+        db.session.commit()
+    except Exception as e:
+        return jsonify({"message": str(e)}), 400
+
+    return jsonify({"message": "Bakery created!"}), 201
+
 
 
 if __name__ == "__main__":
