@@ -38,7 +38,6 @@ const BakerySection = ({ updateCallback }) => {
 
   return (
     <div>
-      <h2>Bakeries</h2>
       <BakeryList bakeries={bakeries} updateBakery={openEditBakeryModal} updateCallback={onBakeryUpdate} />
       <button onClick={openCreateBakeryModal}>Create New Bakery</button>
 
