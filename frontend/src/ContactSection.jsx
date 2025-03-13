@@ -38,7 +38,6 @@ const ContactSection = ({ updateCallback }) => {
 
   return (
     <div>
-      <h2>Contacts</h2>
       <ContactList contacts={contacts} updateContact={openEditContactModal} updateCallback={onContactUpdate} />
       <button onClick={openCreateContactModal}>Create New Contact</button>
 
