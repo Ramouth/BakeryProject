@@ -87,6 +87,34 @@ def create_bakery():
 
     return jsonify({"message": "Bakery created!"}), 201
 
+@app.route("/update_bakery/<int:bakery_id>", methods=["PATCH"])
+def update_bakery(bakery_id):
+    bakery = Bakery.query.get(bakery_id)
+
+    if not bakery:
+        return jsonify({"message": "Bakery not found"}), 404
+
+    data = request.json
+    bakery.name = data.get("name", bakery.name)
+    bakery.zip_code = data.get("zipCode", bakery.zip_code)
+
+    db.session.commit()
+
+    return jsonify({"message": "Bakery updated."}), 200
+
+
+@app.route("/delete_bakery/<int:bakery_id>", methods=["DELETE"])
+def delete_bakery(bakery_id):
+    bakery = Bakery.query.get(bakery_id)
+
+    if not bakery:
+        return jsonify({"message": "Bakery not found"}), 404
+
+    db.session.delete(bakery)
+    db.session.commit()
+
+    return jsonify({"message": "Bakery deleted!"}), 200
+
 
 
 if __name__ == "__main__":
