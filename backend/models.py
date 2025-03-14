@@ -47,11 +47,11 @@ class BakeryReview(db.Model):
     priceRating = db.Column(db.Integer, nullable=False)  # 1-5 rating scale
     atmosphereRating = db.Column(db.Integer, nullable=False)  # 1-5 rating scale
     locationRating = db.Column(db.Integer, nullable=False)  # 1-5 rating scale
-    contact_id = db.Column(db.Integer, db.ForeignKey('contact.id'), nullable=False)  # Foreign key for Contact
-    contact = db.relationship('Contact', backref='bakeryreviews')  # Relationship to Contact
+    contact_id = db.Column(db.Integer, db.ForeignKey('contact.id'), nullable=False)  # Foreign key
+    contact = db.relationship('Contact', backref='bakeryreviews')  # Relationship
 
-    bakery_id = db.Column(db.Integer, db.ForeignKey('bakery.id'), nullable=False)  # Foreign key for Bakery
-    bakery = db.relationship('Bakery', backref='bakeryreviews')  # Relationship to Bakery
+    bakery_id = db.Column(db.Integer, db.ForeignKey('bakery.id'), nullable=False)  # Foreign key
+    bakery = db.relationship('Bakery', backref='bakeryreviews')  # Relationship
 
     def to_json(self):
         return {
@@ -75,11 +75,11 @@ class PastryReview(db.Model):
     tasteRating = db.Column(db.Integer, nullable=False)  # 1-5 rating scale
     priceRating = db.Column(db.Integer, nullable=False)  # 1-5 rating scale
     presentationRating = db.Column(db.Integer, nullable=False)  # 1-5 rating scale
-    contact_id = db.Column(db.Integer, db.ForeignKey('contact.id'), nullable=False)  # Foreign key for Contact
-    contact = db.relationship('Contact', backref='pastryreviews')  # Relationship to Contact
+    contact_id = db.Column(db.Integer, db.ForeignKey('contact.id'), nullable=False)  # Foreign key
+    contact = db.relationship('Contact', backref='pastryreviews')  # Relationship
 
-    pastry_id = db.Column(db.Integer, db.ForeignKey('pastry.id'), nullable=False)  # Foreign key for Pastry
-    pastry = db.relationship('Pastry', backref='pastryreviews')  # Relationship to Pastry
+    pastry_id = db.Column(db.Integer, db.ForeignKey('pastry.id'), nullable=False)  # Foreign key
+    pastry = db.relationship('Pastry', backref='pastryreviews')  # Relationship
 
     def to_json(self):
         return {
