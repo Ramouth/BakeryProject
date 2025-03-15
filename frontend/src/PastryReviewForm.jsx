@@ -3,10 +3,9 @@ import { useState } from "react";
 const PastryReviewForm = ({ existingReview = {}, updateCallback, contacts, pastries }) => {
   const [review, setReview] = useState(existingReview.review || "");
   const [overallRating, setOverallRating] = useState(existingReview.overallRating || 1);
-  const [serviceRating, setServiceRating] = useState(existingReview.serviceRating || 1);
+  const [tasteRating, setTasteRating] = useState(existingReview.tasteRating || 1);
   const [priceRating, setPriceRating] = useState(existingReview.priceRating || 1);
-  const [atmosphereRating, setAtmosphereRating] = useState(existingReview.atmosphereRating || 1);
-  const [locationRating, setLocationRating] = useState(existingReview.locationRating || 1);
+  const [presentationRating, setPresentationRating] = useState(existingReview.presentationRating || 1);
   const [contactId, setContactId] = useState(existingReview.contactId || ""); // Contact ID
   const [pastryId, setPastryId] = useState(existingReview.pastryId || "");  // Pastry ID
 
@@ -18,10 +17,9 @@ const PastryReviewForm = ({ existingReview = {}, updateCallback, contacts, pastr
     const data = {
       review,
       overallRating,
-      serviceRating,
+      tasteRating,
       priceRating,
-      atmosphereRating,
-      locationRating,
+      presentationRating,
       contactId,
       pastryId,
     };
@@ -68,13 +66,13 @@ const PastryReviewForm = ({ existingReview = {}, updateCallback, contacts, pastr
         />
       </div>
       <div>
-        <label>Service Rating:</label>
+        <label>Taste Rating:</label>
         <input
           type="number"
           min="1"
           max="5"
-          value={serviceRating}
-          onChange={(e) => setServiceRating(e.target.value)}
+          value={tasteRating}
+          onChange={(e) => setTasteRating(e.target.value)}
         />
       </div>
       <div>
@@ -88,26 +86,16 @@ const PastryReviewForm = ({ existingReview = {}, updateCallback, contacts, pastr
         />
       </div>
       <div>
-        <label>Atmosphere Rating:</label>
+        <label>Presentation Rating:</label>
         <input
           type="number"
           min="1"
           max="5"
-          value={atmosphereRating}
-          onChange={(e) => setAtmosphereRating(e.target.value)}
+          value={presentationRating}
+          onChange={(e) => setPresentationRating(e.target.value)}
         />
       </div>
-      <div>
-        <label>Location Rating:</label>
-        <input
-          type="number"
-          min="1"
-          max="5"
-          value={locationRating}
-          onChange={(e) => setLocationRating(e.target.value)}
-        />
-      </div>
-
+      
       {/* Dropdown to select an existing contact (user) */}
       <div>
         <label>Contact:</label>

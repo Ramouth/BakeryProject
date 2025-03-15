@@ -263,29 +263,28 @@ def get_pastry_reviews():
     json_reviews = list(map(lambda x: x.to_json(), pastry_reviews))
     return jsonify({"pastryreviews": json_reviews})
 
+
 # Create a new pastry review
 @app.route("/create_pastryreview", methods=["POST"])
-def create_pastryreview():
+def create_pastry_review():
     review = request.json.get("review")
     overall_rating = request.json.get("overallRating")
-    service_rating = request.json.get("serviceRating")
+    taste_rating = request.json.get("tasteRating")
     price_rating = request.json.get("priceRating")
-    atmosphere_rating = request.json.get("atmosphereRating")
-    location_rating = request.json.get("locationRating")
+    presentation_rating = request.json.get("presentationRating")
     contact_id = request.json.get("contactId")
     pastry_id = request.json.get("pastryId")
 
-    if not review or not overall_rating or not service_rating or not price_rating or not atmosphere_rating or not location_rating or not contact_id or not pastry_id:
+    if not all([review, overall_rating, taste_rating, price_rating, presentation_rating, contact_id, pastry_id]):
         return jsonify({"message": "You must include all fields (review, ratings, contactId, pastryId)"}), 400
 
     # Create new pastry review
     new_pastry_review = PastryReview(
         review=review,
         overallRating=overall_rating,
-        serviceRating=service_rating,
+        tasteRating=taste_rating,
         priceRating=price_rating,
-        atmosphereRating=atmosphere_rating,
-        locationRating=location_rating,
+        presentationRating=presentation_rating,
         contact_id=contact_id,
         pastry_id=pastry_id,
     )
@@ -298,9 +297,10 @@ def create_pastryreview():
 
     return jsonify({"message": "Pastry review created!"}), 201
 
+
 # Update a pastry review by ID
 @app.route("/update_pastryreview/<int:review_id>", methods=["PATCH"])
-def update_pastryreview(review_id):
+def update_pastry_review(review_id):
     pastry_review = PastryReview.query.get(review_id)
 
     if not pastry_review:
@@ -309,10 +309,9 @@ def update_pastryreview(review_id):
     data = request.json
     pastry_review.review = data.get("review", pastry_review.review)
     pastry_review.overallRating = data.get("overallRating", pastry_review.overallRating)
-    pastry_review.serviceRating = data.get("serviceRating", pastry_review.serviceRating)
+    pastry_review.tasteRating = data.get("tasteRating", pastry_review.tasteRating)
     pastry_review.priceRating = data.get("priceRating", pastry_review.priceRating)
-    pastry_review.atmosphereRating = data.get("atmosphereRating", pastry_review.atmosphereRating)
-    pastry_review.locationRating = data.get("locationRating", pastry_review.locationRating)
+    pastry_review.presentationRating = data.get("presentationRating", pastry_review.presentationRating)
     pastry_review.contact_id = data.get("contactId", pastry_review.contact_id)
     pastry_review.pastry_id = data.get("pastryId", pastry_review.pastry_id)
 
@@ -320,9 +319,10 @@ def update_pastryreview(review_id):
 
     return jsonify({"message": "Pastry review updated."}), 200
 
+
 # Delete a pastry review by ID
 @app.route("/delete_pastryreview/<int:review_id>", methods=["DELETE"])
-def delete_pastryreview(review_id):
+def delete_pastry_review(review_id):
     pastry_review = PastryReview.query.get(review_id)
 
     if not pastry_review:

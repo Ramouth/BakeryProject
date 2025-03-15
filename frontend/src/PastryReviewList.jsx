@@ -25,10 +25,9 @@ const PastryReviewList = ({ reviews, updateReview, updateCallback }) => {
           <tr>
             <th>Review</th>
             <th>Overall Rating</th>
-            <th>Service Rating</th>
+            <th>Taste Rating</th>
             <th>Price Rating</th>
-            <th>Atmosphere Rating</th>
-            <th>Location Rating</th>
+            <th>Presentation Rating</th>
             <th>Contact</th>
             <th>Pastry</th>
             <th>Actions</th>
@@ -39,10 +38,9 @@ const PastryReviewList = ({ reviews, updateReview, updateCallback }) => {
             <tr key={review.id}>
               <td>{review.review}</td>
               <td>{review.overallRating}</td>
-              <td>{review.serviceRating}</td>
+              <td>{review.tasteRating}</td>
               <td>{review.priceRating}</td>
-              <td>{review.atmosphereRating}</td>
-              <td>{review.locationRating}</td>
+              <td>{review.presentationRating}</td>
               <td>{review.contact_name}</td>
               <td>{review.pastry_name}</td>
               <td>
