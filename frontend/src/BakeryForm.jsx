@@ -9,13 +9,11 @@ const BakeryForm = ({ existingBakery = {}, updateCallback }) => {
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    const data = {
-      name,
-      zipCode,
-    };
+    const data = { name, zipCode };
     const url =
-      "http://127.0.0.1:5000/" +
-      (updating ? `update_bakery/${existingBakery.id}` : "create_bakery");
+      "http://127.0.0.1:5000/bakeries/" +
+      (updating ? `update/${existingBakery.id}` : "create");
+
     const options = {
       method: updating ? "PATCH" : "POST",
       headers: {
@@ -23,6 +21,7 @@ const BakeryForm = ({ existingBakery = {}, updateCallback }) => {
       },
       body: JSON.stringify(data),
     };
+
     const response = await fetch(url, options);
     if (response.status !== 201 && response.status !== 200) {
       const data = await response.json();
@@ -36,21 +35,11 @@ const BakeryForm = ({ existingBakery = {}, updateCallback }) => {
     <form onSubmit={onSubmit}>
       <div>
         <label htmlFor="name">Bakery Name:</label>
-        <input
-          type="text"
-          id="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+        <input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} />
       </div>
       <div>
         <label htmlFor="zipCode">Zip Code:</label>
-        <input
-          type="text"
-          id="zipCode"
-          value={zipCode}
-          onChange={(e) => setZipCode(e.target.value)}
-        />
+        <input type="text" id="zipCode" value={zipCode} onChange={(e) => setZipCode(e.target.value)} />
       </div>
       <button type="submit">{updating ? "Update" : "Create"}</button>
     </form>

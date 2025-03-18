@@ -12,10 +12,11 @@ const BakerySection = ({ updateCallback }) => {
   }, []);
 
   const fetchBakeries = async () => {
-    const response = await fetch("http://127.0.0.1:5000/bakeries");
+    const response = await fetch("http://127.0.0.1:5000/bakeries/");
     const data = await response.json();
     setBakeries(data.bakeries);
   };
+  
 
   const closeBakeryModal = () => {
     setIsBakeryModalOpen(false);
