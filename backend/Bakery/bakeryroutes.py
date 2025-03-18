@@ -5,6 +5,7 @@ from models import Bakery
 
 # Routes for CRUD operations for Bakery
 # Notice that we are now using @bakery_bp instead of @app and the route is now "/" because of url prefix in the blueprint 
+# Also make sure to make changes in the routes in the frontend to match the new routes
 
 @bakery_bp.route("/", methods=["GET"])
 def get_bakeries():
