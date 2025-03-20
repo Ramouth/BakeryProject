@@ -1,9 +1,9 @@
 import { useState } from "react";
-import BakerySection from "./Bakerysection";
-import ContactSection from "./ContactSection";
-import PastrySection from "./PastrySection";
-import BakeryReviewSection from "./BakeryReviewSection";
-import PastryReviewSection from "./PastryReviewSection";
+import BakerySection from "./Bakery/Bakerysection";
+import ContactSection from "./Contact/ContactSection";
+import PastrySection from "./Pastry/PastrySection";
+import BakeryReviewSection from "./BakeryReview/BakeryReviewSection";
+import PastryReviewSection from "./PastryReview/PastryReviewSection";
 import "./App.css";
 
 
