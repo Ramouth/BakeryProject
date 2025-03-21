@@ -1,10 +1,12 @@
 from flask import request, jsonify
 from config import app, db
 from Bakery import bakery_bp
+from Pastry import pastry_bp
 from Reviews import bakeryreview_bp
 from models import Contact, Bakery, Pastry, BakeryReview, PastryReview
 
 app.register_blueprint(bakery_bp, url_prefix="/bakeries")
+app.register_blueprint(pastry_bp, url_prefix="/pastries")
 app.register_blueprint(bakeryreview_bp, url_prefix="/bakeryreviews")
 
 
