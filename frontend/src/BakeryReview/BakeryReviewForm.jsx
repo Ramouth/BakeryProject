@@ -28,7 +28,7 @@ const BakeryReviewForm = ({ existingReview = {}, updateCallback, contacts, baker
 
     const url =
       "http://127.0.0.1:5000/" +
-      (updating ? `update_bakeryreview/${existingReview.id}` : "create_bakeryreview");
+      (updating ? `update/${existingReview.id}` : "create");
 
     const options = {
       method: updating ? "PATCH" : "POST",
