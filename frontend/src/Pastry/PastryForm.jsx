@@ -28,7 +28,7 @@ const PastryForm = ({ existingPastry = {}, updateCallback }) => {
 
     const url =
       "http://127.0.0.1:5000/" +
-      (updating ? `update_pastry/${existingPastry.id}` : "create_pastry");
+      (updating ? `update/${existingPastry.id}` : "create");
 
     const options = {
       method: updating ? "PATCH" : "POST",
