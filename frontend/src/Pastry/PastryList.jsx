@@ -6,7 +6,7 @@ const PastryList = ({ pastries, updatePastry, updateCallback }) => {
       const options = {
         method: "DELETE",
       };
-      const response = await fetch(`http://127.0.0.1:5000/delete/${id}`, options);
+      const response = await fetch(`http://127.0.0.1:5000/pastries/delete/${id}`, options);
       if (response.status === 200) {
         updateCallback();
       } else {
