@@ -23,7 +23,7 @@ const PastryForm = ({ existingPastry = {}, updateCallback }) => {
 
     const data = {
       name,
-      bakery_Id, 
+      bakeryId: bakery_Id, 
     };
 
     const url =
