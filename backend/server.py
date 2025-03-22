@@ -1,15 +1,17 @@
 from flask import Flask
 from flask_cors import CORS
-from config import Config, DevelopmentConfig, ProductionConfig
-from models import db
-from schemas import ma
-from utils.caching import cache, configure_cache
+from config import DevelopmentConfig
 
 # Import blueprints
 from blueprints.bakery_bp import bakery_bp
 from blueprints.pastry_bp import pastry_bp
 from blueprints.review_bp import bakery_review_bp, pastry_review_bp
 from blueprints.user_bp import user_bp
+
+# Import extensions
+from models import db
+from schemas import ma
+from utils.caching import cache, configure_cache
 
 def create_app(config_class=DevelopmentConfig):
     """Create and configure the Flask application"""
