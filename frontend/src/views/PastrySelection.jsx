@@ -66,27 +66,27 @@ const PastrySelection = () => {
   };
   
   if (loading) {
-    return <div className="container">Loading pastries...</div>;
+    return <div className="container"><div className="card">Loading pastries...</div></div>;
   }
   
   if (error) {
-    return <div className="container error-message">{error}</div>;
+    return <div className="container"><div className="card error-message">{error}</div></div>;
   }
   
   return (
     <div className="container">
       <div className="card">
-        <h2>Choose Pastry</h2>
-        <p>Select a pastry from {selectedBakery.name}</p>
+        <h2>Bakery Reviews</h2>
+        <p>{selectedBakery.name} - Option 1</p>
         
         <div className="dropdown-list">
-          {pastries.map(pastry => (
+          {pastries.map((pastry, index) => (
             <div 
               key={pastry.id} 
               className={`dropdown-item ${selectedPastry && selectedPastry.id === pastry.id ? 'selected' : ''}`}
               onClick={() => handlePastrySelect(pastry)}
             >
-              {pastry.name}
+              Option {index + 1}: {pastry.name}
             </div>
           ))}
           <div 
@@ -99,37 +99,46 @@ const PastrySelection = () => {
         
         {showCustom && (
           <div className="form-group">
-            <label htmlFor="customPastry">Enter Pastry Name:</label>
             <input
               type="text"
-              id="customPastry"
-              placeholder="Pastry name"
+              placeholder="Enter pastry name"
               value={customPastryName}
               onChange={(e) => setCustomPastryName(e.target.value)}
             />
             <button 
-              className="btn btn-secondary"
+              className="btn"
               onClick={handleCustomPastrySubmit}
               disabled={customPastryName.trim().length === 0}
             >
-              Add Pastry
+              add
             </button>
           </div>
         )}
+
+        <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+          <button className="btn">choose different pastry</button>
+        </div>
         
         <div className="nav-buttons">
           <button 
-            className="btn btn-secondary"
+            className="btn"
             onClick={() => goToNextStep('bakerySelection')}
           >
-            Back
+            back
+          </button>
+          <button 
+            className="btn"
+            onClick={() => {}}
+            style={{ visibility: 'hidden' }}
+          >
+            skip
           </button>
           <button 
             className="btn"
             onClick={handleNext}
             disabled={!selectedPastry}
           >
-            Next
+            next
           </button>
         </div>
       </div>

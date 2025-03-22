@@ -6,21 +6,23 @@ const Start = () => {
   return (
     <div className="container">
       <div className="card">
-        <h1>Bakery Reviews</h1>
+        <h1>CrumbCompass</h1>
         <p className="intro-text">
-          Welcome to Bakery Reviews! This site is our project to curate the best 
-          bakeries in Copenhagen and Frederiksberg.
+        Welcome to CrumbCompass
         </p>
         <p>
-          Right now, we're working on building a database of pastry and bakery reviews.
-          Please consider giving us your thoughts on bakeries you've visited.
+        This site is a student project from DTU, designed to help you 
+          discover the best bakeries in Copenhagen. 
+           Whether you're looking for the crispiest croissant or the 
+           perfect sourdough, our platform makes it easy 
+           to find the right bakery for you.
         </p>
         <p>
-          You'll first be asked to select a bakery, then a pastry item, and provide
-          ratings. You can then optionally review the bakery itself.
+          Right now, we're testing the site with friends and family, so your feedback is 
+          invaluable! Give us a review, and let us know what you think. 
         </p>
         
-        <div className="nav-buttons">
+        <div className="nav-buttons" style={{ justifyContent: 'center' }}>
           <button 
             className="btn"
             onClick={() => goToNextStep('bakerySelection')}

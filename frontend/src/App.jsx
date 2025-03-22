@@ -15,9 +15,9 @@ import './styles/global.css';
 
 function App() {
   return (
-    <UserProvider>
-      <ReviewProvider>
-        <Router>
+    <Router>
+      <UserProvider>
+        <ReviewProvider>
           <div className="app">
             <NavBar />
             <main className="app-content">
@@ -32,9 +32,9 @@ function App() {
               </Routes>
             </main>
           </div>
-        </Router>
-      </ReviewProvider>
-    </UserProvider>
+        </ReviewProvider>
+      </UserProvider>
+    </Router>
   );
 }
 

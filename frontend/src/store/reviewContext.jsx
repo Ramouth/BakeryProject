@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { reviewService } from '../services';
 
 // Create context
@@ -6,6 +7,7 @@ const ReviewContext = createContext();
 
 // Provider component
 export const ReviewProvider = ({ children }) => {
+  const navigate = useNavigate();
   // State for the review flow
   const [selectedBakery, setSelectedBakery] = useState(null);
   const [selectedPastry, setSelectedPastry] = useState(null);
@@ -30,6 +32,39 @@ export const ReviewProvider = ({ children }) => {
   const [experienceRating, setExperienceRating] = useState(5);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  
+  // Navigation helper to move between steps
+  const goToNextStep = useCallback((step) => {
+    switch (step) {
+      case 'start':
+        navigate('/');
+        break;
+      case 'bakerySelection':
+        navigate('/bakery-selection');
+        break;
+      case 'pastrySelection':
+        navigate('/pastry-selection');
+        break;
+      case 'pastryRating':
+        navigate('/pastry-rating');
+        break;
+      case 'reviewOptions':
+        navigate('/bakery-rating');
+        break;
+      case 'bakeryRating':
+        navigate('/bakery-rating');
+        break;
+      case 'experienceRating':
+        // This would be implemented in a real app
+        navigate('/thank-you');
+        break;
+      case 'thankYou':
+        navigate('/thank-you');
+        break;
+      default:
+        navigate('/');
+    }
+  }, [navigate]);
   
   // Reset all review data
   const resetReview = useCallback(() => {
@@ -144,7 +179,8 @@ export const ReviewProvider = ({ children }) => {
     resetReview,
     submitPastryReview,
     submitBakeryReview,
-    submitExperienceRating
+    submitExperienceRating,
+    goToNextStep
   };
   
   return (
