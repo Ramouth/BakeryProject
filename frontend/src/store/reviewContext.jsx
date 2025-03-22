@@ -1,4 +1,5 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useCallback } from 'react';
+import { reviewService } from '../services';
 
 // Create context
 const ReviewContext = createContext();
@@ -26,11 +27,12 @@ export const ReviewProvider = ({ children }) => {
     comments: ''
   });
   
-  const [currentStep, setCurrentStep] = useState('start');
   const [experienceRating, setExperienceRating] = useState(5);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
   
   // Reset all review data
-  const resetReview = () => {
+  const resetReview = useCallback(() => {
     setSelectedBakery(null);
     setSelectedPastry(null);
     setPastryRatings({
@@ -49,99 +51,81 @@ export const ReviewProvider = ({ children }) => {
       selection: 5,
       comments: ''
     });
-    setCurrentStep('start');
     setExperienceRating(5);
-  };
+    setError(null);
+  }, []);
   
   // Submit pastry review
-  const submitPastryReview = async () => {
+  const submitPastryReview = useCallback(async () => {
+    setIsSubmitting(true);
+    setError(null);
+    
     try {
-      const response = await fetch('http://127.0.0.1:5000/api/pastry-reviews', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          bakeryId: selectedBakery.id,
-          pastryName: selectedPastry.name === 'Other' ? selectedPastry.customName : selectedPastry.name,
-          overallRating: pastryRatings.overall,
-          tasteRating: pastryRatings.taste,
-          priceRating: pastryRatings.price,
-          presentationRating: pastryRatings.presentation,
-          comments: pastryRatings.comments
-        }),
+      const response = await reviewService.createPastryReview({
+        bakeryId: selectedBakery.id,
+        pastryId: selectedPastry.id === 'custom' ? null : selectedPastry.id,
+        pastryName: selectedPastry.name === 'Other' ? selectedPastry.customName : selectedPastry.name,
+        overallRating: pastryRatings.overall,
+        tasteRating: pastryRatings.taste,
+        priceRating: pastryRatings.price,
+        presentationRating: pastryRatings.presentation,
+        review: pastryRatings.comments
       });
       
-      if (!response.ok) {
-        throw new Error('Failed to submit pastry review');
-      }
-      
-      return await response.json();
+      return response;
     } catch (error) {
-      console.error('Error submitting pastry review:', error);
+      setError('Failed to submit pastry review: ' + error.message);
       throw error;
+    } finally {
+      setIsSubmitting(false);
     }
-  };
+  }, [selectedBakery, selectedPastry, pastryRatings]);
   
   // Submit bakery review
-  const submitBakeryReview = async () => {
+  const submitBakeryReview = useCallback(async () => {
+    setIsSubmitting(true);
+    setError(null);
+    
     try {
-      const response = await fetch('http://127.0.0.1:5000/api/bakery-reviews', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          bakeryId: selectedBakery.id,
-          overallRating: bakeryRatings.overall,
-          serviceRating: bakeryRatings.service,
-          priceRating: bakeryRatings.price,
-          atmosphereRating: bakeryRatings.atmosphere,
-          locationRating: bakeryRatings.location,
-          selectionRating: bakeryRatings.selection,
-          comments: bakeryRatings.comments
-        }),
+      const response = await reviewService.createBakeryReview({
+        bakeryId: selectedBakery.id,
+        overallRating: bakeryRatings.overall,
+        serviceRating: bakeryRatings.service,
+        priceRating: bakeryRatings.price,
+        atmosphereRating: bakeryRatings.atmosphere,
+        locationRating: bakeryRatings.location,
+        selectionRating: bakeryRatings.selection,
+        review: bakeryRatings.comments
       });
       
-      if (!response.ok) {
-        throw new Error('Failed to submit bakery review');
-      }
-      
-      return await response.json();
+      return response;
     } catch (error) {
-      console.error('Error submitting bakery review:', error);
+      setError('Failed to submit bakery review: ' + error.message);
       throw error;
+    } finally {
+      setIsSubmitting(false);
     }
-  };
+  }, [selectedBakery, bakeryRatings]);
   
   // Submit experience rating
-  const submitExperienceRating = async () => {
+  const submitExperienceRating = useCallback(async (feedback = "") => {
+    setIsSubmitting(true);
+    setError(null);
+    
     try {
-      const response = await fetch('http://127.0.0.1:5000/api/experience-ratings', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          rating: experienceRating
-        }),
+      const response = await reviewService.submitExperienceRating({
+        rating: experienceRating,
+        feedback
       });
       
-      if (!response.ok) {
-        throw new Error('Failed to submit experience rating');
-      }
-      
-      return await response.json();
+      return response;
     } catch (error) {
-      console.error('Error submitting experience rating:', error);
+      setError('Failed to submit experience rating: ' + error.message);
       throw error;
+    } finally {
+      setIsSubmitting(false);
     }
-  };
-  
-  // Handle navigation through the review process
-  const goToNextStep = (step) => {
-    setCurrentStep(step);
-  };
+  }, [experienceRating]);
   
   // Exposed context value
   const value = {
@@ -153,15 +137,14 @@ export const ReviewProvider = ({ children }) => {
     setPastryRatings,
     bakeryRatings,
     setBakeryRatings,
-    currentStep,
-    setCurrentStep,
     experienceRating,
     setExperienceRating,
+    isSubmitting,
+    error,
     resetReview,
     submitPastryReview,
     submitBakeryReview,
-    submitExperienceRating,
-    goToNextStep
+    submitExperienceRating
   };
   
   return (
