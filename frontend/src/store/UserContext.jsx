@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import apiClient from '../services/api';
 
 // Create context
 const UserContext = createContext();
@@ -8,8 +9,9 @@ export const UserProvider = ({ children }) => {
   // State for the current user
   const [currentUser, setCurrentUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   
-  // On mount, check for user in local storage or get from API
+  // Load user from storage on mount
   useEffect(() => {
     const getUserFromStorage = () => {
       try {
@@ -27,28 +29,96 @@ export const UserProvider = ({ children }) => {
     getUserFromStorage();
   }, []);
   
+  // Login function with API integration
+  const login = useCallback(async (email, password) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // In a real app, this would make an API call to login
+      // For demo, we'll check for existing contacts with this email
+      const response = await apiClient.get('/contacts');
+      const contacts = response.contacts || [];
+      
+      const user = contacts.find(contact => contact.email === email);
+      
+      if (user) {
+        // Set isAdmin based on database value or defaults to false
+        const userData = {
+          ...user,
+          isAdmin: user.isAdmin || false
+        };
+        
+        setUser(userData);
+        return userData;
+      } else {
+        throw new Error('Invalid email or password');
+      }
+    } catch (err) {
+      const errorMessage = err.message || 'Login failed. Please try again.';
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+  
   // Set user and save to storage
-  const setUser = (user) => {
+  const setUser = useCallback((user) => {
     setCurrentUser(user);
     if (user) {
       localStorage.setItem('currentUser', JSON.stringify(user));
     } else {
       localStorage.removeItem('currentUser');
     }
-  };
+  }, []);
+  
+  // Register function with API integration
+  const register = useCallback(async (userData) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const response = await apiClient.post('/contacts/create', userData);
+      
+      if (response && response.contact) {
+        // Auto-login after successful registration
+        const newUser = {
+          ...response.contact,
+          isAdmin: false // New users are not admins by default
+        };
+        
+        setUser(newUser);
+        return newUser;
+      } else {
+        throw new Error('Registration failed');
+      }
+    } catch (err) {
+      const errorMessage = err.message || 'Registration failed. Please try again.';
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [setUser]);
   
   // Log out user
-  const logout = () => {
+  const logout = useCallback(() => {
     setUser(null);
-  };
+    // Clear any cached user data
+    apiClient.clearCacheForUrl('/contacts');
+  }, [setUser]);
   
-  // Exposed context value
-  const value = {
+  // Memoized context value to prevent unnecessary re-renders
+  const value = useMemo(() => ({
     currentUser,
     isLoading,
-    setUser,
+    error,
+    login,
+    register,
     logout,
-  };
+    setUser
+  }), [currentUser, isLoading, error, login, register, logout, setUser]);
   
   return (
     <UserContext.Provider value={value}>

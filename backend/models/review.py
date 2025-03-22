@@ -1,14 +1,19 @@
 from . import db
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime, Index, CheckConstraint
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, declared_attr
 
 class BaseReview:
     """Base class for review models with common attributes"""
     id = Column(Integer, primary_key=True)
     review = Column(Text, nullable=False)
     overall_rating = Column(Integer, nullable=False)
-    contact_id = Column(Integer, ForeignKey('contact.id'), nullable=False)
+    
+    # Use declared_attr for foreign keys in mixins
+    @declared_attr
+    def contact_id(cls):
+        return Column(Integer, ForeignKey('contact.id'), nullable=False)
+    
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
@@ -19,7 +24,11 @@ class BakeryReview(db.Model, BaseReview):
     """Bakery review model for storing bakery reviews"""
     __tablename__ = 'bakery_review'
     
-    bakery_id = Column(Integer, ForeignKey('bakery.id'), nullable=False)
+    # Use declared_attr for foreign keys in mixins
+    @declared_attr
+    def bakery_id(cls):
+        return Column(Integer, ForeignKey('bakery.id'), nullable=False)
+    
     service_rating = Column(Integer, nullable=False)
     price_rating = Column(Integer, nullable=False)
     atmosphere_rating = Column(Integer, nullable=False)
@@ -65,9 +74,9 @@ class BakeryReview(db.Model, BaseReview):
             'atmosphereRating': self.atmosphere_rating,
             'locationRating': self.location_rating,
             'contact_id': self.contact_id,
-            'contact_name': f"{self.contact.first_name} {self.contact.last_name}",
+            'contact_name': f"{self.contact.first_name} {self.contact.last_name}" if self.contact else None,
             'bakery_id': self.bakery_id,
-            'bakery_name': self.bakery.name,
+            'bakery_name': self.bakery.name if self.bakery else None,
             'created_at': self.created_at.isoformat() if self.created_at else None
         }
 
@@ -75,7 +84,11 @@ class PastryReview(db.Model, BaseReview):
     """Pastry review model for storing pastry reviews"""
     __tablename__ = 'pastry_review'
     
-    pastry_id = Column(Integer, ForeignKey('pastry.id'), nullable=False)
+    # Use declared_attr for foreign keys in mixins
+    @declared_attr
+    def pastry_id(cls):
+        return Column(Integer, ForeignKey('pastry.id'), nullable=False)
+    
     taste_rating = Column(Integer, nullable=False)
     price_rating = Column(Integer, nullable=False)
     presentation_rating = Column(Integer, nullable=False)
@@ -117,8 +130,8 @@ class PastryReview(db.Model, BaseReview):
             'priceRating': self.price_rating,
             'presentationRating': self.presentation_rating,
             'contact_id': self.contact_id,
-            'contact_name': f"{self.contact.first_name} {self.contact.last_name}",
+            'contact_name': f"{self.contact.first_name} {self.contact.last_name}" if self.contact else None,
             'pastry_id': self.pastry_id,
-            'pastry_name': self.pastry.name,
+            'pastry_name': self.pastry.name if self.pastry else None,
             'created_at': self.created_at.isoformat() if self.created_at else None
         }
