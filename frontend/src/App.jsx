@@ -1,37 +1,55 @@
-import { useState } from "react";
-import BakerySection from "./Bakery/Bakerysection";
-import ContactSection from "./Contact/ContactSection";
-import PastrySection from "./Pastry/PastrySection";
-import BakeryReviewSection from "./BakeryReview/BakeryReviewSection";
-import PastryReviewSection from "./PastryReview/PastryReviewSection";
-import "./App.css";
+import { ReviewProvider, useReview } from './store/reviewContext';
+import Start from './views/Start';
+import BakerySelection from './views/BakerySelection';
+import PastrySelection from './views/PastrySelection';
+import PastryRating from './views/PastryRating';
+import ReviewOptions from './views/ReviewOptions';
+import BakeryRating from './views/BakeryRating';
+import ExperienceRating from './views/ExperienceRating';
+import ThankYou from './views/ThankYou';
 
+// Import CSS
+import './styles/global.css';
 
+// Router component to handle the view transitions
+const Router = () => {
+  const { currentStep } = useReview();
+  
+  // Render the appropriate view based on current step
+  switch (currentStep) {
+    case 'start':
+      return <Start />;
+    case 'bakerySelection':
+      return <BakerySelection />;
+    case 'pastrySelection':
+      return <PastrySelection />;
+    case 'pastryRating':
+      return <PastryRating />;
+    case 'reviewOptions':
+      return <ReviewOptions />;
+    case 'bakeryRating':
+      return <BakeryRating />;
+    case 'experienceRating':
+      return <ExperienceRating />;
+    case 'thankYou':
+      return <ThankYou />;
+    default:
+      return <Start />;
+  }
+};
+
+// Main App component
 function App() {
-  const [activeTab, setActiveTab] = useState("contacts");
-
-  const switchTab = (tab) => {
-    setActiveTab(tab);
-  };
-
   return (
-    <>
-      {/* Tab navigation */}
-      <div className="tabs">
-        <button onClick={() => switchTab("contacts")}>Contacts</button>
-        <button onClick={() => switchTab("bakeries")}>Bakeries</button>
-        <button onClick={() => switchTab("pastries")}>Pastries</button>
-        <button onClick={() => switchTab("bakeryreviews")}>Bakery Reviews</button>
-        <button onClick={() => switchTab("pastryreviews")}>Pastry Reviews</button>
+    <ReviewProvider>
+      <div className="app">
+        <header className="app-header">
+          <h1>Bakery Reviews</h1>
+          <p>Copenhagen + Frederiksberg</p>
+        </header>
+        <Router />
       </div>
-
-      {/* Shows the activetab*/}
-      {activeTab === "contacts" && <ContactSection />}
-      {activeTab === "bakeries" && <BakerySection />}
-      {activeTab === "pastries" && <PastrySection />}
-      {activeTab === "bakeryreviews" && <BakeryReviewSection/>}
-      {activeTab === "pastryreviews" && <PastryReviewSection/>}
-    </>
+    </ReviewProvider>
   );
 }
 
