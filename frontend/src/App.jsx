@@ -1,55 +1,40 @@
-import { ReviewProvider, useReview } from './store/reviewContext';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { UserProvider } from './store/UserContext';
+import { ReviewProvider } from './store/reviewContext';
+import NavBar from './components/NavBar';
 import Start from './views/Start';
 import BakerySelection from './views/BakerySelection';
 import PastrySelection from './views/PastrySelection';
 import PastryRating from './views/PastryRating';
-import ReviewOptions from './views/ReviewOptions';
 import BakeryRating from './views/BakeryRating';
-import ExperienceRating from './views/ExperienceRating';
 import ThankYou from './views/ThankYou';
+import Admin from './views/Admin';
 
 // Import CSS
 import './styles/global.css';
 
-// Router component to handle the view transitions
-const Router = () => {
-  const { currentStep } = useReview();
-  
-  // Render the appropriate view based on current step
-  switch (currentStep) {
-    case 'start':
-      return <Start />;
-    case 'bakerySelection':
-      return <BakerySelection />;
-    case 'pastrySelection':
-      return <PastrySelection />;
-    case 'pastryRating':
-      return <PastryRating />;
-    case 'reviewOptions':
-      return <ReviewOptions />;
-    case 'bakeryRating':
-      return <BakeryRating />;
-    case 'experienceRating':
-      return <ExperienceRating />;
-    case 'thankYou':
-      return <ThankYou />;
-    default:
-      return <Start />;
-  }
-};
-
-// Main App component
 function App() {
   return (
-    <ReviewProvider>
-      <div className="app">
-        <header className="app-header">
-          <h1>Bakery Reviews</h1>
-          <p>Copenhagen + Frederiksberg</p>
-        </header>
-        <Router />
-      </div>
-    </ReviewProvider>
+    <UserProvider>
+      <ReviewProvider>
+        <Router>
+          <div className="app">
+            <NavBar />
+            <main className="app-content">
+              <Routes>
+                <Route path="/" element={<Start />} />
+                <Route path="/bakery-selection" element={<BakerySelection />} />
+                <Route path="/pastry-selection" element={<PastrySelection />} />
+                <Route path="/pastry-rating" element={<PastryRating />} />
+                <Route path="/bakery-rating" element={<BakeryRating />} />
+                <Route path="/thank-you" element={<ThankYou />} />
+                <Route path="/admin/*" element={<Admin />} />
+              </Routes>
+            </main>
+          </div>
+        </Router>
+      </ReviewProvider>
+    </UserProvider>
   );
 }
 
