@@ -16,14 +16,12 @@ const ThankYou = () => {
   return (
     <div className="container">
       <div className="card">
-        <h2>Thank You!</h2>
+        <h2>Bakery Reviews</h2>
         <p>
-          Thank you for taking the time to share your feedback. Your reviews 
-          help us build a valuable resource for bakery lovers in Copenhagen 
-          and Frederiksberg.
+          Your review is now saved.
         </p>
         <p>
-          We appreciate your contribution to our bakery community!
+          Please review another bakery or pastry!
         </p>
         
         <div className="nav-buttons">
@@ -31,7 +29,19 @@ const ThankYou = () => {
             className="btn"
             onClick={() => goToNextStep('start')}
           >
-            Submit Another Review
+            back
+          </button>
+          <button 
+            className="btn"
+            onClick={() => goToNextStep('bakerySelection')}
+          >
+            exit
+          </button>
+          <button 
+            className="btn"
+            onClick={() => goToNextStep('start')}
+          >
+            next
           </button>
         </div>
       </div>

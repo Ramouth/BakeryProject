@@ -54,51 +54,55 @@ const PastryRating = () => {
   return (
     <div className="container">
       <div className="card">
-        <h2>Pastry Rating</h2>
+        <h2>Your Review:</h2>
         <p>
-          Rate your {pastryName} from {selectedBakery.name}
+          {selectedBakery.name} - {pastryName}
         </p>
         
-        <div className="form-group">
-          <label>Overall Rating (1-10):</label>
-          <StarRating 
-            rating={pastryRatings.overall} 
-            onChange={(value) => handleRatingChange('overall', value)} 
-          />
+        <div className="rating-container">
+          <div className="rating-row">
+            <div className="rating-label">Overall:</div>
+            <StarRating 
+              rating={pastryRatings.overall} 
+              onChange={(value) => handleRatingChange('overall', value)} 
+              max={5}
+            />
+          </div>
+          
+          <div className="rating-row">
+            <div className="rating-label">Taste:</div>
+            <StarRating 
+              rating={pastryRatings.taste} 
+              onChange={(value) => handleRatingChange('taste', value)} 
+              max={5}
+            />
+          </div>
+          
+          <div className="rating-row">
+            <div className="rating-label">Value:</div>
+            <StarRating 
+              rating={pastryRatings.price} 
+              onChange={(value) => handleRatingChange('price', value)} 
+              max={5}
+            />
+          </div>
+          
+          <div className="rating-row">
+            <div className="rating-label">Presentation:</div>
+            <StarRating 
+              rating={pastryRatings.presentation} 
+              onChange={(value) => handleRatingChange('presentation', value)} 
+              max={5}
+            />
+          </div>
         </div>
         
         <div className="form-group">
-          <label>Taste Rating (1-10):</label>
-          <StarRating 
-            rating={pastryRatings.taste} 
-            onChange={(value) => handleRatingChange('taste', value)} 
-          />
-        </div>
-        
-        <div className="form-group">
-          <label>Price Rating (1-10):</label>
-          <StarRating 
-            rating={pastryRatings.price} 
-            onChange={(value) => handleRatingChange('price', value)} 
-          />
-        </div>
-        
-        <div className="form-group">
-          <label>Presentation Rating (1-10):</label>
-          <StarRating 
-            rating={pastryRatings.presentation} 
-            onChange={(value) => handleRatingChange('presentation', value)} 
-          />
-        </div>
-        
-        <div className="form-group">
-          <label htmlFor="comments">Comments (Optional):</label>
           <textarea
-            id="comments"
-            rows="4"
+            rows="3"
             value={pastryRatings.comments}
             onChange={handleCommentsChange}
-            placeholder="Share your thoughts about this pastry..."
+            placeholder="Add additional comments..."
           />
         </div>
         
@@ -106,18 +110,19 @@ const PastryRating = () => {
         
         <div className="nav-buttons">
           <button 
-            className="btn btn-secondary"
+            className="btn"
             onClick={() => goToNextStep('pastrySelection')}
             disabled={isSubmitting}
           >
             Back
           </button>
+          {/* Repeat review button removed */}
           <button 
             className="btn"
             onClick={handleSubmit}
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Submitting...' : 'Submit'}
+            Next
           </button>
         </div>
       </div>

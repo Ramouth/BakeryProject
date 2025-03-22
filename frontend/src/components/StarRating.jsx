@@ -5,10 +5,10 @@ import PropTypes from 'prop-types';
 const StarRating = ({ 
   rating, 
   onChange, 
-  max = 10,
+  max = 5,
   size = 'medium',
   disabled = false,
-  showValue = true
+  showValue = false
 }) => {
   const [hoveredRating, setHoveredRating] = useState(0);
   
