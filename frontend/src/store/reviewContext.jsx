@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { reviewService } from '../services';
+import { useUser } from './UserContext';
 
 // Create context
 const ReviewContext = createContext();
@@ -91,30 +92,37 @@ export const ReviewProvider = ({ children }) => {
   }, []);
   
   // Submit pastry review
-  const submitPastryReview = useCallback(async () => {
-    setIsSubmitting(true);
-    setError(null);
+const submitPastryReview = useCallback(async () => {
+  setIsSubmitting(true);
+  setError(null);
+  
+  try {
+    // Get currentUser from context (you need to import this)
+    const { currentUser } = useUser();
     
-    try {
-      const response = await reviewService.createPastryReview({
-        bakeryId: selectedBakery.id,
-        pastryId: selectedPastry.id === 'custom' ? null : selectedPastry.id,
-        pastryName: selectedPastry.name === 'Other' ? selectedPastry.customName : selectedPastry.name,
-        overallRating: pastryRatings.overall,
-        tasteRating: pastryRatings.taste,
-        priceRating: pastryRatings.price,
-        presentationRating: pastryRatings.presentation,
-        review: pastryRatings.comments
-      });
-      
-      return response;
-    } catch (error) {
-      setError('Failed to submit pastry review: ' + error.message);
-      throw error;
-    } finally {
-      setIsSubmitting(false);
+    if (!currentUser || !currentUser.id) {
+      throw new Error('You must be logged in to submit a review');
     }
-  }, [selectedBakery, selectedPastry, pastryRatings]);
+    
+    const reviewData = {
+      review: pastryRatings.comments,
+      overallRating: parseInt(pastryRatings.overall),
+      tasteRating: parseInt(pastryRatings.taste),
+      priceRating: parseInt(pastryRatings.price),
+      presentationRating: parseInt(pastryRatings.presentation),
+      contactId: currentUser.id,
+      pastryId: selectedPastry.id
+    };
+    
+    const response = await reviewService.createPastryReview(reviewData);
+    return response;
+  } catch (error) {
+    setError('Failed to submit pastry review: ' + error.message);
+    throw error;
+  } finally {
+    setIsSubmitting(false);
+  }
+}, [selectedPastry, pastryRatings, useUser]);
   
   // Submit bakery review
   const submitBakeryReview = useCallback(async () => {

@@ -15,15 +15,12 @@ const NavBar = () => {
     <header className="app-header">
       <div className="header-content">
         <Link to="/" className="logo">
-          <h1>Bakery Reviews</h1>
-          <p>Copenhagen + Frederiksberg</p>
+          <h1>CrumbCompass</h1>
+          <p>Copenhagen Bakery Reviews</p>
         </Link>
         
         <nav className="main-nav">
           <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
             {currentUser && currentUser.isAdmin && (
               <li>
                 <Link to="/admin">Admin</Link>
@@ -37,7 +34,7 @@ const NavBar = () => {
               </li>
             ) : (
               <li>
-                <Link to="/login">Log In</Link>
+                <Link to="/login">Admin</Link>
               </li>
             )}
           </ul>
