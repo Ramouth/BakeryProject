@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { UserProvider } from './store/UserContext';
-import { ReviewProvider } from './store/reviewContext';
+import { ReviewProvider } from './store/ReviewContext';
 import NavBar from './components/NavBar';
 
 // Lazy load views for code splitting and performance
@@ -12,6 +12,7 @@ const PastryRating = lazy(() => import('./views/PastryRating'));
 const BakeryRating = lazy(() => import('./views/BakeryRating'));
 const ThankYou = lazy(() => import('./views/ThankYou'));
 const Admin = lazy(() => import('./views/Admin'));
+const Login = lazy(() => import('./views/Login'));
 
 // Import CSS
 import './styles/global.css';
@@ -33,7 +34,7 @@ function App() {
             <NavBar />
             <main className="app-content">
               <Suspense fallback={<Loading />}>
-                <Routes>
+              <Routes>
                   <Route path="/" element={<Start />} />
                   <Route path="/bakery-selection" element={<BakerySelection />} />
                   <Route path="/pastry-selection" element={<PastrySelection />} />
@@ -41,6 +42,7 @@ function App() {
                   <Route path="/bakery-rating" element={<BakeryRating />} />
                   <Route path="/thank-you" element={<ThankYou />} />
                   <Route path="/admin/*" element={<Admin />} />
+                  <Route path="/login" element={<Login />} />
                 </Routes>
               </Suspense>
             </main>
