@@ -1,7 +1,7 @@
-from . import db
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Index
 from sqlalchemy.orm import relationship
+from . import db
 
 class Pastry(db.Model):
     """Pastry model representing bakery products"""
@@ -9,7 +9,7 @@ class Pastry(db.Model):
     
     id = Column(Integer, primary_key=True)
     name = Column(String(80), nullable=False)
-    bakery_id = Column(Integer, ForeignKey('bakery.id'), nullable=False)
+    bakery_id = Column(Integer, ForeignKey('bakery.id', ondelete='CASCADE'), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
@@ -35,5 +35,11 @@ class Pastry(db.Model):
         return {
             'id': self.id,
             'name': self.name,
-            'bakeryId': self.bakery_id
+            'bakeryId': self.bakery_id,
+            'bakery': {
+                'id': self.bakery.id,
+                'name': self.bakery.name
+            } if self.bakery else None,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }
