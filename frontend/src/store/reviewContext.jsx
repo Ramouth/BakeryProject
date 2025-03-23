@@ -9,6 +9,8 @@ const ReviewContext = createContext();
 // Provider component
 export const ReviewProvider = ({ children }) => {
   const navigate = useNavigate();
+  const { currentUser } = useUser();
+  
   // State for the review flow
   const [selectedBakery, setSelectedBakery] = useState(null);
   const [selectedPastry, setSelectedPastry] = useState(null);
@@ -34,7 +36,7 @@ export const ReviewProvider = ({ children }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   
-  // Navigation helper to move between steps
+  // Navigation helper
   const goToNextStep = useCallback((step) => {
     switch (step) {
       case 'start':
@@ -91,56 +93,62 @@ export const ReviewProvider = ({ children }) => {
     setError(null);
   }, []);
   
-  // Submit pastry review
-const submitPastryReview = useCallback(async () => {
-  setIsSubmitting(true);
-  setError(null);
-  
-  try {
-    // Get currentUser from context (you need to import this)
-    const { currentUser } = useUser();
+  // Submit pastry review - Updated to support anonymous reviews
+  const submitPastryReview = useCallback(async () => {
+    setIsSubmitting(true);
+    setError(null);
     
-    if (!currentUser || !currentUser.id) {
-      throw new Error('You must be logged in to submit a review');
+    try {
+      // Build review data - contactId is now optional
+      const reviewData = {
+        review: pastryRatings.comments || "Great pastry!",
+        overallRating: parseInt(pastryRatings.overall),
+        tasteRating: parseInt(pastryRatings.taste),
+        priceRating: parseInt(pastryRatings.price),
+        presentationRating: parseInt(pastryRatings.presentation),
+        pastryId: selectedPastry.id
+      };
+      
+      // Only include contactId if user is logged in
+      if (currentUser && currentUser.id) {
+        reviewData.contactId = currentUser.id;
+      }
+      
+      // Submit to API
+      const response = await reviewService.createPastryReview(reviewData);
+      return response;
+    } catch (error) {
+      setError('Failed to submit pastry review: ' + error.message);
+      throw error;
+    } finally {
+      setIsSubmitting(false);
     }
-    
-    const reviewData = {
-      review: pastryRatings.comments,
-      overallRating: parseInt(pastryRatings.overall),
-      tasteRating: parseInt(pastryRatings.taste),
-      priceRating: parseInt(pastryRatings.price),
-      presentationRating: parseInt(pastryRatings.presentation),
-      contactId: currentUser.id,
-      pastryId: selectedPastry.id
-    };
-    
-    const response = await reviewService.createPastryReview(reviewData);
-    return response;
-  } catch (error) {
-    setError('Failed to submit pastry review: ' + error.message);
-    throw error;
-  } finally {
-    setIsSubmitting(false);
-  }
-}, [selectedPastry, pastryRatings, useUser]);
+  }, [selectedPastry, pastryRatings, currentUser]);
   
-  // Submit bakery review
+  // Submit bakery review - Updated to support anonymous reviews
   const submitBakeryReview = useCallback(async () => {
     setIsSubmitting(true);
     setError(null);
     
     try {
-      const response = await reviewService.createBakeryReview({
-        bakeryId: selectedBakery.id,
-        overallRating: bakeryRatings.overall,
-        serviceRating: bakeryRatings.service,
-        priceRating: bakeryRatings.price,
-        atmosphereRating: bakeryRatings.atmosphere,
-        locationRating: bakeryRatings.location,
-        selectionRating: bakeryRatings.selection,
-        review: bakeryRatings.comments
-      });
+      // Build review data - contactId is now optional
+      const reviewData = {
+        review: bakeryRatings.comments || "Great bakery!",
+        overallRating: parseInt(bakeryRatings.overall),
+        serviceRating: parseInt(bakeryRatings.service),
+        priceRating: parseInt(bakeryRatings.price),
+        atmosphereRating: parseInt(bakeryRatings.atmosphere),
+        locationRating: parseInt(bakeryRatings.location),
+        bakeryId: selectedBakery.id
+      };
       
+      // Only include contactId if user is logged in
+      if (currentUser && currentUser.id) {
+        reviewData.contactId = currentUser.id;
+      }
+      
+      // Submit to API
+      const response = await reviewService.createBakeryReview(reviewData);
       return response;
     } catch (error) {
       setError('Failed to submit bakery review: ' + error.message);
@@ -148,7 +156,7 @@ const submitPastryReview = useCallback(async () => {
     } finally {
       setIsSubmitting(false);
     }
-  }, [selectedBakery, bakeryRatings]);
+  }, [selectedBakery, bakeryRatings, currentUser]);
   
   // Submit experience rating
   const submitExperienceRating = useCallback(async (feedback = "") => {

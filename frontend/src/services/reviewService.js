@@ -14,7 +14,7 @@ const reviewService = {
   },
 
   /**
-   * Create a bakery review
+   * Create a bakery review - contactId now optional
    * @param {Object} reviewData - Review data
    * @returns {Promise<Object>} - Created review
    */
@@ -54,7 +54,7 @@ const reviewService = {
   },
 
   /**
-   * Create a pastry review
+   * Create a pastry review - contactId now optional
    * @param {Object} reviewData - Review data
    * @returns {Promise<Object>} - Created review
    */

@@ -1,5 +1,3 @@
-# backend/schemas/review_schema.py
-
 from . import ma
 from models.review import BakeryReview, PastryReview
 from marshmallow import fields, validate, post_dump, post_load
@@ -13,7 +11,8 @@ class BaseReviewSchema:
         required=True, 
         validate=validate.Range(min=1, max=5)
     )
-    contactId = fields.Integer(required=True)
+    # ContactId is now optional
+    contactId = fields.Integer(required=False)
     created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)
 
@@ -39,7 +38,8 @@ class BakeryReviewSchema(ma.SQLAlchemyAutoSchema):
         required=True, 
         validate=validate.Range(min=1, max=5)
     )
-    contactId = fields.Integer(required=True)
+    # ContactId is now optional
+    contactId = fields.Integer(required=False)
     
     # Field customizations for specific bakery review fields
     bakeryId = fields.Integer(required=True)
@@ -75,12 +75,15 @@ class BakeryReviewSchema(ma.SQLAlchemyAutoSchema):
         if obj:
             # Map model attributes to schema fields
             data['overallRating'] = obj.overall_rating
-            data['contactId'] = obj.contact_id
             data['bakeryId'] = obj.bakery_id
             data['serviceRating'] = obj.service_rating
             data['priceRating'] = obj.price_rating
             data['atmosphereRating'] = obj.atmosphere_rating
             data['locationRating'] = obj.location_rating
+            
+            # Only add contactId if it exists
+            if obj.contact_id is not None:
+                data['contactId'] = obj.contact_id
             
             # Add computed fields
             if obj.contact:
@@ -96,7 +99,6 @@ class BakeryReviewSchema(ma.SQLAlchemyAutoSchema):
         model_data = {
             'review': data.get('review'),
             'overall_rating': data.get('overallRating'),
-            'contact_id': data.get('contactId'),
             'bakery_id': data.get('bakeryId'),
             'service_rating': data.get('serviceRating'),
             'price_rating': data.get('priceRating'),
@@ -104,6 +106,10 @@ class BakeryReviewSchema(ma.SQLAlchemyAutoSchema):
             'location_rating': data.get('locationRating')
         }
         
+        # Only include contact_id if provided
+        if 'contactId' in data:
+            model_data['contact_id'] = data.get('contactId')
+            
         # For updates, pass the existing instance
         if 'id' in data:
             model_data['id'] = data['id']
@@ -131,7 +137,8 @@ class PastryReviewSchema(ma.SQLAlchemyAutoSchema):
         required=True, 
         validate=validate.Range(min=1, max=5)
     )
-    contactId = fields.Integer(required=True)
+    # ContactId is now optional
+    contactId = fields.Integer(required=False)
     
     # Field customizations for specific pastry review fields
     pastryId = fields.Integer(required=True)
@@ -163,11 +170,14 @@ class PastryReviewSchema(ma.SQLAlchemyAutoSchema):
         if obj:
             # Map model attributes to schema fields
             data['overallRating'] = obj.overall_rating
-            data['contactId'] = obj.contact_id
             data['pastryId'] = obj.pastry_id
             data['tasteRating'] = obj.taste_rating
             data['priceRating'] = obj.price_rating
             data['presentationRating'] = obj.presentation_rating
+            
+            # Only add contactId if it exists
+            if obj.contact_id is not None:
+                data['contactId'] = obj.contact_id
             
             # Add computed fields
             if obj.contact:
@@ -183,13 +193,16 @@ class PastryReviewSchema(ma.SQLAlchemyAutoSchema):
         model_data = {
             'review': data.get('review'),
             'overall_rating': data.get('overallRating'),
-            'contact_id': data.get('contactId'),
             'pastry_id': data.get('pastryId'),
             'taste_rating': data.get('tasteRating'),
             'price_rating': data.get('priceRating'),
             'presentation_rating': data.get('presentationRating')
         }
         
+        # Only include contact_id if provided
+        if 'contactId' in data:
+            model_data['contact_id'] = data.get('contactId')
+            
         # For updates, pass the existing instance
         if 'id' in data:
             model_data['id'] = data['id']

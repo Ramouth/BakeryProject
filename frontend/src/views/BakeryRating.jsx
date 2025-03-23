@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useReview } from '../store/reviewContext';
+import { useReview } from '../store/ReviewContext';
 import StarRating from '../components/StarRating';
 
 const BakeryRating = () => {
@@ -30,16 +30,18 @@ const BakeryRating = () => {
     });
   };
   
-  // Handle form submission
+  // Handle form submission - now directly uses the ReviewContext method
   const handleSubmit = async () => {
     setIsSubmitting(true);
     setError(null);
     
     try {
+      // This will now handle anonymous reviews
       await submitBakeryReview();
       goToNextStep('experienceRating');
     } catch (err) {
       setError('Failed to submit review. Please try again.');
+      console.error('Error submitting review:', err);
     } finally {
       setIsSubmitting(false);
     }
@@ -54,7 +56,7 @@ const BakeryRating = () => {
         </p>
         
         <div className="form-group">
-          <label>Overall Rating (1-10):</label>
+          <label>Overall Rating:</label>
           <StarRating 
             rating={bakeryRatings.overall} 
             onChange={(value) => handleRatingChange('overall', value)} 
@@ -62,7 +64,7 @@ const BakeryRating = () => {
         </div>
         
         <div className="form-group">
-          <label>Service Rating (1-10):</label>
+          <label>Service Rating:</label>
           <StarRating 
             rating={bakeryRatings.service} 
             onChange={(value) => handleRatingChange('service', value)} 
@@ -70,7 +72,7 @@ const BakeryRating = () => {
         </div>
         
         <div className="form-group">
-          <label>Price Rating (1-10):</label>
+          <label>Price Rating:</label>
           <StarRating 
             rating={bakeryRatings.price} 
             onChange={(value) => handleRatingChange('price', value)} 
@@ -78,7 +80,7 @@ const BakeryRating = () => {
         </div>
         
         <div className="form-group">
-          <label>Atmosphere Rating (1-10):</label>
+          <label>Atmosphere Rating:</label>
           <StarRating 
             rating={bakeryRatings.atmosphere} 
             onChange={(value) => handleRatingChange('atmosphere', value)} 
@@ -86,18 +88,10 @@ const BakeryRating = () => {
         </div>
         
         <div className="form-group">
-          <label>Location Rating (1-10):</label>
+          <label>Location Rating:</label>
           <StarRating 
             rating={bakeryRatings.location} 
             onChange={(value) => handleRatingChange('location', value)} 
-          />
-        </div>
-        
-        <div className="form-group">
-          <label>Selection Rating (1-10):</label>
-          <StarRating 
-            rating={bakeryRatings.selection} 
-            onChange={(value) => handleRatingChange('selection', value)} 
           />
         </div>
         

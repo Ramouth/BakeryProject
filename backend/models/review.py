@@ -9,10 +9,10 @@ class BaseReview:
     review = Column(Text, nullable=False)
     overall_rating = Column(Integer, nullable=False)
     
-    # Use declared_attr for foreign keys in mixins
+    # Use declared_attr for foreign keys in mixins, now nullable
     @declared_attr
     def contact_id(cls):
-        return Column(Integer, ForeignKey('contact.id', ondelete='CASCADE'), nullable=False)
+        return Column(Integer, ForeignKey('contact.id', ondelete='SET NULL'), nullable=True)
     
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -34,7 +34,7 @@ class BakeryReview(db.Model, BaseReview):
     atmosphere_rating = Column(Integer, nullable=False)
     location_rating = Column(Integer, nullable=False)
     
-    # Relationships
+    # Relationships - optional contact
     bakery = relationship('Bakery', back_populates='bakery_reviews')
     contact = relationship('Contact', back_populates='bakery_reviews')
     
@@ -94,7 +94,7 @@ class PastryReview(db.Model, BaseReview):
     price_rating = Column(Integer, nullable=False)
     presentation_rating = Column(Integer, nullable=False)
     
-    # Relationships
+    # Relationships - optional contact
     pastry = relationship('Pastry', back_populates='pastry_reviews')
     contact = relationship('Contact', back_populates='pastry_reviews')
     
