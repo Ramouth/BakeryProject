@@ -74,8 +74,8 @@ const BakerySelection = () => {
   return (
     <div className="container">
       <div className="card">
-        <h2>Bakery Reviews</h2>
-        <p>Which did you visit?</p>
+        <h2>Choose a bakery</h2>
+        <p>Where did you go?</p>
         
         <div className="dropdown-list">
           {bakeries.map((bakery, index) => (
@@ -84,7 +84,7 @@ const BakerySelection = () => {
               className={`dropdown-item ${selectedBakery && selectedBakery.id === bakery.id ? 'selected' : ''}`}
               onClick={() => handleBakerySelect(bakery)}
             >
-              Option {index + 1}: {bakery.name}
+              {bakery.name}
             </div>
           ))}
           <div 

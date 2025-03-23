@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { UserProvider } from './store/UserContext';
 import { ReviewProvider } from './store/ReviewContext';
 import NavBar from './components/NavBar';
+import AuthGuard from './components/AuthGuard';
 
 // Lazy load views for code splitting and performance
 const Start = lazy(() => import('./views/Start'));
@@ -34,15 +35,22 @@ function App() {
             <NavBar />
             <main className="app-content">
               <Suspense fallback={<Loading />}>
-              <Routes>
+                <Routes>
                   <Route path="/" element={<Start />} />
                   <Route path="/bakery-selection" element={<BakerySelection />} />
                   <Route path="/pastry-selection" element={<PastrySelection />} />
                   <Route path="/pastry-rating" element={<PastryRating />} />
                   <Route path="/bakery-rating" element={<BakeryRating />} />
                   <Route path="/thank-you" element={<ThankYou />} />
-                  <Route path="/admin/*" element={<Admin />} />
                   <Route path="/login" element={<Login />} />
+                  <Route 
+                    path="/admin/*" 
+                    element={
+                      <AuthGuard>
+                        <Admin />
+                      </AuthGuard>
+                    } 
+                  />
                 </Routes>
               </Suspense>
             </main>
