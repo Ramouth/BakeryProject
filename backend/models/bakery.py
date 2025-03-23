@@ -1,7 +1,7 @@
-from . import db
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, DateTime, Index
+from sqlalchemy import Column, Integer, String, DateTime, Index, event
 from sqlalchemy.orm import relationship
+from . import db
 
 class Bakery(db.Model):
     """Bakery model representing bakery businesses"""
@@ -13,7 +13,7 @@ class Bakery(db.Model):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
-    # Relationships
+    # Relationships with cascade deletes
     pastries = relationship('Pastry', back_populates='bakery', cascade='all, delete-orphan')
     bakery_reviews = relationship('BakeryReview', back_populates='bakery', cascade='all, delete-orphan')
     
@@ -36,4 +36,6 @@ class Bakery(db.Model):
             'id': self.id,
             'name': self.name,
             'zipCode': self.zip_code,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }

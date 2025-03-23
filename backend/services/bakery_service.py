@@ -1,4 +1,5 @@
-from models import db, Bakery
+from models import db, Bakery, BakeryReview
+from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 
 class BakeryService:
@@ -17,11 +18,11 @@ class BakeryService:
         return Bakery.query.filter_by(zip_code=zip_code).order_by(Bakery.name).all()
     
     def search_bakeries(self, search_term):
-        """Search bakeries by name"""
+        """Search bakeries by name using case-insensitive partial matching"""
         return Bakery.query.filter(Bakery.name.ilike(f'%{search_term}%')).order_by(Bakery.name).all()
     
     def create_bakery(self, name, zip_code):
-        """Create a new bakery"""
+        """Create a new bakery with transaction support"""
         try:
             bakery = Bakery(name=name, zip_code=zip_code)
             db.session.add(bakery)
@@ -32,7 +33,7 @@ class BakeryService:
             raise Exception(f"Database error: {str(e)}")
     
     def update_bakery(self, bakery_id, name, zip_code):
-        """Update an existing bakery"""
+        """Update an existing bakery with transaction support"""
         try:
             bakery = self.get_bakery_by_id(bakery_id)
             if not bakery:
@@ -47,7 +48,7 @@ class BakeryService:
             raise Exception(f"Database error: {str(e)}")
     
     def delete_bakery(self, bakery_id):
-        """Delete a bakery"""
+        """Delete a bakery with transaction support and cascade delete"""
         try:
             bakery = self.get_bakery_by_id(bakery_id)
             if not bakery:
@@ -62,8 +63,6 @@ class BakeryService:
     
     def get_bakery_stats(self, bakery_id):
         """Get statistics for a bakery including review averages"""
-        from models import BakeryReview
-        
         bakery = self.get_bakery_by_id(bakery_id)
         if not bakery:
             raise Exception("Bakery not found")
@@ -75,6 +74,7 @@ class BakeryService:
             return {
                 "id": bakery.id,
                 "name": bakery.name,
+                "zipCode": bakery.zip_code,
                 "review_count": 0,
                 "average_rating": 0,
                 "ratings": {
@@ -97,6 +97,7 @@ class BakeryService:
         return {
             "id": bakery.id,
             "name": bakery.name,
+            "zipCode": bakery.zip_code,
             "review_count": review_count,
             "average_rating": round(avg_overall, 1),
             "ratings": {
@@ -107,3 +108,23 @@ class BakeryService:
                 "location": round(avg_location, 1)
             }
         }
+        
+    def get_top_rated_bakeries(self, limit=5):
+        """Get top-rated bakeries based on average overall rating"""
+        # Use SQLAlchemy's aggregation functions to calculate average rating
+        result = db.session.query(
+            Bakery,
+            func.avg(BakeryReview.overall_rating).label('avg_rating'),
+            func.count(BakeryReview.id).label('review_count')
+        ).join(BakeryReview).group_by(Bakery.id).order_by(
+            func.avg(BakeryReview.overall_rating).desc()
+        ).having(func.count(BakeryReview.id) > 0).limit(limit).all()
+        
+        top_bakeries = []
+        for bakery, avg_rating, review_count in result:
+            bakery_data = bakery.to_json()
+            bakery_data['average_rating'] = round(avg_rating, 1)
+            bakery_data['review_count'] = review_count
+            top_bakeries.append(bakery_data)
+            
+        return top_bakeries

@@ -1,0 +1,199 @@
+# Script to initialize the database with schema and sample data
+
+import os
+import sys
+from flask import Flask
+from config import DevelopmentConfig
+from models import db, Bakery, Pastry, Contact, BakeryReview, PastryReview
+
+def create_app():
+    """Create a Flask app instance for database initialization"""
+    app = Flask(__name__)
+    app.config.from_object(DevelopmentConfig)
+    db.init_app(app)
+    return app
+
+def init_db():
+    """Initialize database with schema and sample data"""
+    app = create_app()
+    
+    with app.app_context():
+        print("Dropping all tables...")
+        db.drop_all()
+        
+        print("Creating all tables...")
+        db.create_all()
+        
+        print("Adding sample data...")
+        # Create sample contacts (users)
+        admin = Contact(
+            first_name="Admin",
+            last_name="User",
+            email="admin@example.com",
+            is_admin=True
+        )
+        
+        user1 = Contact(
+            first_name="Test",
+            last_name="User",
+            email="test@example.com",
+            is_admin=False
+        )
+        
+        user2 = Contact(
+            first_name="Jane",
+            last_name="Doe",
+            email="jane@example.com",
+            is_admin=False
+        )
+        
+        user3 = Contact(
+            first_name="John",
+            last_name="Smith",
+            email="john@example.com",
+            is_admin=False
+        )
+        
+        db.session.add_all([admin, user1, user2, user3])
+        db.session.commit()
+        
+        # Create sample bakeries
+        bakery1 = Bakery(name="Hart Bageri", zip_code="1500")
+        bakery2 = Bakery(name="Andersen Bakery", zip_code="2000")
+        bakery3 = Bakery(name="Meyers Bageri", zip_code="2100")
+        bakery4 = Bakery(name="Lagkagehuset", zip_code="2200")
+        bakery5 = Bakery(name="Juno the Bakery", zip_code="2300")
+        
+        db.session.add_all([bakery1, bakery2, bakery3, bakery4, bakery5])
+        db.session.commit()
+        
+        # Create sample pastries
+        pastries = [
+            Pastry(name="Croissant", bakery_id=1),
+            Pastry(name="Pain au Chocolat", bakery_id=1),
+            Pastry(name="Sourdough Bread", bakery_id=1),
+            Pastry(name="Cinnamon Roll", bakery_id=2),
+            Pastry(name="Danish Pastry", bakery_id=2),
+            Pastry(name="Cardamom Bun", bakery_id=3),
+            Pastry(name="Rye Bread", bakery_id=3),
+            Pastry(name="Tebirkes", bakery_id=4),
+            Pastry(name="Kanelstang", bakery_id=4),
+            Pastry(name="Frøsnapper", bakery_id=5)
+        ]
+        
+        db.session.add_all(pastries)
+        db.session.commit()
+        
+        # Create sample bakery reviews
+        bakery_reviews = [
+            BakeryReview(
+                review="Great selection of breads and pastries. Friendly staff.",
+                overall_rating=5,
+                service_rating=5,
+                price_rating=4,
+                atmosphere_rating=5,
+                location_rating=4,
+                contact_id=2,
+                bakery_id=1
+            ),
+            BakeryReview(
+                review="Good bakery but a bit expensive.",
+                overall_rating=4,
+                service_rating=4,
+                price_rating=3,
+                atmosphere_rating=4,
+                location_rating=5,
+                contact_id=3,
+                bakery_id=2
+            ),
+            BakeryReview(
+                review="Best bakery in Copenhagen!",
+                overall_rating=5,
+                service_rating=5,
+                price_rating=4,
+                atmosphere_rating=5,
+                location_rating=5,
+                contact_id=4,
+                bakery_id=3
+            ),
+            BakeryReview(
+                review="Nice location but crowded on weekends.",
+                overall_rating=4,
+                service_rating=3,
+                price_rating=4,
+                atmosphere_rating=3,
+                location_rating=5,
+                contact_id=2,
+                bakery_id=4
+            ),
+            BakeryReview(
+                review="Excellent pastries but limited seating.",
+                overall_rating=4,
+                service_rating=5,
+                price_rating=3,
+                atmosphere_rating=3,
+                location_rating=4,
+                contact_id=3,
+                bakery_id=5
+            )
+        ]
+        
+        db.session.add_all(bakery_reviews)
+        db.session.commit()
+        
+        # Create sample pastry reviews
+        pastry_reviews = [
+            PastryReview(
+                review="Perfect croissant, flaky and buttery.",
+                overall_rating=5,
+                taste_rating=5,
+                price_rating=4,
+                presentation_rating=5,
+                contact_id=2,
+                pastry_id=1
+            ),
+            PastryReview(
+                review="Good chocolate flavor but a bit dry.",
+                overall_rating=4,
+                taste_rating=3,
+                price_rating=4,
+                presentation_rating=4,
+                contact_id=3,
+                pastry_id=2
+            ),
+            PastryReview(
+                review="Best sourdough in town.",
+                overall_rating=5,
+                taste_rating=5,
+                price_rating=4,
+                presentation_rating=4,
+                contact_id=4,
+                pastry_id=3
+            ),
+            PastryReview(
+                review="Too sweet for my taste.",
+                overall_rating=3,
+                taste_rating=3,
+                price_rating=4,
+                presentation_rating=5,
+                contact_id=2,
+                pastry_id=4
+            ),
+            PastryReview(
+                review="Classic Danish pastry done right.",
+                overall_rating=5,
+                taste_rating=5,
+                price_rating=4,
+                presentation_rating=5,
+                contact_id=3,
+                pastry_id=5
+            ),
+        ]
+        
+        db.session.add_all(pastry_reviews)
+        db.session.commit()
+        
+        print("Database initialized successfully!")
+
+if __name__ == "__main__":
+    init_db()

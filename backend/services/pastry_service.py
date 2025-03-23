@@ -1,4 +1,5 @@
-from models import db, Pastry
+from models import db, Pastry, PastryReview
+from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 
 class PastryService:
@@ -62,8 +63,6 @@ class PastryService:
     
     def get_pastry_stats(self, pastry_id):
         """Get statistics for a pastry including review averages"""
-        from models import PastryReview
-        
         pastry = self.get_pastry_by_id(pastry_id)
         if not pastry:
             raise Exception("Pastry not found")
@@ -75,7 +74,7 @@ class PastryService:
             return {
                 "id": pastry.id,
                 "name": pastry.name,
-                "bakery_id": pastry.bakery_id,
+                "bakeryId": pastry.bakery_id,
                 "bakery_name": pastry.bakery.name if pastry.bakery else None,
                 "review_count": 0,
                 "average_rating": 0,
@@ -97,7 +96,7 @@ class PastryService:
         return {
             "id": pastry.id,
             "name": pastry.name,
-            "bakery_id": pastry.bakery_id,
+            "bakeryId": pastry.bakery_id,
             "bakery_name": pastry.bakery.name if pastry.bakery else None,
             "review_count": review_count,
             "average_rating": round(avg_overall, 1),
@@ -108,3 +107,22 @@ class PastryService:
                 "presentation": round(avg_presentation, 1)
             }
         }
+        
+    def get_top_rated_pastries(self, limit=5):
+        """Get top-rated pastries based on average overall rating"""
+        result = db.session.query(
+            Pastry,
+            func.avg(PastryReview.overall_rating).label('avg_rating'),
+            func.count(PastryReview.id).label('review_count')
+        ).join(PastryReview).group_by(Pastry.id).order_by(
+            func.avg(PastryReview.overall_rating).desc()
+        ).having(func.count(PastryReview.id) > 0).limit(limit).all()
+        
+        top_pastries = []
+        for pastry, avg_rating, review_count in result:
+            pastry_data = pastry.to_json()
+            pastry_data['average_rating'] = round(avg_rating, 1)
+            pastry_data['review_count'] = review_count
+            top_pastries.append(pastry_data)
+            
+        return top_pastries
