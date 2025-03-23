@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-/* Variables */
 :root {
   /* Color Palette */
   --primary-color: #C09A6B;
@@ -20,14 +19,13 @@
   --card-width: 400px;
 }
 
-/* Reset */
+/* Base Styles */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Base Styles */
 body {
   font-family: 'Inter', sans-serif;
   background-color: var(--background);
@@ -35,19 +33,10 @@ body {
   line-height: 1.6;
 }
 
-/* Layout Components */
 .container {
   max-width: var(--container-width);
   margin: 20px auto;
   padding: 20px;
-}
-
-.app-content {
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 80vh;
 }
 
 /* Card Component */
@@ -55,26 +44,19 @@ body {
   background-color: var(--primary-light);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow);
-  padding: 25px;
-  width: 400px;
-  min-height: 500px;
+  padding: 20px;
+  max-width: var(--card-width);
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
 }
 
-.card-header {
+.card h1, .card h2 {
   text-align: center;
   margin-bottom: 1rem;
-}
-
-.card-header h1, 
-.card-header h2 {
   font-size: 1.3rem;
   font-weight: normal;
 }
 
-.card-content p {
+.card p {
   text-align: center;
   margin-bottom: 1rem;
   font-size: 0.9rem;
@@ -104,39 +86,10 @@ body {
   cursor: not-allowed;
 }
 
-.btn-link {
-  color: var(--text);
-  text-decoration: none;
-  padding: 6px 12px;
-  border-radius: var(--border-radius);
-  transition: var(--transition);
-  background: none;
-  border: none;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-.btn-link:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-.btn-login {
-  background-color: #8d7547;
-  color: white;
-  padding: 8px 16px;
-  border-radius: var(--border-radius);
-  transition: background-color 0.3s ease;
-}
-
-.btn-login:hover {
-  background-color: #a38a5a;
-}
-
 .nav-buttons {
   display: flex;
   justify-content: space-between;
-  margin-top: auto;
-  padding-top: 20px;
+  margin-top: 25px;
 }
 
 /* Header and Navigation */
@@ -172,36 +125,41 @@ body {
   gap: 20px;
 }
 
-.main-nav a {
+.main-nav a,
+.btn-link {
   color: var(--text);
   text-decoration: none;
   padding: 6px 12px;
   border-radius: var(--border-radius);
   transition: var(--transition);
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
 }
 
-.main-nav a:hover {
+.main-nav a:hover,
+.btn-link:hover {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Form Elements */
-.form-container {
-  width: 100%;
-  max-width: 350px;
-  margin: 0 auto;
-}
-
 .form-group {
   margin-bottom: 1rem;
 }
 
-.form-label {
+label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
 }
 
-.form-control {
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
   width: 100%;
   padding: 8px;
   border: 1px solid #545554;
@@ -211,7 +169,9 @@ body {
   background-color: white;
 }
 
-.form-control:focus {
+input:focus,
+textarea:focus,
+select:focus {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 2px rgba(210, 180, 140, 0.1);
@@ -230,11 +190,7 @@ body {
   border-radius: var(--border-radius);
   overflow: hidden;
   margin-bottom: 1.5rem;
-  background-color: white;
-  width: 100%;
-  max-width: 350px;
-  margin-left: auto;
-  margin-right: auto;
+  background-color: #000000;
 }
 
 .dropdown-item {
@@ -259,32 +215,9 @@ body {
   font-weight: 500;
 }
 
-/* Rating Components */
-.rating-container {
-  margin: 15px 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
+/* Add these styles to frontend/src/styles/global.css */
 
-.rating-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  width: 100%;
-  max-width: 280px;
-}
-
-.rating-label {
-  text-align: right;
-  margin-right: 10px;
-  font-size: 0.9rem;
-  width: 100px;
-  flex-shrink: 0;
-}
-
+/* Rating Bar Styles */
 .rating-bar-container {
   display: flex;
   flex-direction: column;
@@ -348,7 +281,107 @@ body {
   cursor: not-allowed;
 }
 
-/* Authentication Components */
+/* Rating Container */
+.rating-container {
+  margin: 15px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.rating-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  width: 100%;
+  max-width: 280px;
+}
+
+.rating-label {
+  text-align: right;
+  margin-right: 10px;
+  font-size: 0.9rem;
+  width: 100px;
+  flex-shrink: 0;
+}
+
+/* Layout Components */
+.app-content {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+}
+
+/* Form consistency */
+.dropdown-list, 
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  max-width: 350px; 
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.dropdown-list {
+  display: block;
+  border: 1px solid #ccc;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  background-color: white;
+}
+
+/* All cards should have consistent width and padding */
+.card {
+  width: 400px;
+  padding: 25px;
+  min-height: 500px; 
+  display: flex;
+  flex-direction: column;
+}
+
+/* Push buttons to bottom of card */
+.nav-buttons {
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+/* Ensure all form containers have consistent width */
+.form-container {
+  width: 100%;
+  max-width: 350px;
+  margin: 0 auto;
+}
+
+/* Ensure dropdown items have consistent height/padding */
+.dropdown-item {
+  padding: 12px 15px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .card {
+    width: 95%;
+  }
+  
+  .nav-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .nav-buttons .btn {
+    width: 100%;
+  }
+
+/* Login Form Styles */
 .login-form {
   display: flex;
   flex-direction: column;
@@ -372,7 +405,7 @@ body {
   margin-top: 1.5rem;
 }
 
-/* Admin Section */
+/* Admin Section Styles */
 .admin-container {
   max-width: 1200px;
   margin: 20px auto;
@@ -420,6 +453,19 @@ body {
   color: white;
 }
 
+/* Login button styling */
+.main-nav a[href="/login"] {
+  background-color: #8d7547;
+  color: white;
+  padding: 8px 16px;
+  border-radius: var(--border-radius);
+  transition: background-color 0.3s ease;
+}
+
+.main-nav a[href="/login"]:hover {
+  background-color: #a38a5a;
+}
+
 .admin-content {
   flex: 1;
   background-color: white;
@@ -428,21 +474,7 @@ body {
   padding: 1.5rem;
 }
 
-/* Responsive Adjustments */
 @media (max-width: 768px) {
-  .card {
-    width: 95%;
-  }
-  
-  .nav-buttons {
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .nav-buttons .btn {
-    width: 100%;
-  }
-  
   .admin-layout {
     flex-direction: column;
   }
@@ -460,4 +492,5 @@ body {
   .admin-sidebar li {
     margin-bottom: 0;
   }
+}
 }
