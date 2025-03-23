@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useReview } from '../store/reviewContext';
+import { useReview } from '../store/ReviewContext';
 
 const BakerySelection = () => {
   const { selectedBakery, setSelectedBakery, goToNextStep } = useReview();
@@ -13,8 +13,7 @@ const BakerySelection = () => {
   useEffect(() => {
     const fetchBakeries = async () => {
       try {
-        // In a real app, this would be an API call
-        // For now, we'll use mock data
+        // For now, we use mock data. Needs to be replaced wuth actual API call. 
         const mockBakeries = [
           { id: 1, name: 'Hart Bakery', location: 'Copenhagen' },
           { id: 2, name: 'Andersen Bakery', location: 'Frederiksberg' },

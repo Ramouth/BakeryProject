@@ -111,7 +111,6 @@ class BakeryService:
         
     def get_top_rated_bakeries(self, limit=5):
         """Get top-rated bakeries based on average overall rating"""
-        # Use SQLAlchemy's aggregation functions to calculate average rating
         result = db.session.query(
             Bakery,
             func.avg(BakeryReview.overall_rating).label('avg_rating'),

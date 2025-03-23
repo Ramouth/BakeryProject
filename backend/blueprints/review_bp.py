@@ -1,5 +1,3 @@
-# backend/blueprints/review_bp.py
-
 from flask import Blueprint, request, jsonify
 from models import db, BakeryReview, PastryReview, Bakery, Pastry, Contact
 from schemas import BakeryReviewSchema, PastryReviewSchema

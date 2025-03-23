@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useReview } from '../store/reviewContext';
+import { useReview } from '../store/ReviewContext';
 
 const PastrySelection = () => {
   const { selectedBakery, selectedPastry, setSelectedPastry, goToNextStep } = useReview();
@@ -13,8 +13,7 @@ const PastrySelection = () => {
   useEffect(() => {
     const fetchPastries = async () => {
       try {
-        // In a real app, this would be an API call filtered by bakery ID
-        // For now, we'll use mock data
+         // For now, we use mock data. Needs to be replaced wuth actual API call.
         const mockPastries = [
           { id: 1, name: 'Croissant', bakeryId: 1 },
           { id: 2, name: 'Pain au Chocolat', bakeryId: 1 },

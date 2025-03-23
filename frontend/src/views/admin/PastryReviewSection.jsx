@@ -68,8 +68,8 @@ const PastryReviewSection = ({ updateCallback }) => {
             </span>
             <PastryReviewForm 
               existingReview={currentReview} 
-              pastries={pastries} // Passing pastries
-              contacts={contacts} // Passing contacts
+              pastries={pastries}
+              contacts={contacts}
               updateCallback={onReviewUpdate} 
             />
           </div>

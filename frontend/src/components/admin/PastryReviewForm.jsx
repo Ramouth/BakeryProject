@@ -6,8 +6,8 @@ const PastryReviewForm = ({ existingReview = {}, updateCallback, contacts, pastr
   const [tasteRating, setTasteRating] = useState(existingReview.tasteRating || 1);
   const [priceRating, setPriceRating] = useState(existingReview.priceRating || 1);
   const [presentationRating, setPresentationRating] = useState(existingReview.presentationRating || 1);
-  const [contactId, setContactId] = useState(existingReview.contactId || ""); // Contact ID
-  const [pastryId, setPastryId] = useState(existingReview.pastryId || "");  // Pastry ID
+  const [contactId, setContactId] = useState(existingReview.contactId || "");
+  const [pastryId, setPastryId] = useState(existingReview.pastryId || "");
 
   const updating = Object.entries(existingReview).length !== 0;
 

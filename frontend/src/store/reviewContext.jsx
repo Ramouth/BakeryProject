@@ -58,7 +58,6 @@ export const ReviewProvider = ({ children }) => {
         navigate('/bakery-rating');
         break;
       case 'experienceRating':
-        // This would be implemented in a real app
         navigate('/thank-you');
         break;
       case 'thankYou':

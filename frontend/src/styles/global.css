@@ -271,7 +271,7 @@ select:focus {
 .form-group textarea,
 .form-group select {
   width: 100%;
-  max-width: 350px; /* Fixed width for all form elements */
+  max-width: 350px; 
   margin-left: auto;
   margin-right: auto;
 }
@@ -289,7 +289,7 @@ select:focus {
 .card {
   width: 400px;
   padding: 25px;
-  min-height: 500px; /* Minimum height to create consistency */
+  min-height: 500px; 
   display: flex;
   flex-direction: column;
 }

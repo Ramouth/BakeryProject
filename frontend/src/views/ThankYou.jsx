@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useReview } from '../store/reviewContext';
+import { useReview } from '../store/ReviewContext';
 
 const ThankYou = () => {
   const { resetReview, goToNextStep } = useReview();
