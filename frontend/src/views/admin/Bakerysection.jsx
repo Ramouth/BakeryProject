@@ -56,7 +56,6 @@ const useBakeryViewModel = () => {
       let updatedBakery;
       
       if (currentBakery.id) {
-        // Update - optimistic UI update
         const optimisticBakeries = bakeries.map(b => 
           b.id === currentBakery.id ? { ...b, ...bakeryData } : b
         );
@@ -64,9 +63,7 @@ const useBakeryViewModel = () => {
         
         updatedBakery = await bakeryService.updateBakery(currentBakery.id, bakeryData);
       } else {
-        // Create
         updatedBakery = await bakeryService.createBakery(bakeryData);
-        // Add to list with optimistic UI update
         setBakeries(prev => [...prev, updatedBakery.bakery]);
       }
       

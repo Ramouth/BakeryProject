@@ -1,5 +1,3 @@
-# Updates to backend/blueprints/bakery_bp.py
-
 from flask import Blueprint, request, jsonify
 from models import db, Bakery
 from schemas import BakerySchema

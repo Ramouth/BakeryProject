@@ -1,5 +1,3 @@
-# backend/blueprints/user_bp.py
-
 from flask import Blueprint, request, jsonify
 from models import db, Contact
 from schemas import ContactSchema

@@ -1,5 +1,3 @@
-# backend/blueprints/pastry_bp.py
-
 from flask import Blueprint, request, jsonify
 from models import db, Pastry, Bakery
 from schemas import PastrySchema

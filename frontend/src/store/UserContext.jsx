@@ -35,8 +35,6 @@ export const UserProvider = ({ children }) => {
     setError(null);
     
     try {
-      // In a real app, this would make an API call to login
-      // For demo, we'll check for existing contacts with this email
       const response = await apiClient.get('/contacts');
       const contacts = response.contacts || [];
       

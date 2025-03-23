@@ -1,6 +1,3 @@
-/**
- * Enhanced API client for making HTTP requests to the backend with caching
- */
 const API_BASE_URL = 'http://127.0.0.1:5000';
 
 // Simple in-memory cache

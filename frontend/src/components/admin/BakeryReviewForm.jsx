@@ -7,8 +7,8 @@ const BakeryReviewForm = ({ existingReview = {}, updateCallback, contacts, baker
   const [priceRating, setPriceRating] = useState(existingReview.priceRating || 1);
   const [atmosphereRating, setAtmosphereRating] = useState(existingReview.atmosphereRating || 1);
   const [locationRating, setLocationRating] = useState(existingReview.locationRating || 1);
-  const [contactId, setContactId] = useState(existingReview.contactId || ""); // Contact ID
-  const [bakeryId, setBakeryId] = useState(existingReview.bakeryId || "");  // Bakery ID
+  const [contactId, setContactId] = useState(existingReview.contactId || "");
+  const [bakeryId, setBakeryId] = useState(existingReview.bakeryId || ""); 
 
   const updating = Object.entries(existingReview).length !== 0;
 

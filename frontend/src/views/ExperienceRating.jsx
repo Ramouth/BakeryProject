@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useReview } from '../store/reviewContext';
+import { useReview } from '../store/ReviewContext';
 import StarRating from '../components/StarRating';
 
 const ExperienceRating = () => {
