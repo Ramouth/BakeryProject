@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useReview } from '../store/ReviewContext';
-import StarRating from '../components/StarRating';
+import RatingBar from '../components/RatingComponent';
 
 const ExperienceRating = () => {
   const { 
@@ -37,12 +37,15 @@ const ExperienceRating = () => {
         <h2>How was the review experience?</h2>
         <p>Please rate your experience with our review process</p>
         
-        <div className="form-group">
-          <label>Rating (1-10):</label>
-          <StarRating 
-            rating={experienceRating} 
-            onChange={(value) => setExperienceRating(value)} 
-          />
+        <div className="rating-container">
+          <div className="rating-row">
+            <div className="rating-label">Your Rating:</div>
+            <RatingBar 
+              rating={experienceRating} 
+              onChange={(value) => setExperienceRating(value)} 
+              max={10}
+            />
+          </div>
         </div>
         
         <div className="form-group">

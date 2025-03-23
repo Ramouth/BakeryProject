@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useReview } from '../store/ReviewContext';
-import StarRating from '../components/StarRating';
+import RatingBar from '../components/RatingComponent';
 
 const BakeryRating = () => {
   const { 
@@ -55,44 +55,51 @@ const BakeryRating = () => {
           Rate {selectedBakery.name}
         </p>
         
-        <div className="form-group">
-          <label>Overall Rating:</label>
-          <StarRating 
-            rating={bakeryRatings.overall} 
-            onChange={(value) => handleRatingChange('overall', value)} 
-          />
-        </div>
-        
-        <div className="form-group">
-          <label>Service Rating:</label>
-          <StarRating 
-            rating={bakeryRatings.service} 
-            onChange={(value) => handleRatingChange('service', value)} 
-          />
-        </div>
-        
-        <div className="form-group">
-          <label>Price Rating:</label>
-          <StarRating 
-            rating={bakeryRatings.price} 
-            onChange={(value) => handleRatingChange('price', value)} 
-          />
-        </div>
-        
-        <div className="form-group">
-          <label>Atmosphere Rating:</label>
-          <StarRating 
-            rating={bakeryRatings.atmosphere} 
-            onChange={(value) => handleRatingChange('atmosphere', value)} 
-          />
-        </div>
-        
-        <div className="form-group">
-          <label>Location Rating:</label>
-          <StarRating 
-            rating={bakeryRatings.location} 
-            onChange={(value) => handleRatingChange('location', value)} 
-          />
+        <div className="rating-container">
+          <div className="rating-row">
+            <div className="rating-label">Overall:</div>
+            <RatingBar 
+              rating={bakeryRatings.overall} 
+              onChange={(value) => handleRatingChange('overall', value)} 
+              max={10}
+            />
+          </div>
+          
+          <div className="rating-row">
+            <div className="rating-label">Service:</div>
+            <RatingBar 
+              rating={bakeryRatings.service} 
+              onChange={(value) => handleRatingChange('service', value)} 
+              max={10}
+            />
+          </div>
+          
+          <div className="rating-row">
+            <div className="rating-label">Price:</div>
+            <RatingBar 
+              rating={bakeryRatings.price} 
+              onChange={(value) => handleRatingChange('price', value)} 
+              max={10}
+            />
+          </div>
+          
+          <div className="rating-row">
+            <div className="rating-label">Atmosphere:</div>
+            <RatingBar 
+              rating={bakeryRatings.atmosphere} 
+              onChange={(value) => handleRatingChange('atmosphere', value)} 
+              max={10}
+            />
+          </div>
+          
+          <div className="rating-row">
+            <div className="rating-label">Location:</div>
+            <RatingBar 
+              rating={bakeryRatings.location} 
+              onChange={(value) => handleRatingChange('location', value)} 
+              max={10}
+            />
+          </div>
         </div>
         
         <div className="form-group">
