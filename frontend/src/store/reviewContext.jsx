@@ -15,24 +15,24 @@ export const ReviewProvider = ({ children }) => {
   const [selectedBakery, setSelectedBakery] = useState(null);
   const [selectedPastry, setSelectedPastry] = useState(null);
   const [pastryRatings, setPastryRatings] = useState({
-    overall: 5,
-    taste: 5,
-    price: 5, 
-    presentation: 5,
+    overall: 7,
+    taste: 7,
+    price: 7, 
+    presentation: 7,
     comments: ''
   });
   
   const [bakeryRatings, setBakeryRatings] = useState({
-    overall: 5,
-    service: 5,
-    price: 5,
-    atmosphere: 5,
-    location: 5,
-    selection: 5,
+    overall: 7,
+    service: 7,
+    price: 7,
+    atmosphere: 7,
+    location: 7,
+    selection: 7,
     comments: ''
   });
   
-  const [experienceRating, setExperienceRating] = useState(5);
+  const [experienceRating, setExperienceRating] = useState(7);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   
@@ -73,22 +73,22 @@ export const ReviewProvider = ({ children }) => {
     setSelectedBakery(null);
     setSelectedPastry(null);
     setPastryRatings({
-      overall: 5,
-      taste: 5,
-      price: 5, 
-      presentation: 5,
+      overall: 7,
+      taste: 7,
+      price: 7, 
+      presentation: 7,
       comments: ''
     });
     setBakeryRatings({
-      overall: 5,
-      service: 5,
-      price: 5,
-      atmosphere: 5,
-      location: 5,
-      selection: 5,
+      overall: 7,
+      service: 7,
+      price: 7,
+      atmosphere: 7,
+      location: 7,
+      selection: 7,
       comments: ''
     });
-    setExperienceRating(5);
+    setExperienceRating(7);
     setError(null);
   }, []);
   

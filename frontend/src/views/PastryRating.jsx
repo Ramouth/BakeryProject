@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useReview } from '../store/ReviewContext';
-import StarRating from '../components/StarRating';
+import RatingBar from '../components/RatingComponent';
 
 const PastryRating = () => {
   const { 
@@ -64,37 +64,37 @@ const PastryRating = () => {
         <div className="rating-container">
           <div className="rating-row">
             <div className="rating-label">Overall:</div>
-            <StarRating 
+            <RatingBar 
               rating={pastryRatings.overall} 
               onChange={(value) => handleRatingChange('overall', value)} 
-              max={5}
+              max={10}
             />
           </div>
           
           <div className="rating-row">
             <div className="rating-label">Taste:</div>
-            <StarRating 
+            <RatingBar 
               rating={pastryRatings.taste} 
               onChange={(value) => handleRatingChange('taste', value)} 
-              max={5}
+              max={10}
             />
           </div>
           
           <div className="rating-row">
             <div className="rating-label">Value:</div>
-            <StarRating 
+            <RatingBar 
               rating={pastryRatings.price} 
               onChange={(value) => handleRatingChange('price', value)} 
-              max={5}
+              max={10}
             />
           </div>
           
           <div className="rating-row">
             <div className="rating-label">Presentation:</div>
-            <StarRating 
+            <RatingBar 
               rating={pastryRatings.presentation} 
               onChange={(value) => handleRatingChange('presentation', value)} 
-              max={5}
+              max={10}
             />
           </div>
         </div>
