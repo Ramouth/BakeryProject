@@ -1,58 +1,121 @@
-// Submit pastry review with valid IDs
-const submitPastryReview = useCallback(async () => {
-    setIsSubmitting(true);
-    setError(null);
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useUser } from '../store/UserContext';
+import Button from '../components/Button';
+
+const Login = () => {
+  const { login, isLoading, error } = useUser();
+  const navigate = useNavigate();
+  
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [validationErrors, setValidationErrors] = useState({});
+  
+  // Basic form validation
+  const validateForm = () => {
+    const errors = {};
+    
+    if (!email.trim()) {
+      errors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      errors.email = 'Email is invalid';
+    }
+    
+    if (!password.trim()) {
+      errors.password = 'Password is required';
+    }
+    
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
     
     try {
-      // First, validate that we have valid IDs before submitting
-      const contactId = 1; // Hardcoded contact ID that exists in your database
+      const user = await login(email, password);
       
-      // Fetch existing pastries to check which IDs are valid
-      console.log('Selected pastry:', selectedPastry);
-      let pastryId;
-      
-      if (selectedPastry.id === 'custom') {
-        // For custom pastries, we need to create it first or use an existing one
-        pastryId = 1; // Use a valid pastry ID from your database
+      if (user && user.isAdmin) {
+        navigate('/admin');
       } else {
-        pastryId = parseInt(selectedPastry.id);
+        setValidationErrors({ 
+          auth: 'You do not have admin privileges'
+        });
       }
-      
-      const reviewData = {
-        review: pastryRatings.comments || "Great pastry!",
-        overallRating: parseInt(pastryRatings.overall),
-        tasteRating: parseInt(pastryRatings.taste),
-        priceRating: parseInt(pastryRatings.price),
-        presentationRating: parseInt(pastryRatings.presentation),
-        contactId: contactId,
-        pastryId: pastryId
-      };
-      
-      console.log('Submitting pastry review with data:', reviewData);
-      
-      const response = await fetch('http://127.0.0.1:5000/pastryreviews/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(reviewData),
-      });
-      
-      console.log('Response status:', response.status);
-      
-      const responseData = await response.json();
-      console.log('Response data:', responseData);
-      
-      if (!response.ok) {
-        throw new Error(responseData.message || 'Failed to submit review');
-      }
-      
-      return responseData;
-    } catch (error) {
-      console.error('Error submitting review:', error);
-      setError('Failed to submit pastry review: ' + error.message);
-      throw error;
-    } finally {
-      setIsSubmitting(false);
+    } catch (err) {
+      // Error is already handled by the useUser hook
+      console.error('Login error:', err);
     }
-  }, [selectedPastry, pastryRatings]);
+  };
+  
+  return (
+    <div className="container">
+      <div className="card">
+        <h2>Admin Login</h2>
+        <p>Please log in to access the admin area</p>
+        
+        <form onSubmit={handleSubmit} className="login-form">
+          <div className="form-group">
+            <label htmlFor="email">Email:</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={validationErrors.email ? 'error' : ''}
+              disabled={isLoading}
+            />
+            {validationErrors.email && (
+              <div className="error-text">{validationErrors.email}</div>
+            )}
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="password">Password:</label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={validationErrors.password ? 'error' : ''}
+              disabled={isLoading}
+            />
+            {validationErrors.password && (
+              <div className="error-text">{validationErrors.password}</div>
+            )}
+          </div>
+          
+          {(error || validationErrors.auth) && (
+            <div className="error-text auth-error">
+              {error || validationErrors.auth}
+            </div>
+          )}
+          
+          <div className="form-actions">
+            <Button 
+              type="submit" 
+              disabled={isLoading}
+            >
+              {isLoading ? 'Logging in...' : 'Log In'}
+            </Button>
+            
+            <Button 
+              type="button" 
+              variant="secondary"
+              onClick={() => navigate('/')}
+              disabled={isLoading}
+            >
+              Cancel
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default Login;
