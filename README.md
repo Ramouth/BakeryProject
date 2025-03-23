@@ -94,7 +94,7 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
 # Run the application
-python server.py
+python app.py
 ```
 
 #### Frontend

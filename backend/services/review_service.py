@@ -23,8 +23,8 @@ class ReviewService:
         return BakeryReview.query.filter_by(contact_id=contact_id).order_by(BakeryReview.created_at.desc()).all()
     
     def create_bakery_review(self, review, overall_rating, service_rating, price_rating, 
-                         atmosphere_rating, location_rating, contact_id, bakery_id):
-        """Create a new bakery review"""
+                         atmosphere_rating, location_rating, contact_id=None, bakery_id=None):
+        """Create a new bakery review - contact_id now optional"""
         try:
             new_review = BakeryReview(
                 review=review,
@@ -33,7 +33,7 @@ class ReviewService:
                 price_rating=price_rating,
                 atmosphere_rating=atmosphere_rating,
                 location_rating=location_rating,
-                contact_id=contact_id,
+                contact_id=contact_id,  # Can be None for anonymous reviews
                 bakery_id=bakery_id
             )
             db.session.add(new_review)
@@ -44,8 +44,8 @@ class ReviewService:
             raise Exception(f"Database error: {str(e)}")
     
     def update_bakery_review(self, review_id, review, overall_rating, service_rating, price_rating, 
-                         atmosphere_rating, location_rating, contact_id, bakery_id):
-        """Update an existing bakery review"""
+                         atmosphere_rating, location_rating, contact_id=None, bakery_id=None):
+        """Update an existing bakery review - contact_id now optional"""
         try:
             bakery_review = self.get_bakery_review_by_id(review_id)
             if not bakery_review:
@@ -57,7 +57,7 @@ class ReviewService:
             bakery_review.price_rating = price_rating
             bakery_review.atmosphere_rating = atmosphere_rating
             bakery_review.location_rating = location_rating
-            bakery_review.contact_id = contact_id
+            bakery_review.contact_id = contact_id  # Can be None for anonymous reviews
             bakery_review.bakery_id = bakery_id
             
             db.session.commit()
@@ -99,8 +99,8 @@ class ReviewService:
         return PastryReview.query.filter_by(contact_id=contact_id).order_by(PastryReview.created_at.desc()).all()
     
     def create_pastry_review(self, review, overall_rating, taste_rating, price_rating, 
-                         presentation_rating, contact_id, pastry_id):
-        """Create a new pastry review"""
+                         presentation_rating, contact_id=None, pastry_id=None):
+        """Create a new pastry review - contact_id now optional"""
         try:
             new_review = PastryReview(
                 review=review,
@@ -108,7 +108,7 @@ class ReviewService:
                 taste_rating=taste_rating,
                 price_rating=price_rating,
                 presentation_rating=presentation_rating,
-                contact_id=contact_id,
+                contact_id=contact_id,  # Can be None for anonymous reviews
                 pastry_id=pastry_id
             )
             db.session.add(new_review)
@@ -119,8 +119,8 @@ class ReviewService:
             raise Exception(f"Database error: {str(e)}")
     
     def update_pastry_review(self, review_id, review, overall_rating, taste_rating, price_rating, 
-                         presentation_rating, contact_id, pastry_id):
-        """Update an existing pastry review"""
+                         presentation_rating, contact_id=None, pastry_id=None):
+        """Update an existing pastry review - contact_id now optional"""
         try:
             pastry_review = self.get_pastry_review_by_id(review_id)
             if not pastry_review:
@@ -131,7 +131,7 @@ class ReviewService:
             pastry_review.taste_rating = taste_rating
             pastry_review.price_rating = price_rating
             pastry_review.presentation_rating = presentation_rating
-            pastry_review.contact_id = contact_id
+            pastry_review.contact_id = contact_id  # Can be None for anonymous reviews
             pastry_review.pastry_id = pastry_id
             
             db.session.commit()

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useReview } from '../store/reviewContext';
+import { useReview } from '../store/ReviewContext';
 import StarRating from '../components/StarRating';
 
 const PastryRating = () => {
@@ -31,16 +31,18 @@ const PastryRating = () => {
     });
   };
   
-  // Handle form submission
+  // Handle form submission - now directly uses the ReviewContext method
   const handleSubmit = async () => {
     setIsSubmitting(true);
     setError(null);
     
     try {
+      // This will now handle anonymous reviews
       await submitPastryReview();
       goToNextStep('reviewOptions');
     } catch (err) {
       setError('Failed to submit review. Please try again.');
+      console.error('Error submitting review:', err);
     } finally {
       setIsSubmitting(false);
     }
@@ -116,13 +118,12 @@ const PastryRating = () => {
           >
             Back
           </button>
-          {/* Repeat review button removed */}
           <button 
             className="btn"
             onClick={handleSubmit}
             disabled={isSubmitting}
           >
-            Next
+            {isSubmitting ? 'Submitting...' : 'Next'}
           </button>
         </div>
       </div>
