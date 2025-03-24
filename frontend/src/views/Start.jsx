@@ -6,20 +6,12 @@ const Start = () => {
   return (
     <div className="container">
       <div className="card">
-        <h1>CrumbCompass</h1>
-        <p className="intro-text">
-        Welcome to CrumbCompass
+        <h1 style={{ marginBottom: '35px' }}>Welcome to CrumbCompass</h1>
+        <p className="intro-text" style={{ marginBottom: '35px' }}>
+          This site is a student project from DTU 🎓, designed to help you discover the best bakeries in Copenhagen. Whether you're searching for the crispiest croissant 🥐 or the perfect sourdough 🍞, our platform makes it easy to find the right bakery for you!
         </p>
         <p>
-        This site is a student project from DTU, designed to help you 
-          discover the best bakeries in Copenhagen. 
-           Whether you're looking for the crispiest croissant or the 
-           perfect sourdough, our platform makes it easy 
-           to find the right bakery for you.
-        </p>
-        <p>
-          Right now, we're testing the site with friends and family, so your feedback is 
-          invaluable! Give us a review, and let us know what you think. 
+          Right now, we're testing the site with friends and family, so your feedback is invaluable!💬✨ Give us a review ⭐ and let us know what you think! 🚀 
         </p>
         
         <div className="nav-buttons" style={{ justifyContent: 'center' }}>
@@ -28,10 +20,10 @@ const Start = () => {
             onClick={() => goToNextStep('bakerySelection')}
           >
             Start Review
-          </button>
+          </button>  
         </div>
       </div>
-    </div>
+    </div> 
   );
 };
 

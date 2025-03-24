@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { UserProvider } from './store/UserContext';
 import { ReviewProvider } from './store/ReviewContext';
@@ -27,6 +27,21 @@ const Loading = () => (
 );
 
 function App() {
+  // Initialize theme on app load
+  useEffect(() => {
+    // Check for saved theme preference or default to light
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    } else {
+      // Set light theme as default
+      document.documentElement.setAttribute('data-theme', 'light');
+      
+      // Save preference
+      localStorage.setItem('theme', 'light');
+    }
+  }, []);
+
   return (
     <Router>
       <UserProvider>
