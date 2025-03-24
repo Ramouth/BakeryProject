@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import './styles/global.css';
+import './styles/main.css';
 
 // Performance optimization: Disable React StrictMode in production
 const StrictModeWrapper = process.env.NODE_ENV === 'production' 
