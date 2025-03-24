@@ -1,47 +1,84 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useReview } from '../store/ReviewContext';
+import RatingBar from '../components/RatingComponent';
 
 const ThankYou = () => {
-  const { resetReview, goToNextStep } = useReview();
+  const { 
+    experienceRating, 
+    setExperienceRating, 
+    resetReview, 
+    goToNextStep 
+  } = useReview();
   
-  // Reset the review state after a delay
+  const [feedback, setFeedback] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Reset the review state after a delay if navigating away
   useEffect(() => {
     const timer = setTimeout(() => {
-      resetReview();
-    }, 5000); // Reset after 5 seconds
+      // Only reset if the user hasn't submitted feedback yet
+      if (!isSubmitting) {
+        resetReview();
+      }
+    }, 10000); // Reset after 10 seconds of inactivity
     
     return () => clearTimeout(timer);
-  }, [resetReview]);
+  }, [resetReview, isSubmitting]);
+  
+  // Handle submit button click
+  const handleSubmit = () => {
+    setIsSubmitting(true);
+    
+    // Here we would normally submit the experience rating data
+    // For now, we'll just show a success message and reset
+    setTimeout(() => {
+      resetReview();
+      goToNextStep('start');
+    }, 1000);
+  };
   
   return (
     <div className="container">
       <div className="card">
-        <h2>Bakery Reviews</h2>
+        <h2>Thank You!</h2>
         <p>
-          Your review is now saved.
-        </p>
-        <p>
-          Please review another bakery or pastry!
+          Your review has been saved.
         </p>
         
-        <div className="nav-buttons">
+        <div className="review-experience-section" style={{ marginTop: '2rem', textAlign: 'center' }}>
+          <h3 style={{ fontSize: '1.1rem' }}>How was your experience?</h3>
+          <p style={{ fontSize: '0.9rem' }}>Please rate your review experience:</p>
+          
+          <div className="rating-container">
+            <div className="rating-row">
+              <div className="rating-label">Your Rating:</div>
+              <RatingBar 
+                rating={experienceRating} 
+                onChange={(value) => setExperienceRating(value)} 
+                max={10}
+              />
+            </div>
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="feedback">Additional Feedback (Optional):</label>
+            <textarea
+              id="feedback"
+              rows="3"
+              value={feedback}
+              onChange={(e) => setFeedback(e.target.value)}
+              placeholder="Any suggestions to improve our review process?"
+            />
+          </div>
+        </div>
+        
+        <div className="nav-buttons" style={{ justifyContent: 'center', marginTop: '2rem' }}>
           <button 
             className="btn"
-            onClick={() => goToNextStep('start')}
+            onClick={handleSubmit}
+            disabled={isSubmitting}
           >
-            back
-          </button>
-          <button 
-            className="btn"
-            onClick={() => goToNextStep('bakerySelection')}
-          >
-            exit
-          </button>
-          <button 
-            className="btn"
-            onClick={() => goToNextStep('start')}
-          >
-            next
+            {isSubmitting ? 'Submitting...' : 'Submit'}
           </button>
         </div>
       </div>

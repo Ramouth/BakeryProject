@@ -15,24 +15,24 @@ export const ReviewProvider = ({ children }) => {
   const [selectedBakery, setSelectedBakery] = useState(null);
   const [selectedPastry, setSelectedPastry] = useState(null);
   const [pastryRatings, setPastryRatings] = useState({
-    overall: 7,
-    taste: 7,
-    price: 7, 
-    presentation: 7,
+    overall: 0,  // Start at 0 instead of 7
+    taste: 0,    // Start at 0 instead of 7
+    price: 0,    // Start at 0 instead of 7
+    presentation: 0, // Start at 0 instead of 7
     comments: ''
   });
   
   const [bakeryRatings, setBakeryRatings] = useState({
-    overall: 7,
-    service: 7,
-    price: 7,
-    atmosphere: 7,
-    location: 7,
-    selection: 7,
+    overall: 0,  // Start at 0 instead of 7
+    service: 0,  // Start at 0 instead of 7
+    price: 0,    // Start at 0 instead of 7
+    atmosphere: 0, // Start at 0 instead of 7
+    location: 0,   // Start at 0 instead of 7
+    selection: 0,  // Start at 0 instead of 7
     comments: ''
   });
   
-  const [experienceRating, setExperienceRating] = useState(7);
+  const [experienceRating, setExperienceRating] = useState(0); // Start at 0 instead of 7
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   
@@ -73,27 +73,33 @@ export const ReviewProvider = ({ children }) => {
     setSelectedBakery(null);
     setSelectedPastry(null);
     setPastryRatings({
-      overall: 7,
-      taste: 7,
-      price: 7, 
-      presentation: 7,
+      overall: 0, 
+      taste: 0,  
+      price: 0,  
+      presentation: 0, 
       comments: ''
     });
     setBakeryRatings({
-      overall: 7,
-      service: 7,
-      price: 7,
-      atmosphere: 7,
-      location: 7,
-      selection: 7,
+      overall: 0, 
+      service: 0, 
+      price: 0,    
+      atmosphere: 0, 
+      location: 0,   
+      selection: 0,  
       comments: ''
     });
-    setExperienceRating(7);
+    setExperienceRating(0); 
     setError(null);
   }, []);
   
   // Submit pastry review - Updated to support anonymous reviews
   const submitPastryReview = useCallback(async () => {
+    // Validate overall rating is greater than 0
+    if (pastryRatings.overall <= 0) {
+      setError('Please provide an overall rating');
+      return Promise.reject(new Error('Overall rating must be greater than 0'));
+    }
+    
     setIsSubmitting(true);
     setError(null);
     
@@ -126,6 +132,12 @@ export const ReviewProvider = ({ children }) => {
   
   // Submit bakery review - Updated to support anonymous reviews
   const submitBakeryReview = useCallback(async () => {
+    // Validate overall rating is greater than 0
+    if (bakeryRatings.overall <= 0) {
+      setError('Please provide an overall rating');
+      return Promise.reject(new Error('Overall rating must be greater than 0'));
+    }
+    
     setIsSubmitting(true);
     setError(null);
     
@@ -159,6 +171,12 @@ export const ReviewProvider = ({ children }) => {
   
   // Submit experience rating
   const submitExperienceRating = useCallback(async (feedback = "") => {
+    // Validate overall rating is greater than 0
+    if (experienceRating <= 0) {
+      setError('Please provide an experience rating');
+      return Promise.reject(new Error('Experience rating must be greater than 0'));
+    }
+    
     setIsSubmitting(true);
     setError(null);
     
