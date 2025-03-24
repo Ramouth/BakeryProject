@@ -21,7 +21,7 @@ def validate_zip_code(zip_code):
     
     return True, zip_code
 
-def validate_rating(rating, min_value=1, max_value=5):
+def validate_rating(rating, min_value=1, max_value=10):
     """Validate rating value is within range"""
     try:
         rating_val = int(rating)

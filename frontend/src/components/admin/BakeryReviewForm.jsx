@@ -62,7 +62,7 @@ const BakeryReviewForm = ({ existingReview = {}, updateCallback, contacts, baker
         <input
           type="number"
           min="1"
-          max="5"
+          max="10"
           value={overallRating}
           onChange={(e) => setOverallRating(e.target.value)}
         />
@@ -72,7 +72,7 @@ const BakeryReviewForm = ({ existingReview = {}, updateCallback, contacts, baker
         <input
           type="number"
           min="1"
-          max="5"
+          max="10"
           value={serviceRating}
           onChange={(e) => setServiceRating(e.target.value)}
         />
@@ -82,7 +82,7 @@ const BakeryReviewForm = ({ existingReview = {}, updateCallback, contacts, baker
         <input
           type="number"
           min="1"
-          max="5"
+          max="10"
           value={priceRating}
           onChange={(e) => setPriceRating(e.target.value)}
         />
@@ -92,7 +92,7 @@ const BakeryReviewForm = ({ existingReview = {}, updateCallback, contacts, baker
         <input
           type="number"
           min="1"
-          max="5"
+          max="10"
           value={atmosphereRating}
           onChange={(e) => setAtmosphereRating(e.target.value)}
         />
@@ -102,7 +102,7 @@ const BakeryReviewForm = ({ existingReview = {}, updateCallback, contacts, baker
         <input
           type="number"
           min="1"
-          max="5"
+          max="10"
           value={locationRating}
           onChange={(e) => setLocationRating(e.target.value)}
         />
