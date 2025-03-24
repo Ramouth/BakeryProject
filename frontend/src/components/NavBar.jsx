@@ -5,12 +5,6 @@ import ThemeToggle from '../components/ThemeToggle';
 const NavBar = () => {
   const { currentUser, logout } = useUser();
   const location = useLocation();
-  
-  // Only show on certain paths where it makes sense
-  const hiddenPaths = ['/thank-you'];
-  if (hiddenPaths.includes(location.pathname)) {
-    return null;
-  }
 
   return (
     <header className="app-header">

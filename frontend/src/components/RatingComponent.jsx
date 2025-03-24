@@ -1,9 +1,9 @@
 import { useState, useCallback, memo } from 'react';
 import PropTypes from 'prop-types';
 
-// Progress bar rating component with 1-10 scale that displays current value
+// Progress bar rating component with 0-10 scale that displays current value
 const RatingBar = ({ 
-  rating, 
+  rating = 0, // Default to 0 instead of requiring a value
   onChange, 
   max = 10,
   disabled = false,
@@ -56,16 +56,13 @@ const RatingBar = ({
         </div>
       )}
       
-      <div className="rating-scale">
-        <span className="min-value">1</span>
-        <span className="max-value">{max}</span>
-      </div>
+      {/* Rating scale numbers removed */}
     </div>
   );
 };
 
 RatingBar.propTypes = {
-  rating: PropTypes.number.isRequired,
+  rating: PropTypes.number,
   onChange: PropTypes.func.isRequired,
   max: PropTypes.number,
   disabled: PropTypes.bool,
