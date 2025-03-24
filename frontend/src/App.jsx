@@ -16,7 +16,7 @@ const Admin = lazy(() => import('./views/Admin'));
 const Login = lazy(() => import('./views/Login'));
 
 // Import CSS
-import './styles/global.css';
+import './styles/main.css';
 
 // Loading component for Suspense fallback
 const Loading = () => (

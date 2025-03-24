@@ -1,0 +1,19 @@
+/* Main CSS file that imports all other CSS files */
+
+/* Import variables first to make them available to all other files */
+@import 'variables.css';
+
+/* Import base styles */
+@import 'base.css';
+
+/* Import layout styles */
+@import 'layout.css';
+
+/* Import component styles */
+@import 'components.css';
+
+/* Import admin styles */
+@import 'admin.css';
+
+/* Import responsive styles last to override other styles as needed */
+@import 'responsive.css';

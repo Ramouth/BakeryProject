@@ -1,0 +1,137 @@
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    /* Card adjustments */
+    .card {
+      width: 95%;
+      padding: 20px;
+      min-height: auto;
+    }
+    
+    /* Button adjustments */
+    .nav-buttons {
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .nav-buttons .btn {
+      width: 100%;
+    }
+    
+    /* Form adjustments */
+    .form-group input,
+    .form-group textarea,
+    .form-group select,
+    .dropdown-list {
+      max-width: 100%;
+    }
+    
+    /* Admin layout adjustments */
+    .admin-layout {
+      flex-direction: column;
+    }
+    
+    .admin-sidebar {
+      width: 100%;
+      height: auto;
+      position: relative;
+      top: 0;
+      left: 0;
+      display: none;
+    }
+    
+    .admin-sidebar.open {
+      display: block;
+    }
+    
+    .mobile-toggle {
+      display: block;
+    }
+    
+    .header-actions {
+      display: none;
+    }
+    
+    .admin-header {
+      justify-content: space-between;
+    }
+    
+    .stats-grid {
+      grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+    }
+    
+    .dashboard-row {
+      grid-template-columns: 1fr;
+    }
+    
+    /* Sidebar adjustments for mobile */
+    .admin-sidebar ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    
+    .admin-sidebar li {
+      margin-bottom: 0;
+    }
+    
+    /* Typography adjustments */
+    h1 {
+      font-size: 2.5rem;
+    }
+    
+    h2 {
+      font-size: 2rem;
+    }
+    
+    h3 {
+      font-size: 1.75rem;
+    }
+    
+    h4 {
+      font-size: 1.5rem;
+    }
+    
+    h5 {
+      font-size: 1.25rem;
+    }
+  }
+  
+  /* Small screens and tablets */
+  @media (max-width: 576px) {
+    .container {
+      padding: 10px;
+    }
+    
+    .app-content {
+      padding: 10px;
+    }
+    
+    .card {
+      padding: 15px;
+    }
+    
+    .header-content {
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .main-nav ul {
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .rating-row {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .rating-label {
+      width: 100%;
+      text-align: left;
+      margin-bottom: 5px;
+    }
+    
+    .rating-bar-container {
+      width: 100%;
+    }
+  }
