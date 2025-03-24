@@ -9,7 +9,7 @@ class BaseReviewSchema:
     # Define fields without attribute mapping
     overallRating = fields.Integer(
         required=True, 
-        validate=validate.Range(min=1, max=5)
+        validate=validate.Range(min=1, max=10)
     )
     # ContactId is now optional
     contactId = fields.Integer(required=False)
@@ -36,7 +36,7 @@ class BakeryReviewSchema(ma.SQLAlchemyAutoSchema):
     review = fields.String(required=True)
     overallRating = fields.Integer(
         required=True, 
-        validate=validate.Range(min=1, max=5)
+        validate=validate.Range(min=1, max=10)
     )
     # ContactId is now optional
     contactId = fields.Integer(required=False)
@@ -45,19 +45,19 @@ class BakeryReviewSchema(ma.SQLAlchemyAutoSchema):
     bakeryId = fields.Integer(required=True)
     serviceRating = fields.Integer(
         required=True, 
-        validate=validate.Range(min=1, max=5)
+        validate=validate.Range(min=1, max=10)
     )
     priceRating = fields.Integer(
         required=True, 
-        validate=validate.Range(min=1, max=5)
+        validate=validate.Range(min=1, max=10)
     )
     atmosphereRating = fields.Integer(
         required=True, 
-        validate=validate.Range(min=1, max=5)
+        validate=validate.Range(min=1, max=10)
     )
     locationRating = fields.Integer(
         required=True, 
-        validate=validate.Range(min=1, max=5)
+        validate=validate.Range(min=1, max=10)
     )
     
     # Nested fields for related objects
@@ -135,7 +135,7 @@ class PastryReviewSchema(ma.SQLAlchemyAutoSchema):
     review = fields.String(required=True)
     overallRating = fields.Integer(
         required=True, 
-        validate=validate.Range(min=1, max=5)
+        validate=validate.Range(min=1, max=10)
     )
     # ContactId is now optional
     contactId = fields.Integer(required=False)
@@ -144,15 +144,15 @@ class PastryReviewSchema(ma.SQLAlchemyAutoSchema):
     pastryId = fields.Integer(required=True)
     tasteRating = fields.Integer(
         required=True, 
-        validate=validate.Range(min=1, max=5)
+        validate=validate.Range(min=1, max=10)
     )
     priceRating = fields.Integer(
         required=True, 
-        validate=validate.Range(min=1, max=5)
+        validate=validate.Range(min=1, max=10)
     )
     presentationRating = fields.Integer(
         required=True, 
-        validate=validate.Range(min=1, max=5)
+        validate=validate.Range(min=1, max=10)
     )
     
     # Nested fields for related objects

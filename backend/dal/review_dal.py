@@ -158,7 +158,7 @@ class ReviewDAL:
         result = query.group_by(getattr(model, rating_field)).all()
         
         # Convert to dictionary for easier consumption
-        distribution = {i: 0 for i in range(1, 6)}  # Initialize with zeros for ratings 1-5
+        distribution = {i: 0 for i in range(1, 11)}  # Initialize with zeros for ratings 1-10
         for rating, count in result:
             distribution[rating] = count
             

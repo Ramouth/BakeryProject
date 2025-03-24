@@ -100,10 +100,10 @@ class PastryReview(db.Model, BaseReview):
     
     # Indexes and constraints
     __table_args__ = (
-        CheckConstraint('overall_rating BETWEEN 1 AND 5', name='check_pastry_overall_rating'),
-        CheckConstraint('taste_rating BETWEEN 1 AND 5', name='check_pastry_taste_rating'),
-        CheckConstraint('price_rating BETWEEN 1 AND 5', name='check_pastry_price_rating'),
-        CheckConstraint('presentation_rating BETWEEN 1 AND 5', name='check_pastry_presentation_rating'),
+        CheckConstraint('overall_rating BETWEEN 1 AND 10', name='check_pastry_overall_rating'),
+        CheckConstraint('taste_rating BETWEEN 1 AND 10', name='check_pastry_taste_rating'),
+        CheckConstraint('price_rating BETWEEN 1 AND 10', name='check_pastry_price_rating'),
+        CheckConstraint('presentation_rating BETWEEN 1 AND 10', name='check_pastry_presentation_rating'),
         Index('idx_pastry_review_pastry_id', 'pastry_id'),
         Index('idx_pastry_review_contact_id', 'contact_id'),
     )

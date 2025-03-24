@@ -60,7 +60,7 @@ const PastryReviewForm = ({ existingReview = {}, updateCallback, contacts, pastr
         <input
           type="number"
           min="1"
-          max="5"
+          max="10"
           value={overallRating}
           onChange={(e) => setOverallRating(e.target.value)}
         />
@@ -70,7 +70,7 @@ const PastryReviewForm = ({ existingReview = {}, updateCallback, contacts, pastr
         <input
           type="number"
           min="1"
-          max="5"
+          max="10"
           value={tasteRating}
           onChange={(e) => setTasteRating(e.target.value)}
         />
@@ -80,7 +80,7 @@ const PastryReviewForm = ({ existingReview = {}, updateCallback, contacts, pastr
         <input
           type="number"
           min="1"
-          max="5"
+          max="10"
           value={priceRating}
           onChange={(e) => setPriceRating(e.target.value)}
         />
@@ -90,7 +90,7 @@ const PastryReviewForm = ({ existingReview = {}, updateCallback, contacts, pastr
         <input
           type="number"
           min="1"
-          max="5"
+          max="10"
           value={presentationRating}
           onChange={(e) => setPresentationRating(e.target.value)}
         />
