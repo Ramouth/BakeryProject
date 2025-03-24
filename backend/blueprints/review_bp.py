@@ -68,10 +68,10 @@ def create_bakery_review():
         for field in rating_fields:
             try:
                 rating = int(data[field])
-                if rating < 1 or rating > 5:
-                    return jsonify({"message": f"{field} must be between 1 and 5"}), 400
+                if rating < 1 or rating > 10:
+                    return jsonify({"message": f"{field} must be between 1 and 10"}), 400
             except (ValueError, TypeError):
-                return jsonify({"message": f"{field} must be a number between 1 and 5"}), 400
+                return jsonify({"message": f"{field} must be a number between 1 and 10"}), 400
         
         # Create review through service
         review = review_service.create_bakery_review(
@@ -137,10 +137,10 @@ def update_bakery_review(review_id):
         for field, value in rating_fields.items():
             try:
                 rating = int(value)
-                if rating < 1 or rating > 5:
-                    return jsonify({"message": f"{field} must be between 1 and 5"}), 400
+                if rating < 1 or rating > 10:
+                    return jsonify({"message": f"{field} must be between 1 and 10"}), 400
             except (ValueError, TypeError):
-                return jsonify({"message": f"{field} must be a number between 1 and 5"}), 400
+                return jsonify({"message": f"{field} must be a number between 1 and 10"}), 400
         
         # Update review through service
         updated_review = review_service.update_bakery_review(
@@ -210,9 +210,9 @@ def create_pastry_review():
     try:
         data = request.json
         
-        # Validate required fields
+        # Validate required fields (contactId is optional for anonymous reviews)
         required_fields = ['review', 'overallRating', 'tasteRating', 'priceRating', 
-                          'presentationRating', 'contactId', 'pastryId']
+                          'presentationRating', 'pastryId']
         
         for field in required_fields:
             if field not in data:
@@ -223,10 +223,12 @@ def create_pastry_review():
         if not pastry:
             return jsonify({"message": "Pastry not found"}), 404
             
-        # Validate contact exists
-        contact = Contact.query.get(data['contactId'])
-        if not contact:
-            return jsonify({"message": "Contact not found"}), 404
+        # Validate contact exists only if contactId is provided (support anonymous reviews)
+        contact = None
+        if data.get('contactId'):
+            contact = Contact.query.get(data['contactId'])
+            if not contact:
+                return jsonify({"message": "Contact not found"}), 404
         
         # Validate rating values
         rating_fields = ['overallRating', 'tasteRating', 'priceRating', 'presentationRating']
@@ -234,10 +236,10 @@ def create_pastry_review():
         for field in rating_fields:
             try:
                 rating = int(data[field])
-                if rating < 1 or rating > 5:
-                    return jsonify({"message": f"{field} must be between 1 and 5"}), 400
+                if rating < 1 or rating > 10:
+                    return jsonify({"message": f"{field} must be between 1 and 10"}), 400
             except (ValueError, TypeError):
-                return jsonify({"message": f"{field} must be a number between 1 and 5"}), 400
+                return jsonify({"message": f"{field} must be a number between 1 and 10"}), 400
         
         # Create review through service
         review = review_service.create_pastry_review(
@@ -246,7 +248,7 @@ def create_pastry_review():
             int(data['tasteRating']),
             int(data['priceRating']),
             int(data['presentationRating']),
-            int(data['contactId']),
+            int(data['contactId']) if contact else None,  # Only pass contactId if it exists
             int(data['pastryId'])
         )
         
@@ -257,6 +259,7 @@ def create_pastry_review():
         return jsonify({"message": "Pastry review created!", "review": pastry_review_schema.dump(review)}), 201
     except Exception as e:
         return jsonify({"message": str(e)}), 400
+
 
 @pastry_review_bp.route('/update/<int:review_id>', methods=['PATCH'])
 def update_pastry_review(review_id):
@@ -300,10 +303,10 @@ def update_pastry_review(review_id):
         for field, value in rating_fields.items():
             try:
                 rating = int(value)
-                if rating < 1 or rating > 5:
-                    return jsonify({"message": f"{field} must be between 1 and 5"}), 400
+                if rating < 1 or rating > 10:
+                    return jsonify({"message": f"{field} must be between 1 and 10"}), 400
             except (ValueError, TypeError):
-                return jsonify({"message": f"{field} must be a number between 1 and 5"}), 400
+                return jsonify({"message": f"{field} must be a number between 1 and 10"}), 400
         
         # Update review through service
         updated_review = review_service.update_pastry_review(
