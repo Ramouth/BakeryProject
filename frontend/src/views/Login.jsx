@@ -95,21 +95,12 @@ const Login = () => {
             </div>
           )}
           
-          <div className="form-actions">
+          <div className="form-actions" style={{ display: 'flex', justifyContent: 'center' }}>
             <Button 
               type="submit" 
               disabled={isLoading}
             >
               {isLoading ? 'Logging in...' : 'Log In'}
-            </Button>
-            
-            <Button 
-              type="button" 
-              variant="secondary"
-              onClick={() => navigate('/')}
-              disabled={isLoading}
-            >
-              Cancel
             </Button>
           </div>
         </form>
