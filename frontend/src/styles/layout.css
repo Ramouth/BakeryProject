@@ -1,0 +1,57 @@
+/* Layout Styles */
+.container {
+    max-width: var(--container-width);
+    margin: 20px auto;
+    padding: 20px;
+  }
+  
+  /* App Layout */
+  .app-content {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+  }
+  
+  /* Form consistency */
+  .form-container {
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto;
+  }
+  
+  /* Responsive Layout */
+  @media (max-width: 768px) {
+    .container {
+      padding: 15px;
+    }
+    
+    .app-content {
+      padding: 15px;
+    }
+  }
+  
+  /* Auth Layout */
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto;
+  }
+  
+  .auth-error {
+    margin: 1rem 0;
+    padding: 0.5rem;
+    background-color: rgba(211, 47, 47, 0.1);
+    border-radius: var(--border-radius);
+    text-align: center;
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+  }

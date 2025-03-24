@@ -12,6 +12,9 @@
 /* Import component styles */
 @import 'components.css';
 
+/* Import theme toggle styles */
+@import 'theme-toggle.css';
+
 /* Import admin styles */
 @import 'admin.css';
 
