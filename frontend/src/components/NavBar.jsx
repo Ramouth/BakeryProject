@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useUser } from '../store/UserContext';
+import ThemeToggle from '../components/ThemeToggle';
 
 const NavBar = () => {
   const { currentUser, logout } = useUser();
@@ -21,25 +22,18 @@ const NavBar = () => {
         
         <nav className="main-nav">
           <ul>
-            {currentUser && currentUser.isAdmin && (
-              <li>
-                <Link to="/admin">Admin</Link>
-              </li>
-            )}
+            <li className="nav-item">
+              <ThemeToggle />
+            </li>
             {currentUser ? (
-              <>
-                <li>
-                  <span className="user-greeting">Hello, {currentUser.firstName}</span>
-                </li>
-                <li>
-                  <button onClick={logout} className="btn-link">
-                    Log Out
-                  </button>
-                </li>
-              </>
+              <li className="nav-item">
+                <button onClick={logout} className="btn-link">
+                  Log Out
+                </button>
+              </li>
             ) : (
-              <li>
-                <Link to="/login">Admin Login</Link>
+              <li className="nav-item">
+                <Link to="/login" className="login-button">Admin Login</Link>
               </li>
             )}
           </ul>
