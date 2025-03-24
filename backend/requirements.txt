@@ -1,0 +1,14 @@
+# Core dependencies
+werkzeug==3.0.2
+Flask==3.0.2
+Flask-SQLAlchemy==3.1.1
+SQLAlchemy==2.0.29
+Flask-Marshmallow==1.2.1
+marshmallow-sqlalchemy==0.29.0
+marshmallow==3.21.1
+Flask-Cors==4.0.1
+email-validator==2.1.1
+python-dotenv==1.0.1
+
+# Caching
+Flask-Caching==2.1.0
