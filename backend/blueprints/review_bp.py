@@ -43,9 +43,9 @@ def create_bakery_review():
     try:
         data = request.json
         
-        # Validate required fields
+        # Validate required fields (contactId is optional for anonymous reviews)
         required_fields = ['review', 'overallRating', 'serviceRating', 'priceRating', 
-                          'atmosphereRating', 'locationRating', 'contactId', 'bakeryId']
+                          'atmosphereRating', 'locationRating', 'bakeryId']
         
         for field in required_fields:
             if field not in data:
@@ -56,10 +56,12 @@ def create_bakery_review():
         if not bakery:
             return jsonify({"message": "Bakery not found"}), 404
             
-        # Validate contact exists
-        contact = Contact.query.get(data['contactId'])
-        if not contact:
-            return jsonify({"message": "Contact not found"}), 404
+        # Validate contact exists only if contactId is provided (support anonymous reviews)
+        contact = None
+        if data.get('contactId'):
+            contact = Contact.query.get(data['contactId'])
+            if not contact:
+                return jsonify({"message": "Contact not found"}), 404
         
         # Validate rating values
         rating_fields = ['overallRating', 'serviceRating', 'priceRating', 
@@ -81,7 +83,7 @@ def create_bakery_review():
             int(data['priceRating']),
             int(data['atmosphereRating']),
             int(data['locationRating']),
-            int(data['contactId']),
+            int(data['contactId']) if contact else None,  # Only pass contactId if it exists
             int(data['bakeryId'])
         )
         
@@ -92,6 +94,7 @@ def create_bakery_review():
         return jsonify({"message": "Bakery review created!", "review": bakery_review_schema.dump(review)}), 201
     except Exception as e:
         return jsonify({"message": str(e)}), 400
+
 
 @bakery_review_bp.route('/update/<int:review_id>', methods=['PATCH'])
 def update_bakery_review(review_id):
