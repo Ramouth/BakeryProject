@@ -1,10 +1,10 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { lazy, Suspense, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { UserProvider } from './store/UserContext';
 import { ReviewProvider } from './store/ReviewContext';
 import NavBar from './components/NavBar';
 import AuthGuard from './components/AuthGuard';
-import ProgressBar from './components/ProgressBar';
+import ProgressTracker from './components/ProgressTracker';
 
 // Lazy load views for code splitting and performance
 const Start = lazy(() => import('./views/Start'));
@@ -19,16 +19,6 @@ const Login = lazy(() => import('./views/Login'));
 // Import CSS
 import './styles/main.css';
 
-// Define the steps for the progress bar
-const reviewSteps = [
-  { label: 'Start', path: '/' },
-  { label: 'Bakery', path: '/bakery-selection' },
-  { label: 'Pastry', path: '/pastry-selection' },
-  { label: 'Rate Pastry', path: '/pastry-rating' },
-  { label: 'Rate Bakery', path: '/bakery-rating' },
-  { label: 'Done', path: '/thank-you' }
-];
-
 // Loading component for Suspense fallback
 const Loading = () => (
   <div className="loading-container">
@@ -36,35 +26,6 @@ const Loading = () => (
     <p>Loading...</p>
   </div>
 );
-
-// Progress tracker component
-const ProgressTracker = () => {
-  const location = useLocation();
-  const [currentStep, setCurrentStep] = useState(1);
-  
-  // Update current step based on location
-  useEffect(() => {
-    const path = location.pathname;
-    const stepIndex = reviewSteps.findIndex(step => step.path === path);
-    if (stepIndex !== -1) {
-      setCurrentStep(stepIndex + 1);
-    } else {
-      // If we're not on a review step (like admin or login), don't show progress
-      setCurrentStep(0);
-    }
-  }, [location]);
-  
-  // Only show progress bar for review flow pages
-  if (currentStep === 0) return null;
-  
-  return (
-    <ProgressBar 
-      currentStep={currentStep} 
-      totalSteps={reviewSteps.length} 
-      steps={reviewSteps}
-    />
-  );
-};
 
 function App() {
   // Initialize theme on app load
@@ -88,7 +49,9 @@ function App() {
         <ReviewProvider>
           <div className="app">
             <NavBar />
-            <ProgressTracker />
+            <div className="progress-bar-container">
+              <ProgressTracker />
+            </div>
             <main className="app-content">
               <Suspense fallback={<Loading />}>
                 <Routes>
