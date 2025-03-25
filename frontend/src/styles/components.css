@@ -24,35 +24,225 @@
   }
   
   /* Button Styles */
-  .btn {
-    text-transform: capitalize;
-    background-color: var(--primary-color);
-    color: var(--text-50);
-    border: none;
-    padding: 6px 15px;
-    margin: 0 5px;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: var(--transition);
-  }
-  
-  .btn:hover {
-    background-color: var(--primary-dark);
-  }
-  
-  .btn-disabled,
-  .btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-width: 100px;
+  text-transform: capitalize;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Primary Button */
+.btn-primary {
+  background-color: var(--primary-600);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-700);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Secondary Button */
+.btn-secondary {
+  background-color: var(--accent-200);
+  color: var(--accent-800);
+  border: 1px solid var(--accent-300);
+}
+
+.btn-secondary:hover {
+  background-color: var(--accent-300);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary:active {
+  transform: translateY(1px);
+}
+
+/* Danger Button */
+.btn-danger {
+  background-color: var(--error);
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #f44336;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Success Button */
+.btn-success {
+  background-color: var(--success);
+  color: white;
+}
+
+.btn-success:hover {
+  background-color: #43a047;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Link Button */
+.btn-link {
+  background: transparent;
+  color: var(--primary-color);
+  box-shadow: none;
+  padding: 0.5rem 0.75rem;
+  text-decoration: underline;
+  min-width: auto;
+}
+
+.btn-link:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--primary-dark);
+  transform: none;
+}
+
+/* Button Sizes */
+.btn-sm {
+  padding: 0.35rem 0.8rem;
+  font-size: 0.85rem;
+  min-width: 80px;
+}
+
+.btn-lg {
+  padding: 0.8rem 1.6rem;
+  font-size: 1.1rem;
+  min-width: 140px;
+}
+
+/* Disabled State */
+.btn:disabled,
+.btn.btn-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Button with Icon */
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-icon i,
+.btn-icon svg {
+  font-size: 1.2em;
+}
+
+/* Button Group */
+.btn-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Improved Background-Button Contrast */
+
+.btn-primary {
+  background-color: var(--primary-600);
+  color: white;
+}
+
+body {
+  background-color: #f9f6f0; /* Lighter beige background */
+}
+
+/* Make the start review button more prominent */
+.btn {
+  background-color: #8b5a2b; /* Deeper brown color */
+  color: white; /* White text for maximum contrast */
+  font-weight: 600;
+  padding: 0.7rem 1.5rem;
+  border-radius: 6px;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  background-color: #724923; /* Slightly darker on hover */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* For the specific start review button on the home page */
+.start-review-btn {
+  background-color: #8b5a2b; /* Consistent with general button style */
+  color: white;
+  font-size: 1.1rem;
+  padding: 0.8rem 2rem;
+  letter-spacing: 0.5px;
+}
+
+/* Add a subtle outline to further increase contrast */
+.start-review-btn {
+  outline: 2px solid rgba(139, 90, 43, 0.3);
+  outline-offset: 2px;
+}
+
+/* Container styling for better spacing */
+.container {
+  padding: 30px 20px;
+}
+
+
+/* Full Width Button on Mobile */
+@media (max-width: 768px) {
+  .btn-mobile-full {
+    width: 100%;
   }
   
   .nav-buttons {
+    width: 100%;
     display: flex;
-    justify-content: space-between;
-    margin-top: auto;
-    padding-top: 20px;
+    gap: 10px;
   }
+  
+  .nav-buttons .btn {
+    flex: 1;
+  }
+}
+
+/* Ripple Effect */
+.btn::after {
+  content: '';
+  position: absolute;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+  opacity: 1;
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
   
   /* Form Elements */
   .form-group {
