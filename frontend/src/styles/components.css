@@ -551,3 +551,15 @@ body {
     margin-bottom: 35px;
   }
 }
+
+/* Progressbar */
+.progress-bar-container {
+  padding: 10px 0;
+  background-color: transparent;
+  width: 100%;
+}
+
+.app-content {
+  position: relative;
+  z-index: 1; /* Lower z-index than the progress bar */
+}
