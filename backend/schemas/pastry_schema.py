@@ -33,14 +33,14 @@ class PastrySchema(ma.SQLAlchemyAutoSchema):
         else:
             # Otherwise, it's a single object
             result = super().dump(obj, *args, **kwargs)
-            result['bakeryId'] = obj.zip_code if obj else None
+            result['bakeryId'] = obj.bakery_id if obj else None
             return result
 
 
     def _dump_single(self, obj):
         # This method handles dumping a single pastry
         result = super().dump(obj)
-        result['bakeryId'] = obj.zip_code if obj else None
+        result['bakeryId'] = obj.bakery_id if obj else None
         return result
 
 
