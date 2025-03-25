@@ -27,10 +27,23 @@ class BakerySchema(ma.SQLAlchemyAutoSchema):
 
     # Methods to handle the attribute mapping manually
     def dump(self, obj, *args, **kwargs):
-        result = super().dump(obj, *args, **kwargs)
-        # Add zipCode to the dumped data
+    # Check if obj is a list (many objects)
+        if isinstance(obj, list):
+        # If it's a list, we can call the superclass dump with many=True
+            return super().dump(obj, many=True, *args, **kwargs)
+        else:
+            # Otherwise, it's a single object
+            result = super().dump(obj, *args, **kwargs)
+            result['zipCode'] = obj.zip_code if obj else None
+            return result
+
+
+    def _dump_single(self, obj):
+        # This method handles dumping a single bakery
+        result = super().dump(obj)
         result['zipCode'] = obj.zip_code if obj else None
         return result
+
 
     def load(self, data, *args, **kwargs):
         # Extract zipCode from input data to use later
