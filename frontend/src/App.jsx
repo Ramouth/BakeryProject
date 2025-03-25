@@ -49,30 +49,36 @@ function App() {
         <ReviewProvider>
           <div className="app">
             <NavBar />
+            
+            {/* Completely separate progress bar section */}
             <div className="progress-bar-container">
               <ProgressTracker />
             </div>
-            <main className="app-content">
-              <Suspense fallback={<Loading />}>
-                <Routes>
-                  <Route path="/" element={<Start />} />
-                  <Route path="/bakery-selection" element={<BakerySelection />} />
-                  <Route path="/pastry-selection" element={<PastrySelection />} />
-                  <Route path="/pastry-rating" element={<PastryRating />} />
-                  <Route path="/bakery-rating" element={<BakeryRating />} />
-                  <Route path="/thank-you" element={<ThankYou />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route 
-                    path="/admin/*" 
-                    element={
-                      <AuthGuard>
-                        <Admin />
-                      </AuthGuard>
-                    } 
-                  />
-                </Routes>
-              </Suspense>
-            </main>
+            
+            {/* Add clear separation between progress bar and content */}
+            <div className="content-section">
+              <main className="app-content">
+                <Suspense fallback={<Loading />}>
+                  <Routes>
+                    <Route path="/" element={<Start />} />
+                    <Route path="/bakery-selection" element={<BakerySelection />} />
+                    <Route path="/pastry-selection" element={<PastrySelection />} />
+                    <Route path="/pastry-rating" element={<PastryRating />} />
+                    <Route path="/bakery-rating" element={<BakeryRating />} />
+                    <Route path="/thank-you" element={<ThankYou />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route 
+                      path="/admin/*" 
+                      element={
+                        <AuthGuard>
+                          <Admin />
+                        </AuthGuard>
+                      } 
+                    />
+                  </Routes>
+                </Suspense>
+              </main>
+            </div>
           </div>
         </ReviewProvider>
       </UserProvider>
