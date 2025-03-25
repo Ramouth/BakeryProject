@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useReview } from '../store/ReviewContext';
+import bakeryService from '../services/bakeryService'; // Import the bakery service
 
 const PastrySelection = () => {
   const { selectedBakery, selectedPastry, setSelectedPastry, goToNextStep } = useReview();
@@ -8,43 +9,38 @@ const PastrySelection = () => {
   const [error, setError] = useState(null);
   const [customPastryName, setCustomPastryName] = useState('');
   const [showCustom, setShowCustom] = useState(false);
-  
+
   // Fetch pastries from API based on selected bakery
   useEffect(() => {
     const fetchPastries = async () => {
-      try {
-         // For now, we use mock data. Needs to be replaced wuth actual API call.
-        const mockPastries = [
-          { id: 1, name: 'Croissant', bakeryId: 1 },
-          { id: 2, name: 'Pain au Chocolat', bakeryId: 1 },
-          { id: 3, name: 'Cinnamon Roll', bakeryId: 1 },
-          { id: 4, name: 'Danish Pastry', bakeryId: 1 },
-          { id: 5, name: 'Sourdough Bread', bakeryId: 1 },
-        ];
-        
-        setPastries(mockPastries);
-        setLoading(false);
-      } catch (err) {
-        setError('Failed to load pastries. Please try again later.');
-        setLoading(false);
+      if (selectedBakery) {
+        try {
+          // Fetch pastries using the bakeryService.getBakeryPastries method
+          const pastriesData = await bakeryService.getBakeryPastries(selectedBakery.id);
+          setPastries(pastriesData);
+          setLoading(false);
+        } catch (err) {
+          setError('Failed to load pastries. Please try again later.');
+          setLoading(false);
+        }
       }
     };
-    
+
     fetchPastries();
-  }, [selectedBakery]);
-  
+  }, [selectedBakery]); // Re-fetch pastries when the selected bakery changes
+
   // Handle pastry selection
   const handlePastrySelect = (pastry) => {
     setSelectedPastry(pastry);
     setShowCustom(false);
   };
-  
+
   // Handle "Other" option
   const handleOtherSelect = () => {
     setShowCustom(true);
     setSelectedPastry(null);
   };
-  
+
   // Handle custom pastry submission
   const handleCustomPastrySubmit = () => {
     if (customPastryName.trim().length > 0) {
@@ -52,34 +48,34 @@ const PastrySelection = () => {
         id: 'custom',
         name: 'Other',
         customName: customPastryName,
-        bakeryId: selectedBakery.id
+        bakeryId: selectedBakery.id,
       });
     }
   };
-  
+
   // Handle next step
   const handleNext = () => {
     if (selectedPastry) {
       goToNextStep('pastryRating');
     }
   };
-  
+
   if (loading) {
     return <div className="container"><div className="card">Loading pastries...</div></div>;
   }
-  
+
   if (error) {
     return <div className="container"><div className="card error-message">{error}</div></div>;
   }
-  
+
   return (
     <div className="container">
       <div className="card">
         <h2>Choose a pastry</h2>
-       <p>Selected bakery: {selectedBakery.name}</p>
-        
+        <p>Selected bakery: {selectedBakery.name}</p>
+
         <div className="dropdown-list">
-          {pastries.map((pastry, index) => (
+          {pastries.map((pastry) => (
             <div 
               key={pastry.id} 
               className={`dropdown-item ${selectedPastry && selectedPastry.id === pastry.id ? 'selected' : ''}`}
@@ -95,7 +91,7 @@ const PastrySelection = () => {
             Other
           </div>
         </div>
-        
+
         {showCustom && (
           <div className="form-group">
             <input
@@ -113,7 +109,7 @@ const PastrySelection = () => {
             </button>
           </div>
         )}
-        
+
         <div className="nav-buttons">
           <button 
             className="btn"
