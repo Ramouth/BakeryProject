@@ -13,10 +13,14 @@ const ThankYou = () => {
   const [feedback, setFeedback] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Reset the review state after a delay if navigating away
+  // Reset the review state immediately when component mounts
   useEffect(() => {
+    // Reset review state to ensure fresh start for new reviews
+    resetReview();
+    
+    // Still keep a timeout as a fallback
     const timer = setTimeout(() => {
-      // Only reset if the user hasn't submitted feedback yet
+      // Force reset review state again if user stays on page
       if (!isSubmitting) {
         resetReview();
       }
@@ -24,18 +28,6 @@ const ThankYou = () => {
     
     return () => clearTimeout(timer);
   }, [resetReview, isSubmitting]);
-  
-  // Handle submit button click
-  const handleSubmit = () => {
-    setIsSubmitting(true);
-    
-    // Here we would normally submit the experience rating data
-    // For now, we'll just show a success message and reset
-    setTimeout(() => {
-      resetReview();
-      goToNextStep('start');
-    }, 1000);
-  };
   
   return (
     <div className="container">
@@ -75,7 +67,7 @@ const ThankYou = () => {
         <div className="nav-buttons" style={{ justifyContent: 'center', marginTop: '2rem' }}>
           <button 
             className="btn"
-            onClick={handleSubmit}
+            onClick={() => goToNextStep('Start')}
             disabled={isSubmitting}
           >
             {isSubmitting ? 'Submitting...' : 'Submit'}

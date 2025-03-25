@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 // Progress bar rating component with 0-10 scale that displays current value
 const RatingBar = ({ 
-  rating = 0, // Default to 0 instead of requiring a value
+  rating = 0, 
   onChange, 
   max = 10,
   disabled = false,
@@ -55,8 +55,6 @@ const RatingBar = ({
           {hoveredRating || rating}/{max}
         </div>
       )}
-      
-      {/* Rating scale numbers removed */}
     </div>
   );
 };

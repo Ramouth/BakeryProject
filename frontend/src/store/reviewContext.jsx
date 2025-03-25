@@ -70,8 +70,13 @@ export const ReviewProvider = ({ children }) => {
   
   // Reset all review data
   const resetReview = useCallback(() => {
+    // Reset bakery selection
     setSelectedBakery(null);
+    
+    // Reset pastry selection
     setSelectedPastry(null);
+    
+    // Reset pastry ratings
     setPastryRatings({
       overall: 0, 
       taste: 0,  
@@ -79,6 +84,8 @@ export const ReviewProvider = ({ children }) => {
       presentation: 0, 
       comments: ''
     });
+    
+    // Reset bakery ratings
     setBakeryRatings({
       overall: 0, 
       service: 0, 
@@ -88,8 +95,18 @@ export const ReviewProvider = ({ children }) => {
       selection: 0,  
       comments: ''
     });
-    setExperienceRating(0); 
+    
+    // Reset experience rating and state
+    setExperienceRating(0);
+    setIsSubmitting(false);
     setError(null);
+    
+    // Also clear from localStorage to prevent persisting between sessions
+    try {
+      localStorage.removeItem('reviewState');
+    } catch (err) {
+      console.error('Failed to clear review state from storage', err);
+    }
   }, []);
   
   // Submit pastry review - Updated to support anonymous reviews
