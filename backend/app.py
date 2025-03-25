@@ -30,10 +30,10 @@ def create_app(config_class=DevelopmentConfig):
     ma.init_app(app)
     CORS(app, resources={
         r"/*": {
-            "origins": ["http://localhost:5173"],
+            "origins": ["http://localhost:5173"],  # Explicitly allow your frontend origin
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            "allow_headers": ["Content-Type", "Authorization"],
-            "supports_credentials": True
+            "allow_headers": ["Content-Type", "Authorization", "Access-Control-Allow-Origin"],
+            "supports_credentials": True  # Allow credentials (cookies, authorization headers, etc.)
         }
     })
     # Configure caching
