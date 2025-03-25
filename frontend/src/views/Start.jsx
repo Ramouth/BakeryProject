@@ -1,7 +1,14 @@
+import { useEffect } from 'react';
 import { useReview } from '../store/ReviewContext';
 
 const Start = () => {
-  const { goToNextStep } = useReview();
+  const { goToNextStep, resetReview } = useReview();
+  
+  // Always reset review state when starting page loads
+  useEffect(() => {
+    resetReview();
+  }, [resetReview]);
+
   
   return (
     <div className="container">

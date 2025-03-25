@@ -117,13 +117,6 @@ const BakeryRating = () => {
         
         <div className="nav-buttons">
           <button 
-            className="btn btn-secondary"
-            onClick={() => goToNextStep('reviewOptions')}
-            disabled={isSubmitting}
-          >
-            Back
-          </button>
-          <button 
             className="btn"
             onClick={handleSubmit}
             disabled={isSubmitting}
