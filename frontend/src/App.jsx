@@ -4,6 +4,7 @@ import { UserProvider } from './store/UserContext';
 import { ReviewProvider } from './store/ReviewContext';
 import NavBar from './components/NavBar';
 import AuthGuard from './components/AuthGuard';
+import ProgressTracker from './components/ProgressTracker';
 
 // Lazy load views for code splitting and performance
 const Start = lazy(() => import('./views/Start'));
@@ -48,27 +49,36 @@ function App() {
         <ReviewProvider>
           <div className="app">
             <NavBar />
-            <main className="app-content">
-              <Suspense fallback={<Loading />}>
-                <Routes>
-                  <Route path="/" element={<Start />} />
-                  <Route path="/bakery-selection" element={<BakerySelection />} />
-                  <Route path="/pastry-selection" element={<PastrySelection />} />
-                  <Route path="/pastry-rating" element={<PastryRating />} />
-                  <Route path="/bakery-rating" element={<BakeryRating />} />
-                  <Route path="/thank-you" element={<ThankYou />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route 
-                    path="/admin/*" 
-                    element={
-                      <AuthGuard>
-                        <Admin />
-                      </AuthGuard>
-                    } 
-                  />
-                </Routes>
-              </Suspense>
-            </main>
+            
+            {/* Completely separate progress bar section */}
+            <div className="progress-bar-container">
+              <ProgressTracker />
+            </div>
+            
+            {/* Add clear separation between progress bar and content */}
+            <div className="content-section">
+              <main className="app-content">
+                <Suspense fallback={<Loading />}>
+                  <Routes>
+                    <Route path="/" element={<Start />} />
+                    <Route path="/bakery-selection" element={<BakerySelection />} />
+                    <Route path="/pastry-selection" element={<PastrySelection />} />
+                    <Route path="/pastry-rating" element={<PastryRating />} />
+                    <Route path="/bakery-rating" element={<BakeryRating />} />
+                    <Route path="/thank-you" element={<ThankYou />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route 
+                      path="/admin/*" 
+                      element={
+                        <AuthGuard>
+                          <Admin />
+                        </AuthGuard>
+                      } 
+                    />
+                  </Routes>
+                </Suspense>
+              </main>
+            </div>
           </div>
         </ReviewProvider>
       </UserProvider>
