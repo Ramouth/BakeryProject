@@ -1,9 +1,10 @@
-from flask import Flask
+from flask import Flask, request
 from flask_cors import CORS
 from config import Config, DevelopmentConfig, ProductionConfig
 from models import db
 from schemas import ma
 from utils.caching import cache, configure_cache
+import logging
 
 # Import blueprints
 from blueprints.bakery_bp import bakery_bp
@@ -11,16 +12,30 @@ from blueprints.pastry_bp import pastry_bp
 from blueprints.review_bp import bakery_review_bp, pastry_review_bp
 from blueprints.user_bp import user_bp
 
+
 def create_app(config_class=DevelopmentConfig):
     """Create and configure the Flask application"""
     app = Flask(__name__)
     app.config.from_object(config_class)
+
+    app.url_map.strict_slashes = False
+
+    @app.before_request
+    def log_request_info():
+        app.logger.debug('Headers: %s', request.headers)
+        app.logger.debug('Method: %s', request.method)
     
     # Initialize extensions
     db.init_app(app)
     ma.init_app(app)
-    CORS(app)
-    
+    CORS(app, resources={
+        r"/*": {
+            "origins": ["http://localhost:5173"],  # Explicitly allow your frontend origin
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization", "Access-Control-Allow-Origin"],
+            "supports_credentials": True  # Allow credentials (cookies, authorization headers, etc.)
+        }
+    })
     # Configure caching
     configure_cache(app)
     
