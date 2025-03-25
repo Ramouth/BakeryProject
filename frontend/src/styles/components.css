@@ -26,7 +26,7 @@
   /* Button Styles */
 
 .btn {
-  display: inline-flex;
+  display: block;
   align-items: center;
   justify-content: center;
   padding: 0.6rem 1.25rem;
@@ -42,6 +42,8 @@
   text-transform: capitalize;
   position: relative;
   overflow: hidden;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Primary Button */
@@ -76,6 +78,14 @@
 
 .btn-secondary:active {
   transform: translateY(1px);
+}
+
+/* Center button */
+.nav-buttons {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 25px;
 }
 
 /* Danger Button */
@@ -197,10 +207,10 @@ body {
   letter-spacing: 0.5px;
 }
 
-/* Add a subtle outline to further increase contrast */
+/* For the Start Review button specifically  */
 .start-review-btn {
-  outline: 2px solid rgba(139, 90, 43, 0.3);
-  outline-offset: 2px;
+  margin-top: 25px;
+  min-width: 160px; /* Set a consistent width */
 }
 
 /* Container styling for better spacing */
