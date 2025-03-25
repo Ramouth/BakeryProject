@@ -1,5 +1,7 @@
 import { memo } from 'react';
 import PropTypes from 'prop-types';
+import "../styles/ProgressBar.css";
+
 
 const ProgressBar = ({ currentStep, totalSteps, steps }) => {
   // Calculate percentage for the progress bar
