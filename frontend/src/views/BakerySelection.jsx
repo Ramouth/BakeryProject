@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useReview } from '../store/ReviewContext';
+import bakeryService from '../services/bakeryService'; 
 
 const BakerySelection = () => {
   const { selectedBakery, setSelectedBakery, goToNextStep } = useReview();
@@ -13,23 +14,16 @@ const BakerySelection = () => {
   useEffect(() => {
     const fetchBakeries = async () => {
       try {
-        // For now, we use mock data. Needs to be replaced wuth actual API call. 
-        const mockBakeries = [
-          { id: 1, name: 'Hart Bakery', location: 'Copenhagen' },
-          { id: 2, name: 'Andersen Bakery', location: 'Frederiksberg' },
-          { id: 3, name: 'Meyers Bageri', location: 'Copenhagen' },
-          { id: 4, name: 'Lagkagehuset', location: 'Copenhagen' },
-          { id: 5, name: 'Bageriet', location: 'Frederiksberg' },
-        ];
-        
-        setBakeries(mockBakeries);
+        const data = await bakeryService.getAllBakeries(); // Use the bakeryService to get bakeries
+        setBakeries(data); // Assume the response directly returns an array of bakeries
         setLoading(false);
       } catch (err) {
+        console.log(err);
         setError('Failed to load bakeries. Please try again later.');
         setLoading(false);
       }
     };
-    
+
     fetchBakeries();
   }, []);
   
