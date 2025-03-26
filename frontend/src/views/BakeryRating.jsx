@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useReview } from '../store/ReviewContext';
+import { useReview } from '../store/reviewContext';
+import { useNotification } from '../store/NotificationContext';
 import RatingBar from '../components/RatingComponent';
 
 const BakeryRating = () => {
@@ -11,8 +12,8 @@ const BakeryRating = () => {
     goToNextStep 
   } = useReview();
   
+  const { showSuccess, showError } = useNotification();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState(null);
   
   // Handle rating changes
   const handleRatingChange = (field, value) => {
@@ -33,14 +34,26 @@ const BakeryRating = () => {
   // Handle form submission - now directly uses the ReviewContext method
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    setError(null);
     
     try {
+      // Validate overall rating is provided
+      if (bakeryRatings.overall <= 0) {
+        showError("Please provide an overall rating");
+        setIsSubmitting(false);
+        return;
+      }
+      
       // This will now handle anonymous reviews
       await submitBakeryReview();
+      
+      // Show success notification
+      showSuccess("Bakery review saved successfully!");
+      
+      // Navigate to next step
       goToNextStep('experienceRating');
     } catch (err) {
-      setError('Failed to submit review. Please try again.');
+      // Show error notification
+      showError(`Failed to submit review: ${err.message || "Please try again"}`);
       console.error('Error submitting review:', err);
     } finally {
       setIsSubmitting(false);
@@ -112,8 +125,6 @@ const BakeryRating = () => {
             placeholder="Share your thoughts about this bakery..."
           />
         </div>
-        
-        {error && <div className="error-message">{error}</div>}
         
         <div className="nav-buttons">
           <button 
