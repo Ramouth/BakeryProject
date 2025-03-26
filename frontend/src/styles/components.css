@@ -49,7 +49,7 @@
 /* Primary Button */
 .btn-primary {
   background-color: var(--primary-600);
-  color: white;
+  color: var(--text-50);
 }
 
 .btn-primary:hover {
@@ -91,7 +91,7 @@
 /* Danger Button */
 .btn-danger {
   background-color: var(--error);
-  color: white;
+  color: var(--text-50);
 }
 
 .btn-danger:hover {
@@ -103,7 +103,7 @@
 /* Success Button */
 .btn-success {
   background-color: var(--success);
-  color: white;
+  color: var(--text-50);
 }
 
 .btn-success:hover {
@@ -177,7 +177,7 @@
 }
 
 body {
-  background-color: #f9f6f0; /* Lighter beige background */
+  background-color: var(--background-50);
 }
 
 /* Make the start review button more prominent */
@@ -200,8 +200,8 @@ body {
 
 /* For the specific start review button on the home page */
 .start-review-btn {
-  background-color: #8b5a2b; /* Consistent with general button style */
-  color: white;
+  background-color: var(--primary-500);
+  color: var(--text-50);
   font-size: 1.1rem;
   padding: 0.8rem 2rem;
   letter-spacing: 0.5px;
@@ -210,7 +210,7 @@ body {
 /* For the Start Review button specifically  */
 .start-review-btn {
   margin-top: 25px;
-  min-width: 160px; /* Set a consistent width */
+  min-width: 160px; 
 }
 
 /* Container styling for better spacing */
@@ -240,7 +240,7 @@ body {
 .btn::after {
   content: '';
   position: absolute;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(var(--text-50-rgb), 0.3);
   border-radius: 50%;
   transform: scale(0);
   animation: ripple 0.6s linear;
