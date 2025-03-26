@@ -21,6 +21,9 @@
 /* Import admin styles */
 @import 'admin.css';
 
+/* Import animations */
+@import 'animations.css';
+
 /* Import responsive styles last to override other styles as needed */
 @import 'responsive.css';
 
