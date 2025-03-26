@@ -6,7 +6,6 @@ const UserContext = createContext();
 
 // Provider component
 export const UserProvider = ({ children }) => {
-  // State for the current user
   const [currentUser, setCurrentUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,7 +16,12 @@ export const UserProvider = ({ children }) => {
       try {
         const storedUser = localStorage.getItem('currentUser');
         if (storedUser) {
-          setCurrentUser(JSON.parse(storedUser));
+          const parsedUser = JSON.parse(storedUser);
+          // Ensure isAdmin is explicitly set when loading from storage
+          setCurrentUser({
+            ...parsedUser,
+            isAdmin: parsedUser.isAdmin || false
+          });
         }
       } catch (error) {
         console.error('Error retrieving user from storage:', error);
@@ -29,49 +33,55 @@ export const UserProvider = ({ children }) => {
     getUserFromStorage();
   }, []);
   
-  // Login function with improved error handling
+  // Login function with improved admin status handling
   const login = useCallback(async (email, password) => {
     setIsLoading(true);
     setError(null);
     
     try {
-      // Simple password validation for demo purposes - in a real app, this would be on the server
-      const mockPassword = 'admin123'; // This should be replaced with real auth in production
-      
-      // For demo purposes, let's implement a fallback if the API is unreachable
+      const mockPassword = 'admin123';
       let user;
       let contacts = [];
       
       try {
-        // Try to get contacts from API first
+        // Attempt to fetch contacts and find user
         const response = await apiClient.get('/contacts');
         contacts = response.contacts || [];
         user = contacts.find(contact => contact.email === email);
       } catch (apiError) {
         console.error('API connection error:', apiError);
         
-        // If API fails, use hardcoded demo accounts
-        if (email === 'test@test.com' || email === 'admin@crumbcompass.com') {
-          user = {
-            id: 'demo-user',
-            firstName: 'Demo',
+        // Fallback to predefined admin users
+        const adminUsers = [
+          {
+            id: 'admin1',
+            firstName: 'Admin',
             lastName: 'User',
-            email: email
-          };
-        }
+            email: 'admin@crumbcompass.com',
+            isAdmin: true
+          },
+          {
+            id: 'test1',
+            firstName: 'Test',
+            lastName: 'User',
+            email: 'test@test.com',
+            isAdmin: true
+          }
+        ];
+        
+        user = adminUsers.find(u => u.email === email);
       }
       
-      // Check if user exists and password matches mock password
+      // Validate user and password
       if (user && password === mockPassword) {
-        // Grant admin status to specific users for demo purposes
-        const isAdmin = ['admin@crumbcompass.com', 'test@test.com'].includes(email);
-        
+        // Explicitly ensure isAdmin is set
         const userData = {
           ...user,
-          isAdmin
+          isAdmin: user.isAdmin === true // Ensure boolean value
         };
         
         setUser(userData);
+        console.log('Logged in user:', userData); // Debug log
         return userData;
       } else {
         throw new Error('Invalid email or password');
@@ -79,17 +89,25 @@ export const UserProvider = ({ children }) => {
     } catch (err) {
       const errorMessage = err.message || 'Login failed. Please try again.';
       setError(errorMessage);
+      console.error('Login error:', errorMessage); // Debug log
       throw new Error(errorMessage);
     } finally {
       setIsLoading(false);
     }
   }, []);
   
-  // Set user and save to storage
+  // Set user with explicit admin status handling
   const setUser = useCallback((user) => {
-    setCurrentUser(user);
-    if (user) {
-      localStorage.setItem('currentUser', JSON.stringify(user));
+    // Ensure isAdmin is always a boolean
+    const userWithAdminStatus = user ? {
+      ...user,
+      isAdmin: user.isAdmin === true
+    } : null;
+    
+    setCurrentUser(userWithAdminStatus);
+    
+    if (userWithAdminStatus) {
+      localStorage.setItem('currentUser', JSON.stringify(userWithAdminStatus));
     } else {
       localStorage.removeItem('currentUser');
     }
