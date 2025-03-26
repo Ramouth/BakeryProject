@@ -21,13 +21,16 @@ const NavBar = () => {
             </li>
             {currentUser ? (
               <li className="nav-item">
-                <button onClick={logout} className="btn-link">
-                  Log Out
-                </button>
+                {/* Use a div with the same class as Admin Login */}
+                <div className="admin-login-container">
+                  <Link to="/" onClick={logout} className="admin-login-button">Log Out</Link>
+                </div>
               </li>
             ) : (
               <li className="nav-item">
-                <Link to="/login" className="login-button">Admin Login</Link>
+                <div className="admin-login-container">
+                  <Link to="/login" className="admin-login-button">Admin Login</Link>
+                </div>
               </li>
             )}
           </ul>
