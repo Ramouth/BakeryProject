@@ -110,7 +110,7 @@
   
   .main-nav a:hover,
   .btn-link:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(var(--text-50-rgb), 0.2);
   }
   
   /* Login button styling */

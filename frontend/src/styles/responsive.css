@@ -1,139 +1,42 @@
 /* Responsive Adjustments */
 @media (max-width: 768px) {
-    /* Card adjustments */
-    .card {
-      width: 95%;
-      padding: 20px;
-      min-height: auto;
-    }
-    
-    /* Button adjustments */
-    .nav-buttons {
-      flex-direction: column;
-      gap: 10px;
-    }
-    
-    .nav-buttons .btn {
-      width: 100%;
-    }
-    
-    /* Form adjustments */
-    .form-group input,
-    .form-group textarea,
-    .form-group select,
-    .dropdown-list {
-      max-width: 100%;
-    }
-    
-    /* Admin layout adjustments */
-    .admin-layout {
-      flex-direction: column;
-    }
-    
-    .admin-sidebar {
-      width: 100%;
-      height: auto;
-      position: relative;
-      top: 0;
-      left: 0;
-      display: none;
-    }
-    
-    .admin-sidebar.open {
-      display: block;
-    }
-    
-    .mobile-toggle {
-      display: block;
-    }
-    
-    .header-actions {
-      display: none;
-    }
-    
-    .admin-header {
-      justify-content: space-between;
-    }
-    
-    .stats-grid {
-      grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
-    }
-    
-    .dashboard-row {
-      grid-template-columns: 1fr;
-    }
-    
-    /* Sidebar adjustments for mobile */
-    .admin-sidebar ul {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-    
-    .admin-sidebar li {
-      margin-bottom: 0;
-    }
-    
-    /* Typography adjustments */
-    h1 {
-      font-size: 2.5rem;
-    }
-    
-    h2 {
-      font-size: 2rem;
-    }
-    
-    h3 {
-      font-size: 1.75rem;
-    }
-    
-    h4 {
-      font-size: 1.5rem;
-    }
-    
-    h5 {
-      font-size: 1.25rem;
-    }
-  }
-  
-/* Add these to frontend/src/styles/responsive.css */
-@media (max-width: 768px) {
-  /* Customizable card width with some space on sides - adjust the percentage as needed */
+  /* Card adjustments */
   .card {
-    width: 95%; /* Adjust this value between 90-100% to control spacing */
+    width: 95%;
     max-width: none;
-    border-radius: 8px; /* Preserve some rounding */
     padding: 20px 15px;
-    margin: 0 auto; /* Auto margins for centering */
+    min-height: auto;
+    border-radius: 8px;
+    margin: 0 auto;
     box-sizing: border-box;
   }
   
-  /* Full width container with padding */
+  /* Container adjustments */
   .container {
     width: 100%;
     max-width: none;
-    padding: 0 8px; /* Small padding on sides */
+    padding: 0 8px;
     margin: 0;
     box-sizing: border-box;
   }
   
-  /* Place buttons side by side in the same row */
+  /* Button adjustments */
   .nav-buttons {
     display: flex;
-    flex-direction: row; /* Keep buttons in a row */
-    justify-content: space-between; /* Space between buttons */
+    flex-direction: row;
+    justify-content: space-between;
     width: 100%;
     margin-top: 15px;
+    gap: 10px;
   }
   
-  /* Style buttons to be equal width */
   .nav-buttons .btn {
     flex: 1;
     margin: 0 5px;
     min-width: 0;
   }
   
-  /* Add 'Progress:' label above progress bar on mobile */
+  /* Progress bar label */
   .progress-container::before {
     content: "Progress:";
     display: block;
@@ -142,15 +45,69 @@
     color: var(--text-950);
   }
   
-  /* Remove button order reversal - keeping original order */
-  /*.nav-buttons {
-    flex-direction: row-reverse;
-  }*/
-  
-  /* Ensure spacing between buttons */
-  .nav-buttons .btn {
-    margin: 0 5px;
+  /* Form adjustments */
+  .form-group input,
+  .form-group textarea,
+  .form-group select,
+  .dropdown-list {
+    max-width: 100%;
   }
+  
+  /* Admin layout adjustments */
+  .admin-layout {
+    flex-direction: column;
+  }
+  
+  .admin-sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    top: 0;
+    left: 0;
+    display: none;
+  }
+  
+  .admin-sidebar.open {
+    display: block;
+  }
+  
+  .mobile-toggle {
+    display: block;
+  }
+  
+  .header-actions {
+    display: none;
+  }
+  
+  .admin-header {
+    justify-content: space-between;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+  }
+  
+  .dashboard-row {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Sidebar adjustments for mobile */
+  .admin-sidebar ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .admin-sidebar li {
+    margin-bottom: 0;
+  }
+  
+  /* Typography adjustments */
+  h1 { font-size: 2.5rem; }
+  h2 { font-size: 2rem; }
+  h3 { font-size: 1.75rem; }
+  h4 { font-size: 1.5rem; }
+  h5 { font-size: 1.25rem; }
   
   /* Hide admin login button on mobile */
   .main-nav a[href="/login"] {
