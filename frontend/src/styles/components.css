@@ -182,8 +182,8 @@ body {
 
 /* Make the start review button more prominent */
 .btn {
-  background-color: #8b5a2b; /* Deeper brown color */
-  color: white; /* White text for maximum contrast */
+  background-color: var(--primary-color); 
+  color: white; 
   font-weight: 600;
   padding: 0.7rem 1.5rem;
   border-radius: 6px;
@@ -193,7 +193,7 @@ body {
 }
 
 .btn:hover {
-  background-color: #724923; /* Slightly darker on hover */
+  background-color: var(--primary-600); /* Slightly darker on hover */
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }

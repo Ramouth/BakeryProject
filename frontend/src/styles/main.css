@@ -15,6 +15,9 @@
 /* Import theme toggle styles */
 @import 'theme-toggle.css';
 
+/* Import notification styles */
+@import 'notification.css';
+
 /* Import admin styles */
 @import 'admin.css';
 

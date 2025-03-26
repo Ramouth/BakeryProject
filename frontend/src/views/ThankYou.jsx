@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useReview } from '../store/ReviewContext';
+import { useReview } from '../store/reviewContext';
+import { useNotification } from '../store/NotificationContext';
 import RatingBar from '../components/RatingComponent';
 
 const ThankYou = () => {
@@ -10,6 +11,7 @@ const ThankYou = () => {
     goToNextStep 
   } = useReview();
   
+  const { showSuccess, showError } = useNotification();
   const [feedback, setFeedback] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -28,6 +30,24 @@ const ThankYou = () => {
     
     return () => clearTimeout(timer);
   }, [resetReview, isSubmitting]);
+
+  const handleSubmit = () => {
+    setIsSubmitting(true);
+    
+    try {
+      // Show success notification
+      showSuccess("Thank you for your feedback!");
+      
+      // Go back to start
+      goToNextStep('Start');
+    } catch (error) {
+      // Show error notification
+      showError("Failed to submit feedback");
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   
   return (
     <div className="container">
@@ -67,7 +87,7 @@ const ThankYou = () => {
         <div className="nav-buttons" style={{ justifyContent: 'center', marginTop: '2rem' }}>
           <button 
             className="btn"
-            onClick={() => goToNextStep('Start')}
+            onClick={handleSubmit}
             disabled={isSubmitting}
           >
             {isSubmitting ? 'Submitting...' : 'Submit'}
