@@ -15,24 +15,24 @@ export const ReviewProvider = ({ children }) => {
   const [selectedBakery, setSelectedBakery] = useState(null);
   const [selectedPastry, setSelectedPastry] = useState(null);
   const [pastryRatings, setPastryRatings] = useState({
-    overall: 0,  // Start at 0 instead of 7
-    taste: 0,    // Start at 0 instead of 7
-    price: 0,    // Start at 0 instead of 7
-    presentation: 0, // Start at 0 instead of 7
+    overall: 0,  
+    taste: 0,    
+    price: 0,    
+    presentation: 0, 
     comments: ''
   });
   
   const [bakeryRatings, setBakeryRatings] = useState({
-    overall: 0,  // Start at 0 instead of 7
-    service: 0,  // Start at 0 instead of 7
-    price: 0,    // Start at 0 instead of 7
-    atmosphere: 0, // Start at 0 instead of 7
-    location: 0,   // Start at 0 instead of 7
-    selection: 0,  // Start at 0 instead of 7
+    overall: 0,  
+    service: 0,  
+    price: 0,    
+    atmosphere: 0, 
+    location: 0,   
+    selection: 0,  
     comments: ''
   });
   
-  const [experienceRating, setExperienceRating] = useState(0); // Start at 0 instead of 7
+  const [experienceRating, setExperienceRating] = useState(0); 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   
