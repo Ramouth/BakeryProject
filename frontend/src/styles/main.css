@@ -23,3 +23,6 @@
 
 /* Import responsive styles last to override other styles as needed */
 @import 'responsive.css';
+
+/* Import footer styles */
+@import 'footer.css';
