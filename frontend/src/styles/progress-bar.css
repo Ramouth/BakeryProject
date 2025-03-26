@@ -60,16 +60,16 @@
 .step-dot {
   width: 16px;
   height: 16px;
-  background-color: var(--primary-200); /* Match background */
+  background-color: var(--primary-200); 
   border-radius: 50%;
   transition: all 0.3s ease;
   position: relative;
-  margin-bottom: -10px; /* Pull dots down slightly */
+  margin-bottom: -10px; 
 }
 
 /* Active step styling */
 .step-indicator.active .step-dot {
-  background-color: var(--primary-color); 
+  background-color: var(--primary-600); 
 }
 
 /* Current step styling */
