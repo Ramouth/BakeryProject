@@ -5,7 +5,7 @@
   margin-top: 15px;
   margin-bottom: 15px;
   position: relative;
-  z-index: 50; /* Very high z-index to ensure it's above everything */
+  z-index: 50; 
   background-color: transparent;
 }
 
@@ -20,10 +20,10 @@
 .progress-bar-wrapper {
   position: relative;
   height: 10px;
-  background-color: #e0e0e0; /* Light grey background */
+  background-color: var(--primary-light); 
   border-radius: 10px;
   overflow: visible; /* Allow step indicators to be visible outside the bar */
-  margin: 30px 0 50px; /* Plenty of space above and below */
+  margin: 30px 0 50px; 
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -32,7 +32,7 @@
   top: 0;
   left: 0;
   height: 100%;
-  background-color: #8b5a2b; /* Match your button color */
+  background-color: var(--primary-600); 
   border-radius: 10px;
   transition: width 0.5s ease-in-out;
 }
@@ -58,35 +58,35 @@
 
 /* Style for the dots */
 .step-dot {
-  width: 24px;
-  height: 24px;
-  background-color: #e0e0e0; /* Match background */
+  width: 16px;
+  height: 16px;
+  background-color: var(--primary-200); /* Match background */
   border-radius: 50%;
-  border: 3px solid #f9f6f0; /* Match your app background */
   transition: all 0.3s ease;
   position: relative;
-  z-index: 2;
+  margin-bottom: -10px; /* Pull dots down slightly */
 }
 
 /* Active step styling */
 .step-indicator.active .step-dot {
-  background-color: #8b5a2b; /* Match button color */
+  background-color: var(--primary-600); 
 }
 
 /* Current step styling */
 .step-indicator.current .step-dot {
   box-shadow: 0 0 0 4px rgba(139, 90, 43, 0.25);
+  transform: scale(1.1);
 }
 
 /* Step labels */
 .step-label {
   position: absolute;
-  top: 30px; /* Position below the dot */
+  top: 30px; 
   font-size: 0.85rem;
-  color: #666;
+  color: var(--text-950);
   white-space: nowrap;
   text-align: center;
-  width: 100px; /* Give enough width */
+  width: 100px; 
   left: 50%;
   transform: translateX(-50%);
 }
@@ -109,7 +109,7 @@
 }
 
 /* Media query for smaller screens */
-@media (max-width: 768px) {
+@media (max-width: 500px) {
   .progress-bar-container {
     padding: 10px;
   }
@@ -126,7 +126,7 @@
   .step-label {
     font-size: 0.7rem;
     width: 70px;
-    display: none; /* Hide labels on smaller screens to avoid overlap */
+    display: none; 
   }
   
   .progress-bar-wrapper {
@@ -135,7 +135,7 @@
 }
 
 /* Extra small screens */
-@media (max-width: 576px) {
+@media (max-width: 350px) {
   .step-dot {
     width: 16px;
     height: 16px;
