@@ -4,6 +4,7 @@ import { UserProvider } from './store/UserContext';
 import { ReviewProvider } from './store/ReviewContext';
 import { NotificationProvider } from './store/NotificationContext';
 import NavBar from './components/NavBar';
+import Footer from './components/Footer';
 import AuthGuard from './components/AuthGuard';
 import ProgressTracker from './components/ProgressTracker';
 
@@ -19,6 +20,7 @@ const Login = lazy(() => import('./views/Login'));
 
 // Import CSS
 import './styles/main.css';
+import './styles/footer.css';
 
 // Loading component for Suspense fallback
 const Loading = () => (
@@ -81,6 +83,8 @@ function App() {
                   </Suspense>
                 </main>
               </div>
+              
+              <Footer />
             </div>
           </NotificationProvider>
         </ReviewProvider>
