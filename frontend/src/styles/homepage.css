@@ -1,119 +1,160 @@
-/* Homepage Styles */
-.home-banner {
+/* Updated Homepage Styles inspired by TripAdvisor */
+
+/* Hero section with search */
+.hero-section {
     text-align: center;
-    margin: 2rem auto 3rem;
+    margin: 2rem auto;
     padding: 2rem;
-    background-color: var(--primary-light);
-    border-radius: 8px;
     max-width: 900px;
   }
   
-  .home-banner h1 {
-    color: var(--primary-700);
+  .hero-section h1 {
     font-size: 2.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-950);
   }
   
-  .home-banner p {
-    font-size: 1.2rem;
-    color: var(--text);
+  /* Search container */
+  .search-container {
+    margin: 1.5rem auto;
+    max-width: 700px;
   }
   
-  /* Features section */
-  .features-section {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
-    margin: 3rem auto;
-    max-width: 900px;
+  .search-bar {
+    display: flex;
+    border-radius: 50px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   }
   
-  .feature-card {
-    background-color: var(--background);
-    border-radius: 8px;
-    padding: 1.5rem;
-    text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  .search-input {
+    flex: 1;
+    padding: 15px 20px;
+    font-size: 1rem;
+    border: none;
+    outline: none;
   }
   
-  .feature-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  .search-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0 25px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
   }
   
-  .feature-icon {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
+  .search-button:hover {
+    background-color: var(--primary-600);
   }
   
-  .feature-card h3 {
-    font-size: 1.3rem;
-    margin-bottom: 0.5rem;
-    color: var(--primary-700);
+  /* Category tabs */
+  .category-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 1.5rem 0;
+    flex-wrap: wrap;
   }
   
-  .feature-card p {
+  .category-tab {
+    padding: 8px 16px;
+    border-radius: 20px;
+    background-color: var(--background-100);
+    color: var(--text-800);
+    text-decoration: none;
     font-size: 0.9rem;
-    color: var(--text);
+    transition: all 0.2s ease;
   }
   
-  /* CTA Section */
-  .cta-section {
-    background-color: var(--primary-light);
-    text-align: center;
-    padding: 3rem 2rem;
+  .category-tab:hover {
+    background-color: var(--background-200);
+  }
+  
+  .category-tab.active {
+    background-color: var(--primary-color);
+    color: white;
+  }
+  
+  /* Promotional card */
+  .promo-card {
+    background-color: #022a4b;
+    background-image: url('/src/assets/promo-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    border-radius: 10px;
+    overflow: hidden;
     margin: 3rem auto;
-    border-radius: 8px;
     max-width: 900px;
+    height: 250px;
+    display: flex;
+    align-items: center;
   }
   
-  .cta-section h2 {
-    color: var(--primary-700);
+  .promo-content {
+    padding: 2rem;
+    max-width: 60%;
+  }
+  
+  .promo-content h2 {
+    font-size: 2rem;
     margin-bottom: 1rem;
-    font-size: 1.8rem;
+    color: white;
   }
   
-  .cta-section p {
-    margin-bottom: 2rem;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  
-  .start-review-btn {
+  .promo-content p {
+    margin-bottom: 1.5rem;
     font-size: 1.1rem;
-    padding: 0.8rem 2rem;
   }
   
-  /* Top Bakeries Section */
+  .promo-content .btn {
+    background-color: white;
+    color: #022a4b;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: 600;
+    display: inline-block;
+  }
+  
+  /* Top bakeries section */
   .top-bakeries {
     margin: 4rem auto;
     max-width: 900px;
+    text-align: center;
   }
   
   .top-bakeries h2 {
-    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-800);
+  }
+  
+  .top-bakeries > p {
+    color: var(--text-600);
     margin-bottom: 2rem;
-    color: var(--primary-700);
   }
   
   .bakery-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 1.5rem;
+    margin-top: 2rem;
   }
   
   .bakery-card {
-    background-color: var(--background);
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
+    background-color: white;
   }
   
   .bakery-card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
   }
   
   .bakery-image {
@@ -124,21 +165,16 @@
     justify-content: center;
   }
   
-  .placeholder-image {
-    color: var(--text-50);
-    font-weight: bold;
-  }
-  
   .bakery-card h3 {
     font-size: 1.1rem;
     margin: 1rem 1rem 0.5rem;
-    color: var(--primary-700);
+    color: var(--text-800);
   }
   
   .bakery-card p {
     font-size: 0.85rem;
     margin: 0 1rem 0.5rem;
-    color: var(--text);
+    color: var(--text-600);
   }
   
   .bakery-rating {
@@ -148,44 +184,42 @@
     margin: 0 1rem 1rem;
   }
   
-  /* About Section */
-  .about-section {
-    max-width: 800px;
-    margin: 4rem auto;
-    text-align: center;
-  }
-  
-  .about-section h2 {
-    color: var(--primary-700);
-    margin-bottom: 1.5rem;
-  }
-  
-  .about-section p {
-    margin-bottom: 1.5rem;
-    line-height: 1.6;
-  }
-  
-  /* Responsive adjustments */
+  /* Responsive styles */
   @media (max-width: 900px) {
-    .features-section {
+    .bakery-grid {
       grid-template-columns: repeat(2, 1fr);
     }
     
-    .bakery-grid {
-      grid-template-columns: repeat(2, 1fr);
+    .promo-content {
+      max-width: 100%;
     }
   }
   
   @media (max-width: 600px) {
-    .features-section {
-      grid-template-columns: 1fr;
+    .hero-section h1 {
+      font-size: 2rem;
     }
     
     .bakery-grid {
       grid-template-columns: 1fr;
     }
     
-    .home-banner h1 {
-      font-size: 2rem;
+    .search-bar {
+      flex-direction: column;
+      border-radius: 8px;
+    }
+    
+    .search-input {
+      border-bottom: 1px solid #eee;
+    }
+    
+    .search-button {
+      padding: 12px;
+    }
+    
+    .category-tabs {
+      overflow-x: auto;
+      justify-content: flex-start;
+      padding-bottom: 10px;
     }
   }
