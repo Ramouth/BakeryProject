@@ -16,8 +16,8 @@ const NavBar = () => {
         </div>
         
         <div className="nav-links">
-          <Link to="/" className="nav-link">Bakeries</Link>
-          <Link to="/" className="nav-link">Categories</Link>
+          <Link to="/" className="nav-link">Bakery Rankings</Link>
+          <Link to="/" className="nav-link">Product Rankings</Link>
         </div>
         
         <div className="header-actions">

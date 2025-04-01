@@ -1,52 +1,72 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useReview } from '../store/ReviewContext';
 
 const HomePage = () => {
   const { resetReview } = useReview();
+  const [searchTerm, setSearchTerm] = useState("");
   
   // Reset review state when homepage loads
   useEffect(() => {
     resetReview();
   }, [resetReview]);
 
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  // Handle search submission
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    // Implementation for search functionality would go here
+    console.log("Searching for:", searchTerm);
+  };
+
   return (
     <div className="container">
-      <div className="home-banner">
-        <h1>Discover Copenhagen's Best Bakeries</h1>
-        <p>Find the perfect pastry with CrumbCompass</p>
-      </div>
-      
-      <div className="features-section">
-        <div className="feature-card">
-          <div className="feature-icon">🥐</div>
-          <h3>Rate Pastries</h3>
-          <p>Share your experience with the best Danish pastries in town</p>
-        </div>
+      {/* Hero section with search bar */}
+      <div className="hero-section">
+        <h1>Denmark`s first ever bakery guide</h1>
         
-        <div className="feature-card">
-          <div className="feature-icon">🏠</div>
-          <h3>Review Bakeries</h3>
-          <p>Help others find cozy and delicious bakeries around Copenhagen</p>
+        <div className="search-container">
+          <form onSubmit={handleSearchSubmit}>
+            <div className="search-bar">
+              <input 
+                type="text" 
+                placeholder="Places to go, things to do, bakeries..." 
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="search-input"
+              />
+              <button type="submit" className="search-button">Search</button>
+            </div>
+          </form>
         </div>
-        
-        <div className="feature-card">
-          <div className="feature-icon">🔍</div>
-          <h3>Discover</h3>
-          <p>Find hidden gems and local favorites in your neighborhood</p>
+
+        <div className="category-tabs">
+          <Link to="/" className="category-tab active">All</Link>
+          <Link to="/" className="category-tab">Bakeries</Link>
+          <Link to="/" className="category-tab">Cafés</Link>
+          <Link to="/" className="category-tab">Pastries</Link>
+          <Link to="/" className="category-tab">Reviews</Link>
         </div>
       </div>
       
-      <div className="cta-section">
-        <h2>Ready to share your bakery experience?</h2>
-        <p>Your reviews help the Copenhagen community discover incredible pastries and bakeries</p>
-        <Link to="/bakery-selection" className="btn start-review-btn">
-          Start a Review
-        </Link>
+      {/* Promotional card section */}
+      <div className="promo-card">
+        <div className="promo-content">
+          <h2>Plan your bakery visit</h2>
+          <p>Get custom recommendations for all the things you're into with our product rankings.</p>
+          <Link to="/bakery-selection" className="btn">View rankings</Link>
+        </div>
       </div>
       
+      {/* Top bakeries section */}
       <div className="top-bakeries">
-        <h2>Top Bakeries in Copenhagen</h2>
+        <h2>Explore Copenhagens most cozy bakeries</h2>
+        <p>Top four ranked bakeries, currently:</p>
+        
         <div className="bakery-grid">
           <div className="bakery-card">
             <div className="bakery-image">
@@ -84,19 +104,6 @@ const HomePage = () => {
             <div className="bakery-rating">4.5 ★</div>
           </div>
         </div>
-      </div>
-      
-      <div className="about-section">
-        <h2>About CrumbCompass</h2>
-        <p>
-          CrumbCompass is a student project from DTU (Technical University of Denmark) designed to help locals and visitors 
-          navigate Copenhagen's vibrant bakery scene. Our platform allows users to discover, rate, and review the best pastries 
-          and bakeries throughout the city.
-        </p>
-        <p>
-          Whether you're searching for the perfect croissant, a traditional Danish pastry, or an artisanal sourdough, 
-          CrumbCompass is your guide to finding the most delicious baked goods Copenhagen has to offer.
-        </p>
       </div>
     </div>
   );
