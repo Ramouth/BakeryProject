@@ -21,6 +21,9 @@
 /* Import admin styles */
 @import 'admin.css';
 
+/* Import homepage styles */
+@import 'homepage.css';
+
 /* Import animations */
 @import 'animations.css';
 

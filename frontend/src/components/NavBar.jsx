@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useUser } from '../store/UserContext';
-import ThemeToggle from '../components/ThemeToggle';
+import ThemeToggle from './ThemeToggle';
 
 const NavBar = () => {
   const { currentUser, logout } = useUser();
@@ -9,32 +9,27 @@ const NavBar = () => {
   return (
     <header className="app-header">
       <div className="header-content">
-        <Link to="/" className="logo">
-          <h1>CrumbCompass</h1>
-          <p>Copenhagen Bakery Reviews</p>
-        </Link>
+        <div className="logo-section">
+          <Link to="/" className="logo">
+            <h1>CrumbCompass</h1>
+          </Link>
+        </div>
         
-        <nav className="main-nav">
-          <ul>
-            <li className="nav-item">
-              <ThemeToggle />
-            </li>
-            {currentUser ? (
-              <li className="nav-item">
-                {/* Use a div with the same class as Admin Login */}
-                <div className="admin-login-container">
-                  <Link to="/" onClick={logout} className="admin-login-button">Log Out</Link>
-                </div>
-              </li>
-            ) : (
-              <li className="nav-item">
-                <div className="admin-login-container">
-                  <Link to="/login" className="admin-login-button">Admin Login</Link>
-                </div>
-              </li>
-            )}
-          </ul>
-        </nav>
+        <div className="nav-links">
+          <Link to="/" className="nav-link">Bakeries</Link>
+          <Link to="/" className="nav-link">Categories</Link>
+        </div>
+        
+        <div className="header-actions">
+          
+          <Link to="/login" className="login-button">
+            Log in
+          </Link>
+          
+          <Link to="/bakery-selection" className="sign-up-button">
+            Sign up
+          </Link>
+        </div>
       </div>
     </header>
   );
