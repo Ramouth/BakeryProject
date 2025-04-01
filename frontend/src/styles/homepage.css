@@ -1,0 +1,191 @@
+/* Homepage Styles */
+.home-banner {
+    text-align: center;
+    margin: 2rem auto 3rem;
+    padding: 2rem;
+    background-color: var(--primary-light);
+    border-radius: 8px;
+    max-width: 900px;
+  }
+  
+  .home-banner h1 {
+    color: var(--primary-700);
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .home-banner p {
+    font-size: 1.2rem;
+    color: var(--text);
+  }
+  
+  /* Features section */
+  .features-section {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin: 3rem auto;
+    max-width: 900px;
+  }
+  
+  .feature-card {
+    background-color: var(--background);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .feature-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary-700);
+  }
+  
+  .feature-card p {
+    font-size: 0.9rem;
+    color: var(--text);
+  }
+  
+  /* CTA Section */
+  .cta-section {
+    background-color: var(--primary-light);
+    text-align: center;
+    padding: 3rem 2rem;
+    margin: 3rem auto;
+    border-radius: 8px;
+    max-width: 900px;
+  }
+  
+  .cta-section h2 {
+    color: var(--primary-700);
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+  }
+  
+  .cta-section p {
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .start-review-btn {
+    font-size: 1.1rem;
+    padding: 0.8rem 2rem;
+  }
+  
+  /* Top Bakeries Section */
+  .top-bakeries {
+    margin: 4rem auto;
+    max-width: 900px;
+  }
+  
+  .top-bakeries h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--primary-700);
+  }
+  
+  .bakery-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+  
+  .bakery-card {
+    background-color: var(--background);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .bakery-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .bakery-image {
+    height: 150px;
+    background-color: var(--primary-300);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .placeholder-image {
+    color: var(--text-50);
+    font-weight: bold;
+  }
+  
+  .bakery-card h3 {
+    font-size: 1.1rem;
+    margin: 1rem 1rem 0.5rem;
+    color: var(--primary-700);
+  }
+  
+  .bakery-card p {
+    font-size: 0.85rem;
+    margin: 0 1rem 0.5rem;
+    color: var(--text);
+  }
+  
+  .bakery-rating {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: var(--primary-600);
+    margin: 0 1rem 1rem;
+  }
+  
+  /* About Section */
+  .about-section {
+    max-width: 800px;
+    margin: 4rem auto;
+    text-align: center;
+  }
+  
+  .about-section h2 {
+    color: var(--primary-700);
+    margin-bottom: 1.5rem;
+  }
+  
+  .about-section p {
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 900px) {
+    .features-section {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .bakery-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .features-section {
+      grid-template-columns: 1fr;
+    }
+    
+    .bakery-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .home-banner h1 {
+      font-size: 2rem;
+    }
+  }

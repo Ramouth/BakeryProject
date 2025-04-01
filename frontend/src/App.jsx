@@ -9,6 +9,7 @@ import AuthGuard from './components/AuthGuard';
 import ProgressTracker from './components/ProgressTracker';
 
 // Lazy load views for code splitting and performance
+const HomePage = lazy(() => import('./views/Homepage'));
 const Start = lazy(() => import('./views/Start'));
 const BakerySelection = lazy(() => import('./views/BakerySelection'));
 const PastrySelection = lazy(() => import('./views/PastrySelection'));
@@ -21,6 +22,8 @@ const Login = lazy(() => import('./views/Login'));
 // Import CSS
 import './styles/main.css';
 import './styles/footer.css';
+import './styles/homepage.css';
+import './styles/header.css';
 
 // Loading component for Suspense fallback
 const Loading = () => (
@@ -54,17 +57,15 @@ function App() {
             <div className="app">
               <NavBar />
               
-              {/* Completely separate progress bar section */}
-              <div className="progress-bar-container">
-                <ProgressTracker />
-              </div>
+              
               
               {/* Add clear separation between progress bar and content */}
               <div className="content-section">
                 <main className="app-content">
                   <Suspense fallback={<Loading />}>
                     <Routes>
-                      <Route path="/" element={<Start />} />
+                      <Route path="/" element={<HomePage />} />
+                      <Route path="/start" element={<Start />} />
                       <Route path="/bakery-selection" element={<BakerySelection />} />
                       <Route path="/pastry-selection" element={<PastrySelection />} />
                       <Route path="/pastry-rating" element={<PastryRating />} />
