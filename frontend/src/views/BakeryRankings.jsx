@@ -289,9 +289,6 @@ const BakeryRankings = () => {
                       <strong>Must try:</strong> {bakery.topItem}
                     </div>
                   </div>
-                  <Link to={`/bakery/${bakery.id}`} className="view-details">
-                    View Details
-                  </Link>
                 </div>
               </div>
             ))}
