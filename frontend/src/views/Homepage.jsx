@@ -4,52 +4,97 @@ import { useReview } from '../store/ReviewContext';
 
 const HomePage = () => {
   const { resetReview } = useReview();
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchType, setSearchType] = useState('bakeries');
+  const [selectedZipCode, setSelectedZipCode] = useState('');
+  const [selectedPastryType, setSelectedPastryType] = useState('');
+  const [selectedRating, setSelectedRating] = useState('');
   
   // Reset review state when homepage loads
   useEffect(() => {
     resetReview();
   }, [resetReview]);
 
-  // Handle search input change
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
-
   // Handle search submission
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     // Implementation for search functionality would go here
-    console.log("Searching for:", searchTerm);
+    console.log("Searching for:", {
+      type: searchType,
+      zipCode: selectedZipCode,
+      pastryType: selectedPastryType,
+      rating: selectedRating
+    });
   };
 
   return (
     <div className="container">
-      {/* Hero section with search bar */}
+      {/* Hero section with search dropdown */}
       <div className="hero-section">
-        <h1>Denmark`s first ever bakery guide</h1>
+        <h1>Denmark's first ever bakery guide</h1>
         
         <div className="search-container">
-          <form onSubmit={handleSearchSubmit}>
-            <div className="search-bar">
-              <input 
-                type="text" 
-                placeholder="Places to go, things to do, bakeries..." 
-                value={searchTerm}
-                onChange={handleSearchChange}
-                className="search-input"
-              />
-              <button type="submit" className="search-button">Search</button>
+          <form onSubmit={handleSearchSubmit} className="search-dropdown-form">
+            <div className="search-type-selector">
+              <select 
+                value={searchType} 
+                onChange={(e) => setSearchType(e.target.value)}
+                className="search-dropdown"
+              >
+                <option value="bakeries">Find Bakeries</option>
+                <option value="pastries">Find Pastries</option>
+                <option value="reviews">Browse Reviews</option>
+                <option value="topRated">Top Rated</option>
+              </select>
             </div>
+            
+            <div className="search-filters">
+              {searchType === 'bakeries' && (
+                <select 
+                  value={selectedZipCode} 
+                  onChange={(e) => setSelectedZipCode(e.target.value)}
+                  className="search-dropdown"
+                >
+                  <option value="">All Copenhagen</option>
+                  <option value="1050">1050 - Inner City</option>
+                  <option value="1500">1500 - Vesterbro</option>
+                  <option value="2000">2000 - Frederiksberg</option>
+                  <option value="2100">2100 - Østerbro</option>
+                  <option value="2200">2200 - Nørrebro</option>
+                  <option value="2300">2300 - Amager</option>
+                </select>
+              )}
+              
+              {searchType === 'pastries' && (
+                <select 
+                  value={selectedPastryType} 
+                  onChange={(e) => setSelectedPastryType(e.target.value)}
+                  className="search-dropdown"
+                >
+                  <option value="">All Pastry Types</option>
+                  <option value="danish">Danish Pastry</option>
+                  <option value="bread">Bread</option>
+                  <option value="cake">Cakes</option>
+                  <option value="croissant">Croissants</option>
+                  <option value="cinnamon">Cinnamon Rolls</option>
+                </select>
+              )}
+              
+              {searchType === 'reviews' || searchType === 'topRated' ? (
+                <select 
+                  value={selectedRating} 
+                  onChange={(e) => setSelectedRating(e.target.value)}
+                  className="search-dropdown"
+                >
+                  <option value="">All Ratings</option>
+                  <option value="5">5+ Stars</option>
+                  <option value="4">4+ Stars</option>
+                  <option value="3">3+ Stars</option>
+                </select>
+              ) : null}
+            </div>
+            
+            <button type="submit" className="search-button">Search</button>
           </form>
-        </div>
-
-        <div className="category-tabs">
-          <Link to="/" className="category-tab active">All</Link>
-          <Link to="/" className="category-tab">Bakeries</Link>
-          <Link to="/" className="category-tab">Cafés</Link>
-          <Link to="/" className="category-tab">Pastries</Link>
-          <Link to="/" className="category-tab">Reviews</Link>
         </div>
       </div>
       

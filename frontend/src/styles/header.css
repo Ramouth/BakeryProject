@@ -1,11 +1,12 @@
 /* Header Styles */
 .app-header {
-    background-color: #bd8a42;
+    background-color: var(--background-100);
     position: sticky;
     top: 0;
     width: 100%;
     z-index: 1000;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid #e0e0e0;
   }
   
   .header-content {
@@ -25,7 +26,7 @@
   .logo h1 {
     font-size: 18px;
     font-weight: 700;
-    color: #fff;
+    color: var(--text-950);
     margin: 0;
     padding: 0;
   }
@@ -36,7 +37,7 @@
   }
   
   .nav-link {
-    color: #fff;
+    color: var(--text-950);
     text-decoration: none;
     font-size: 14px;
     font-weight: 500;
@@ -53,14 +54,9 @@
     gap: 15px;
   }
   
-  .search-icon {
-    color: #fff;
-    cursor: pointer;
-  }
-  
   .login-button {
     background-color: transparent;
-    color: #fff;
+    color: var(--text-950);
     border: none;
     padding: 5px 10px;
     font-size: 14px;
@@ -70,7 +66,7 @@
   
   .sign-up-button {
     background-color: #fff;
-    color: #bd8a42;
+    color: var(primary-500);
     border: none;
     border-radius: 4px;
     padding: 5px 10px;
