@@ -37,6 +37,32 @@
     overflow: hidden;
     position: relative;
     transition: var(--transition);
+    height: 180px;
+  }
+  
+  /* Top ranked styles */
+  .bakery-card:nth-child(1) {
+    background-color: rgba(255, 215, 0, 0.15); /* Gold */
+  }
+  
+  .bakery-card:nth-child(2) {
+    background-color: rgba(192, 192, 192, 0.15); /* Silver */
+  }
+  
+  .bakery-card:nth-child(3) {
+    background-color: rgba(205, 127, 50, 0.15); /* Bronze */
+  }
+  
+  .bakery-card:nth-child(1):hover {
+    background-color: rgba(255, 215, 0, 0.25);
+  }
+  
+  .bakery-card:nth-child(2):hover {
+    background-color: rgba(192, 192, 192, 0.25);
+  }
+  
+  .bakery-card:nth-child(3):hover {
+    background-color: rgba(205, 127, 50, 0.25);
   }
   
   .bakery-card:hover {
@@ -61,6 +87,22 @@
     z-index: 1;
   }
   
+  /* Top rank colors */
+  .bakery-card:nth-child(1) .bakery-rank {
+    background-color: #FFD700; /* Gold */
+    color: black;
+  }
+  
+  .bakery-card:nth-child(2) .bakery-rank {
+    background-color: #C0C0C0; /* Silver */
+    color: black;
+  }
+  
+  .bakery-card:nth-child(3) .bakery-rank {
+    background-color: #CD7F32; /* Bronze */
+    color: white;
+  }
+  
   .bakery-image {
     width: 180px;
     height: 180px;
@@ -79,7 +121,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--primary-300);
+    background-image: url('/src/assets/bageri.jpeg');
+    background-size: cover;
+    background-position: center;
     color: transparent;
   }
   
@@ -101,6 +145,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
   
   .bakery-details h3 {
@@ -155,27 +200,11 @@
     font-size: 0.9rem;
   }
   
-  .view-details {
-    align-self: flex-end;
-    background-color: var(--primary-600);
-    color: var(--text-50);
-    padding: 8px 16px;
-    border-radius: var(--border-radius);
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.9rem;
-    transition: var(--transition);
-  }
-  
-  .view-details:hover {
-    background-color: var(--primary-700);
-    color: var(--text-50);
-  }
-  
   /* Responsive Styles */
   @media (max-width: 768px) {
     .bakery-card {
       flex-direction: column;
+      height: auto;
     }
     
     .bakery-image {
@@ -192,12 +221,6 @@
       flex-direction: column;
       align-items: flex-start;
       gap: 0.5rem;
-    }
-    
-    .view-details {
-      align-self: center;
-      width: 100%;
-      text-align: center;
     }
   }
   

@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import '../styles/product-rankings.css';
 
-// MVVM pattern - ViewModel logic
 const useProductRankingsViewModel = () => {
   const { categoryId, productId } = useParams();
   const [productTypes, setProductTypes] = useState([]);
