@@ -1,23 +1,57 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import '../styles/product-rankings.css';
 
 // MVVM pattern - ViewModel logic
 const useProductRankingsViewModel = () => {
-  // State for the product rankings
+  const { categoryId, productId } = useParams();
   const [productTypes, setProductTypes] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [productRankings, setProductRankings] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Mock data for product categories
-  const mockProductTypes = [
+  const mockProductTypes = {
+    'danish': [
+      { id: 'kanelsnegl', name: 'Kanelsnegle' },
+      { id: 'spandauer', name: 'Spandauer' },
+      { id: 'tebirkes', name: 'Tebirkes' },
+      { id: 'romsnegl', name: 'Romsnegl' }
+    ],
+    'bread': [
+      { id: 'rugbrod', name: 'Rugbrød' },
+      { id: 'sourdough', name: 'Sourdough' },
+      { id: 'franskbrod', name: 'Franskbrød' },
+      { id: 'flutes', name: 'Flutes' }
+    ],
+    'croissants': [
+      { id: 'classic-croissant', name: 'Classic Croissant' },
+      { id: 'chocolate-croissant', name: 'Chocolate Croissant' },
+      { id: 'almond-croissant', name: 'Almond Croissant' },
+      { id: 'ham-cheese-croissant', name: 'Ham & Cheese Croissant' }
+    ],
+    'cakes': [
+      { id: 'hindbaersnitter', name: 'Hindbærsnitter' },
+      { id: 'drommekage', name: 'Drømmekage' },
+      { id: 'napoleon-hat', name: 'Napoleon\'s Hat' },
+      { id: 'othellolagkage', name: 'Othellolagkage' }
+    ],
+    'specialty': [
+      { id: 'cardamom-bun', name: 'Cardamom Bun' },
+      { id: 'chokoladebolle', name: 'Chokoladebolle' },
+      { id: 'wienerbrod', name: 'Wienerbrød' },
+      { id: 'brunsviger', name: 'Brunsviger' }
+    ]
+  };
+
+  // Default product types if no category is selected
+  const defaultProductTypes = [
     { id: 'kanelsnegl', name: 'Kanelsnegle' },
-    { id: 'croissant', name: 'Croissant' },
+    { id: 'classic-croissant', name: 'Classic Croissant' },
     { id: 'rugbrod', name: 'Rugbrød' },
+    { id: 'cardamom-bun', name: 'Cardamom Bun' },
     { id: 'tebirkes', name: 'Tebirkes' },
-    { id: 'cardamom', name: 'Cardamom Bun' },
-    { id: 'chokoladeboller', name: 'Chokoladeboller' },
+    { id: 'chokoladebolle', name: 'Chokoladebolle' },
   ];
 
   // Mock data for product rankings by type
@@ -72,138 +106,95 @@ const useProductRankingsViewModel = () => {
         rating: 4.5,
         reviewCount: 98,
         image: "kanelsnegl-5.jpg"
-      },
-      {
-        rank: 6,
-        bakeryName: "Bageriet Brød",
-        bakeryId: 6,
-        address: "Anker Heegaards Gade 2\n1572 København V",
-        topReview: "Traditional Danish kanelsnegl done right. Great texture and balanced sweetness.",
-        rating: 4.4,
-        reviewCount: 76,
-        image: "kanelsnegl-6.jpg"
-      },
-      {
-        rank: 7,
-        bakeryName: "Buka Bakery",
-        bakeryId: 8,
-        address: "Jagtvej 59\n2200 København N",
-        topReview: "Innovative take with cardamom hints. A modern twist that works beautifully.",
-        rating: 4.3,
-        reviewCount: 65,
-        image: "kanelsnegl-7.jpg"
-      },
-      {
-        rank: 8,
-        bakeryName: "Alice Copenhagen",
-        bakeryId: 9,
-        address: "Galionsvej 37\n1437 København K",
-        topReview: "A French-inspired take on the Danish classic. Lighter and more delicate than most.",
-        rating: 4.2,
-        reviewCount: 52,
-        image: "kanelsnegl-8.jpg"
-      },
-      {
-        rank: 9,
-        bakeryName: "Mirabelle",
-        bakeryId: 10,
-        address: "Guldbergsgade 29\n2200 København N",
-        topReview: "Organic ingredients shine in this less-sweet but satisfying kanelsnegl. Worth trying.",
-        rating: 4.1,
-        reviewCount: 48,
-        image: "kanelsnegl-9.jpg"
-      },
-      {
-        rank: 10,
-        bakeryName: "Juno The Bakery",
-        bakeryId: 1,
-        address: "Århusgade 48\n2100 København Ø",
-        topReview: "While they're famous for cardamom buns, their kanelsnegle are also creative and flavorful.",
-        rating: 4.0,
-        reviewCount: 39,
-        image: "kanelsnegl-10.jpg"
       }
     ],
-    'croissant': [
+    'spandauer': [
       {
         rank: 1,
-        bakeryName: "Hart Bageri",
-        bakeryId: 2,
-        zipCode: "1850",
-        description: "Perfect flaky layers with rich buttery flavor",
+        bakeryName: "Andersen Bakery",
+        bakeryId: 4,
+        address: "Thorvaldsensvej 2\n1871 Frederiksberg",
+        topReview: "Perfect Spandauer with creamy vanilla filling and crisp pastry. Simply the best.",
         rating: 4.9,
-        reviewCount: 192,
-        price: "45 kr",
-        image: "croissant-1.jpg"
+        reviewCount: 156,
+        image: "spandauer-1.jpg"
       },
       {
         rank: 2,
-        bakeryName: "Alice Copenhagen",
-        bakeryId: 9,
-        zipCode: "1437",
-        description: "Authentic French technique with perfect texture",
-        rating: 4.8,
-        reviewCount: 165,
-        price: "48 kr",
-        image: "croissant-2.jpg"
-      },
-      // Additional entries would be here
+        bakeryName: "Lagkagehuset",
+        bakeryId: 3,
+        address: "Torvegade 45\n1400 København K",
+        topReview: "Rich custard filling and perfectly laminated dough make this a standout.",
+        rating: 4.7,
+        reviewCount: 187,
+        image: "spandauer-2.jpg"
+      }
     ],
     'rugbrod': [
       {
         rank: 1,
         bakeryName: "Meyers Bageri",
         bakeryId: 5,
-        zipCode: "2200",
-        description: "Traditional Danish rye with perfect density",
+        address: "Jægersborggade 9\n2200 København N",
+        topReview: "Traditional Danish rye with perfect density and flavor balance. Worth every kroner.",
         rating: 4.8,
         reviewCount: 156,
-        price: "65 kr",
         image: "rugbrod-1.jpg"
       },
-      // Additional entries would be here
-    ],
-    'tebirkes': [
       {
-        rank: 1,
-        bakeryName: "Andersen Bakery",
-        bakeryId: 4,
-        zipCode: "1871",
-        description: "Flaky tebirkes with generous poppy seeds",
-        rating: 4.8,
-        reviewCount: 143,
-        price: "32 kr",
-        image: "tebirkes-1.jpg"
-      },
-      // Additional entries would be here
+        rank: 2,
+        bakeryName: "Hart Bageri",
+        bakeryId: 2,
+        address: "Gl. Kongevej 109\n1850 Frederiksberg",
+        topReview: "Exceptional sourdough rye with beautiful crust and moist interior.",
+        rating: 4.7,
+        reviewCount: 132,
+        image: "rugbrod-2.jpg"
+      }
     ],
-    'cardamom': [
+    'cardamom-bun': [
       {
         rank: 1,
         bakeryName: "Juno The Bakery",
         bakeryId: 1,
-        zipCode: "2100",
-        description: "Signature cardamom bun with perfect balance",
+        address: "Århusgade 48\n2100 København Ø",
+        topReview: "The signature cardamom bun is life-changing. Perfect balance of spice and sweetness.",
         rating: 4.9,
         reviewCount: 218,
-        price: "42 kr",
         image: "cardamom-1.jpg"
       },
-      // Additional entries would be here
+      {
+        rank: 2,
+        bakeryName: "Hart Bageri",
+        bakeryId: 2,
+        address: "Gl. Kongevej 109\n1850 Frederiksberg",
+        topReview: "Incredible interpretation with complex layers of flavor. A must-try.",
+        rating: 4.6,
+        reviewCount: 124,
+        image: "cardamom-2.jpg"
+      }
     ],
-    'chokoladeboller': [
+    'chokoladebolle': [
       {
         rank: 1,
         bakeryName: "Buka Bakery",
         bakeryId: 8,
-        zipCode: "2200",
-        description: "Rich chocolate roll with perfect texture",
+        address: "Jagtvej 59\n2200 København N",
+        topReview: "Rich chocolate roll with perfect texture. The chocolate quality is exceptional.",
         rating: 4.7,
         reviewCount: 87,
-        price: "40 kr",
         image: "chokoladeboller-1.jpg"
       },
-      // Additional entries would be here
+      {
+        rank: 2,
+        bakeryName: "Andersen Bakery",
+        bakeryId: 4,
+        address: "Thorvaldsensvej 2\n1871 Frederiksberg",
+        topReview: "Deep chocolate flavor with a perfect texture. Not too sweet, just right.",
+        rating: 4.6,
+        reviewCount: 92,
+        image: "chokoladeboller-2.jpg"
+      }
     ]
   };
 
@@ -213,30 +204,55 @@ const useProductRankingsViewModel = () => {
     setProductRankings(mockRankingsByProduct[productId] || []);
   };
 
-  // Simulate API fetch
+  // Set initial product types and selected product based on URL params
   useEffect(() => {
     setLoading(true);
-    // Simulate API delay
-    const timer = setTimeout(() => {
-      setProductTypes(mockProductTypes);
-      // Set default selected product to first in list
-      if (mockProductTypes.length > 0) {
-        const defaultProduct = mockProductTypes[0].id;
-        setSelectedProduct(defaultProduct);
-        setProductRankings(mockRankingsByProduct[defaultProduct] || []);
+    
+    setTimeout(() => {
+      // If we have a categoryId, filter product types by category
+      if (categoryId && mockProductTypes[categoryId]) {
+        setProductTypes(mockProductTypes[categoryId]);
+        
+        // If we also have a productId, set it as selected
+        if (productId && mockRankingsByProduct[productId]) {
+          setSelectedProduct(productId);
+          setProductRankings(mockRankingsByProduct[productId]);
+        } 
+        // Otherwise, select first product in category
+        else if (mockProductTypes[categoryId].length > 0) {
+          const firstProduct = mockProductTypes[categoryId][0].id;
+          setSelectedProduct(firstProduct);
+          setProductRankings(mockRankingsByProduct[firstProduct] || []);
+        }
+      } 
+      // If no category, use default product types
+      else {
+        setProductTypes(defaultProductTypes);
+        
+        // If we have a productId directly, use it
+        if (productId && mockRankingsByProduct[productId]) {
+          setSelectedProduct(productId);
+          setProductRankings(mockRankingsByProduct[productId]);
+        } 
+        // Otherwise, select first default product
+        else if (defaultProductTypes.length > 0) {
+          const firstProduct = defaultProductTypes[0].id;
+          setSelectedProduct(firstProduct);
+          setProductRankings(mockRankingsByProduct[firstProduct] || []);
+        }
       }
+      
       setLoading(false);
     }, 500);
-    
-    return () => clearTimeout(timer);
-  }, []);
+  }, [categoryId, productId]);
 
   return {
     productTypes,
     selectedProduct,
     productRankings,
     loading,
-    handleProductSelect
+    handleProductSelect,
+    categoryId
   };
 };
 
@@ -247,7 +263,8 @@ const ProductRankings = () => {
     selectedProduct,
     productRankings,
     loading,
-    handleProductSelect
+    handleProductSelect,
+    categoryId
   } = useProductRankingsViewModel();
 
   // Get the name of the currently selected product
@@ -257,11 +274,34 @@ const ProductRankings = () => {
     return found ? found.name : '';
   };
 
+  // Get category name from ID
+  const getCategoryName = () => {
+    if (!categoryId) return 'All Categories';
+    
+    const categoryNames = {
+      'danish': 'Danish Pastries',
+      'bread': 'Breads',
+      'croissants': 'Croissants',
+      'cakes': 'Cakes & Tarts',
+      'specialty': 'Specialty Items'
+    };
+    
+    return categoryNames[categoryId] || 'Products';
+  };
+
   return (
     <div className="container">
       <div className="product-rankings-header">
-        <h1>Product Rankings</h1>
+        <h1>Product Rankings: {getCategoryName()}</h1>
         <p>Compare the best places to get popular Danish pastries</p>
+        
+        {categoryId && (
+          <div className="category-nav">
+            <Link to="/product-categories" className="back-link">
+              ← Back to Categories
+            </Link>
+          </div>
+        )}
       </div>
       
       {/* Product Navigation */}
@@ -290,7 +330,7 @@ const ProductRankings = () => {
           
           {loading ? (
             <div className="loading-indicator">Loading rankings...</div>
-          ) : (
+          ) : productRankings.length > 0 ? (
             <div className="rankings-table">
               <div className="table-header">
                 <div className="col-rank">Rank</div>
@@ -319,11 +359,15 @@ const ProductRankings = () => {
                         <span className="rating-value">{item.rating}</span>
                         <span className="star">★</span>
                       </div>
-                      <span className="review-count">based on {item.reviewCount} user reviews</span>
+                      <span className="review-count">based on {item.reviewCount} reviews</span>
                     </div>
                   </div>
                 </div>
               ))}
+            </div>
+          ) : (
+            <div className="no-rankings-message">
+              <p>No rankings available for this product yet. Be the first to review it!</p>
             </div>
           )}
         </div>

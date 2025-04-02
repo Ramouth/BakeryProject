@@ -21,12 +21,14 @@ const Admin = lazy(() => import('./views/Admin'));
 const Login = lazy(() => import('./views/Login'));
 const BakeryRankings = lazy(() => import('./views/BakeryRankings')); 
 const ProductRankings = lazy(() => import('./views/ProductRankings'));
+const ProductCategorySelection = lazy(() => import('./views/ProductCategorySelection'));
 
 // Import CSS
 import './styles/main.css';
 import './styles/footer.css';
 import './styles/homepage.css';
 import './styles/header.css';
+import './styles/product-category.css';
 
 // Loading component for Suspense fallback
 const Loading = () => (
@@ -73,7 +75,10 @@ function App() {
                       <Route path="/thank-you" element={<ThankYou />} />
                       <Route path="/login" element={<Login />} />
                       <Route path="/bakery-rankings" element={<BakeryRankings />} />
+                      <Route path="/product-categories" element={<ProductCategorySelection />} />
                       <Route path="/product-rankings" element={<ProductRankings />} />
+                      <Route path="/product-rankings/:categoryId" element={<ProductRankings />} />
+                      <Route path="/product-rankings/:categoryId/:productId" element={<ProductRankings />} />
                       <Route 
                         path="/admin/*" 
                         element={
