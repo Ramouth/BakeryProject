@@ -1,0 +1,290 @@
+/* Product Rankings Styles */
+.product-rankings-header {
+    text-align: center;
+    margin: 2rem auto;
+    max-width: 800px;
+  }
+  
+  .product-rankings-header h1 {
+    color: var(--text-950);
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .product-rankings-header p {
+    color: var(--text-600);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+  }
+  
+  /* Product Navigation */
+  .product-navigation {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 2rem auto;
+    max-width: 900px;
+  }
+  
+  .product-nav-item {
+    background-color: var(--background-100);
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  
+  .product-nav-item:hover {
+    background-color: var(--primary-100);
+  }
+  
+  .product-nav-item.active {
+    background-color: var(--primary-600);
+    color: var(--text-50);
+    font-weight: 500;
+  }
+  
+  /* Ranking Section */
+  .ranking-section {
+    max-width: 1100px;
+    margin: 0 auto 3rem;
+  }
+  
+  .ranking-title {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  .ranking-title h2 {
+    font-size: 1.8rem;
+    color: var(--text-950);
+    font-weight: 600;
+  }
+  
+  /* Rankings Table */
+  .rankings-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--background-50);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  
+  .table-header {
+    display: flex;
+    background-color: var(--primary-600);
+    color: var(--text-50);
+    font-weight: 600;
+    padding: 12px 15px;
+    text-align: left;
+  }
+  
+  .table-row {
+    display: flex;
+    padding: 15px;
+    border-bottom: 1px solid var(--accent-200);
+    align-items: center;
+    transition: var(--transition);
+  }
+  
+  .table-row:last-child {
+    border-bottom: none;
+  }
+  
+  .table-row:hover {
+    background-color: var(--background-100);
+  }
+  
+  /* Top ranked rows */
+  .table-row.top-1 {
+    background-color: rgba(255, 215, 0, 0.15); /* Gold */
+  }
+  
+  .table-row.top-2 {
+    background-color: rgba(192, 192, 192, 0.15); /* Silver */
+  }
+  
+  .table-row.top-3 {
+    background-color: rgba(205, 127, 50, 0.15); /* Bronze */
+  }
+  
+  .table-row.top-1:hover {
+    background-color: rgba(255, 215, 0, 0.25);
+  }
+  
+  .table-row.top-2:hover {
+    background-color: rgba(192, 192, 192, 0.25);
+  }
+  
+  .table-row.top-3:hover {
+    background-color: rgba(205, 127, 50, 0.25);
+  }
+  
+  /* Table columns */
+  .col-rank {
+    width: 10%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .rank-number {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: var(--primary-600);
+    color: var(--text-50);
+    font-weight: bold;
+  }
+  
+  .top-1 .rank-number {
+    background-color: #FFD700; /* Gold */
+    color: black;
+  }
+  
+  .top-2 .rank-number {
+    background-color: #C0C0C0; /* Silver */
+    color: black;
+  }
+  
+  .top-3 .rank-number {
+    background-color: #CD7F32; /* Bronze */
+    color: white;
+  }
+  
+  .col-bakery {
+    width: 20%;
+    padding-right: 10px;
+  }
+  
+  .col-bakery a {
+    text-decoration: none;
+    color: var(--text-950);
+  }
+  
+  .col-bakery h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  
+  .bakery-address {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-600);
+    margin-top: 5px;
+    white-space: pre-line;
+  }
+  
+  .col-review {
+    width: 50%;
+    padding-right: 10px;
+  }
+  
+  .col-review p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-800);
+    font-style: italic;
+  }
+  
+  .col-rating {
+    width: 15%;
+    text-align: center;
+  }
+  
+  .rating-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .rating-with-star {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .rating-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary-600);
+  }
+  
+  .star {
+    font-size: 1.3rem;
+    color: var(--secondary-500);
+  }
+  
+  .review-count {
+    font-size: 0.8rem;
+    color: var(--text-600);
+    margin-top: 3px;
+    text-align: center;
+  }
+  
+  /* Loading indicator */
+  .loading-indicator {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-600);
+    font-style: italic;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 900px) {
+    .table-header {
+      display: none; /* Hide header on mobile */
+    }
+    
+    .table-row {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 15px;
+      position: relative;
+    }
+    
+    .col-rank {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+    }
+    
+    .col-bakery, .col-review, .col-rating {
+      width: 100%;
+      margin-bottom: 10px;
+      padding-right: 0;
+    }
+    
+    .col-rating {
+      text-align: left;
+    }
+    
+    .rating-display {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .rating-with-star {
+      justify-content: flex-start;
+    }
+    
+    /* Price column removed */
+    
+    .product-navigation {
+      flex-direction: column;
+      padding: 0 15px;
+    }
+    
+    .product-nav-item {
+      width: 100%;
+      text-align: center;
+    }
+  }

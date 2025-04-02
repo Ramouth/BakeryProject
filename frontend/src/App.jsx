@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { UserProvider } from './store/UserContext';
 import { ReviewProvider } from './store/ReviewContext';
@@ -7,7 +7,7 @@ import NavBar from './components/NavBar';
 import Footer from './components/Footer';
 import AuthGuard from './components/AuthGuard';
 import ProgressTracker from './components/ProgressTracker';
-import { useEffect } from 'react';
+
 
 // Lazy load views for code splitting and performance
 const HomePage = lazy(() => import('./views/Homepage'));
@@ -19,7 +19,8 @@ const BakeryRating = lazy(() => import('./views/BakeryRating'));
 const ThankYou = lazy(() => import('./views/ThankYou'));
 const Admin = lazy(() => import('./views/Admin'));
 const Login = lazy(() => import('./views/Login'));
-const BakeryRankings = lazy(() => import('./views/BakeryRankings')); // New page
+const BakeryRankings = lazy(() => import('./views/BakeryRankings')); 
+const ProductRankings = lazy(() => import('./views/ProductRankings'));
 
 // Import CSS
 import './styles/main.css';
@@ -71,7 +72,8 @@ function App() {
                       <Route path="/bakery-rating" element={<BakeryRating />} />
                       <Route path="/thank-you" element={<ThankYou />} />
                       <Route path="/login" element={<Login />} />
-                      <Route path="/bakery-rankings" element={<BakeryRankings />} /> {/* New route */}
+                      <Route path="/bakery-rankings" element={<BakeryRankings />} />
+                      <Route path="/product-rankings" element={<ProductRankings />} />
                       <Route 
                         path="/admin/*" 
                         element={
