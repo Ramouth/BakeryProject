@@ -1,0 +1,86 @@
+/* Search Dropdown Component Styles */
+.search-container {
+    margin: 1.5rem auto;
+    max-width: 800px;
+  }
+  
+  .search-dropdown-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    align-items: stretch;
+    background-color: var(--primary-100);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+  }
+  
+  .search-type-selector,
+  .search-filters {
+    flex: 1;
+    min-width: 150px;
+    display: flex;
+    gap: 10px;
+  }
+  
+  .search-filters {
+    flex-wrap: wrap;
+  }
+  
+  .search-dropdown {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--accent-300);
+    background-color: var(--background-50);
+    font-size: 14px;
+    color: var(--text-950);
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+    cursor: pointer;
+  }
+  
+  .search-dropdown:focus {
+    outline: none;
+    border-color: var(--primary-600);
+    box-shadow: 0 0 0 2px rgba(189, 138, 66, 0.2);
+  }
+  
+  .search-button {
+    padding: 12px 25px;
+    background-color: var(--primary-600);
+    color: var(--text-50);
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    min-width: 120px;
+  }
+  
+  .search-button:hover {
+    background-color: var(--primary-700);
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 768px) {
+    .search-filters {
+      flex-direction: column;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .search-dropdown-form {
+      flex-direction: column;
+      gap: 10px;
+      padding: 12px;
+    }
+    
+    .search-button {
+      width: 100%;
+    }
+  }

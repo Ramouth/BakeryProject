@@ -1,0 +1,217 @@
+/* Bakery Rankings Styles */
+.rankings-header {
+    text-align: center;
+    margin: 2rem auto;
+    max-width: 800px;
+  }
+  
+  .rankings-header h1 {
+    color: var(--text-950);
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .rankings-header p {
+    color: var(--text-600);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+  }
+  
+  /* Bakery List Styles */
+  .bakery-rankings {
+    max-width: 900px;
+    margin: 3rem auto;
+  }
+  
+  .bakery-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .bakery-card {
+    display: flex;
+    background-color: var(--background-50);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    position: relative;
+    transition: var(--transition);
+  }
+  
+  .bakery-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+  
+  .bakery-rank {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 30px;
+    height: 30px;
+    background-color: var(--primary-600);
+    color: var(--text-50);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+    z-index: 1;
+  }
+  
+  .bakery-image {
+    width: 180px;
+    height: 180px;
+    background-color: var(--primary-300);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0px; /* Hide text */
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .placeholder-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary-300);
+    color: transparent;
+  }
+  
+  .top-review-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: var(--primary-600);
+    color: var(--text-50);
+    padding: 5px 10px;
+    font-size: 10px;
+    font-weight: bold;
+    border-radius: 4px;
+    transform: rotate(0deg);
+  }
+  
+  .bakery-details {
+    padding: 1.2rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .bakery-details h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.4rem;
+    color: var(--text-950);
+  }
+  
+  .bakery-location {
+    color: var(--text-600);
+    font-size: 0.9rem;
+    margin-bottom: 0.8rem;
+  }
+  
+  .bakery-description {
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    flex-grow: 1;
+  }
+  
+  .bakery-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .bakery-rating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .rating-value {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: var(--primary-700);
+  }
+  
+  .stars {
+    color: var(--secondary-500);
+    font-size: 1rem;
+  }
+  
+  .review-count {
+    color: var(--text-600);
+    font-size: 0.85rem;
+  }
+  
+  .top-item {
+    font-size: 0.9rem;
+  }
+  
+  .view-details {
+    align-self: flex-end;
+    background-color: var(--primary-600);
+    color: var(--text-50);
+    padding: 8px 16px;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: var(--transition);
+  }
+  
+  .view-details:hover {
+    background-color: var(--primary-700);
+    color: var(--text-50);
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    .bakery-card {
+      flex-direction: column;
+    }
+    
+    .bakery-image {
+      width: 100%;
+      height: 140px;
+    }
+    
+    .bakery-rank {
+      top: 10px;
+      left: 10px;
+    }
+    
+    .bakery-meta {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    
+    .view-details {
+      align-self: center;
+      width: 100%;
+      text-align: center;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .rankings-header h1 {
+      font-size: 1.8rem;
+    }
+    
+    .search-dropdown-form {
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .search-button {
+      width: 100%;
+    }
+  }
