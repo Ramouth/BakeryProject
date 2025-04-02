@@ -16,12 +16,11 @@ const NavBar = () => {
         </div>
         
         <div className="nav-links">
-          <Link to="/" className="nav-link">Bakery Rankings</Link>
+          <Link to="/bakery-rankings" className="nav-link">Bakery Rankings</Link>
           <Link to="/" className="nav-link">Product Rankings</Link>
         </div>
         
         <div className="header-actions">
-          
           <Link to="/login" className="login-button">
             Log in
           </Link>
