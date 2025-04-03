@@ -3,6 +3,8 @@ from models import db, Contact
 from schemas import ContactSchema
 from services.user_service import UserService
 from utils.caching import cache
+from utils.validators import validate_contact_data
+from marshmallow import ValidationError
 
 # Create blueprint
 user_bp = Blueprint('contact', __name__)
@@ -34,31 +36,11 @@ def get_contact(contact_id):
 def create_contact():
     """Create a new contact"""
     try:
-        first_name = request.json.get('firstName')
-        last_name = request.json.get('lastName')
-        email = request.json.get('email')
-        
-        if not first_name or not last_name or not email:
-            return jsonify({"message": "First name, last name, and email are required"}), 400
-        
-        # Check if email already exists
-        existing_contact = Contact.query.filter_by(email=email).first()
-        if existing_contact:
-            return jsonify({"message": "Email already in use"}), 400
-        
-        # Validate input data against schema
-        errors = contact_schema.validate(request.json)
-        if errors:
-            return jsonify({"message": "Validation error", "errors": errors}), 400
-        
-        new_contact = user_service.create_contact(first_name, last_name, email)
-        
-        # Invalidate cache
-        cache.delete('view/get_contacts')
-        
+        validate_contact_data(contact_schema, request.json)
+        new_contact = user_service.create_contact(request.json)
         return jsonify({"message": "Contact created!", "contact": contact_schema.dump(new_contact)}), 201
-    except Exception as e:
-        return jsonify({"message": str(e)}), 400
+    except ValidationError as e:
+        return jsonify({"message": "Validation error", "errors": e.messages}), 400
 
 @user_bp.route('/update/<int:contact_id>', methods=['PATCH'])
 def update_contact(contact_id):

@@ -1,155 +1,34 @@
-from models import db, BakeryReview, PastryReview
-from sqlalchemy.exc import SQLAlchemyError
+from dal.review_dal import ReviewDAL
+from models import BakeryReview, PastryReview
 
 class ReviewService:
     """Service class for review-related business logic"""
-    
-    # === Bakery Review Methods ===
-    
-    def get_all_bakery_reviews(self):
-        """Get all bakery reviews ordered by creation date (newest first)"""
-        return BakeryReview.query.order_by(BakeryReview.created_at.desc()).all()
-    
-    def get_bakery_review_by_id(self, review_id):
-        """Get a specific bakery review by ID"""
-        return BakeryReview.query.get(review_id)
-    
-    def get_bakery_reviews_by_bakery(self, bakery_id):
-        """Get all reviews for a specific bakery"""
-        return BakeryReview.query.filter_by(bakery_id=bakery_id).order_by(BakeryReview.created_at.desc()).all()
-    
-    def get_bakery_reviews_by_contact(self, contact_id):
-        """Get all bakery reviews by a specific contact"""
-        return BakeryReview.query.filter_by(contact_id=contact_id).order_by(BakeryReview.created_at.desc()).all()
-    
-    def create_bakery_review(self, review, overall_rating, service_rating, price_rating, 
-                         atmosphere_rating, location_rating, contact_id=None, bakery_id=None):
-        """Create a new bakery review - contact_id now optional"""
-        try:
-            new_review = BakeryReview(
-                review=review,
-                overall_rating=overall_rating,
-                service_rating=service_rating,
-                price_rating=price_rating,
-                atmosphere_rating=atmosphere_rating,
-                location_rating=location_rating,
-                contact_id=contact_id,  # Can be None for anonymous reviews
-                bakery_id=bakery_id
-            )
-            db.session.add(new_review)
-            db.session.commit()
-            return new_review
-        except SQLAlchemyError as e:
-            db.session.rollback()
-            raise Exception(f"Database error: {str(e)}")
-    
-    def update_bakery_review(self, review_id, review, overall_rating, service_rating, price_rating, 
-                         atmosphere_rating, location_rating, contact_id=None, bakery_id=None):
-        """Update an existing bakery review - contact_id now optional"""
-        try:
-            bakery_review = self.get_bakery_review_by_id(review_id)
-            if not bakery_review:
-                raise Exception("Bakery review not found")
-                
-            bakery_review.review = review
-            bakery_review.overall_rating = overall_rating
-            bakery_review.service_rating = service_rating
-            bakery_review.price_rating = price_rating
-            bakery_review.atmosphere_rating = atmosphere_rating
-            bakery_review.location_rating = location_rating
-            bakery_review.contact_id = contact_id  # Can be None for anonymous reviews
-            bakery_review.bakery_id = bakery_id
-            
-            db.session.commit()
-            return bakery_review
-        except SQLAlchemyError as e:
-            db.session.rollback()
-            raise Exception(f"Database error: {str(e)}")
-    
-    def delete_bakery_review(self, review_id):
-        """Delete a bakery review"""
-        try:
-            bakery_review = self.get_bakery_review_by_id(review_id)
-            if not bakery_review:
-                raise Exception("Bakery review not found")
-                
-            db.session.delete(bakery_review)
-            db.session.commit()
-            return True
-        except SQLAlchemyError as e:
-            db.session.rollback()
-            raise Exception(f"Database error: {str(e)}")
-    
-    # === Pastry Review Methods ===
-    
-    def get_all_pastry_reviews(self):
-        """Get all pastry reviews ordered by creation date (newest first)"""
-        return PastryReview.query.order_by(PastryReview.created_at.desc()).all()
-    
-    def get_pastry_review_by_id(self, review_id):
-        """Get a specific pastry review by ID"""
-        return PastryReview.query.get(review_id)
-    
-    def get_pastry_reviews_by_pastry(self, pastry_id):
-        """Get all reviews for a specific pastry"""
-        return PastryReview.query.filter_by(pastry_id=pastry_id).order_by(PastryReview.created_at.desc()).all()
-    
-    def get_pastry_reviews_by_contact(self, contact_id):
-        """Get all pastry reviews by a specific contact"""
-        return PastryReview.query.filter_by(contact_id=contact_id).order_by(PastryReview.created_at.desc()).all()
-    
-    def create_pastry_review(self, review, overall_rating, taste_rating, price_rating, 
-                         presentation_rating, contact_id=None, pastry_id=None):
-        """Create a new pastry review - contact_id now optional"""
-        try:
-            new_review = PastryReview(
-                review=review,
-                overall_rating=overall_rating,
-                taste_rating=taste_rating,
-                price_rating=price_rating,
-                presentation_rating=presentation_rating,
-                contact_id=contact_id,  # Can be None for anonymous reviews
-                pastry_id=pastry_id
-            )
-            db.session.add(new_review)
-            db.session.commit()
-            return new_review
-        except SQLAlchemyError as e:
-            db.session.rollback()
-            raise Exception(f"Database error: {str(e)}")
-    
-    def update_pastry_review(self, review_id, review, overall_rating, taste_rating, price_rating, 
-                         presentation_rating, contact_id=None, pastry_id=None):
-        """Update an existing pastry review - contact_id now optional"""
-        try:
-            pastry_review = self.get_pastry_review_by_id(review_id)
-            if not pastry_review:
-                raise Exception("Pastry review not found")
-                
-            pastry_review.review = review
-            pastry_review.overall_rating = overall_rating
-            pastry_review.taste_rating = taste_rating
-            pastry_review.price_rating = price_rating
-            pastry_review.presentation_rating = presentation_rating
-            pastry_review.contact_id = contact_id  # Can be None for anonymous reviews
-            pastry_review.pastry_id = pastry_id
-            
-            db.session.commit()
-            return pastry_review
-        except SQLAlchemyError as e:
-            db.session.rollback()
-            raise Exception(f"Database error: {str(e)}")
-    
-    def delete_pastry_review(self, review_id):
-        """Delete a pastry review"""
-        try:
-            pastry_review = self.get_pastry_review_by_id(review_id)
-            if not pastry_review:
-                raise Exception("Pastry review not found")
-                
-            db.session.delete(pastry_review)
-            db.session.commit()
-            return True
-        except SQLAlchemyError as e:
-            db.session.rollback()
-            raise Exception(f"Database error: {str(e)}")
+
+    def __init__(self):
+        self.review_dal = ReviewDAL()
+
+    def get_all_reviews(self, model):
+        """Get all reviews for a given model"""
+        return self.review_dal.get_all_reviews(model)
+
+    def get_review_by_id(self, model, review_id):
+        """Get a specific review by ID for a given model"""
+        return self.review_dal.get_review_by_id(model, review_id)
+
+    def get_reviews_by_entity(self, model, entity_id_field, entity_id):
+        """Get all reviews for a specific entity (e.g., bakery or pastry)"""
+        return self.review_dal.get_reviews_by_entity(model, entity_id_field, entity_id)
+
+    def create_review(self, model, review_data):
+        """Create a new review for a given model"""
+        # Add validation logic here if needed
+        return self.review_dal.create_review(model, review_data)
+
+    def update_review(self, model, review_id, review_data):
+        """Update an existing review for a given model"""
+        # Add validation logic here if needed
+        return self.review_dal.update_review(model, review_id, review_data)
+
+    def delete_review(self, model, review_id):
+        """Delete a review for a given model"""
+        return self.review_dal.delete_review(model, review_id)
