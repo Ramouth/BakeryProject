@@ -18,12 +18,12 @@ class Product(db.Model):
     
     # Relationships
     bakery = relationship('Bakery', back_populates='pastries')
-    pastry_reviews = relationship('PastryReview', back_populates='pastry', cascade='all, delete-orphan')
+    product_reviews = relationship('productReview', back_populates='product', cascade='all, delete-orphan')
     
     # Indexes for faster queries
     __table_args__ = (
-        Index('idx_pastry_name', 'name'),
-        Index('idx_pastry_bakery_id', 'bakery_id'),
+        Index('idx_product_name', 'name'),
+        Index('idx_product_bakery_id', 'bakery_id'),
     )
     
     def __init__(self, name, bakery_id):
@@ -31,7 +31,7 @@ class Product(db.Model):
         self.bakery_id = bakery_id
     
     def __repr__(self):
-        return f'<Pastry {self.name}>'
+        return f'<product {self.name}>'
     
     def to_json(self):
         """Convert to JSON serializable dictionary"""

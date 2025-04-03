@@ -76,20 +76,20 @@ class UserDAL:
     @staticmethod
     def get_most_active_reviewers(limit=5):
         """Get most active reviewers by number of reviews"""
-        from models import BakeryReview, PastryReview
+        from models import BakeryReview, productReview
         
         # Count reviews per user across both review types
         result = db.session.query(
             Contact,
-            (func.count(BakeryReview.id) + func.count(PastryReview.id)).label('review_count')
+            (func.count(BakeryReview.id) + func.count(productReview.id)).label('review_count')
         ).outerjoin(
             BakeryReview, Contact.id == BakeryReview.contact_id
         ).outerjoin(
-            PastryReview, Contact.id == PastryReview.contact_id
+            productReview, Contact.id == productReview.contact_id
         ).group_by(
             Contact.id
         ).order_by(
-            func.count(BakeryReview.id) + func.count(PastryReview.id).desc()
+            func.count(BakeryReview.id) + func.count(productReview.id).desc()
         ).limit(limit).all()
         
         return result
