@@ -81,45 +81,45 @@ class BakeryReview(db.Model, BaseReview):
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }
 
-class PastryReview(db.Model, BaseReview):
-    """Pastry review model for storing pastry reviews"""
-    __tablename__ = 'pastry_review'
+class ProductReview(db.Model, BaseReview):
+    """Product review model for storing product reviews"""
+    __tablename__ = 'product_review'
     
     # Use declared_attr for foreign keys in mixins
     @declared_attr
-    def pastry_id(cls):
-        return Column(Integer, ForeignKey('pastry.id', ondelete='CASCADE'), nullable=False)
+    def product_id(cls):
+        return Column(Integer, ForeignKey('product.id', ondelete='CASCADE'), nullable=False)
     
     taste_rating = Column(Integer, nullable=False)
     price_rating = Column(Integer, nullable=False)
     presentation_rating = Column(Integer, nullable=False)
     
     # Relationships - optional contact
-    pastry = relationship('Pastry', back_populates='pastry_reviews')
-    contact = relationship('Contact', back_populates='pastry_reviews')
+    product = relationship('Product', back_populates='product_reviews')
+    contact = relationship('Contact', back_populates='product_reviews')
     
     # Indexes and constraints
     __table_args__ = (
-        CheckConstraint('overall_rating BETWEEN 1 AND 10', name='check_pastry_overall_rating'),
-        CheckConstraint('taste_rating BETWEEN 1 AND 10', name='check_pastry_taste_rating'),
-        CheckConstraint('price_rating BETWEEN 1 AND 10', name='check_pastry_price_rating'),
-        CheckConstraint('presentation_rating BETWEEN 1 AND 10', name='check_pastry_presentation_rating'),
-        Index('idx_pastry_review_pastry_id', 'pastry_id'),
-        Index('idx_pastry_review_contact_id', 'contact_id'),
+        CheckConstraint('overall_rating BETWEEN 1 AND 10', name='check_product_overall_rating'),
+        CheckConstraint('taste_rating BETWEEN 1 AND 10', name='check_product_taste_rating'),
+        CheckConstraint('price_rating BETWEEN 1 AND 10', name='check_product_price_rating'),
+        CheckConstraint('presentation_rating BETWEEN 1 AND 10', name='check_product_presentation_rating'),
+        Index('idx_product_review_product_id', 'product_id'),
+        Index('idx_product_review_contact_id', 'contact_id'),
     )
     
     def __init__(self, review, overall_rating, taste_rating, price_rating, 
-                 presentation_rating, contact_id, pastry_id):
+                 presentation_rating, contact_id, product_id):
         self.review = review
         self.overall_rating = overall_rating
         self.taste_rating = taste_rating
         self.price_rating = price_rating
         self.presentation_rating = presentation_rating
         self.contact_id = contact_id
-        self.pastry_id = pastry_id
+        self.product_id = product_id
     
     def __repr__(self):
-        return f'<PastryReview {self.id}>'
+        return f'<productReview {self.id}>'
     
     def to_json(self):
         """Convert to JSON serializable dictionary"""
@@ -132,8 +132,8 @@ class PastryReview(db.Model, BaseReview):
             'presentationRating': self.presentation_rating,
             'contactId': self.contact_id,
             'contact_name': f"{self.contact.first_name} {self.contact.last_name}" if self.contact else None,
-            'pastryId': self.pastry_id,
-            'pastry_name': self.pastry.name if self.pastry else None,
+            'productId': self.product_id,
+            'product_name': self.product.name if self.product else None,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }

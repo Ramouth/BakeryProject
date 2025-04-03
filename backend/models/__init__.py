@@ -5,6 +5,6 @@ db = SQLAlchemy()
 
 # Import models to make them available when importing the models package
 from .bakery import Bakery
-from .pastry import Pastry
+from .product import Product
 from .review import BakeryReview, PastryReview
 from .user import Contact
