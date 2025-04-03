@@ -3,15 +3,18 @@ from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Index
 from sqlalchemy.orm import relationship
 from . import db
 
-class Pastry(db.Model):
-    """Pastry model representing bakery products"""
-    __tablename__ = 'pastry'
+class Product(db.Model):
+    """Product model representing bakery products"""
+    __tablename__ = 'product'
     
     id = Column(Integer, primary_key=True)
     name = Column(String(80), nullable=False)
     bakery_id = Column(Integer, ForeignKey('bakery.id', ondelete='CASCADE'), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    category = Column(String(50), nullable=True)
+    image_url = Column(String(255), nullable=True)
     
     # Relationships
     bakery = relationship('Bakery', back_populates='pastries')
@@ -36,6 +39,8 @@ class Pastry(db.Model):
             'id': self.id,
             'name': self.name,
             'bakeryId': self.bakery_id,
+            'category': self.category,
+            'imageUrl': self.image_url,
             'bakery': {
                 'id': self.bakery.id,
                 'name': self.bakery.name
