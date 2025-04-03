@@ -47,7 +47,6 @@ const UserProfile = () => {
         bakeryReviews: 5,
         pastryReviews: 7,
         averageRating: 4.2,
-        favoriteCategory: 'Danish Pastries',
         mostRecentReview: '2024-04-01T12:00:00Z'
       };
       
@@ -313,12 +312,7 @@ const UserProfile = () => {
                     </div>
                   </div>
                   
-                  <div className="additional-stats">
-                    <div className="stat-row">
-                      <span className="stat-label">Favorite Category:</span>
-                      <span className="stat-detail">{userStats.favoriteCategory}</span>
-                    </div>
-                    
+                  <div className="additional-stats">                 
                     <div className="stat-row">
                       <span className="stat-label">Last Review:</span>
                       <span className="stat-detail">{formatDate(userStats.mostRecentReview)}</span>
