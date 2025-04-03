@@ -10,7 +10,7 @@ class productDAL:
     
     @staticmethod
     def get_all():
-        """Get all pastries ordered by name"""
+        """Get all products ordered by name"""
         return product.query.order_by(product.name).all()
     
     @staticmethod
@@ -20,12 +20,12 @@ class productDAL:
     
     @staticmethod
     def get_by_bakery(bakery_id):
-        """Get all pastries for a specific bakery"""
+        """Get all products for a specific bakery"""
         return product.query.filter_by(bakery_id=bakery_id).order_by(product.name).all()
     
     @staticmethod
     def search_by_name(search_term):
-        """Search pastries by name with partial matching"""
+        """Search products by name with partial matching"""
         return product.query.filter(product.name.ilike(f'%{search_term}%')).order_by(product.name).all()
     
     @staticmethod
@@ -61,7 +61,7 @@ class productDAL:
     
     @staticmethod
     def get_top_rated(limit=5):
-        """Get top rated pastries based on review score"""
+        """Get top rated products based on review score"""
         from models import productReview
         
         # Use SQLAlchemy aggregation to get average ratings

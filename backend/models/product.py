@@ -17,7 +17,7 @@ class Product(db.Model):
     image_url = Column(String(255), nullable=True)
     
     # Relationships
-    bakery = relationship('Bakery', back_populates='pastries')
+    bakery = relationship('Bakery', back_populates='products')
     product_reviews = relationship('productReview', back_populates='product', cascade='all, delete-orphan')
     
     # Indexes for faster queries
