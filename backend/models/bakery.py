@@ -14,6 +14,9 @@ class Bakery(db.Model):
     street_number = Column(String(10), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    image_url = Column(String(255), nullable=True)
+    website_url = Column(String(255), nullable=True)
     
     # Relationships with cascade deletes
     products = relationship('Product', back_populates='bakery', cascade='all, delete-orphan')  # Change 'product' to 'Product'
@@ -26,11 +29,13 @@ class Bakery(db.Model):
         Index('idx_bakery_street', 'street_name', 'street_number'),
     )
     
-    def __init__(self, name, zip_code, street_name, street_number):
+    def __init__(self, name, zip_code, street_name, street_number, image_url=None, website_url=None):
         self.name = name
         self.zip_code = zip_code
         self.street_name = street_name
         self.street_number = street_number
+        self.image_url = image_url
+        self.website_url = website_url
 
     
     def __repr__(self):
@@ -44,6 +49,8 @@ class Bakery(db.Model):
             'zipCode': self.zip_code,
             'streetName': self.street_name,
             'streetNumber': self.street_number,
+            'imageUrl': self.image_url,
+            'websiteUrl': self.website_url,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }

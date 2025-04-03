@@ -9,14 +9,17 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
         model = User
         load_instance = True
         include_fk = True
-        exclude = ("password_hash",)  # Never expose password hash
+        exclude = ("password_hash", "profile_picture", "is_admin")  # Exclude these fields from default mapping
     
     # Field customizations
     id = fields.Integer(dump_only=True)  # Read-only field
     username = fields.String(required=True, validate=validate.Length(min=1, max=80))
     email = fields.Email(required=True)
     password = fields.String(required=True, load_only=True)  # Only used when loading, never expose
-    profilePicture = fields.Integer(attribute='profile_picture', default=1)
+    
+    # Explicitly define these fields with attributes
+    profilePicture = fields.Integer(attribute='profile_picture', default=1, allow_none=True)
     isAdmin = fields.Boolean(attribute='is_admin', default=False)
+    
     created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)
