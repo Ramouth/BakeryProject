@@ -18,7 +18,7 @@ class Product(db.Model):
     
     # Relationships
     bakery = relationship('Bakery', back_populates='products')
-    product_reviews = relationship('productReview', back_populates='product', cascade='all, delete-orphan')
+    product_reviews = relationship('ProductReview', back_populates='product', cascade='all, delete-orphan')
     
     # Indexes for faster queries
     __table_args__ = (
