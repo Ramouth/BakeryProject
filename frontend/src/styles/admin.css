@@ -1,10 +1,11 @@
 /* Admin Section Styles */
 .admin-container {
   display: flex;
-  width: 65%;
+  width: 85%; /* Standardizing width to match homepage content */
   flex-direction: column;
   min-height: 100vh;
   background-color: var(--background-100);
+  margin: 0 auto;
 }
 
 .admin-header {

@@ -1,29 +1,32 @@
 .bakery-profile-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    background-color: var(--background-50);
-  }
-  
-  /* Header styling */
-  .bakery-header {
-    height: 300px;
-    width: 100%;
-    background-size: cover;
-    background-position: center;
-    position: relative;
-  }
-  
-  .bakery-header-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.4);
-    display: flex;
-    align-items: flex-end;
-    padding: 20px;
-  }
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: var(--background-50);
+  width: 85%; /* Standardizing width to match homepage content */
+}
+
+/* Header styling */
+.bakery-header {
+  height: 300px;
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.bakery-header-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: flex-end;
+  padding: 20px;
+}
+
+/* Rest of the CSS remains unchanged */
   
   .bakery-logo-container {
     background-color: white;

@@ -3,6 +3,7 @@
   max-width: var(--container-width);
   margin: 20px auto;
   padding: 20px;
+  width: 85%; /* Standardizing width to match homepage content */
 }
 
 /* App Layout - Updated to ensure footer stays at bottom */
@@ -19,6 +20,8 @@
   align-items: center;
   flex: 1; /* Takes available space */
   min-height: 400px; /* Minimum height */
+  width: 85%; /* Standardizing width */
+  margin: 0 auto; /* Center the content */
 }
 
 /* Form consistency */
