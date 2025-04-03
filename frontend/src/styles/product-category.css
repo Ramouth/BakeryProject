@@ -3,6 +3,7 @@
   text-align: center;
   margin: 2rem auto;
   max-width: 800px;
+  width: 85%; /* Standardizing width to match homepage content */
 }
 
 .category-selection-header h1 {
@@ -25,6 +26,7 @@
   margin: 0 auto;
   max-width: 1200px;
   padding: 0 1rem;
+  width: 85%; /* Standardizing width to match homepage content */
 }
 
 /* Category Card */

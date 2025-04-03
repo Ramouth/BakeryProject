@@ -1,6 +1,6 @@
 /* Profile Page Styles */
 .profile-container {
-  width: 85%;
+  width: 100%; /* Updated to match the homepage width */
   margin: 0 auto;
   background-color: var(--background-50);
   border-radius: var(--border-radius);
