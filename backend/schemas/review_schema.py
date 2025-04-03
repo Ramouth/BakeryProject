@@ -1,5 +1,6 @@
+# schemas/review_schema.py
 from . import ma
-from models.review import BakeryReview, PastryReview
+from models.review import BakeryReview, ProductReview
 from marshmallow import fields, validate, post_dump, post_load
 
 class BaseReviewSchema:
@@ -11,8 +12,8 @@ class BaseReviewSchema:
         required=True, 
         validate=validate.Range(min=1, max=10)
     )
-    # ContactId is now optional
-    contactId = fields.Integer(required=False)
+    # UserId is now optional
+    userId = fields.Integer(required=False)
     created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)
 
@@ -26,7 +27,7 @@ class BakeryReviewSchema(ma.SQLAlchemyAutoSchema):
         include_relationships = True
         # Exclude fields that will cause collisions
         exclude = (
-            "overall_rating", "contact_id", "bakery_id", 
+            "overall_rating", "user_id", "bakery_id", 
             "service_rating", "price_rating", 
             "atmosphere_rating", "location_rating"
         )
@@ -36,36 +37,41 @@ class BakeryReviewSchema(ma.SQLAlchemyAutoSchema):
     review = fields.String(required=True)
     overallRating = fields.Integer(
         required=True, 
-        validate=validate.Range(min=1, max=10)
+        validate=validate.Range(min=1, max=10),
+        attribute='overall_rating'
     )
-    # ContactId is now optional
-    contactId = fields.Integer(required=False)
+    # UserId is now optional
+    userId = fields.Integer(required=False, attribute='user_id')
     
     # Field customizations for specific bakery review fields
-    bakeryId = fields.Integer(required=True)
+    bakeryId = fields.Integer(required=True, attribute='bakery_id')
     serviceRating = fields.Integer(
         required=True, 
-        validate=validate.Range(min=1, max=10)
+        validate=validate.Range(min=1, max=10),
+        attribute='service_rating'
     )
     priceRating = fields.Integer(
         required=True, 
-        validate=validate.Range(min=1, max=10)
+        validate=validate.Range(min=1, max=10),
+        attribute='price_rating'
     )
     atmosphereRating = fields.Integer(
         required=True, 
-        validate=validate.Range(min=1, max=10)
+        validate=validate.Range(min=1, max=10),
+        attribute='atmosphere_rating'
     )
     locationRating = fields.Integer(
         required=True, 
-        validate=validate.Range(min=1, max=10)
+        validate=validate.Range(min=1, max=10),
+        attribute='location_rating'
     )
     
     # Nested fields for related objects
-    contact = fields.Nested('ContactSchema', only=('id', 'firstName', 'lastName'))
-    bakery = fields.Nested('BakerySchema', only=('id', 'name'))
+    user = fields.Nested('UserSchema', only=('id', 'username'), dump_only=True)
+    bakery = fields.Nested('BakerySchema', only=('id', 'name'), dump_only=True)
     
     # Virtual fields for easier frontend access
-    contact_name = fields.String(dump_only=True)
+    username = fields.String(dump_only=True)
     bakery_name = fields.String(dump_only=True)
     
     @post_dump
@@ -81,52 +87,59 @@ class BakeryReviewSchema(ma.SQLAlchemyAutoSchema):
             data['atmosphereRating'] = obj.atmosphere_rating
             data['locationRating'] = obj.location_rating
             
-            # Only add contactId if it exists
-            if obj.contact_id is not None:
-                data['contactId'] = obj.contact_id
+            # Only add userId if it exists
+            if obj.user_id is not None:
+                data['userId'] = obj.user_id
             
             # Add computed fields
-            if obj.contact:
-                data['contact_name'] = f"{obj.contact.first_name} {obj.contact.last_name}"
+            if obj.user:
+                data['username'] = obj.user.username
             if obj.bakery:
                 data['bakery_name'] = obj.bakery.name
         return data
     
     @post_load
     def map_fields(self, data, **kwargs):
-        """Map schema fields to model attributes"""
-        # Create a dictionary for model initialization
-        model_data = {
-            'review': data.get('review'),
-            'overall_rating': data.get('overallRating'),
-            'bakery_id': data.get('bakeryId'),
-            'service_rating': data.get('serviceRating'),
-            'price_rating': data.get('priceRating'),
-            'atmosphere_rating': data.get('atmosphereRating'),
-            'location_rating': data.get('locationRating')
-        }
+        """Map camelCase API fields to snake_case model attributes"""
+        result = {}
         
-        # Only include contact_id if provided
-        if 'contactId' in data:
-            model_data['contact_id'] = data.get('contactId')
+        # Map standard fields
+        if 'review' in data:
+            result['review'] = data['review']
+        if 'overallRating' in data:
+            result['overall_rating'] = data['overallRating']
+        if 'userId' in data:
+            result['user_id'] = data['userId']
+        if 'bakeryId' in data:
+            result['bakery_id'] = data['bakeryId']
+        
+        # Map rating fields
+        if 'serviceRating' in data:
+            result['service_rating'] = data['serviceRating']
+        if 'priceRating' in data:
+            result['price_rating'] = data['priceRating']
+        if 'atmosphereRating' in data:
+            result['atmosphere_rating'] = data['atmosphereRating']
+        if 'locationRating' in data:
+            result['location_rating'] = data['locationRating']
             
-        # For updates, pass the existing instance
+        # For updates, pass the existing instance id
         if 'id' in data:
-            model_data['id'] = data['id']
+            result['id'] = data['id']
             
-        return model_data
+        return result
 
-class PastryReviewSchema(ma.SQLAlchemyAutoSchema):
-    """Schema for serializing and deserializing PastryReview objects"""
+class ProductReviewSchema(ma.SQLAlchemyAutoSchema):
+    """Schema for serializing and deserializing ProductReview objects"""
     
     class Meta:
-        model = PastryReview
+        model = ProductReview
         load_instance = True
         include_fk = True
         include_relationships = True
         # Exclude fields that will cause collisions
         exclude = (
-            "overall_rating", "contact_id", "pastry_id", 
+            "overall_rating", "user_id", "product_id", 
             "taste_rating", "price_rating", "presentation_rating"
         )
     
@@ -135,33 +148,37 @@ class PastryReviewSchema(ma.SQLAlchemyAutoSchema):
     review = fields.String(required=True)
     overallRating = fields.Integer(
         required=True, 
-        validate=validate.Range(min=1, max=10)
+        validate=validate.Range(min=1, max=10),
+        attribute='overall_rating'
     )
-    # ContactId is now optional
-    contactId = fields.Integer(required=False)
+    # UserId is now optional
+    userId = fields.Integer(required=False, attribute='user_id')
     
-    # Field customizations for specific pastry review fields
-    pastryId = fields.Integer(required=True)
+    # Field customizations for specific product review fields
+    productId = fields.Integer(required=True, attribute='product_id')
     tasteRating = fields.Integer(
         required=True, 
-        validate=validate.Range(min=1, max=10)
+        validate=validate.Range(min=1, max=10),
+        attribute='taste_rating'
     )
     priceRating = fields.Integer(
         required=True, 
-        validate=validate.Range(min=1, max=10)
+        validate=validate.Range(min=1, max=10),
+        attribute='price_rating'
     )
     presentationRating = fields.Integer(
         required=True, 
-        validate=validate.Range(min=1, max=10)
+        validate=validate.Range(min=1, max=10),
+        attribute='presentation_rating'
     )
     
     # Nested fields for related objects
-    contact = fields.Nested('ContactSchema', only=('id', 'firstName', 'lastName'))
-    pastry = fields.Nested('PastrySchema', only=('id', 'name'))
+    user = fields.Nested('UserSchema', only=('id', 'username'), dump_only=True)
+    product = fields.Nested('ProductSchema', only=('id', 'name'), dump_only=True)
     
     # Virtual fields for easier frontend access
-    contact_name = fields.String(dump_only=True)
-    pastry_name = fields.String(dump_only=True)
+    username = fields.String(dump_only=True)
+    product_name = fields.String(dump_only=True)
     
     @post_dump
     def add_computed_fields(self, data, **kwargs):
@@ -170,41 +187,47 @@ class PastryReviewSchema(ma.SQLAlchemyAutoSchema):
         if obj:
             # Map model attributes to schema fields
             data['overallRating'] = obj.overall_rating
-            data['pastryId'] = obj.pastry_id
+            data['productId'] = obj.product_id
             data['tasteRating'] = obj.taste_rating
             data['priceRating'] = obj.price_rating
             data['presentationRating'] = obj.presentation_rating
             
-            # Only add contactId if it exists
-            if obj.contact_id is not None:
-                data['contactId'] = obj.contact_id
+            # Only add userId if it exists
+            if obj.user_id is not None:
+                data['userId'] = obj.user_id
             
             # Add computed fields
-            if obj.contact:
-                data['contact_name'] = f"{obj.contact.first_name} {obj.contact.last_name}"
-            if obj.pastry:
-                data['pastry_name'] = obj.pastry.name
+            if obj.user:
+                data['username'] = obj.user.username
+            if obj.product:
+                data['product_name'] = obj.product.name
         return data
     
     @post_load
     def map_fields(self, data, **kwargs):
-        """Map schema fields to model attributes"""
-        # Create a dictionary for model initialization
-        model_data = {
-            'review': data.get('review'),
-            'overall_rating': data.get('overallRating'),
-            'pastry_id': data.get('pastryId'),
-            'taste_rating': data.get('tasteRating'),
-            'price_rating': data.get('priceRating'),
-            'presentation_rating': data.get('presentationRating')
-        }
+        """Map camelCase API fields to snake_case model attributes"""
+        result = {}
         
-        # Only include contact_id if provided
-        if 'contactId' in data:
-            model_data['contact_id'] = data.get('contactId')
+        # Map standard fields
+        if 'review' in data:
+            result['review'] = data['review']
+        if 'overallRating' in data:
+            result['overall_rating'] = data['overallRating']
+        if 'userId' in data:
+            result['user_id'] = data['userId']
+        if 'productId' in data:
+            result['product_id'] = data['productId']
+        
+        # Map rating fields
+        if 'tasteRating' in data:
+            result['taste_rating'] = data['tasteRating']
+        if 'priceRating' in data:
+            result['price_rating'] = data['priceRating']
+        if 'presentationRating' in data:
+            result['presentation_rating'] = data['presentationRating']
             
-        # For updates, pass the existing instance
+        # For updates, pass the existing instance id
         if 'id' in data:
-            model_data['id'] = data['id']
+            result['id'] = data['id']
             
-        return model_data
+        return result

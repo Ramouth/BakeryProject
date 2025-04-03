@@ -1,31 +1,22 @@
 from . import ma
-from models.user import Contact
+from models.user import User
 from marshmallow import fields, validate
 
-class ContactSchema(ma.SQLAlchemyAutoSchema):
-    """Schema for serializing and deserializing Contact objects"""
+class UserSchema(ma.SQLAlchemyAutoSchema):
+    """Schema for serializing and deserializing User objects"""
     
     class Meta:
-        model = Contact
+        model = User
         load_instance = True
         include_fk = True
-        include_relationships = True
-        # Exclude the model fields that conflict with our custom fields
-        exclude = ("first_name", "last_name", "is_admin")
-
-    # Field customizations (mapping to database fields)
+        exclude = ("password_hash",)  # Never expose password hash
+    
+    # Field customizations
     id = fields.Integer(dump_only=True)  # Read-only field
-    firstName = fields.String(
-        required=True, 
-        validate=validate.Length(min=1, max=80),
-        attribute='first_name'  # Maps to DB column `first_name`
-    )
-    lastName = fields.String(
-        required=True, 
-        validate=validate.Length(min=1, max=80),
-        attribute='last_name'  # Maps to DB column `last_name`
-    )
+    username = fields.String(required=True, validate=validate.Length(min=1, max=80))
     email = fields.Email(required=True)
+    password = fields.String(required=True, load_only=True)  # Only used when loading, never expose
+    profilePicture = fields.Integer(attribute='profile_picture', default=1)
     isAdmin = fields.Boolean(attribute='is_admin', default=False)
     created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)
