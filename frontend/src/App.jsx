@@ -7,6 +7,7 @@ import NavBar from './components/NavBar';
 import Footer from './components/Footer';
 import AuthGuard from './components/AuthGuard';
 import ProgressTracker from './components/ProgressTracker';
+import BakeryProfile from './views/BakeryProfile';
 
 
 // Lazy load views for code splitting and performance
@@ -79,6 +80,7 @@ function App() {
                       <Route path="/product-rankings" element={<ProductRankings />} />
                       <Route path="/product-rankings/:categoryId" element={<ProductRankings />} />
                       <Route path="/product-rankings/:categoryId/:productId" element={<ProductRankings />} />
+                      <Route path="/bakery/:bakeryId" element={<BakeryProfile />} />
                       <Route 
                         path="/admin/*" 
                         element={
