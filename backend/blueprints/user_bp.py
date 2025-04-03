@@ -1,112 +1,143 @@
 from flask import Blueprint, request, jsonify
-from models import db, Contact
-from schemas import ContactSchema
+from models import db, User
+from schemas import UserSchema
 from services.user_service import UserService
 from utils.caching import cache
 
 # Create blueprint
-user_bp = Blueprint('contact', __name__)
+user_bp = Blueprint('user', __name__)
 
 # Initialize schemas
-contact_schema = ContactSchema()
-contacts_schema = ContactSchema(many=True)
+user_schema = UserSchema()
+users_schema = UserSchema(many=True)
 
 # Initialize service
 user_service = UserService()
 
 @user_bp.route('/', methods=['GET'])
 @cache.cached(timeout=60)  # Cache for 60 seconds
-def get_contacts():
-    """Get all contacts"""
-    contacts = user_service.get_all_contacts()
-    return jsonify({"contacts": contacts_schema.dump(contacts)})
+def get_users():
+    """Get all users"""
+    users = user_service.get_all_users()
+    return jsonify({"users": users_schema.dump(users)})
 
-@user_bp.route('/<int:contact_id>', methods=['GET'])
+@user_bp.route('/<int:user_id>', methods=['GET'])
 @cache.cached(timeout=60)  # Cache for 60 seconds
-def get_contact(contact_id):
-    """Get a specific contact by ID"""
-    contact = user_service.get_contact_by_id(contact_id)
-    if not contact:
-        return jsonify({"message": "Contact not found"}), 404
-    return jsonify(contact_schema.dump(contact))
+def get_user(user_id):
+    """Get a specific user by ID"""
+    user = user_service.get_user_by_id(user_id)
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+    return jsonify(user_schema.dump(user))
+
+@user_bp.route('/search', methods=['GET'])
+def search_users():
+    """Search users by username or email"""
+    search_term = request.args.get('q')
+    if not search_term:
+        return jsonify({"message": "Search term is required"}), 400
+        
+    users = user_service.search_users(search_term)
+    return jsonify({"users": users_schema.dump(users)})
 
 @user_bp.route('/create', methods=['POST'])
-def create_contact():
-    """Create a new contact"""
+def create_user():
+    """Create a new user"""
     try:
-        first_name = request.json.get('firstName')
-        last_name = request.json.get('lastName')
-        email = request.json.get('email')
+        data = request.json
         
-        if not first_name or not last_name or not email:
-            return jsonify({"message": "First name, last name, and email are required"}), 400
+        # Check required fields
+        if not data.get('username') or not data.get('email') or not data.get('password'):
+            return jsonify({"message": "Username, email, and password are required"}), 400
         
-        # Check if email already exists
-        existing_contact = Contact.query.filter_by(email=email).first()
-        if existing_contact:
-            return jsonify({"message": "Email already in use"}), 400
-        
-        # Validate input data against schema
-        errors = contact_schema.validate(request.json)
+        # Validate against schema
+        errors = user_schema.validate(data)
         if errors:
             return jsonify({"message": "Validation error", "errors": errors}), 400
         
-        new_contact = user_service.create_contact(first_name, last_name, email)
+        # Create user through service
+        user = user_service.create_user(
+            username=data['username'],
+            email=data['email'],
+            password=data['password'],
+            profile_picture=data.get('profilePicture', 1),
+            is_admin=data.get('isAdmin', False)
+        )
         
         # Invalidate cache
-        cache.delete('view/get_contacts')
+        cache.delete('view/get_users')
         
-        return jsonify({"message": "Contact created!", "contact": contact_schema.dump(new_contact)}), 201
+        return jsonify({"message": "User created!", "user": user_schema.dump(user)}), 201
     except Exception as e:
         return jsonify({"message": str(e)}), 400
 
-@user_bp.route('/update/<int:contact_id>', methods=['PATCH'])
-def update_contact(contact_id):
-    """Update a contact"""
+@user_bp.route('/update/<int:user_id>', methods=['PATCH'])
+def update_user(user_id):
+    """Update a user"""
     try:
-        contact = user_service.get_contact_by_id(contact_id)
-        if not contact:
-            return jsonify({"message": "Contact not found"}), 404
+        user = user_service.get_user_by_id(user_id)
+        if not user:
+            return jsonify({"message": "User not found"}), 404
         
         data = request.json
-        first_name = data.get('firstName', contact.first_name)
-        last_name = data.get('lastName', contact.last_name)
-        email = data.get('email', contact.email)
         
-        # Validate input data
-        if not first_name or not last_name or not email:
-            return jsonify({"message": "First name, last name, and email cannot be empty"}), 400
-        
-        # Check if email already exists and belongs to a different contact
-        if email != contact.email:
-            existing_contact = Contact.query.filter_by(email=email).first()
-            if existing_contact and existing_contact.id != contact_id:
-                return jsonify({"message": "Email already in use"}), 400
-        
-        updated_contact = user_service.update_contact(contact_id, first_name, last_name, email)
+        # Update user through service
+        updated_user = user_service.update_user(
+            user_id=user_id,
+            username=data.get('username'),
+            email=data.get('email'),
+            profile_picture=data.get('profilePicture'),
+            is_admin=data.get('isAdmin')
+        )
         
         # Invalidate cache
-        cache.delete('view/get_contacts')
-        cache.delete(f'view/get_contact_{contact_id}')
+        cache.delete('view/get_users')
+        cache.delete(f'view/get_user_{user_id}')
         
-        return jsonify({"message": "Contact updated.", "contact": contact_schema.dump(updated_contact)}), 200
+        return jsonify({"message": "User updated.", "user": user_schema.dump(updated_user)}), 200
     except Exception as e:
         return jsonify({"message": str(e)}), 400
 
-@user_bp.route('/delete/<int:contact_id>', methods=['DELETE'])
-def delete_contact(contact_id):
-    """Delete a contact"""
+@user_bp.route('/delete/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    """Delete a user"""
     try:
-        contact = user_service.get_contact_by_id(contact_id)
-        if not contact:
-            return jsonify({"message": "Contact not found"}), 404
+        user = user_service.get_user_by_id(user_id)
+        if not user:
+            return jsonify({"message": "User not found"}), 404
         
-        user_service.delete_contact(contact_id)
+        # Delete user
+        user_service.delete_user(user_id)
         
         # Invalidate cache
-        cache.delete('view/get_contacts')
-        cache.delete(f'view/get_contact_{contact_id}')
+        cache.delete('view/get_users')
+        cache.delete(f'view/get_user_{user_id}')
         
-        return jsonify({"message": "Contact deleted!"}), 200
+        return jsonify({"message": "User deleted!"}), 200
+    except Exception as e:
+        return jsonify({"message": str(e)}), 400
+
+@user_bp.route('/change-password/<int:user_id>', methods=['POST'])
+def change_password(user_id):
+    """Change a user's password"""
+    try:
+        user = user_service.get_user_by_id(user_id)
+        if not user:
+            return jsonify({"message": "User not found"}), 404
+            
+        data = request.json
+        
+        # Check required fields
+        if not data.get('currentPassword') or not data.get('newPassword'):
+            return jsonify({"message": "Current password and new password are required"}), 400
+            
+        # Update password through service
+        success = user_service.update_password(
+            user_id=user_id,
+            current_password=data['currentPassword'],
+            new_password=data['newPassword']
+        )
+        
+        return jsonify({"message": "Password changed successfully"}), 200
     except Exception as e:
         return jsonify({"message": str(e)}), 400

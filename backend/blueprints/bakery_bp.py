@@ -44,14 +44,28 @@ def create_bakery():
         if errors:
             return jsonify({"message": "Validation error", "errors": errors}), 400
             
-        # Create bakery
+        # Extract required fields
         name = data.get('name')
         zip_code = data.get('zipCode')
         
         if not name or not zip_code:
             return jsonify({"message": "Name and zip code are required"}), 400
         
-        new_bakery = bakery_service.create_bakery(name, zip_code)
+        # Extract optional fields
+        street_name = data.get('streetName')
+        street_number = data.get('streetNumber')
+        image_url = data.get('imageUrl')
+        website_url = data.get('websiteUrl')
+        
+        # Create bakery
+        new_bakery = bakery_service.create_bakery(
+            name=name, 
+            zip_code=zip_code,
+            street_name=street_name,
+            street_number=street_number,
+            image_url=image_url,
+            website_url=website_url
+        )
         
         # Invalidate cache
         cache.delete_memoized(get_bakeries)
@@ -82,12 +96,24 @@ def update_bakery(bakery_id):
         # Extract and validate data
         name = data.get('name', bakery.name)
         zip_code = data.get('zipCode', bakery.zip_code)
+        street_name = data.get('streetName', bakery.street_name)
+        street_number = data.get('streetNumber', bakery.street_number)
+        image_url = data.get('imageUrl', bakery.image_url)
+        website_url = data.get('websiteUrl', bakery.website_url)
         
         if not name or not zip_code:
             return jsonify({"message": "Name and zip code cannot be empty"}), 400
         
         # Update bakery
-        updated_bakery = bakery_service.update_bakery(bakery_id, name, zip_code)
+        updated_bakery = bakery_service.update_bakery(
+            bakery_id=bakery_id,
+            name=name,
+            zip_code=zip_code,
+            street_name=street_name,
+            street_number=street_number,
+            image_url=image_url,
+            website_url=website_url
+        )
         
         # Invalidate cache
         cache.delete_memoized(get_bakeries)
@@ -151,19 +177,19 @@ def get_bakery_stats(bakery_id):
     except Exception as e:
         return jsonify({"message": str(e)}), 404
 
-@bakery_bp.route('/<int:bakery_id>/pastries', methods=['GET'])
+@bakery_bp.route('/<int:bakery_id>/products', methods=['GET'])
 @cache.cached(timeout=60)
-def get_bakery_pastries(bakery_id):
-    """Get all pastries for a specific bakery"""
-    from services.pastry_service import PastryService
-    from schemas import PastrySchema
+def get_bakery_products(bakery_id):
+    """Get all products for a specific bakery"""
+    from services.product_service import ProductService
+    from schemas import ProductSchema
     
-    pastry_service = PastryService()
-    pastries_schema = PastrySchema(many=True)
+    product_service = ProductService()
+    products_schema = ProductSchema(many=True)
     
     bakery = bakery_service.get_bakery_by_id(bakery_id)
     if not bakery:
         return jsonify({"message": "Bakery not found"}), 404
         
-    pastries = pastry_service.get_pastries_by_bakery(bakery_id)
-    return jsonify({"pastries": pastries_schema.dump(pastries)})
+    products = product_service.get_products_by_bakery(bakery_id)
+    return jsonify({"products": products_schema.dump(products)})
