@@ -75,6 +75,80 @@
     font-weight: 500;
   }
   
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .login-button {
+    background-color: transparent;
+    color: var(--text-950);
+    border: none;
+    padding: 5px 10px;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  
+  .sign-up-button {
+    background-color: #fff;
+    color: var(--primary-500);
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-size: 14px;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .review-button {
+    display: flex;
+    align-items: center;
+    background-color: var(--primary-600);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 14px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+  }
+  
+  .review-button:hover {
+    background-color: var(--primary-700);
+    color: #fff;
+  }
+  
+  .review-button .plus-icon {
+    font-size: 16px;
+    font-weight: bold;
+    margin-right: 8px;
+  }
+  
+  .review-button .separator {
+    height: 16px;
+    width: 1px;
+    background-color: rgba(255, 255, 255, 0.5);
+    margin-right: 8px;
+  }
+  
+  .profile-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-950);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+  }
+  
+  .profile-icon:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
   /* Responsive styling */
   @media (max-width: 768px) {
     .nav-links {
