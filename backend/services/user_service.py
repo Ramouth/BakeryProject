@@ -1,90 +1,58 @@
-from models import db, Contact
+from dal.user_dal import UserDAL
 from sqlalchemy.exc import SQLAlchemyError
 
 class UserService:
     """Service class for user-related business logic"""
     
+    def __init__(self):
+        self.user_dal = UserDAL()
+
     def get_all_contacts(self):
         """Get all contacts ordered by name"""
-        return Contact.query.order_by(Contact.last_name, Contact.first_name).all()
+        return self.user_dal.get_all()
     
     def get_contact_by_id(self, contact_id):
         """Get a specific contact by ID"""
-        return Contact.query.get(contact_id)
+        return self.user_dal.get_by_id(contact_id)
     
     def get_contact_by_email(self, email):
         """Get a contact by email address"""
-        return Contact.query.filter_by(email=email).first()
+        return self.user_dal.get_by_email(email)
     
     def search_contacts(self, search_term):
         """Search contacts by name or email"""
-        return Contact.query.filter(
-            (Contact.first_name.ilike(f'%{search_term}%')) |
-            (Contact.last_name.ilike(f'%{search_term}%')) |
-            (Contact.email.ilike(f'%{search_term}%'))
-        ).order_by(Contact.last_name, Contact.first_name).all()
+        return self.user_dal.search(search_term)
     
-    def create_contact(self, first_name, last_name, email, is_admin=False):
+    def create_contact(self, contact_data):
         """Create a new contact"""
-        try:
-            # Check if email already exists
-            existing_contact = self.get_contact_by_email(email)
-            if existing_contact:
-                raise Exception("Email already in use")
-                
-            contact = Contact(
-                first_name=first_name,
-                last_name=last_name,
-                email=email,
-                is_admin=is_admin
-            )
-            db.session.add(contact)
-            db.session.commit()
-            return contact
-        except SQLAlchemyError as e:
-            db.session.rollback()
-            raise Exception(f"Database error: {str(e)}")
+        # Check if email already exists
+        existing_contact = self.get_contact_by_email(contact_data['email'])
+        if existing_contact:
+            raise Exception("Email already in use")
+        
+        return self.user_dal.create(contact_data)
     
-    def update_contact(self, contact_id, first_name, last_name, email, is_admin=None):
+    def update_contact(self, contact_id, contact_data):
         """Update an existing contact"""
-        try:
-            contact = self.get_contact_by_id(contact_id)
-            if not contact:
-                raise Exception("Contact not found")
-            
-            # Check if email already exists and belongs to a different contact
-            if email != contact.email:
-                existing_contact = self.get_contact_by_email(email)
-                if existing_contact and existing_contact.id != contact_id:
-                    raise Exception("Email already in use")
-            
-            contact.first_name = first_name
-            contact.last_name = last_name
-            contact.email = email
-            
-            # Only update is_admin if explicitly provided
-            if is_admin is not None:
-                contact.is_admin = is_admin
-                
-            db.session.commit()
-            return contact
-        except SQLAlchemyError as e:
-            db.session.rollback()
-            raise Exception(f"Database error: {str(e)}")
+        contact = self.get_contact_by_id(contact_id)
+        if not contact:
+            raise Exception("Contact not found")
+        
+        # Check if email already exists and belongs to a different contact
+        if 'email' in contact_data and contact_data['email'] != contact.email:
+            existing_contact = self.get_contact_by_email(contact_data['email'])
+            if existing_contact and existing_contact.id != contact_id:
+                raise Exception("Email already in use")
+        
+        return self.user_dal.update(contact_id, contact_data)
     
     def delete_contact(self, contact_id):
         """Delete a contact"""
-        try:
-            contact = self.get_contact_by_id(contact_id)
-            if not contact:
-                raise Exception("Contact not found")
-                
-            db.session.delete(contact)
-            db.session.commit()
-            return True
-        except SQLAlchemyError as e:
-            db.session.rollback()
-            raise Exception(f"Database error: {str(e)}")
+        contact = self.get_contact_by_id(contact_id)
+        if not contact:
+            raise Exception("Contact not found")
+        
+        return self.user_dal.delete(contact_id)
     
     def get_contact_stats(self, contact_id):
         """Get statistics for a contact including review counts"""
@@ -93,7 +61,7 @@ class UserService:
         contact = self.get_contact_by_id(contact_id)
         if not contact:
             raise Exception("Contact not found")
-            
+        
         # Get review counts
         bakery_review_count = BakeryReview.query.filter_by(contact_id=contact_id).count()
         pastry_review_count = PastryReview.query.filter_by(contact_id=contact_id).count()
