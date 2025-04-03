@@ -21,10 +21,17 @@ class BakeryService:
         """Search bakeries by name using case-insensitive partial matching"""
         return Bakery.query.filter(Bakery.name.ilike(f'%{search_term}%')).order_by(Bakery.name).all()
     
-    def create_bakery(self, name, zip_code):
+    def create_bakery(self, name, zip_code, street_name=None, street_number=None, image_url=None, website_url=None):
         """Create a new bakery with transaction support"""
         try:
-            bakery = Bakery(name=name, zip_code=zip_code)
+            bakery = Bakery(
+                name=name, 
+                zip_code=zip_code, 
+                street_name=street_name, 
+                street_number=street_number, 
+                image_url=image_url, 
+                website_url=website_url
+            )
             db.session.add(bakery)
             db.session.commit()
             return bakery
@@ -32,7 +39,7 @@ class BakeryService:
             db.session.rollback()
             raise Exception(f"Database error: {str(e)}")
     
-    def update_bakery(self, bakery_id, name, zip_code):
+    def update_bakery(self, bakery_id, name, zip_code, street_name=None, street_number=None, image_url=None, website_url=None):
         """Update an existing bakery with transaction support"""
         try:
             bakery = self.get_bakery_by_id(bakery_id)
@@ -41,6 +48,11 @@ class BakeryService:
                 
             bakery.name = name
             bakery.zip_code = zip_code
+            bakery.street_name = street_name
+            bakery.street_number = street_number
+            bakery.image_url = image_url
+            bakery.website_url = website_url
+            
             db.session.commit()
             return bakery
         except SQLAlchemyError as e:
@@ -75,6 +87,10 @@ class BakeryService:
                 "id": bakery.id,
                 "name": bakery.name,
                 "zipCode": bakery.zip_code,
+                "streetName": bakery.street_name,
+                "streetNumber": bakery.street_number,
+                "imageUrl": bakery.image_url,
+                "websiteUrl": bakery.website_url,
                 "review_count": 0,
                 "average_rating": 0,
                 "ratings": {
@@ -98,6 +114,10 @@ class BakeryService:
             "id": bakery.id,
             "name": bakery.name,
             "zipCode": bakery.zip_code,
+            "streetName": bakery.street_name,
+            "streetNumber": bakery.street_number,
+            "imageUrl": bakery.image_url,
+            "websiteUrl": bakery.website_url,
             "review_count": review_count,
             "average_rating": round(avg_overall, 1),
             "ratings": {
