@@ -16,7 +16,7 @@ class Bakery(db.Model):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relationships with cascade deletes
-    pastries = relationship('Pastry', back_populates='bakery', cascade='all, delete-orphan')
+    pastries = relationship('product', back_populates='bakery', cascade='all, delete-orphan')
     bakery_reviews = relationship('BakeryReview', back_populates='bakery', cascade='all, delete-orphan')
     
     # Indexes for faster queries

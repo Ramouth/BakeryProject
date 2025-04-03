@@ -24,7 +24,7 @@ This project follows the MVVM (Model-View-ViewModel) architecture pattern and is
 ## Features
 
 - Bakery management (create, read, update, delete)
-- Pastry management linked to bakeries
+- product management linked to bakeries
 - Reviews for both bakeries and pastries
 - User authentication and authorization
 - Admin dashboard for data management
@@ -120,11 +120,11 @@ npm run dev
 
 ### Pastries
 - GET `/pastries` - Get all pastries
-- GET `/pastries/:id` - Get pastry by ID
+- GET `/pastries/:id` - Get product by ID
 - GET `/pastries/bakery/:bakeryId` - Get pastries by bakery
-- POST `/pastries/create` - Create a pastry
-- PATCH `/pastries/update/:id` - Update a pastry
-- DELETE `/pastries/delete/:id` - Delete a pastry
+- POST `/pastries/create` - Create a product
+- PATCH `/pastries/update/:id` - Update a product
+- DELETE `/pastries/delete/:id` - Delete a product
 
 ### Reviews
 - GET `/bakeryreviews` - Get all bakery reviews
@@ -133,11 +133,11 @@ npm run dev
 - PATCH `/bakeryreviews/update/:id` - Update a bakery review
 - DELETE `/bakeryreviews/delete/:id` - Delete a bakery review
 
-- GET `/pastryreviews` - Get all pastry reviews
-- GET `/pastryreviews/pastry/:pastryId` - Get reviews by pastry
-- POST `/pastryreviews/create` - Create a pastry review
-- PATCH `/pastryreviews/update/:id` - Update a pastry review
-- DELETE `/pastryreviews/delete/:id` - Delete a pastry review
+- GET `/productreviews` - Get all product reviews
+- GET `/productreviews/product/:productId` - Get reviews by product
+- POST `/productreviews/create` - Create a product review
+- PATCH `/productreviews/update/:id` - Update a product review
+- DELETE `/productreviews/delete/:id` - Delete a product review
 
 ### Contacts
 - GET `/contacts` - Get all contacts/users
