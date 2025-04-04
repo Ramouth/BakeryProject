@@ -25,6 +25,12 @@ review_service = ReviewService()
 def get_bakery_reviews():
     """Get all bakery reviews with related user and bakery information"""
     try:
+        reviews = BakeryReview.query.all()
+
+        for review in reviews:
+            if review.user_id == '':
+                review.user_id = None
+
         # Use joined load to efficiently fetch related data
         reviews = BakeryReview.query.options(
             joinedload(BakeryReview.user),
@@ -38,14 +44,9 @@ def get_bakery_reviews():
             "bakeryReviews": result,
             "total_count": len(result)
         }), 200
-    
     except Exception as e:
-        # Log the full error details
-        print(f"Error in get_bakery_reviews: {str(e)}")
-        print(f"Full error traceback:", traceback.format_exc())
-        
         return jsonify({
-            "message": f"Failed to fetch bakery reviews: {str(e)}",
+            "message": f"Error fetching bakery reviews: {str(e)}",
             "bakeryReviews": []
         }), 500
 
