@@ -4,9 +4,12 @@ import Modal from './Modal';
 import Button from './Button';
 import RatingBar from './RatingComponent';
 import { useNotification } from '../store/NotificationContext';
+import { useUser } from '../store/UserContext';
+import apiClient from '../services/api';
 
 const ReviewModal = ({ isOpen, onClose }) => {
   const { showSuccess, showError } = useNotification();
+  const { currentUser } = useUser();
   
   // State for form inputs and UI control
   const [reviewType, setReviewType] = useState('bakery'); // 'bakery' or 'product'
@@ -15,6 +18,7 @@ const ReviewModal = ({ isOpen, onClose }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Review form data
   const [overallRating, setOverallRating] = useState(0);
@@ -54,10 +58,11 @@ const ReviewModal = ({ isOpen, onClose }) => {
       presentation: 0
     });
     setComments('');
+    setIsSubmitting(false);
   };
 
   // Handle bakery/product search
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (searchTerm.trim().length < 2) {
       showError("Please enter at least 2 characters to search");
       return;
@@ -66,33 +71,33 @@ const ReviewModal = ({ isOpen, onClose }) => {
     setIsSearching(true);
     setHasSearched(true);
     
-    // Mock API call to search bakeries or products
-    setTimeout(() => {
-      let mockResults = [];
-      
+    try {
+      let endpoint = '';
       if (reviewType === 'bakery') {
-        // These would come from your actual API
-        mockResults = [
-          { id: 1, name: "Juno The Bakery", location: "Århusgade 48, 2100 København Ø" },
-          { id: 2, name: "Hart Bageri", location: "Gl. Kongevej 109, 1850 Frederiksberg" },
-          { id: 3, name: "Lagkagehuset", location: "Torvegade 45, 1400 København K" }
-        ];
+        endpoint = `/bakeries/search?q=${encodeURIComponent(searchTerm)}`;
       } else {
-        mockResults = [
-          { id: 1, name: "Kanelsnegl", bakery: "Lagkagehuset" },
-          { id: 2, name: "Tebirkes", bakery: "Andersen Bakery" },
-          { id: 3, name: "Cardamom Bun", bakery: "Juno The Bakery" }
-        ];
+        endpoint = `/products/search?q=${encodeURIComponent(searchTerm)}`;
       }
       
-      // Filter results based on search term
-      const filteredResults = mockResults.filter(item => 
-        item.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      const response = await apiClient.get(endpoint);
+      console.log('Search response:', response);
       
-      setSearchResults(filteredResults);
+      // Handle response data based on the review type
+      let results = [];
+      if (reviewType === 'bakery') {
+        results = response.bakeries || [];
+      } else {
+        results = response.products || [];
+      }
+      
+      setSearchResults(results);
+    } catch (error) {
+      console.error('Search error:', error);
+      showError(`Error searching for ${reviewType === 'bakery' ? 'bakeries' : 'products'}`);
+      setSearchResults([]);
+    } finally {
       setIsSearching(false);
-    }, 500);
+    }
   };
 
   // Handle rating changes
@@ -108,7 +113,7 @@ const ReviewModal = ({ isOpen, onClose }) => {
   };
   
   // Submit the review
-  const handleSubmitReview = () => {
+  const handleSubmitReview = async () => {
     if (!selectedItem) {
       showError(`Please select a ${reviewType} to review`);
       return;
@@ -119,34 +124,54 @@ const ReviewModal = ({ isOpen, onClose }) => {
       return;
     }
     
-    // In a real implementation, you would send this data to your API
-    const reviewData = {
-      type: reviewType,
-      itemId: selectedItem.id,
-      itemName: selectedItem.name,
-      overallRating,
-      ratings: reviewType === 'bakery' 
-        ? {
-            service: ratings.service,
-            price: ratings.price,
-            atmosphere: ratings.atmosphere,
-            location: ratings.location
-          }
-        : {
-            taste: ratings.taste,
-            price: ratings.price,
-            presentation: ratings.presentation
-          },
-      comments
-    };
+    setIsSubmitting(true);
     
-    console.log('Submitting review:', reviewData);
-    
-    // Mock successful submission
-    setTimeout(() => {
+    try {
+      // Prepare review data based on review type
+      let reviewData = {
+        review: comments || `Review for ${selectedItem.name}`,
+        overallRating: overallRating,
+        userId: null // Always set userId to null for now
+      };
+      
+      // Removed user ID assignment to ensure all reviews are anonymous
+      // This can be re-enabled once user authentication is fully implemented
+      
+      if (reviewType === 'bakery') {
+        // Bakery review specific fields
+        reviewData = {
+          ...reviewData,
+          serviceRating: ratings.service || 5,
+          priceRating: ratings.price || 5,
+          atmosphereRating: ratings.atmosphere || 5,
+          locationRating: ratings.location || 5,
+          bakeryId: selectedItem.id
+        };
+        
+        // Send to bakery reviews endpoint
+        await apiClient.post('/bakeryreviews/create', reviewData);
+      } else {
+        // Product review specific fields
+        reviewData = {
+          ...reviewData,
+          tasteRating: ratings.taste || 5,
+          priceRating: ratings.price || 5,
+          presentationRating: ratings.presentation || 5,
+          productId: selectedItem.id
+        };
+        
+        // Send to product reviews endpoint
+        await apiClient.post('/productreviews/create', reviewData);
+      }
+      
       showSuccess(`Your ${reviewType} review has been submitted!`);
       onClose();
-    }, 500);
+    } catch (error) {
+      console.error('Review submission error:', error);
+      showError(`Failed to submit review: ${error.message || 'Unknown error'}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -190,6 +215,11 @@ const ReviewModal = ({ isOpen, onClose }) => {
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder={`Enter ${reviewType} name`}
               className="search-input"
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearch();
+                }
+              }}
             />
             <Button 
               onClick={handleSearch}
@@ -215,7 +245,10 @@ const ReviewModal = ({ isOpen, onClose }) => {
                 >
                   <div className="result-item-name">{item.name}</div>
                   <div className="result-item-details">
-                    {reviewType === 'bakery' ? item.location : `Bakery: ${item.bakery}`}
+                    {reviewType === 'bakery' 
+                      ? `${item.streetName || ''} ${item.streetNumber || ''}, ${item.zipCode || ''}`
+                      : `Bakery: ${item.bakery?.name || 'Unknown'}`
+                    }
                   </div>
                 </div>
               ))}
@@ -325,16 +358,16 @@ const ReviewModal = ({ isOpen, onClose }) => {
         
         {/* Action Buttons */}
         <div className="modal-actions">
-          <Button variant="secondary" onClick={onClose}>
+          <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
             Cancel
           </Button>
           
           {selectedItem && (
             <Button
               onClick={handleSubmitReview}
-              disabled={overallRating === 0}
+              disabled={overallRating === 0 || isSubmitting}
             >
-              Submit Review
+              {isSubmitting ? 'Submitting...' : 'Submit Review'}
             </Button>
           )}
         </div>

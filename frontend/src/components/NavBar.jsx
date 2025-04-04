@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useUser } from '../store/UserContext';
 import ThemeToggle from './ThemeToggle';
-import ReviewModal from './ReviewModal';
+import ReviewModal from './ReviewModal'; // This now uses our connected ReviewModal
 
 // Import the review modal CSS
 import '../styles/review-modal.css';
@@ -64,7 +64,7 @@ const NavBar = () => {
         </div>
       </div>
       
-      {/* Review Modal */}
+      {/* Connected Review Modal */}
       <ReviewModal 
         isOpen={isReviewModalOpen} 
         onClose={closeReviewModal} 
