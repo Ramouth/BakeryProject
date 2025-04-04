@@ -9,8 +9,25 @@ const reviewService = {
    * @returns {Promise<Array>} - List of bakery reviews
    */
   getAllBakeryReviews: async () => {
-    const response = await apiClient.get('/bakeryreviews');
-    return response.bakeryreviews;
+    try {
+      const response = await apiClient.get('/bakeryreviews');
+      
+      // Debug logging
+      console.log('Bakery reviews API response:', response);
+      
+      // Handle different possible response structures
+      if (response && response.bakeryReviews) {
+        return response.bakeryReviews;
+      } else if (Array.isArray(response)) {
+        return response;
+      } else {
+        console.warn('Unexpected bakery reviews response structure:', response);
+        return [];
+      }
+    } catch (error) {
+      console.error('Error fetching bakery reviews:', error);
+      throw error;
+    }
   },
 
   /**
@@ -49,8 +66,25 @@ const reviewService = {
    * @returns {Promise<Array>} - List of product reviews
    */
   getAllProductReviews: async () => {
-    const response = await apiClient.get('/productreviews');
-    return response.productreviews;
+    try {
+      const response = await apiClient.get('/productreviews');
+      
+      // Debug logging
+      console.log('Product reviews API response:', response);
+      
+      // Handle different possible response structures
+      if (response && response.productReviews) {
+        return response.productReviews;
+      } else if (Array.isArray(response)) {
+        return response;
+      } else {
+        console.warn('Unexpected product reviews response structure:', response);
+        return [];
+      }
+    } catch (error) {
+      console.error('Error fetching product reviews:', error);
+      throw error;
+    }
   },
 
   /**
