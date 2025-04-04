@@ -113,7 +113,7 @@ const useProductRankingsViewModel = () => {
         bakeryName: "Andersen Bakery",
         bakeryId: 4,
         address: "Thorvaldsensvej 2\n1871 Frederiksberg",
-        topReview: "Perfect Spandauer with creamy vanilla filling and crisp pastry. Simply the best.",
+        topReview: "Perfect Spandauer with creamy vanilla filling and crisp product. Simply the best.",
         rating: 4.9,
         reviewCount: 156,
         image: "spandauer-1.jpg"
@@ -278,7 +278,7 @@ const ProductRankings = () => {
     if (!categoryId) return 'All Categories';
     
     const categoryNames = {
-      'danish': 'Danish Pastries',
+      'danish': 'Danish Products',
       'bread': 'Breads',
       'croissants': 'Croissants',
       'cakes': 'Cakes & Tarts',
@@ -292,7 +292,7 @@ const ProductRankings = () => {
     <div className="container">
       <div className="product-rankings-header">
         <h1>Product Rankings: {getCategoryName()}</h1>
-        <p>Compare the best places to get popular Danish pastries</p>
+        <p>Compare the best places to get popular Danish products</p>
         
         {categoryId && (
           <div className="category-nav">

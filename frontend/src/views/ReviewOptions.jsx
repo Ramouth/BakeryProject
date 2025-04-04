@@ -6,15 +6,15 @@ const ReviewOptions = () => {
   return (
     <div className="container">
       <div className="card">
-        <h2>Submit another pastry review</h2>
-        <p>Thank you for your pastry review! What would you like to do next?</p>
+        <h2>Submit another product review</h2>
+        <p>Thank you for your product review! What would you like to do next?</p>
         
         <div className="options-container">
           <button 
             className="btn"
-            onClick={() => goToNextStep('pastrySelection')}
+            onClick={() => goToNextStep('productSelection')}
           >
-            Review another pastry
+            Review another product
           </button>
           
           <button 

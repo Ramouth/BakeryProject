@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { Routes, Route, NavLink, useNavigate } from 'react-router-dom';
 import { useUser } from '../store/UserContext';
 import BakerySection from './admin/BakerySection';
-import PastrySection from './admin/PastrySection';
+import ProductSection from './admin/ProductSection';
 import UserSection from './admin/ContactSection';
 import BakeryReviewSection from './admin/BakeryReviewSection';
-import PastryReviewSection from './admin/PastryReviewSection';
+import ProductReviewSection from './admin/ProductReviewSection';
 import Button from '../components/Button';
 
 // Admin dashboard home page
@@ -21,7 +21,7 @@ const AdminHome = () => (
       </div>
       <div className="stat-card">
         <h3>84</h3>
-        <p>Pastries</p>
+        <p>Products</p>
       </div>
       <div className="stat-card">
         <h3>132</h3>
@@ -46,7 +46,7 @@ const AdminHome = () => (
         </div>
         <div className="activity-item">
           <span className="activity-time">Yesterday, 16:30</span>
-          <span className="activity-text">New pastry: "Kanelsnegl" for Andersen Bakery</span>
+          <span className="activity-text">New product: "Kanelsnegl" for Andersen Bakery</span>
         </div>
       </div>
     </div>
@@ -95,8 +95,8 @@ const Admin = () => {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/admin/pastries" className={({ isActive }) => isActive ? 'active' : ''}>
-                  Pastries
+                <NavLink to="/admin/products" className={({ isActive }) => isActive ? 'active' : ''}>
+                  Products
                 </NavLink>
               </li>
               <li>
@@ -110,8 +110,8 @@ const Admin = () => {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/admin/pastry-reviews" className={({ isActive }) => isActive ? 'active' : ''}>
-                  Pastry Reviews
+                <NavLink to="/admin/product-reviews" className={({ isActive }) => isActive ? 'active' : ''}>
+                  Product Reviews
                 </NavLink>
               </li>
             </ul>
@@ -122,10 +122,10 @@ const Admin = () => {
           <Routes>
             <Route path="/" element={<AdminHome />} />
             <Route path="/bakeries" element={<BakerySection />} />
-            <Route path="/pastries" element={<PastrySection />} />
+            <Route path="/products" element={<ProductSection />} />
             <Route path="/contacts" element={<UserSection />} />
             <Route path="/bakery-reviews" element={<BakeryReviewSection />} />
-            <Route path="/pastry-reviews" element={<PastryReviewSection />} />
+            <Route path="/product-reviews" element={<ProductReviewSection />} />
           </Routes>
         </main>
       </div>

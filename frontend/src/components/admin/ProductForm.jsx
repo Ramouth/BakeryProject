@@ -2,25 +2,25 @@ import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import Button from "../Button";
 
-const PastryForm = ({ pastry = {}, bakeries = [], onSubmit, onCancel }) => {
+const ProductForm = ({ product = {}, bakeries = [], onSubmit, onCancel }) => {
   const [name, setName] = useState("");
   const [bakeryId, setBakeryId] = useState("");
   const [errors, setErrors] = useState({});
 
-  // Initialize form with pastry data if provided
+  // Initialize form with product data if provided
   useEffect(() => {
-    if (pastry.id) {
-      setName(pastry.name || "");
-      setBakeryId(pastry.bakeryId || pastry.bakery_Id || "");
+    if (product.id) {
+      setName(product.name || "");
+      setBakeryId(product.bakeryId || product.bakery_Id || "");
     }
-  }, [pastry]);
+  }, [product]);
 
   // Form validation
   const validateForm = () => {
     const newErrors = {};
     
     if (!name.trim()) {
-      newErrors.name = "Pastry name is required";
+      newErrors.name = "Product name is required";
     }
     
     if (!bakeryId) {
@@ -44,9 +44,9 @@ const PastryForm = ({ pastry = {}, bakeries = [], onSubmit, onCancel }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="form pastry-form">
+    <form onSubmit={handleSubmit} className="form product-form">
       <div className="form-group">
-        <label htmlFor="name">Pastry Name:</label>
+        <label htmlFor="name">Product Name:</label>
         <input
           type="text"
           id="name"
@@ -80,15 +80,15 @@ const PastryForm = ({ pastry = {}, bakeries = [], onSubmit, onCancel }) => {
           Cancel
         </Button>
         <Button type="submit" variant="primary">
-          {pastry.id ? "Update" : "Create"}
+          {product.id ? "Update" : "Create"}
         </Button>
       </div>
     </form>
   );
 };
 
-PastryForm.propTypes = {
-  pastry: PropTypes.shape({
+ProductForm.propTypes = {
+  product: PropTypes.shape({
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     name: PropTypes.string,
     bakeryId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
@@ -104,4 +104,4 @@ PastryForm.propTypes = {
   onCancel: PropTypes.func.isRequired
 };
 
-export default PastryForm;
+export default ProductForm;

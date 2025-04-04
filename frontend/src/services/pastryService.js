@@ -1,48 +1,48 @@
 import apiClient from './api';
 
 /**
- * Service for handling pastry-related API calls
+ * Service for handling product-related API calls
  */
-const pastryService = {
+const productService = {
   /**
-   * Get all pastries
-   * @returns {Promise<Array>} - List of pastries
+   * Get all products
+   * @returns {Promise<Array>} - List of products
    */
-  getAllPastries: async () => {
-    const response = await apiClient.get('/pastries');
-    return response.pastries;
+  getAllProducts: async () => {
+    const response = await apiClient.get('/products');
+    return response.products;
   },
 
   /**
-   * Create a new pastry
-   * @param {Object} pastryData - Pastry data to create
-   * @returns {Promise<Object>} - Created pastry
+   * Create a new product
+   * @param {Object} productData - Product data to create
+   * @returns {Promise<Object>} - Created product
    */
-  createPastry: async (pastryData) => {
-    const response = await apiClient.post('/pastries/create', pastryData);
+  createProduct: async (productData) => {
+    const response = await apiClient.post('/products/create', productData);
     return response;
   },
 
   /**
-   * Update an existing pastry
-   * @param {string|number} id - Pastry ID
-   * @param {Object} pastryData - Updated pastry data
-   * @returns {Promise<Object>} - Updated pastry
+   * Update an existing product
+   * @param {string|number} id - Product ID
+   * @param {Object} productData - Updated product data
+   * @returns {Promise<Object>} - Updated product
    */
-  updatePastry: async (id, pastryData) => {
-    const response = await apiClient.patch(`/pastries/update/${id}`, pastryData);
+  updateProduct: async (id, productData) => {
+    const response = await apiClient.patch(`/products/update/${id}`, productData);
     return response;
   },
 
   /**
-   * Delete a pastry
-   * @param {string|number} id - Pastry ID
+   * Delete a product
+   * @param {string|number} id - Product ID
    * @returns {Promise<Object>} - Deletion response
    */
-  deletePastry: async (id) => {
-    const response = await apiClient.delete(`/pastries/delete/${id}`);
+  deleteProduct: async (id) => {
+    const response = await apiClient.delete(`/products/delete/${id}`);
     return response;
   },
 };
 
-export default pastryService;
+export default productService;
