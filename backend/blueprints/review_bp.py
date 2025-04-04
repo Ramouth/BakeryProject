@@ -4,6 +4,7 @@ from schemas import BakeryReviewSchema, ProductReviewSchema
 from services.review_service import ReviewService
 from utils.caching import cache
 from sqlalchemy.orm import joinedload
+import traceback
 
 # Create blueprints
 bakery_review_bp = Blueprint('bakeryreview', __name__)
@@ -37,9 +38,14 @@ def get_bakery_reviews():
             "bakeryReviews": result,
             "total_count": len(result)
         }), 200
+    
     except Exception as e:
+        # Log the full error details
+        print(f"Error in get_bakery_reviews: {str(e)}")
+        print(f"Full error traceback:", traceback.format_exc())
+        
         return jsonify({
-            "message": f"Error fetching bakery reviews: {str(e)}",
+            "message": f"Failed to fetch bakery reviews: {str(e)}",
             "bakeryReviews": []
         }), 500
 
