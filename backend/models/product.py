@@ -26,9 +26,11 @@ class Product(db.Model):
         Index('idx_product_bakery_id', 'bakery_id'),
     )
     
-    def __init__(self, name, bakery_id):
+    def __init__(self, name, bakery_id, category=None, image_url=None):
         self.name = name
         self.bakery_id = bakery_id
+        self.category = category
+        self.image_url = image_url
     
     def __repr__(self):
         return f'<product {self.name}>'
