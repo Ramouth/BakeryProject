@@ -332,79 +332,37 @@ def create_product_review():
         return jsonify({"message": str(e)}), 400
 
 
-@product_review_bp.route('/update/<int:review_id>', methods=['PATCH'])
+@product_review_bp.route('/update/<int:review_id>', methods=['PATCH', 'OPTIONS'])
 def update_product_review(review_id):
-    """Update a product review"""
+    # Handle OPTIONS preflight request
+    if request.method == 'OPTIONS':
+        return '', 200
+    
     try:
         review = ProductReview.query.get(review_id)
         if not review:
             return jsonify({"message": "Product review not found"}), 404
         
-        data = request.json
+        data = request.get_json()
         
-        # Process update data
-        review_text = data.get('review', review.review)
-        overall_rating = data.get('overallRating', review.overall_rating)
-        taste_rating = data.get('tasteRating', review.taste_rating)
-        price_rating = data.get('priceRating', review.price_rating)
-        presentation_rating = data.get('presentationRating', review.presentation_rating)
-        user_id = data.get('userId', review.user_id)
-        product_id = data.get('productId', review.product_id)
+        # Update review fields
+        review.review = data.get('review', review.review)
+        review.overall_rating = data.get('overallRating', review.overall_rating)
+        review.taste_rating = data.get('tasteRating', review.taste_rating)
+        review.price_rating = data.get('priceRating', review.price_rating)
+        review.presentation_rating = data.get('presentationRating', review.presentation_rating)
         
-        # Validate product exists if being updated
-        if product_id != review.product_id:
-            product = Product.query.get(product_id)
-            if not product:
-                return jsonify({"message": "Product not found"}), 404
+        db.session.commit()
         
-        # Validate user exists if being updated and not null
-        if user_id != review.user_id and user_id is not None:
-            user = User.query.get(user_id)
-            if not user:
-                return jsonify({"message": "User not found"}), 404
-        
-        # Validate rating values
-        rating_fields = {
-            'overallRating': overall_rating,
-            'tasteRating': taste_rating,
-            'priceRating': price_rating,
-            'presentationRating': presentation_rating
-        }
-        
-        for field, value in rating_fields.items():
-            try:
-                rating = int(value)
-                if rating < 1 or rating > 10:
-                    return jsonify({"message": f"{field} must be between 1 and 10"}), 400
-            except (ValueError, TypeError):
-                return jsonify({"message": f"{field} must be a number between 1 and 10"}), 400
-        
-        # Update review through service
-        updated_review = review_service.update_product_review(
-            review_id=review_id,
-            review=review_text,
-            overall_rating=int(overall_rating),
-            taste_rating=int(taste_rating),
-            price_rating=int(price_rating),
-            presentation_rating=int(presentation_rating),
-            user_id=int(user_id) if user_id else None,
-            product_id=int(product_id)
-        )
-        
-        # Invalidate cache
-        cache.delete('view/get_product_reviews')
-        cache.delete(f'view/get_product_reviews_by_product_{review.product_id}')
-        if product_id != review.product_id:
-            cache.delete(f'view/get_product_reviews_by_product_{product_id}')
-        if review.user_id:
-            cache.delete(f'view/get_product_reviews_by_user_{review.user_id}')
-        if user_id and user_id != review.user_id:
-            cache.delete(f'view/get_product_reviews_by_user_{user_id}')
-        
-        return jsonify({"message": "Product review updated.", "review": product_review_schema.dump(updated_review)}), 200
+        return jsonify({
+            "message": "Product review updated successfully",
+            "review": product_review_schema.dump(review)
+        }), 200
+    
     except Exception as e:
-        return jsonify({"message": str(e)}), 400
-
+        db.session.rollback()
+        return jsonify({"message": f"Error updating review: {str(e)}"}), 400
+    
 @product_review_bp.route('/delete/<int:review_id>', methods=['DELETE'])
 def delete_product_review(review_id):
     """Delete a product review"""
