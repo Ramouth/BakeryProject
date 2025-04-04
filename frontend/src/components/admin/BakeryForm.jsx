@@ -1,4 +1,3 @@
-// src/components/admin/BakeryForm.jsx
 import { useState, useEffect, useCallback, useMemo } from "react";
 import PropTypes from "prop-types";
 import Button from "../Button";
@@ -101,16 +100,21 @@ const BakeryForm = ({ bakery = {}, onSubmit, onCancel, isSubmitting = false }) =
     const newErrors = {};
     let isValid = true;
     
+    // Log the current form state
+    console.log("Current form data for validation:", formData);
+    
     // Check each field with its validation rule
     Object.keys(validationRules).forEach(fieldName => {
       const error = validateField(fieldName, formData[fieldName]);
       if (error) {
         newErrors[fieldName] = error;
         isValid = false;
+        console.warn(`Validation error for ${fieldName}:`, error);
       }
     });
     
     setErrors(newErrors);
+    console.log("Form valid:", isValid);
     return isValid;
   }, [formData, validateField]);
 
@@ -141,22 +145,22 @@ const BakeryForm = ({ bakery = {}, onSubmit, onCancel, isSubmitting = false }) =
   }, [isFormSubmitted, touched, validateField]);
 
   // Handle form submission
-  const handleSubmit = useCallback((e) => {
-    e.preventDefault();
-    setIsFormSubmitted(true);
-    
-    if (validateForm()) {
-      onSubmit({
-        name: formData.name.trim(),
-        zipCode: formData.zipCode.trim(),
-        streetName: formData.streetName.trim(),
-        streetNumber: formData.streetNumber.trim(),
-        imageUrl: formData.imageUrl.trim() || null,
-        websiteUrl: formData.websiteUrl.trim() || null
-      });
-    }
-  }, [formData, onSubmit, validateForm]);
-
+const handleSubmit = useCallback((e) => {
+  e.preventDefault();
+  setIsFormSubmitted(true);
+  
+  if (validateForm()) {
+    onSubmit({
+      name: formData.name.trim(),
+      zipCode: formData.zipCode.trim(),
+      streetName: formData.streetName.trim(),
+      streetNumber: formData.streetNumber.trim(),
+      // Change these to empty strings instead of null
+      imageUrl: formData.imageUrl.trim() || "",  // Changed from null to ""
+      websiteUrl: formData.websiteUrl.trim() || ""  // Changed from null to ""
+    });
+  }
+}, [formData, onSubmit, validateForm]);
   // Form is valid when there are no errors
   const isFormValid = useMemo(() => {
     return Object.values(errors).every(error => error === null || error === undefined);
