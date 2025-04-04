@@ -1,12 +1,12 @@
 import React from "react";
 
-const PastryReviewList = ({ reviews, updateReview, updateCallback }) => {
+const ProductReviewList = ({ reviews, updateReview, updateCallback }) => {
   const onDelete = async (id) => {
     try {
       const options = {
         method: "DELETE",
       };
-      const response = await fetch(`http://127.0.0.1:5000/pastryreviews/delete/${id}`, options);
+      const response = await fetch(`http://127.0.0.1:5000/productreviews/delete/${id}`, options);
       if (response.status === 200) {
         updateCallback();
       } else {
@@ -19,7 +19,7 @@ const PastryReviewList = ({ reviews, updateReview, updateCallback }) => {
 
   return (
     <div>
-      <h2>Pastry Reviews</h2>
+      <h2>Product Reviews</h2>
       <table>
         <thead>
           <tr>
@@ -29,7 +29,7 @@ const PastryReviewList = ({ reviews, updateReview, updateCallback }) => {
             <th>Price Rating</th>
             <th>Presentation Rating</th>
             <th>Contact</th>
-            <th>Pastry</th>
+            <th>Product</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -42,7 +42,7 @@ const PastryReviewList = ({ reviews, updateReview, updateCallback }) => {
               <td>{review.priceRating}</td>
               <td>{review.presentationRating}</td>
               <td>{review.contact_name}</td>
-              <td>{review.pastry_name}</td>
+              <td>{review.product_name}</td>
               <td>
                 <button onClick={() => updateReview(review)}>Update</button>
                 <button onClick={() => onDelete(review.id)}>Delete</button>
@@ -55,4 +55,4 @@ const PastryReviewList = ({ reviews, updateReview, updateCallback }) => {
   );
 };
 
-export default PastryReviewList;
+export default ProductReviewList;

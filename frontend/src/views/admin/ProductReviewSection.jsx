@@ -1,29 +1,29 @@
 import { useState, useEffect } from "react";
-import PastryReviewList from "../../components/admin/PastryReviewList";
-import PastryReviewForm from "../../components/admin/PastryReviewForm";
+import ProductReviewList from "../../components/admin/ProductReviewList";
+import ProductReviewForm from "../../components/admin/ProductReviewForm";
 
-const PastryReviewSection = ({ updateCallback }) => {
+const ProductReviewSection = ({ updateCallback }) => {
   const [reviews, setReviews] = useState([]);
-  const [pastries, setPastries] = useState([]);
+  const [products, setProducts] = useState([]);
   const [contacts, setContacts] = useState([]);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [currentReview, setCurrentReview] = useState({});
 
   useEffect(() => {
     fetchReviews();
-    fetchPastriesAndContacts();
+    fetchProductsAndContacts();
   }, []);
 
   const fetchReviews = async () => {
-    const response = await fetch("http://127.0.0.1:5000/pastryreviews");
+    const response = await fetch("http://127.0.0.1:5000/productreviews");
     const data = await response.json();
-    setReviews(data.pastryreviews);
+    setReviews(data.productreviews);
   };
 
-  const fetchPastriesAndContacts = async () => {
-    const pastryResponse = await fetch("http://127.0.0.1:5000/pastries");
-    const pastryData = await pastryResponse.json();
-    setPastries(pastryData.pastries || []);
+  const fetchProductsAndContacts = async () => {
+    const productResponse = await fetch("http://127.0.0.1:5000/products");
+    const productData = await productResponse.json();
+    setProducts(productData.products || []);
 
     const contactResponse = await fetch("http://127.0.0.1:5000/contacts");
     const contactData = await contactResponse.json();
@@ -52,23 +52,23 @@ const PastryReviewSection = ({ updateCallback }) => {
 
   return (
     <div>
-      <PastryReviewList 
+      <ProductReviewList 
         reviews={reviews} 
         updateReview={openEditReviewModal} 
         updateCallback={onReviewUpdate} 
       />
-      <button onClick={openCreateReviewModal}>Create New Pastry Review</button>
+      <button onClick={openCreateReviewModal}>Create New Product Review</button>
 
-      {/* Pastry Review Modal */}
+      {/* Product Review Modal */}
       {isReviewModalOpen && (
         <div className="modal">
           <div className="modal-content">
             <span className="close" onClick={closeReviewModal}>
               &times;
             </span>
-            <PastryReviewForm 
+            <ProductReviewForm 
               existingReview={currentReview} 
-              pastries={pastries}
+              products={products}
               contacts={contacts}
               updateCallback={onReviewUpdate} 
             />
@@ -79,4 +79,4 @@ const PastryReviewSection = ({ updateCallback }) => {
   );
 };
 
-export default PastryReviewSection;
+export default ProductReviewSection;

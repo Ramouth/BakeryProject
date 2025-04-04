@@ -1,15 +1,15 @@
 import { useState, useEffect, useCallback } from "react";
-import { pastryService, bakeryService } from "../../services";
+import { productService, bakeryService } from "../../services";
 import Modal from "../../components/Modal";
 import Button from "../../components/Button";
-import PastryForm from "../../components/admin/PastryForm";
-import PastryList from "../../components/admin/PastryList";
+import ProductForm from "../../components/admin/ProductForm";
+import ProductList from "../../components/admin/ProductList";
 
-const PastrySection = () => {
-  const [pastries, setPastries] = useState([]);
+const ProductSection = () => {
+  const [products, setProducts] = useState([]);
   const [bakeries, setBakeries] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentPastry, setCurrentPastry] = useState({});
+  const [currentProduct, setCurrentProduct] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -18,11 +18,11 @@ const PastrySection = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const [pastriesData, bakeriesData] = await Promise.all([
-        pastryService.getAllPastries(),
+      const [productsData, bakeriesData] = await Promise.all([
+        productService.getAllProducts(),
         bakeryService.getAllBakeries()
       ]);
-      setPastries(pastriesData || []);
+      setProducts(productsData || []);
       setBakeries(bakeriesData || []);
     } catch (err) {
       setError("Failed to fetch data. Please try again.");
@@ -39,63 +39,63 @@ const PastrySection = () => {
   // Modal handlers
   const closeModal = () => {
     setIsModalOpen(false);
-    setCurrentPastry({});
+    setCurrentProduct({});
   };
 
   const openCreateModal = () => {
-    setCurrentPastry({});
+    setCurrentProduct({});
     setIsModalOpen(true);
   };
 
-  const openEditModal = (pastry) => {
-    setCurrentPastry(pastry);
+  const openEditModal = (product) => {
+    setCurrentProduct(product);
     setIsModalOpen(true);
   };
 
   // Form submission handler
-  const handleFormSubmit = async (pastryData) => {
+  const handleFormSubmit = async (productData) => {
     try {
-      if (Object.keys(currentPastry).length) {
-        await pastryService.updatePastry(currentPastry.id, pastryData);
+      if (Object.keys(currentProduct).length) {
+        await productService.updateProduct(currentProduct.id, productData);
       } else {
-        await pastryService.createPastry(pastryData);
+        await productService.createProduct(productData);
       }
       closeModal();
       fetchData();
     } catch (err) {
-      console.error("Failed to save pastry:", err);
+      console.error("Failed to save product:", err);
       // Handle error visualization to the user
     }
   };
 
   // Delete handler
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this pastry?")) {
+    if (window.confirm("Are you sure you want to delete this product?")) {
       try {
-        await pastryService.deletePastry(id);
+        await productService.deleteProduct(id);
         fetchData();
       } catch (err) {
-        console.error("Failed to delete pastry:", err);
+        console.error("Failed to delete product:", err);
         // Handle error visualization to the user
       }
     }
   };
 
-  if (isLoading && !pastries.length) {
-    return <div className="loading">Loading pastries...</div>;
+  if (isLoading && !products.length) {
+    return <div className="loading">Loading products...</div>;
   }
 
   return (
-    <div className="section pastry-section">
+    <div className="section product-section">
       <div className="section-header">
-        <h2>Manage Pastries</h2>
-        <Button onClick={openCreateModal}>Create New Pastry</Button>
+        <h2>Manage Products</h2>
+        <Button onClick={openCreateModal}>Create New Product</Button>
       </div>
 
       {error && <div className="error-message">{error}</div>}
 
-      <PastryList 
-        pastries={pastries} 
+      <ProductList 
+        products={products} 
         onEdit={openEditModal} 
         onDelete={handleDelete} 
       />
@@ -103,10 +103,10 @@ const PastrySection = () => {
       <Modal 
         isOpen={isModalOpen} 
         onClose={closeModal}
-        title={Object.keys(currentPastry).length ? "Edit Pastry" : "Create Pastry"}
+        title={Object.keys(currentProduct).length ? "Edit Product" : "Create Product"}
       >
-        <PastryForm 
-          pastry={currentPastry} 
+        <ProductForm 
+          product={currentProduct} 
           bakeries={bakeries}
           onSubmit={handleFormSubmit} 
           onCancel={closeModal}
@@ -116,4 +116,4 @@ const PastrySection = () => {
   );
 };
 
-export default PastrySection;
+export default ProductSection;

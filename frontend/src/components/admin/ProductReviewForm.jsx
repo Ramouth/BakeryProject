@@ -1,13 +1,13 @@
 import { useState } from "react";
 
-const PastryReviewForm = ({ existingReview = {}, updateCallback, contacts, pastries }) => {
+const ProductReviewForm = ({ existingReview = {}, updateCallback, contacts, products }) => {
   const [review, setReview] = useState(existingReview.review || "");
   const [overallRating, setOverallRating] = useState(existingReview.overallRating || 1);
   const [tasteRating, setTasteRating] = useState(existingReview.tasteRating || 1);
   const [priceRating, setPriceRating] = useState(existingReview.priceRating || 1);
   const [presentationRating, setPresentationRating] = useState(existingReview.presentationRating || 1);
   const [contactId, setContactId] = useState(existingReview.contactId || "");
-  const [pastryId, setPastryId] = useState(existingReview.pastryId || "");
+  const [productId, setProductId] = useState(existingReview.productId || "");
 
   const updating = Object.entries(existingReview).length !== 0;
 
@@ -21,11 +21,11 @@ const PastryReviewForm = ({ existingReview = {}, updateCallback, contacts, pastr
       priceRating,
       presentationRating,
       contactId,
-      pastryId,
+      productId,
     };
 
     const url =
-      "http://127.0.0.1:5000/pastryreviews/" +
+      "http://127.0.0.1:5000/productreviews/" +
       (updating ? `update/${existingReview.id}` : "create");
 
     const options = {
@@ -112,17 +112,17 @@ const PastryReviewForm = ({ existingReview = {}, updateCallback, contacts, pastr
         </select>
       </div>
 
-      {/* Dropdown to select an existing pastry */}
+      {/* Dropdown to select an existing product */}
       <div>
-        <label>Pastry:</label>
+        <label>Product:</label>
         <select
-          value={pastryId}
-          onChange={(e) => setPastryId(e.target.value)}
+          value={productId}
+          onChange={(e) => setProductId(e.target.value)}
         >
-          <option value="">--Select a Pastry--</option>
-          {pastries.map((pastry) => (
-            <option key={pastry.id} value={pastry.id}>
-              {pastry.name}
+          <option value="">--Select a Product--</option>
+          {products.map((product) => (
+            <option key={product.id} value={product.id}>
+              {product.name}
             </option>
           ))}
         </select>
@@ -133,4 +133,4 @@ const PastryReviewForm = ({ existingReview = {}, updateCallback, contacts, pastr
   );
 };
 
-export default PastryReviewForm;
+export default ProductReviewForm;

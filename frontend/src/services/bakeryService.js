@@ -45,13 +45,13 @@ const bakeryService = {
   },
 
   /**
-   * Get all pastries for a bakery
+   * Get all products for a bakery
    * @param {string|number} bakeryId - Bakery ID
-   * @returns {Promise<Array>} - List of pastries
+   * @returns {Promise<Array>} - List of products
    */
-  getBakeryPastries: async (bakeryId) => {
-    const response = await apiClient.get(`/bakeries/${bakeryId}/pastries`);
-    return response.pastries;
+  getBakeryProducts: async (bakeryId) => {
+    const response = await apiClient.get(`/bakeries/${bakeryId}/products`);
+    return response.products;
   },
 };
 

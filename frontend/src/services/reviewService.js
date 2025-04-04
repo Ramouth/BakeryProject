@@ -45,42 +45,42 @@ const reviewService = {
   },
 
   /**
-   * Get all pastry reviews
-   * @returns {Promise<Array>} - List of pastry reviews
+   * Get all product reviews
+   * @returns {Promise<Array>} - List of product reviews
    */
-  getAllPastryReviews: async () => {
-    const response = await apiClient.get('/pastryreviews');
-    return response.pastryreviews;
+  getAllProductReviews: async () => {
+    const response = await apiClient.get('/productreviews');
+    return response.productreviews;
   },
 
   /**
-   * Create a pastry review - contactId now optional
+   * Create a product review - contactId now optional
    * @param {Object} reviewData - Review data
    * @returns {Promise<Object>} - Created review
    */
-  createPastryReview: async (reviewData) => {
-    const response = await apiClient.post('/pastryreviews/create', reviewData);
+  createProductReview: async (reviewData) => {
+    const response = await apiClient.post('/productreviews/create', reviewData);
     return response;
   },
 
   /**
-   * Update a pastry review
+   * Update a product review
    * @param {string|number} id - Review ID
    * @param {Object} reviewData - Updated review data
    * @returns {Promise<Object>} - Updated review
    */
-  updatePastryReview: async (id, reviewData) => {
-    const response = await apiClient.patch(`/pastryreviews/update/${id}`, reviewData);
+  updateProductReview: async (id, reviewData) => {
+    const response = await apiClient.patch(`/productreviews/update/${id}`, reviewData);
     return response;
   },
 
   /**
-   * Delete a pastry review
+   * Delete a product review
    * @param {string|number} id - Review ID
    * @returns {Promise<Object>} - Deletion response
    */
-  deletePastryReview: async (id) => {
-    const response = await apiClient.delete(`/pastryreviews/delete/${id}`);
+  deleteProductReview: async (id) => {
+    const response = await apiClient.delete(`/productreviews/delete/${id}`);
     return response;
   },
 

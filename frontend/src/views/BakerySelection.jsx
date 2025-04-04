@@ -53,7 +53,7 @@ const BakerySelection = () => {
   // Handle next step
   const handleNext = () => {
     if (selectedBakery) {
-      goToNextStep('pastrySelection');
+      goToNextStep('productSelection');
     }
   };
   

@@ -14,8 +14,8 @@ import BakeryProfile from './views/BakeryProfile';
 const HomePage = lazy(() => import('./views/Homepage'));
 const Start = lazy(() => import('./views/Start'));
 const BakerySelection = lazy(() => import('./views/BakerySelection'));
-const PastrySelection = lazy(() => import('./views/PastrySelection'));
-const PastryRating = lazy(() => import('./views/PastryRating'));
+const ProductSelection = lazy(() => import('./views/ProductSelection'));
+const ProductRating = lazy(() => import('./views/ProductRating'));
 const BakeryRating = lazy(() => import('./views/BakeryRating'));
 const ThankYou = lazy(() => import('./views/ThankYou'));
 const Admin = lazy(() => import('./views/Admin'));
@@ -70,8 +70,8 @@ function App() {
                       <Route path="/" element={<HomePage />} />
                       <Route path="/start" element={<Start />} />
                       <Route path="/bakery-selection" element={<BakerySelection />} />
-                      <Route path="/pastry-selection" element={<PastrySelection />} />
-                      <Route path="/pastry-rating" element={<PastryRating />} />
+                      <Route path="/product-selection" element={<ProductSelection />} />
+                      <Route path="/product-rating" element={<ProductRating />} />
                       <Route path="/bakery-rating" element={<BakeryRating />} />
                       <Route path="/thank-you" element={<ThankYou />} />
                       <Route path="/login" element={<Login />} />
