@@ -54,17 +54,63 @@ const ProductSection = () => {
 
   // Form submission handler
   const handleFormSubmit = async (productData) => {
+    setIsLoading(true);
     try {
-      if (Object.keys(currentProduct).length) {
-        await productService.updateProduct(currentProduct.id, productData);
-      } else {
-        await productService.createProduct(productData);
+      console.log("Processing product submission:", productData);
+      
+      // Ensure bakeryId is a number (API might expect this)
+      if (productData.bakeryId && typeof productData.bakeryId === 'string') {
+        productData.bakeryId = parseInt(productData.bakeryId, 10);
       }
+      
+      // Log the exact data being sent
+      console.log("Sending product data to API:", productData);
+      
+      if (currentProduct.id) {
+        // Update existing product
+        const response = await fetch(`http://127.0.0.1:5000/products/update/${currentProduct.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(productData)
+        });
+        
+        // Get response body regardless of status
+        const responseText = await response.clone().text();
+        console.log("Update product response:", responseText);
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || `HTTP error ${response.status}`);
+        }
+      } else {
+        // Create new product
+        const response = await fetch(`http://127.0.0.1:5000/products/create`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(productData)
+        });
+        
+        // Get response body regardless of status
+        const responseText = await response.clone().text();
+        console.log("Create product response:", responseText);
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || `HTTP error ${response.status}`);
+        }
+      }
+      
       closeModal();
-      fetchData();
+      fetchData(); // Refresh the product list
     } catch (err) {
       console.error("Failed to save product:", err);
-      // Handle error visualization to the user
+      setError(`Failed to save product: ${err.message}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -76,14 +122,10 @@ const ProductSection = () => {
         fetchData();
       } catch (err) {
         console.error("Failed to delete product:", err);
-        // Handle error visualization to the user
+        setError(`Failed to delete product: ${err.message}`);
       }
     }
   };
-
-  if (isLoading && !products.length) {
-    return <div className="loading">Loading products...</div>;
-  }
 
   return (
     <div className="section product-section">
@@ -94,22 +136,27 @@ const ProductSection = () => {
 
       {error && <div className="error-message">{error}</div>}
 
-      <ProductList 
-        products={products} 
-        onEdit={openEditModal} 
-        onDelete={handleDelete} 
-      />
+      {isLoading && !products.length ? (
+        <div className="loading">Loading products...</div>
+      ) : (
+        <ProductList 
+          products={products} 
+          onEdit={openEditModal} 
+          onDelete={handleDelete} 
+        />
+      )}
 
       <Modal 
         isOpen={isModalOpen} 
         onClose={closeModal}
-        title={Object.keys(currentProduct).length ? "Edit Product" : "Create Product"}
+        title={currentProduct.id ? "Edit Product" : "Create Product"}
       >
         <ProductForm 
           product={currentProduct} 
           bakeries={bakeries}
           onSubmit={handleFormSubmit} 
           onCancel={closeModal}
+          isSubmitting={isLoading}
         />
       </Modal>
     </div>
