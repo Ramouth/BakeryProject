@@ -25,9 +25,9 @@ class ReviewDAL:
         return BakeryReview.query.filter_by(bakery_id=bakery_id).order_by(BakeryReview.created_at.desc()).all()
     
     @staticmethod
-    def get_bakery_reviews_by_contact(contact_id):
+    def get_bakery_reviews_by_user(user_id):
         """Get all bakery reviews by a specific user"""
-        return BakeryReview.query.filter_by(contact_id=contact_id).order_by(BakeryReview.created_at.desc()).all()
+        return BakeryReview.query.filter_by(user_id=user_id).order_by(BakeryReview.created_at.desc()).all()
     
     @staticmethod
     def create_bakery_review(review_data):
@@ -39,7 +39,7 @@ class ReviewDAL:
             price_rating=review_data['price_rating'],
             atmosphere_rating=review_data['atmosphere_rating'],
             location_rating=review_data['location_rating'],
-            contact_id=review_data['contact_id'],
+            user_id=review_data['user_id'],
             bakery_id=review_data['bakery_id']
         )
         db.session.add(review)
@@ -59,7 +59,7 @@ class ReviewDAL:
         review.price_rating = review_data['price_rating']
         review.atmosphere_rating = review_data['atmosphere_rating']
         review.location_rating = review_data['location_rating']
-        review.contact_id = review_data['contact_id']
+        review.user_id = review_data['user_id']
         review.bakery_id = review_data['bakery_id']
         
         db.session.commit()
@@ -93,9 +93,9 @@ class ReviewDAL:
         return productReview.query.filter_by(product_id=product_id).order_by(productReview.created_at.desc()).all()
     
     @staticmethod
-    def get_product_reviews_by_contact(contact_id):
+    def get_product_reviews_by_user(user_id):
         """Get all product reviews by a specific user"""
-        return productReview.query.filter_by(contact_id=contact_id).order_by(productReview.created_at.desc()).all()
+        return productReview.query.filter_by(user_id=user_id).order_by(productReview.created_at.desc()).all()
     
     @staticmethod
     def create_product_review(review_data):
@@ -106,7 +106,7 @@ class ReviewDAL:
             taste_rating=review_data['taste_rating'],
             price_rating=review_data['price_rating'],
             presentation_rating=review_data['presentation_rating'],
-            contact_id=review_data['contact_id'],
+            user_id=review_data['user_id'],
             product_id=review_data['product_id']
         )
         db.session.add(review)
@@ -125,7 +125,7 @@ class ReviewDAL:
         review.taste_rating = review_data['taste_rating']
         review.price_rating = review_data['price_rating']
         review.presentation_rating = review_data['presentation_rating']
-        review.contact_id = review_data['contact_id']
+        review.user_id = review_data['user_id']
         review.product_id = review_data['product_id']
         
         db.session.commit()

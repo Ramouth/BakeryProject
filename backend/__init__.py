@@ -45,7 +45,7 @@ def create_app(config_object=None):
         app.register_blueprint(product_bp, url_prefix='/products')
         app.register_blueprint(bakery_review_bp, url_prefix='/bakeryreviews')
         app.register_blueprint(product_review_bp, url_prefix='/productreviews')
-        app.register_blueprint(user_bp, url_prefix='/contacts')
+        app.register_blueprint(user_bp, url_prefix='/users')
         
         # Create database tables
         db.create_all()

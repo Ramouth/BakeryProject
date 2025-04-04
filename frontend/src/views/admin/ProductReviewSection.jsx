@@ -5,13 +5,13 @@ import ProductReviewForm from "../../components/admin/ProductReviewForm";
 const ProductReviewSection = ({ updateCallback }) => {
   const [reviews, setReviews] = useState([]);
   const [products, setProducts] = useState([]);
-  const [contacts, setContacts] = useState([]);
+  const [users, setUsers] = useState([]);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [currentReview, setCurrentReview] = useState({});
 
   useEffect(() => {
     fetchReviews();
-    fetchProductsAndContacts();
+    fetchProductsAndUsers();
   }, []);
 
   const fetchReviews = async () => {
@@ -20,14 +20,14 @@ const ProductReviewSection = ({ updateCallback }) => {
     setReviews(data.productreviews);
   };
 
-  const fetchProductsAndContacts = async () => {
+  const fetchProductsAndUsers = async () => {
     const productResponse = await fetch("http://127.0.0.1:5000/products");
     const productData = await productResponse.json();
     setProducts(productData.products || []);
 
-    const contactResponse = await fetch("http://127.0.0.1:5000/contacts");
-    const contactData = await contactResponse.json();
-    setContacts(contactData.contacts || []);
+    const userResponse = await fetch("http://127.0.0.1:5000/users");
+    const userData = await userResponse.json();
+    setUsers(userData.users || []);
   };
 
   const closeReviewModal = () => {
@@ -69,7 +69,7 @@ const ProductReviewSection = ({ updateCallback }) => {
             <ProductReviewForm 
               existingReview={currentReview} 
               products={products}
-              contacts={contacts}
+              users={users}
               updateCallback={onReviewUpdate} 
             />
           </div>

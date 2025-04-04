@@ -29,7 +29,7 @@ const BakeryReviewList = ({ reviews, updateReview, updateCallback }) => {
             <th>Price Rating</th>
             <th>Atmosphere Rating</th>
             <th>Location Rating</th>
-            <th>Contact</th>
+            <th>User</th>
             <th>Bakery</th>
             <th>Actions</th>
           </tr>
@@ -43,7 +43,7 @@ const BakeryReviewList = ({ reviews, updateReview, updateCallback }) => {
               <td>{review.priceRating}</td>
               <td>{review.atmosphereRating}</td>
               <td>{review.locationRating}</td>
-              <td>{review.contact_name}</td>
+              <td>{review.user_name}</td>
               <td>{review.bakery_name}</td>
               <td>
                 <button onClick={() => updateReview(review)}>Update</button>

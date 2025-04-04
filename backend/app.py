@@ -44,7 +44,7 @@ def create_app(config_class=DevelopmentConfig):
     app.register_blueprint(product_bp, url_prefix='/products')  # Changed from pastries
     app.register_blueprint(bakery_review_bp, url_prefix='/bakeryreviews')
     app.register_blueprint(product_review_bp, url_prefix='/productreviews')  # Changed from productreviews
-    app.register_blueprint(user_bp, url_prefix='/users')  # Changed from contacts
+    app.register_blueprint(user_bp, url_prefix='/users')  # Changed from users
     app.register_blueprint(auth_bp, url_prefix='/auth')  # New auth blueprint
     
     # Create all database tables

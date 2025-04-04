@@ -5,13 +5,13 @@ import BakeryReviewForm from "../../components/admin/BakeryReviewForm";
 const BakeryReviewSection = ({ updateCallback }) => {
   const [reviews, setReviews] = useState([]);
   const [bakeries, setBakeries] = useState([]);
-  const [contacts, setContacts] = useState([]);
+  const [users, setUsers] = useState([]);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [currentReview, setCurrentReview] = useState({});
 
   useEffect(() => {
     fetchReviews();
-    fetchBakeriesAndContacts();
+    fetchBakeriesAndUsers();
   }, []);
 
   const fetchReviews = async () => {
@@ -20,14 +20,14 @@ const BakeryReviewSection = ({ updateCallback }) => {
     setReviews(data.bakeryreviews);
   };
 
-  const fetchBakeriesAndContacts = async () => {
+  const fetchBakeriesAndUsers = async () => {
     const bakeryResponse = await fetch("http://127.0.0.1:5000/bakeries");
     const bakeryData = await bakeryResponse.json();
     setBakeries(bakeryData.bakeries || []);
 
-    const contactResponse = await fetch("http://127.0.0.1:5000/contacts");
-    const contactData = await contactResponse.json();
-    setContacts(contactData.contacts || []);
+    const userResponse = await fetch("http://127.0.0.1:5000/users");
+    const userData = await userResponse.json();
+    setUsers(userData.users || []);
   };
 
   const closeReviewModal = () => {
@@ -69,7 +69,7 @@ const BakeryReviewSection = ({ updateCallback }) => {
             <BakeryReviewForm 
               existingReview={currentReview} 
               bakeries={bakeries} 
-              contacts={contacts} 
+              users={users} 
               updateCallback={onReviewUpdate} 
             />
           </div>
