@@ -15,17 +15,29 @@ products_schema = ProductSchema(many=True)
 product_service = ProductService()
 
 @product_bp.route('/', methods=['GET'])
-@cache.cached(timeout=60)  # Cache for 60 seconds
 def get_products():
-    """Get all products with filtering option by category"""
-    category = request.args.get('category')
-    
-    if category:
-        products = product_service.get_products_by_category(category)
-    else:
-        products = product_service.get_all_products()
+    """Get all products with detailed information"""
+    try:
+        # Fetch all products with their associated bakery
+        products = Product.query.all()
         
-    return jsonify({"products": products_schema.dump(products)})
+        # Use schema to serialize products
+        result = products_schema.dump(products)
+        
+        # Add debug logging
+        print("Fetched products:", result)
+        
+        return jsonify({
+            "products": result,
+            "total_count": len(result)
+        }), 200
+    
+    except Exception as e:
+        print(f"Error fetching products: {str(e)}")
+        return jsonify({
+            "message": f"Failed to fetch products: {str(e)}",
+            "products": []
+        }), 500
 
 @product_bp.route('/<int:product_id>', methods=['GET'])
 @cache.cached(timeout=60)  # Cache for 60 seconds
