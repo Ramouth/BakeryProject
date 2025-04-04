@@ -1,16 +1,32 @@
 import apiClient from './api';
 
-/**
- * Service for handling product-related API calls
- */
 const productService = {
   /**
    * Get all products
    * @returns {Promise<Array>} - List of products
    */
   getAllProducts: async () => {
-    const response = await apiClient.get('/products');
-    return response.products;
+    try {
+      const response = await apiClient.get('/products');
+      
+      // Extensive logging
+      console.log('Full product API response:', response);
+      
+      // Check different possible response structures
+      if (response && response.products) {
+        console.log('Returning products from .products key');
+        return response.products;
+      } else if (Array.isArray(response)) {
+        console.log('Returning response directly as array');
+        return response;
+      } else {
+        console.warn('Unexpected product response structure:', response);
+        return [];
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      throw error;
+    }
   },
 
   /**
@@ -20,15 +36,17 @@ const productService = {
    */
   createProduct: async (productData) => {
     console.log("Creating product with data:", productData);
-    // Make sure we're sending empty strings instead of null for optional fields
+    
+    // Ensure data matches backend expectations
     const sanitizedData = {
       name: productData.name,
       bakeryId: productData.bakeryId,
-      category: productData.category || "",
-      imageUrl: productData.imageUrl || ""
+      category: productData.category || '',
+      imageUrl: productData.imageUrl || ''
     };
+    
     const response = await apiClient.post('/products/create', sanitizedData);
-    return response;
+    return response.product || response;
   },
 
   /**
@@ -38,16 +56,18 @@ const productService = {
    * @returns {Promise<Object>} - Updated product
    */
   updateProduct: async (id, productData) => {
-    console.log("Updating product with data:", productData);
-    // Make sure we're sending empty strings instead of null for optional fields
+    console.log(`Updating product ${id} with data:`, productData);
+    
+    // Ensure data matches backend expectations
     const sanitizedData = {
       name: productData.name,
       bakeryId: productData.bakeryId,
-      category: productData.category || "",
-      imageUrl: productData.imageUrl || ""
+      category: productData.category || '',
+      imageUrl: productData.imageUrl || ''
     };
+    
     const response = await apiClient.patch(`/products/update/${id}`, sanitizedData);
-    return response;
+    return response.product || response;
   },
 
   /**
@@ -58,26 +78,6 @@ const productService = {
   deleteProduct: async (id) => {
     const response = await apiClient.delete(`/products/delete/${id}`);
     return response;
-  },
-
-  /**
-   * Get products by bakery ID
-   * @param {string|number} bakeryId - Bakery ID
-   * @returns {Promise<Array>} - List of products for the bakery
-   */
-  getProductsByBakery: async (bakeryId) => {
-    const response = await apiClient.get(`/products/bakery/${bakeryId}`);
-    return response.products;
-  },
-
-  /**
-   * Get products by category
-   * @param {string} category - Product category
-   * @returns {Promise<Array>} - List of products in the category
-   */
-  getProductsByCategory: async (category) => {
-    const response = await apiClient.get(`/products/category/${category}`);
-    return response.products;
   }
 };
 

@@ -15,6 +15,7 @@ const ProductList = ({ products, onEdit, onDelete }) => {
             <th>ID</th>
             <th>Product Name</th>
             <th>Bakery</th>
+            <th>Category</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -26,6 +27,7 @@ const ProductList = ({ products, onEdit, onDelete }) => {
               <td>
                 {product.bakery ? product.bakery.name : "No Bakery"}
               </td>
+              <td>{product.category || "No Category"}</td>
               <td className="actions">
                 <Button 
                   variant="secondary" 
