@@ -27,6 +27,9 @@
 /* Import animations */
 @import 'animations.css';
 
+/* Import review modal styles */
+@import 'review-modal.css';
+
 /* Import responsive styles last to override other styles as needed */
 @import 'responsive.css';
 
