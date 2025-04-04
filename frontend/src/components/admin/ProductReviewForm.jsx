@@ -1,12 +1,12 @@
 import { useState } from "react";
 
-const ProductReviewForm = ({ existingReview = {}, updateCallback, contacts, products }) => {
+const ProductReviewForm = ({ existingReview = {}, updateCallback, users, products }) => {
   const [review, setReview] = useState(existingReview.review || "");
   const [overallRating, setOverallRating] = useState(existingReview.overallRating || 1);
   const [tasteRating, setTasteRating] = useState(existingReview.tasteRating || 1);
   const [priceRating, setPriceRating] = useState(existingReview.priceRating || 1);
   const [presentationRating, setPresentationRating] = useState(existingReview.presentationRating || 1);
-  const [contactId, setContactId] = useState(existingReview.contactId || "");
+  const [userId, setUserId] = useState(existingReview.userId || "");
   const [productId, setProductId] = useState(existingReview.productId || "");
 
   const updating = Object.entries(existingReview).length !== 0;
@@ -20,7 +20,7 @@ const ProductReviewForm = ({ existingReview = {}, updateCallback, contacts, prod
       tasteRating,
       priceRating,
       presentationRating,
-      contactId,
+      userId,
       productId,
     };
 
@@ -96,17 +96,17 @@ const ProductReviewForm = ({ existingReview = {}, updateCallback, contacts, prod
         />
       </div>
       
-      {/* Dropdown to select an existing contact (user) */}
+      {/* Dropdown to select an existing user (user) */}
       <div>
-        <label>Contact:</label>
+        <label>User:</label>
         <select
-          value={contactId}
-          onChange={(e) => setContactId(e.target.value)}
+          value={userId}
+          onChange={(e) => setUserId(e.target.value)}
         >
-          <option value="">--Select a Contact--</option>
-          {contacts.map((contact) => (
-            <option key={contact.id} value={contact.id}>
-              {contact.firstName} {contact.lastName}
+          <option value="">--Select a User--</option>
+          {users.map((user) => (
+            <option key={user.id} value={user.id}>
+              {user.firstName} {user.lastName}
             </option>
           ))}
         </select>

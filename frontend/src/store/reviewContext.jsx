@@ -121,7 +121,7 @@ export const ReviewProvider = ({ children }) => {
     setError(null);
     
     try {
-      // Build review data - contactId is now optional
+      // Build review data - userId is now optional
       const reviewData = {
         review: productRatings.comments || "Great product!",
         overallRating: parseInt(productRatings.overall),
@@ -131,9 +131,9 @@ export const ReviewProvider = ({ children }) => {
         productId: selectedProduct.id
       };
       
-      // Only include contactId if user is logged in
+      // Only include userId if user is logged in
       if (currentUser && currentUser.id) {
-        reviewData.contactId = currentUser.id;
+        reviewData.userId = currentUser.id;
       }
       
       // Submit to API
@@ -159,7 +159,7 @@ export const ReviewProvider = ({ children }) => {
     setError(null);
     
     try {
-      // Build review data - contactId is now optional
+      // Build review data - userId is now optional
       const reviewData = {
         review: bakeryRatings.comments || "Great bakery!",
         overallRating: parseInt(bakeryRatings.overall),
@@ -170,9 +170,9 @@ export const ReviewProvider = ({ children }) => {
         bakeryId: selectedBakery.id
       };
       
-      // Only include contactId if user is logged in
+      // Only include userId if user is logged in
       if (currentUser && currentUser.id) {
-        reviewData.contactId = currentUser.id;
+        reviewData.userId = currentUser.id;
       }
       
       // Submit to API

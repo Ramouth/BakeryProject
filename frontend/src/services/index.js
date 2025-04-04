@@ -128,28 +128,28 @@ const reviewServiceFactory = createServiceFactory((api) => ({
   },
 }));
 
-// User/contact service factory
+// User/user service factory
 const userServiceFactory = createServiceFactory((api) => ({
-  getAllContacts: async () => {
-    const response = await api.get('/contacts');
-    return response.contacts;
+  getAllUsers: async () => {
+    const response = await api.get('/users');
+    return response.users;
   },
   
-  getContactById: async (id) => {
-    const response = await api.get(`/contacts/${id}`);
+  getUserById: async (id) => {
+    const response = await api.get(`/users/${id}`);
     return response;
   },
   
-  createContact: async (contactData) => {
-    return api.post('/contacts/create', contactData);
+  createUser: async (userData) => {
+    return api.post('/users/create', userData);
   },
   
-  updateContact: async (id, contactData) => {
-    return api.patch(`/contacts/update/${id}`, contactData);
+  updateUser: async (id, userData) => {
+    return api.patch(`/users/update/${id}`, userData);
   },
   
-  deleteContact: async (id) => {
-    return api.delete(`/contacts/delete/${id}`);
+  deleteUser: async (id) => {
+    return api.delete(`/users/delete/${id}`);
   }
 }));
 

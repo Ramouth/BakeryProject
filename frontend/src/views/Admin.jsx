@@ -3,7 +3,7 @@ import { Routes, Route, NavLink, useNavigate } from 'react-router-dom';
 import { useUser } from '../store/UserContext';
 import BakerySection from './admin/BakerySection';
 import ProductSection from './admin/ProductSection';
-import UserSection from './admin/ContactSection';
+import UserSection from './admin/UserSection';
 import BakeryReviewSection from './admin/BakeryReviewSection';
 import ProductReviewSection from './admin/ProductReviewSection';
 import Button from '../components/Button';
@@ -100,7 +100,7 @@ const Admin = () => {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/admin/contacts" className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to="/admin/users" className={({ isActive }) => isActive ? 'active' : ''}>
                   Users
                 </NavLink>
               </li>
@@ -123,7 +123,7 @@ const Admin = () => {
             <Route path="/" element={<AdminHome />} />
             <Route path="/bakeries" element={<BakerySection />} />
             <Route path="/products" element={<ProductSection />} />
-            <Route path="/contacts" element={<UserSection />} />
+            <Route path="/users" element={<UserSection />} />
             <Route path="/bakery-reviews" element={<BakeryReviewSection />} />
             <Route path="/product-reviews" element={<ProductReviewSection />} />
           </Routes>

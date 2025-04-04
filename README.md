@@ -139,12 +139,12 @@ npm run dev
 - PATCH `/productreviews/update/:id` - Update a product review
 - DELETE `/productreviews/delete/:id` - Delete a product review
 
-### Contacts
-- GET `/contacts` - Get all contacts/users
-- GET `/contacts/:id` - Get contact by ID
-- POST `/contacts/create` - Create a contact
-- PATCH `/contacts/update/:id` - Update a contact
-- DELETE `/contacts/delete/:id` - Delete a contact
+### Users
+- GET `/users` - Get all users/users
+- GET `/users/:id` - Get user by ID
+- POST `/users/create` - Create a user
+- PATCH `/users/update/:id` - Update a user
+- DELETE `/users/delete/:id` - Delete a user
 
 ## Contributors
 
