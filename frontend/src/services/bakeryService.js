@@ -19,6 +19,8 @@ const bakeryService = {
    * @returns {Promise<Object>} - Created bakery
    */
   createBakery: async (bakeryData) => {
+    // Keep data in camelCase format when sending to API
+    console.log("Creating bakery with data:", bakeryData);
     const response = await apiClient.post('/bakeries/create', bakeryData);
     return response;
   },
@@ -30,6 +32,8 @@ const bakeryService = {
    * @returns {Promise<Object>} - Updated bakery
    */
   updateBakery: async (id, bakeryData) => {
+    // Keep data in camelCase format when sending to API
+    console.log("Updating bakery with data:", bakeryData);
     const response = await apiClient.patch(`/bakeries/update/${id}`, bakeryData);
     return response;
   },

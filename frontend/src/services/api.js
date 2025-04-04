@@ -28,6 +28,11 @@ class ApiClient {
     }
     
     try {
+      console.log(`API Request: ${options.method || 'GET'} ${fullUrl}`);
+      if (options.body) {
+        console.log("Request body:", options.body);
+      }
+      
       const response = await fetch(fullUrl, {
         ...options,
         headers: {
@@ -41,10 +46,12 @@ class ApiClient {
         const error = new Error(errorData.message || 'API request failed');
         error.status = response.status;
         error.data = errorData;
+        console.error("API Error:", errorData);
         throw error;
       }
 
       const data = await response.json();
+      console.log("API Response:", data);
       
       // Cache successful GET responses
       if (isGet && useCache) {
@@ -109,9 +116,6 @@ class ApiClient {
     }, false);
   }
 
-  /**
-   * Clear all cached data
-   */
   clearCache() {
     cache.clear();
   }

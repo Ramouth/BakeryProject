@@ -1,8 +1,9 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app as app
 from models import db, Bakery
 from schemas import BakerySchema
 from services.bakery_service import BakeryService
 from utils.caching import cache
+import logging
 
 # Create blueprint
 bakery_bp = Blueprint('bakery', __name__)
@@ -39,17 +40,28 @@ def create_bakery():
         if not data:
             return jsonify({"message": "No input data provided"}), 400
             
+        # Log received data
+        app.logger.info(f"Received bakery creation data: {data}")
+            
         # Validate with schema
         errors = bakery_schema.validate(data)
         if errors:
+            app.logger.error(f"Schema validation errors: {errors}")
             return jsonify({"message": "Validation error", "errors": errors}), 400
             
         # Extract required fields
         name = data.get('name')
         zip_code = data.get('zipCode')
         
+        # Log extracted fields
+        app.logger.info(f"Extracted fields - name: {name}, zipCode: {zip_code}")
+        
         if not name or not zip_code:
-            return jsonify({"message": "Name and zip code are required"}), 400
+            missing = []
+            if not name: missing.append("name")
+            if not zip_code: missing.append("zipCode")
+            app.logger.error(f"Missing required fields: {missing}")
+            return jsonify({"message": f"Name and zip code are required"}), 400
         
         # Extract optional fields
         street_name = data.get('streetName')
@@ -77,8 +89,9 @@ def create_bakery():
         
     except Exception as e:
         db.session.rollback()
+        app.logger.error(f"Error creating bakery: {str(e)}")
         return jsonify({"message": f"Error creating bakery: {str(e)}"}), 400
-
+    
 @bakery_bp.route('/update/<int:bakery_id>', methods=['PATCH'])
 def update_bakery(bakery_id):
     """Update an existing bakery with improved error handling"""

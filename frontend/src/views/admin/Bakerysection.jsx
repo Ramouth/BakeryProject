@@ -54,27 +54,25 @@ const useBakeryViewModel = () => {
     setIsModalOpen(true);
   }, []);
 
-  // Convert camelCase form fields to snake_case API fields
-  const convertFormDataToApiFormat = (formData) => {
-    return {
-      name: formData.name,
-      zip_code: formData.zipCode,
-      street_name: formData.streetName,
-      street_number: formData.streetNumber,
-      image_url: formData.imageUrl,
-      website_url: formData.websiteUrl
-    };
-  };
-
   // Form submission handler with optimistic updates
   const handleFormSubmit = useCallback(async (formData) => {
     setIsLoading(true);
     try {
       let response;
       
-      // Convert to API format (snake_case)
-      const apiData = convertFormDataToApiFormat(formData);
-      console.log("Sending API data:", apiData);
+      // Log the exact data being sent
+      console.log("Form data being submitted:", formData);
+      
+      // Check for required fields
+      if (!formData.name || !formData.zipCode || !formData.streetName || !formData.streetNumber) {
+        console.error("Missing required fields:", {
+          name: !!formData.name,
+          zipCode: !!formData.zipCode,
+          streetName: !!formData.streetName,
+          streetNumber: !!formData.streetNumber
+        });
+        throw new Error("Missing required fields");
+      }
       
       if (currentBakery.id) {
         // Update existing bakery
@@ -88,7 +86,7 @@ const useBakeryViewModel = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(apiData)
+          body: JSON.stringify(formData)
         });
       } else {
         // Create new bakery
@@ -97,9 +95,14 @@ const useBakeryViewModel = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(apiData)
+          body: JSON.stringify(formData)
         });
       }
+      
+      // Get response body regardless of status
+      const responseBody = await response.clone().text();
+      console.log("Response status:", response.status);
+      console.log("Response body:", responseBody);
       
       if (!response.ok) {
         // Try to get more detailed error information
@@ -109,7 +112,7 @@ const useBakeryViewModel = () => {
           errorMessage = errorData.message || errorMessage;
           console.error("API Error Details:", errorData);
         } catch (e) {
-          console.error("Could not parse error response");
+          console.error("Could not parse error response:", responseBody);
         }
         throw new Error(errorMessage);
       }
