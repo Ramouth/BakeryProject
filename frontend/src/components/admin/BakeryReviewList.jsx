@@ -8,6 +8,13 @@ const BakeryReviewList = ({ reviews, updateReview, updateCallback }) => {
   
   // Add logging to debug what's coming in
   console.log("Reviews received in BakeryReviewList:", reviews);
+  console.log("Number of reviews:", safeReviews.length);
+  
+  // Log the structure of the first review
+  if (safeReviews.length > 0) {
+    console.log("First review structure:", Object.keys(safeReviews[0]));
+    console.log("First review full details:", JSON.stringify(safeReviews[0], null, 2));
+  }
 
   const onDelete = async (id) => {
     try {
@@ -63,7 +70,7 @@ const BakeryReviewList = ({ reviews, updateReview, updateCallback }) => {
                   <td>{review.atmosphereRating}</td>
                   <td>{review.locationRating}</td>
                   <td>{review.username || 'Anonymous'}</td>
-                  <td>{review.bakery_name || review.bakeryName || '—'}</td>
+                  <td>{review.bakery?.name || review.bakery_name || review.bakeryName || '—'}</td>
                   <td>
                     <Button 
                       variant="secondary" 

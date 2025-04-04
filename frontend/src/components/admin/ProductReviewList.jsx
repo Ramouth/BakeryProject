@@ -61,7 +61,7 @@ const ProductReviewList = ({ reviews, updateReview, updateCallback }) => {
                   <td>{review.priceRating}</td>
                   <td>{review.presentationRating}</td>
                   <td>{review.username || 'Anonymous'}</td>
-                  <td>{review.product_name || review.productName || '—'}</td>
+                  <td>{review.product?.name || review.product_name || review.productName || '—'}</td>
                   <td>
                     <Button 
                       variant="secondary" 
