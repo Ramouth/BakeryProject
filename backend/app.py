@@ -31,7 +31,7 @@ def create_app(config_class=DevelopmentConfig):
     CORS(app, resources={
         r"/*": {
             "origins": ["http://localhost:5173"],
-            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization", "Access-Control-Allow-Origin"],
             "supports_credentials": True
         }
