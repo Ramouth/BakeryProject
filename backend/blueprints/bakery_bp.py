@@ -3,7 +3,9 @@ from models import db, Bakery
 from schemas import BakerySchema
 from services.bakery_service import BakeryService
 from utils.caching import cache
+from utils.caching import cache_key_with_query
 import logging
+
 
 # Create blueprint
 bakery_bp = Blueprint('bakery', __name__)
@@ -166,19 +168,22 @@ def delete_bakery(bakery_id):
 # New endpoints to support the app requirements
 
 @bakery_bp.route('/search', methods=['GET'])
+@cache.cached(timeout=30, key_prefix=cache_key_with_query)  # Use query parameters in cache key
 def search_bakeries():
-    """Search bakeries by name or zip code"""
+    """Search bakeries by name"""
     search_term = request.args.get('q', '')
-    zip_code = request.args.get('zip', '')
     
-    if search_term:
-        bakeries = bakery_service.search_bakeries(search_term)
-    elif zip_code:
-        bakeries = bakery_service.get_bakeries_by_zip(zip_code)
-    else:
-        return jsonify({"message": "Search term or zip code required"}), 400
+    if not search_term or len(search_term) < 2:
+        return jsonify({"message": "Search term must be at least 2 characters long", "bakeries": []}), 400
         
-    return jsonify({"bakeries": bakeries_schema.dump(bakeries)})
+    try:
+        # Use the bakery service to search by name
+        bakeries = bakery_service.search_bakeries(search_term)
+        return jsonify({"bakeries": bakeries_schema.dump(bakeries)}), 200
+    except Exception as e:
+        app.logger.error(f"Error searching bakeries: {str(e)}")
+        return jsonify({"message": f"Error searching bakeries: {str(e)}", "bakeries": []}), 500
+
 
 @bakery_bp.route('/<int:bakery_id>/stats', methods=['GET'])
 @cache.cached(timeout=60)

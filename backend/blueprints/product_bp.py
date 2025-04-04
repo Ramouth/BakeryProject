@@ -3,6 +3,9 @@ from models import db, Product, Bakery
 from schemas import ProductSchema
 from services.product_service import ProductService
 from utils.caching import cache
+from flask import current_app as app
+from utils.caching import cache_key_with_query
+import logging
 
 # Create blueprint
 product_bp = Blueprint('product', __name__)
@@ -171,3 +174,20 @@ def delete_product(product_id):
         return jsonify({"message": "Product deleted!"}), 200
     except Exception as e:
         return jsonify({"message": str(e)}), 400
+    
+@product_bp.route('/search', methods=['GET'])
+@cache.cached(timeout=30, key_prefix=cache_key_with_query)  # Use query parameters in cache key
+def search_products():
+    """Search products by name"""
+    search_term = request.args.get('q', '')
+    
+    if not search_term or len(search_term) < 2:
+        return jsonify({"message": "Search term must be at least 2 characters long", "products": []}), 400
+        
+    try:
+        # Use the product service to search by name
+        products = product_service.search_products(search_term)
+        return jsonify({"products": products_schema.dump(products)}), 200
+    except Exception as e:
+        app.logger.error(f"Error searching products: {str(e)}")
+        return jsonify({"message": f"Error searching products: {str(e)}", "products": []}), 500
