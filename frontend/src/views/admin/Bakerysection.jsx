@@ -1,5 +1,5 @@
+// src/views/admin/BakerySection.jsx
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { bakeryService } from "../../services";
 import Modal from "../../components/Modal";
 import Button from "../../components/Button";
 import BakeryForm from "../../components/admin/BakeryForm";
@@ -19,8 +19,13 @@ const useBakeryViewModel = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await bakeryService.getAllBakeries();
-      setBakeries(data || []);
+      const response = await fetch("http://127.0.0.1:5000/bakeries");
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`);
+      }
+      const data = await response.json();
+      console.log("Bakeries API response:", data);
+      setBakeries(data.bakeries || []);
     } catch (err) {
       setError("Failed to fetch bakeries. Please try again.");
       console.error(err);
@@ -49,30 +54,75 @@ const useBakeryViewModel = () => {
     setIsModalOpen(true);
   }, []);
 
+  // Convert camelCase form fields to snake_case API fields
+  const convertFormDataToApiFormat = (formData) => {
+    return {
+      name: formData.name,
+      zip_code: formData.zipCode,
+      street_name: formData.streetName,
+      street_number: formData.streetNumber,
+      image_url: formData.imageUrl,
+      website_url: formData.websiteUrl
+    };
+  };
+
   // Form submission handler with optimistic updates
-  const handleFormSubmit = useCallback(async (bakeryData) => {
+  const handleFormSubmit = useCallback(async (formData) => {
     setIsLoading(true);
     try {
-      let updatedBakery;
+      let response;
+      
+      // Convert to API format (snake_case)
+      const apiData = convertFormDataToApiFormat(formData);
+      console.log("Sending API data:", apiData);
       
       if (currentBakery.id) {
+        // Update existing bakery
         const optimisticBakeries = bakeries.map(b => 
-          b.id === currentBakery.id ? { ...b, ...bakeryData } : b
+          b.id === currentBakery.id ? { ...b, ...formData } : b
         );
         setBakeries(optimisticBakeries);
         
-        updatedBakery = await bakeryService.updateBakery(currentBakery.id, bakeryData);
+        response = await fetch(`http://127.0.0.1:5000/bakeries/update/${currentBakery.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(apiData)
+        });
       } else {
-        updatedBakery = await bakeryService.createBakery(bakeryData);
-        setBakeries(prev => [...prev, updatedBakery.bakery]);
+        // Create new bakery
+        response = await fetch(`http://127.0.0.1:5000/bakeries/create`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(apiData)
+        });
       }
+      
+      if (!response.ok) {
+        // Try to get more detailed error information
+        let errorMessage = `HTTP error ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+          console.error("API Error Details:", errorData);
+        } catch (e) {
+          console.error("Could not parse error response");
+        }
+        throw new Error(errorMessage);
+      }
+      
+      const data = await response.json();
+      console.log("Save bakery response:", data);
       
       closeModal();
       // Trigger a refresh to ensure data consistency
       setLastUpdate(Date.now());
     } catch (err) {
       console.error("Failed to save bakery:", err);
-      setError("Failed to save. Please check your data and try again.");
+      setError(`Failed to save: ${err.message}`);
       // Revert optimistic updates by re-fetching data
       fetchBakeries();
     } finally {
@@ -89,7 +139,14 @@ const useBakeryViewModel = () => {
         const optimisticBakeries = bakeries.filter(b => b.id !== id);
         setBakeries(optimisticBakeries);
         
-        await bakeryService.deleteBakery(id);
+        const response = await fetch(`http://127.0.0.1:5000/bakeries/delete/${id}`, {
+          method: 'DELETE'
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error ${response.status}`);
+        }
+        
         // Refresh data to ensure consistency
         setLastUpdate(Date.now());
       } catch (err) {
