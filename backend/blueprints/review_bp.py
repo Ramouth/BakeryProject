@@ -3,6 +3,7 @@ from models import db, BakeryReview, ProductReview, Bakery, Product, User
 from schemas import BakeryReviewSchema, ProductReviewSchema
 from services.review_service import ReviewService
 from utils.caching import cache
+from sqlalchemy.orm import joinedload
 
 # Create blueprints
 bakery_review_bp = Blueprint('bakeryreview', __name__)
@@ -20,11 +21,27 @@ review_service = ReviewService()
 # === Bakery Review Routes ===
 
 @bakery_review_bp.route('/', methods=['GET'])
-@cache.cached(timeout=60)  # Cache for 60 seconds
 def get_bakery_reviews():
-    """Get all bakery reviews"""
-    reviews = review_service.get_all_bakery_reviews()
-    return jsonify({"bakeryReviews": bakery_reviews_schema.dump(reviews)})
+    """Get all bakery reviews with related user and bakery information"""
+    try:
+        # Use joined load to efficiently fetch related data
+        reviews = BakeryReview.query.options(
+            joinedload(BakeryReview.user),
+            joinedload(BakeryReview.bakery)
+        ).order_by(BakeryReview.created_at.desc()).all()
+        
+        # Serialize reviews with related information
+        result = bakery_reviews_schema.dump(reviews)
+        
+        return jsonify({
+            "bakeryReviews": result,
+            "total_count": len(result)
+        }), 200
+    except Exception as e:
+        return jsonify({
+            "message": f"Error fetching bakery reviews: {str(e)}",
+            "bakeryReviews": []
+        }), 500
 
 @bakery_review_bp.route('/bakery/<int:bakery_id>', methods=['GET'])
 @cache.cached(timeout=60)  # Cache for 60 seconds
@@ -212,11 +229,27 @@ def delete_bakery_review(review_id):
 # === Product Review Routes ===
 
 @product_review_bp.route('/', methods=['GET'])
-@cache.cached(timeout=60)  # Cache for 60 seconds
 def get_product_reviews():
-    """Get all product reviews"""
-    reviews = review_service.get_all_product_reviews()
-    return jsonify({"productReviews": product_reviews_schema.dump(reviews)})
+    """Get all product reviews with related user and product information"""
+    try:
+        # Use joined load to efficiently fetch related data
+        reviews = ProductReview.query.options(
+            joinedload(ProductReview.user),
+            joinedload(ProductReview.product)
+        ).order_by(ProductReview.created_at.desc()).all()
+        
+        # Serialize reviews with related information
+        result = product_reviews_schema.dump(reviews)
+        
+        return jsonify({
+            "productReviews": result,
+            "total_count": len(result)
+        }), 200
+    except Exception as e:
+        return jsonify({
+            "message": f"Error fetching product reviews: {str(e)}",
+            "productReviews": []
+        }), 500
 
 @product_review_bp.route('/product/<int:product_id>', methods=['GET'])
 @cache.cached(timeout=60)  # Cache for 60 seconds
