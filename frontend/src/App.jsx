@@ -32,6 +32,7 @@ import './styles/homepage.css';
 import './styles/header.css';
 import './styles/product-category.css';
 import './styles/profile.css';
+import ProductProfile from './views/ProductProfile';
 
 // Loading component for Suspense fallback
 const Loading = () => (
@@ -103,6 +104,7 @@ function App() {
                       <Route path="/product-rankings/:categoryId" element={<ProductRankings />} />
                       <Route path="/product-rankings/:categoryId/:productId" element={<ProductRankings />} />
                       <Route path="/bakery/:bakeryId" element={<BakeryProfile />} />
+                      <Route path="/product/:productId" element={<ProductProfile />} />
                       <Route 
                         path="/admin/*" 
                         element={
