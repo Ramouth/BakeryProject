@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { UserProvider } from './store/UserContext';
 import { ReviewProvider } from './store/ReviewContext';
 import { NotificationProvider } from './store/NotificationContext';
@@ -8,7 +8,7 @@ import Footer from './components/Footer';
 import AuthGuard from './components/AuthGuard';
 import ProgressTracker from './components/ProgressTracker';
 import BakeryProfile from './views/BakeryProfile';
-
+import apiClient from './services/api';
 
 // Lazy load views for code splitting and performance
 const HomePage = lazy(() => import('./views/Homepage'));
@@ -41,6 +41,24 @@ const Loading = () => (
   </div>
 );
 
+// Component to handle route changes and cache clearing
+const RouteChangeHandler = () => {
+  const navigate = useNavigate();
+  
+  // Custom navigation function that clears relevant cache
+  const navigateWithCacheClear = (path) => {
+    apiClient.clearCacheForCurrentRoute();
+    navigate(path);
+  };
+  
+  // Set up cache clearing on navigation
+  useEffect(() => {
+    apiClient.clearCacheOnNavigation();
+  }, []);
+  
+  return null;
+};
+
 function App() {
   // Initialize theme on app load
   useEffect(() => {
@@ -64,12 +82,13 @@ function App() {
           <NotificationProvider>
             <div className="app">
               <NavBar />
+              <RouteChangeHandler />
               
               <div className="content-section">
                 <main className="app-content">
                   <Suspense fallback={<Loading />}>
                     <Routes>
-                      <Route path="/" element={<HomePage />} />
+                      <Route path="/" element={<HomePage key="homepage-component" />} />
                       <Route path="/start" element={<Start />} />
                       <Route path="/bakery-selection" element={<BakerySelection />} />
                       <Route path="/pastry-selection" element={<PastrySelection />} />
