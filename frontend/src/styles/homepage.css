@@ -1,214 +1,230 @@
 /* Hero section with search */
 .hero-section {
-    text-align: center;
-    margin: 2rem auto;
-    padding: 2rem;
-    max-width: 900px;
-  }
-  
-  .hero-section h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1.5rem;
-    color: var(--text-950);
-  }
-  
-  /* Search container */
-  .search-container {
-    margin: 1.5rem auto;
-    max-width: 700px;
-  }
-  
-  /* Updated search dropdown styling */
-  .search-dropdown-form {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-    align-items: stretch;
-    max-width: 800px;
-    margin: 0 auto;
-    background-color: var(--primary-100);
-    padding: 15px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-  }
-  
-  .search-type-selector,
-  .search-filters {
-    flex: 1;
-    min-width: 200px;
-  }
-  
-  .search-dropdown {
-    width: 100%;
-    padding: 12px 15px;
-    border-radius: var(--border-radius);
-    border: 1px solid var(--accent-300);
-    background-color: var(--background-50);
-    font-size: 16px;
-    color: var(--text-950);
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    cursor: pointer;
-  }
-  
-  .search-dropdown:focus {
-    outline: none;
-    border-color: var(--primary-color);
-  }
-  
-  .search-button {
-    padding: 12px 25px;
-    background-color: var(--primary-color);
-    color: var(--text-50);
-    border: none;
-    border-radius: var(--border-radius);
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-    min-width: 120px;
-  }
-  
-  .search-button:hover {
-    background-color: var(--primary-600);
-  }
-  
-  /* Promotional card */
-  .promo-card {
-    background-color: var(--accent-600);
-    background-size: cover;
-    background-position: center;
-    color: var(--text-50);
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    margin: 3rem auto;
-    max-width: 900px;
-    height: 250px;
-    display: flex;
-    align-items: center;
+  text-align: center;
+  margin: 2rem auto;
+  padding: 2rem;
+  max-width: 900px;
+}
+
+.hero-section h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-950);
+}
+
+/* Search container */
+.search-container {
+  margin: 1.5rem auto;
+  max-width: 700px;
+}
+
+/* Updated search dropdown styling */
+.search-dropdown-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  align-items: stretch;
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: var(--primary-100);
+  padding: 15px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+}
+
+.search-type-selector,
+.search-filters {
+  flex: 1;
+  min-width: 200px;
+}
+
+.search-dropdown {
+  width: 100%;
+  padding: 12px 15px;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--accent-300);
+  background-color: var(--background-50);
+  font-size: 16px;
+  color: var(--text-950);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  cursor: pointer;
+}
+
+.search-dropdown:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.search-button {
+  padding: 12px 25px;
+  background-color: var(--primary-color);
+  color: var(--text-50);
+  border: none;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  min-width: 120px;
+}
+
+.search-button:hover {
+  background-color: var(--primary-600);
+}
+
+/* Promotional card */
+.promo-card {
+  background-color: var(--accent-600);
+  background-size: cover;
+  background-position: center;
+  color: var(--text-50);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  margin: 3rem auto;
+  max-width: 900px;
+  height: 250px;
+  display: flex;
+  align-items: center;
+}
+
+.promo-content {
+  padding: 2rem;
+  max-width: 60%;
+}
+
+.promo-content h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: var(--text-50);
+}
+
+.promo-content p {
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+.promo-content .btn {
+  background-color: var(--background-50);
+  color: var(--primary-700);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+/* Top bakeries section */
+.top-bakeries {
+  margin: 4rem auto;
+  max-width: 900px;
+  text-align: center;
+}
+
+.top-bakeries h2 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-800);
+}
+
+.top-bakeries > p {
+  color: var(--text-600);
+  margin-bottom: 2rem;
+}
+
+/* New namespaced classes for homepage bakery cards */
+.homepage-bakery-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.homepage-bakery-card {
+  display: block;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  background-color: var(--background-100);
+  height: auto;
+}
+
+.homepage-bakery-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.homepage-bakery-image {
+  height: 150px;
+  background-color: var(--primary-300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.homepage-placeholder-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url('/src/assets/bageri.jpeg');
+  background-size: cover;
+  background-position: center;
+  color: transparent;
+}
+
+.homepage-bakery-card h3 {
+  font-size: 1.1rem;
+  margin: 1rem 1rem 0.5rem;
+  color: var(--text-950);
+}
+
+.homepage-bakery-card p {
+  font-size: 0.85rem;
+  margin: 0 1rem 0.5rem;
+  color: var(--text-950);
+}
+
+.homepage-bakery-card .bakery-rating {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: var(--primary-600);
+  margin: 0 1rem 1rem;
+}
+
+/* Responsive styles */
+@media (max-width: 900px) {
+  .homepage-bakery-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
   
   .promo-content {
-    padding: 2rem;
-    max-width: 60%;
+    max-width: 100%;
   }
-  
-  .promo-content h2 {
+}
+
+@media (max-width: 600px) {
+  .hero-section h1 {
     font-size: 2rem;
-    margin-bottom: 1rem;
-    color: var(--text-50);
   }
   
-  .promo-content p {
-    margin-bottom: 1.5rem;
-    font-size: 1.1rem;
+  .homepage-bakery-grid {
+    grid-template-columns: 1fr;
   }
   
-  .promo-content .btn {
-    background-color: var(--background-50);
-    color: var(--primary-700);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
-    font-weight: 600;
-    display: inline-block;
+  .search-dropdown-form {
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
   }
   
-  /* Top bakeries section */
-  .top-bakeries {
-    margin: 4rem auto;
-    max-width: 900px;
-    text-align: center;
+  .search-button {
+    width: 100%;
   }
-  
-  .top-bakeries h2 {
-    font-size: 1.8rem;
-    margin-bottom: 0.5rem;
-    color: var(--text-800);
-  }
-  
-  .top-bakeries > p {
-    color: var(--text-600);
-    margin-bottom: 2rem;
-  }
-  
-  .bakery-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
-    margin-top: 2rem;
-  }
-  
-  .top-bakeries .bakery-card {
-    border-radius: var(--border-radius) !important;
-    overflow: hidden !important;
-    box-shadow: var(--shadow) !important;
-    transition: var(--transition) !important;
-    background-color: var(--background-100) !important;
-  }
-  
-  .top-bakeries .bakery-card:hover {
-    transform: translateY(-5px) !important;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15) !important;
-  }
-  
-  .bakery-image {
-    height: 150px;
-    background-color: var(--primary-300);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .bakery-card h3 {
-    font-size: 1.1rem;
-    margin: 1rem 1rem 0.5rem;
-    color: var(--text-950);
-  }
-  
-  .bakery-card p {
-    font-size: 0.85rem;
-    margin: 0 1rem 0.5rem;
-    color: var(--text-950);
-  }
-  
-  .bakery-rating {
-    font-size: 0.9rem;
-    font-weight: bold;
-    color: var(--primary-600);
-    margin: 0 1rem 1rem;
-  }
-  
-  /* Responsive styles */
-  @media (max-width: 900px) {
-    .bakery-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .promo-content {
-      max-width: 100%;
-    }
-  }
-  
-  @media (max-width: 600px) {
-    .hero-section h1 {
-      font-size: 2rem;
-    }
-    
-    .bakery-grid {
-      grid-template-columns: 1fr;
-    }
-    
-    .search-dropdown-form {
-      flex-direction: column;
-      gap: 10px;
-      padding: 12px;
-    }
-    
-    .search-button {
-      width: 100%;
-    }
-  }
+}
