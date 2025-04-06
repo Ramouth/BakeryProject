@@ -112,37 +112,37 @@ const HomePage = () => {
         <h2>Explore Copenhagens most cozy bakeries</h2>
         <p>Top four ranked bakeries, currently:</p>
         
-        <div className="bakery-grid">
-          <div className="bakery-card">
-            <div className="bakery-image">
-              <div className="placeholder-image">Hart Bageri</div>
+        <div className="homepage-bakery-grid">
+          <div className="homepage-bakery-card">
+            <div className="homepage-bakery-image">
+              <div className="homepage-placeholder-image">Hart Bageri</div>
             </div>
             <h3>Hart Bageri</h3>
             <p>Famous for their sourdough bread and danish pastries</p>
             <div className="bakery-rating">4.8 ★</div>
           </div>
           
-          <div className="bakery-card">
-            <div className="bakery-image">
-              <div className="placeholder-image">Juno</div>
+          <div className="homepage-bakery-card">
+            <div className="homepage-bakery-image">
+              <div className="homepage-placeholder-image">Juno</div>
             </div>
             <h3>Juno The Bakery</h3>
             <p>Known for their amazing cardamom buns</p>
             <div className="bakery-rating">4.9 ★</div>
           </div>
           
-          <div className="bakery-card">
-            <div className="bakery-image">
-              <div className="placeholder-image">Andersen</div>
+          <div className="homepage-bakery-card">
+            <div className="homepage-bakery-image">
+              <div className="homepage-placeholder-image">Andersen</div>
             </div>
             <h3>Andersen Bakery</h3>
             <p>Traditional Danish pastries with a modern twist</p>
             <div className="bakery-rating">4.7 ★</div>
           </div>
           
-          <div className="bakery-card">
-            <div className="bakery-image">
-              <div className="placeholder-image">Lagkagehuset</div>
+          <div className="homepage-bakery-card">
+            <div className="homepage-bakery-image">
+              <div className="homepage-placeholder-image">Lagkagehuset</div>
             </div>
             <h3>Lagkagehuset</h3>
             <p>Popular chain with consistently delicious offerings</p>
