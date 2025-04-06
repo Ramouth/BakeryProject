@@ -2,9 +2,17 @@ const API_BASE_URL = 'http://127.0.0.1:5000';
 
 // Simple in-memory cache
 const cache = new Map();
-const CACHE_DURATION = 60000; // 1 minute in milliseconds
+const CACHE_DURATION = 60000; // 1 minute
 
 class ApiClient {
+  /**
+   * Get the current route for cache key prefixing
+   * @returns {string} - The current route path
+   */
+  getCurrentRoute() {
+    return window.location.pathname;
+  }
+
   /**
    * Send a request to the API with error handling and optional caching
    * @param {string} url - The endpoint URL
@@ -15,7 +23,7 @@ class ApiClient {
   async request(url, options = {}, useCache = true) {
     const fullUrl = `${API_BASE_URL}${url}`;
     const isGet = !options.method || options.method === 'GET';
-    const cacheKey = `${options.method || 'GET'}-${fullUrl}`;
+    const cacheKey = `${this.getCurrentRoute()}-${options.method || 'GET'}-${fullUrl}`;
     
     // Check cache for GET requests if caching is enabled
     if (isGet && useCache && cache.has(cacheKey)) {
@@ -113,6 +121,7 @@ class ApiClient {
    * Clear all cached data
    */
   clearCache() {
+    console.log('Clearing entire cache');
     cache.clear();
   }
 
@@ -131,6 +140,35 @@ class ApiClient {
     }
     
     keysToDelete.forEach(key => cache.delete(key));
+  }
+  
+  /**
+   * Clear cache for the current route
+   */
+  clearCacheForCurrentRoute() {
+    const currentRoute = this.getCurrentRoute();
+    const keysToDelete = [];
+    
+    for (const key of cache.keys()) {
+      if (key.startsWith(currentRoute)) {
+        keysToDelete.push(key);
+      }
+    }
+    
+    keysToDelete.forEach(key => {
+      console.log(`Clearing cache for: ${key}`);
+      cache.delete(key);
+    });
+  }
+  
+  /**
+   * Setup event listener to clear cache on navigation
+   */
+  clearCacheOnNavigation() {
+    window.addEventListener('popstate', () => {
+      console.log('Navigation detected, clearing route cache');
+      this.clearCacheForCurrentRoute();
+    });
   }
 }
 

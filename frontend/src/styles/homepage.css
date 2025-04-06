@@ -142,17 +142,17 @@
     margin-top: 2rem;
   }
   
-  .bakery-card {
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    box-shadow: var(--shadow);
-    transition: var(--transition);
-    background-color: var(--background-100);
+  .top-bakeries .bakery-card {
+    border-radius: var(--border-radius) !important;
+    overflow: hidden !important;
+    box-shadow: var(--shadow) !important;
+    transition: var(--transition) !important;
+    background-color: var(--background-100) !important;
   }
   
-  .bakery-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  .top-bakeries .bakery-card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15) !important;
   }
   
   .bakery-image {
