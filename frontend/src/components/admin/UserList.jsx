@@ -1,12 +1,12 @@
 import React from "react"
 
-const ContactList = ({ contacts, updateContact, updateCallback }) => {
+const UserList = ({ users, updateUser, updateCallback }) => {
     const onDelete = async (id) => {
         try {
             const options = {
                 method: "DELETE"
             }
-            const response = await fetch(`http://127.0.0.1:5000/contacts/delete/${id}`, options)
+            const response = await fetch(`http://127.0.0.1:5000/users/delete/${id}`, options)
             if (response.status === 200) {
                 updateCallback()
             } else {
@@ -18,7 +18,7 @@ const ContactList = ({ contacts, updateContact, updateCallback }) => {
     }
 
     return <div>
-        <h2>Contacts</h2>
+        <h2>Users</h2>
         <table>
             <thead>
                 <tr>
@@ -29,14 +29,14 @@ const ContactList = ({ contacts, updateContact, updateCallback }) => {
                 </tr>
             </thead>
             <tbody>
-                {contacts.map((contact) => (
-                    <tr key={contact.id}>
-                        <td>{contact.firstName}</td>
-                        <td>{contact.lastName}</td>
-                        <td>{contact.email}</td>
+                {users.map((user) => (
+                    <tr key={user.id}>
+                        <td>{user.firstName}</td>
+                        <td>{user.lastName}</td>
+                        <td>{user.email}</td>
                         <td>
-                            <button onClick={() => updateContact(contact)}>Update</button>
-                            <button onClick={() => onDelete(contact.id)}>Delete</button>
+                            <button onClick={() => updateUser(user)}>Update</button>
+                            <button onClick={() => onDelete(user.id)}>Delete</button>
                         </td>
                     </tr>
                 ))}
@@ -45,4 +45,4 @@ const ContactList = ({ contacts, updateContact, updateCallback }) => {
     </div>
 }
 
-export default ContactList
+export default UserList

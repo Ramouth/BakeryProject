@@ -9,7 +9,7 @@ load_dotenv()
 class Config:
     """Base configuration"""
     # Database configuration
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:///bakery_reviews.db')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:///new_bakery_reviews.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Security configurations

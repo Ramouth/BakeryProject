@@ -13,8 +13,8 @@ export const ReviewProvider = ({ children }) => {
   
   // State for the review flow
   const [selectedBakery, setSelectedBakery] = useState(null);
-  const [selectedPastry, setSelectedPastry] = useState(null);
-  const [pastryRatings, setPastryRatings] = useState({
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [productRatings, setProductRatings] = useState({
     overall: 0,  
     taste: 0,    
     price: 0,    
@@ -45,11 +45,11 @@ export const ReviewProvider = ({ children }) => {
       case 'bakerySelection':
         navigate('/bakery-selection');
         break;
-      case 'pastrySelection':
-        navigate('/pastry-selection');
+      case 'productSelection':
+        navigate('/product-selection');
         break;
-      case 'pastryRating':
-        navigate('/pastry-rating');
+      case 'productRating':
+        navigate('/product-rating');
         break;
       case 'reviewOptions':
         navigate('/bakery-rating');
@@ -73,11 +73,11 @@ export const ReviewProvider = ({ children }) => {
     // Reset bakery selection
     setSelectedBakery(null);
     
-    // Reset pastry selection
-    setSelectedPastry(null);
+    // Reset product selection
+    setSelectedProduct(null);
     
-    // Reset pastry ratings
-    setPastryRatings({
+    // Reset product ratings
+    setProductRatings({
       overall: 0, 
       taste: 0,  
       price: 0,  
@@ -109,10 +109,10 @@ export const ReviewProvider = ({ children }) => {
     }
   }, []);
   
-  // Submit pastry review - Updated to support anonymous reviews
-  const submitPastryReview = useCallback(async () => {
+  // Submit product review - Updated to support anonymous reviews
+  const submitProductReview = useCallback(async () => {
     // Validate overall rating is greater than 0
-    if (pastryRatings.overall <= 0) {
+    if (productRatings.overall <= 0) {
       setError('Please provide an overall rating');
       return Promise.reject(new Error('Overall rating must be greater than 0'));
     }
@@ -121,31 +121,31 @@ export const ReviewProvider = ({ children }) => {
     setError(null);
     
     try {
-      // Build review data - contactId is now optional
+      // Build review data - userId is now optional
       const reviewData = {
-        review: pastryRatings.comments || "Great pastry!",
-        overallRating: parseInt(pastryRatings.overall),
-        tasteRating: parseInt(pastryRatings.taste),
-        priceRating: parseInt(pastryRatings.price),
-        presentationRating: parseInt(pastryRatings.presentation),
-        pastryId: selectedPastry.id
+        review: productRatings.comments || "Great product!",
+        overallRating: parseInt(productRatings.overall),
+        tasteRating: parseInt(productRatings.taste),
+        priceRating: parseInt(productRatings.price),
+        presentationRating: parseInt(productRatings.presentation),
+        productId: selectedProduct.id
       };
       
-      // Only include contactId if user is logged in
+      // Only include userId if user is logged in
       if (currentUser && currentUser.id) {
-        reviewData.contactId = currentUser.id;
+        reviewData.userId = currentUser.id;
       }
       
       // Submit to API
-      const response = await reviewService.createPastryReview(reviewData);
+      const response = await reviewService.createProductReview(reviewData);
       return response;
     } catch (error) {
-      setError('Failed to submit pastry review: ' + error.message);
+      setError('Failed to submit product review: ' + error.message);
       throw error;
     } finally {
       setIsSubmitting(false);
     }
-  }, [selectedPastry, pastryRatings, currentUser]);
+  }, [selectedProduct, productRatings, currentUser]);
   
   // Submit bakery review - Updated to support anonymous reviews
   const submitBakeryReview = useCallback(async () => {
@@ -159,7 +159,7 @@ export const ReviewProvider = ({ children }) => {
     setError(null);
     
     try {
-      // Build review data - contactId is now optional
+      // Build review data - userId is now optional
       const reviewData = {
         review: bakeryRatings.comments || "Great bakery!",
         overallRating: parseInt(bakeryRatings.overall),
@@ -170,9 +170,9 @@ export const ReviewProvider = ({ children }) => {
         bakeryId: selectedBakery.id
       };
       
-      // Only include contactId if user is logged in
+      // Only include userId if user is logged in
       if (currentUser && currentUser.id) {
-        reviewData.contactId = currentUser.id;
+        reviewData.userId = currentUser.id;
       }
       
       // Submit to API
@@ -216,10 +216,10 @@ export const ReviewProvider = ({ children }) => {
   const value = {
     selectedBakery,
     setSelectedBakery,
-    selectedPastry,
-    setSelectedPastry,
-    pastryRatings,
-    setPastryRatings,
+    selectedProduct,
+    setSelectedProduct,
+    productRatings,
+    setProductRatings,
     bakeryRatings,
     setBakeryRatings,
     experienceRating,
@@ -227,7 +227,7 @@ export const ReviewProvider = ({ children }) => {
     isSubmitting,
     error,
     resetReview,
-    submitPastryReview,
+    submitProductReview,
     submitBakeryReview,
     submitExperienceRating,
     goToNextStep

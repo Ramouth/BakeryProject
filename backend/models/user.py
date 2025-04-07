@@ -2,45 +2,62 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Index
 from sqlalchemy.orm import relationship
 from . import db
+from flask_bcrypt import generate_password_hash, check_password_hash
 
-class Contact(db.Model):
-    """User model representing users of the system"""
-    __tablename__ = 'contact'
+class User(db.Model):
+    """User model with username and password"""
+    __tablename__ = 'user'  # Keep the table name for compatibility
     
     id = Column(Integer, primary_key=True)
-    first_name = Column(String(80), nullable=False)
-    last_name = Column(String(80), nullable=False)
+    
+    # Replace first/last name with username
+    username = Column(String(80), nullable=False, unique=True)
     email = Column(String(120), unique=True, nullable=False)
+    
+    # New fields
+    password_hash = Column(String(128), nullable=False)
+    profile_picture = Column(Integer, default=1, nullable=True)
+    
     is_admin = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
-    # Relationships
-    bakery_reviews = relationship('BakeryReview', back_populates='contact', cascade='all, delete-orphan')
-    pastry_reviews = relationship('PastryReview', back_populates='contact', cascade='all, delete-orphan')
+    # Relationships - update to work with ProductReview
+    bakery_reviews = relationship('BakeryReview', back_populates='user', cascade='all, delete-orphan')
+    product_reviews = relationship('ProductReview', back_populates='user', cascade='all, delete-orphan')
     
     # Indexes for faster queries
     __table_args__ = (
-        Index('idx_contact_email', 'email', unique=True),
-        Index('idx_contact_name', 'first_name', 'last_name'),
+        Index('idx_user_email', 'email', unique=True),
+        Index('idx_user_username', 'username', unique=True),
     )
     
-    def __init__(self, first_name, last_name, email, is_admin=False):
-        self.first_name = first_name
-        self.last_name = last_name
+    def __init__(self, username, email, password, profile_picture=1, is_admin=False):
+        self.username = username
         self.email = email
+        self.set_password(password)
+        self.profile_picture = profile_picture
         self.is_admin = is_admin
     
+    # Password methods
+    def set_password(self, password):
+        """Hash and set the user password"""
+        self.password_hash = generate_password_hash(password)
+    
+    def check_password(self, password):
+        """Verify password against stored hash"""
+        return check_password_hash(self.password_hash, password)
+    
     def __repr__(self):
-        return f'<Contact {self.first_name} {self.last_name}>'
+        return f'<User {self.username}>'
     
     def to_json(self):
         """Convert to JSON serializable dictionary"""
         return {
             'id': self.id,
-            'firstName': self.first_name,
-            'lastName': self.last_name,
+            'username': self.username,
             'email': self.email,
+            'profilePicture': self.profile_picture,
             'isAdmin': self.is_admin,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None

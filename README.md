@@ -1,6 +1,6 @@
 # CrumbCompass: Bakery Review System
 
-A full-stack web application for reviewing bakeries and pastries in Copenhagen.
+A full-stack web application for reviewing bakeries and products in Copenhagen.
 
 ## Project Structure
 
@@ -24,8 +24,8 @@ This project follows the MVVM (Model-View-ViewModel) architecture pattern and is
 ## Features
 
 - Bakery management (create, read, update, delete)
-- Pastry management linked to bakeries
-- Reviews for both bakeries and pastries
+- product management linked to bakeries
+- Reviews for both bakeries and products
 - User authentication and authorization
 - Admin dashboard for data management
 - Optimized performance with caching
@@ -118,13 +118,13 @@ npm run dev
 - PATCH `/bakeries/update/:id` - Update a bakery
 - DELETE `/bakeries/delete/:id` - Delete a bakery
 
-### Pastries
-- GET `/pastries` - Get all pastries
-- GET `/pastries/:id` - Get pastry by ID
-- GET `/pastries/bakery/:bakeryId` - Get pastries by bakery
-- POST `/pastries/create` - Create a pastry
-- PATCH `/pastries/update/:id` - Update a pastry
-- DELETE `/pastries/delete/:id` - Delete a pastry
+### Products
+- GET `/products` - Get all products
+- GET `/products/:id` - Get product by ID
+- GET `/products/bakery/:bakeryId` - Get products by bakery
+- POST `/products/create` - Create a product
+- PATCH `/products/update/:id` - Update a product
+- DELETE `/products/delete/:id` - Delete a product
 
 ### Reviews
 - GET `/bakeryreviews` - Get all bakery reviews
@@ -133,18 +133,18 @@ npm run dev
 - PATCH `/bakeryreviews/update/:id` - Update a bakery review
 - DELETE `/bakeryreviews/delete/:id` - Delete a bakery review
 
-- GET `/pastryreviews` - Get all pastry reviews
-- GET `/pastryreviews/pastry/:pastryId` - Get reviews by pastry
-- POST `/pastryreviews/create` - Create a pastry review
-- PATCH `/pastryreviews/update/:id` - Update a pastry review
-- DELETE `/pastryreviews/delete/:id` - Delete a pastry review
+- GET `/productreviews` - Get all product reviews
+- GET `/productreviews/product/:productId` - Get reviews by product
+- POST `/productreviews/create` - Create a product review
+- PATCH `/productreviews/update/:id` - Update a product review
+- DELETE `/productreviews/delete/:id` - Delete a product review
 
-### Contacts
-- GET `/contacts` - Get all contacts/users
-- GET `/contacts/:id` - Get contact by ID
-- POST `/contacts/create` - Create a contact
-- PATCH `/contacts/update/:id` - Update a contact
-- DELETE `/contacts/delete/:id` - Delete a contact
+### Users
+- GET `/users` - Get all users/users
+- GET `/users/:id` - Get user by ID
+- POST `/users/create` - Create a user
+- PATCH `/users/update/:id` - Update a user
+- DELETE `/users/delete/:id` - Delete a user
 
 ## Contributors
 
