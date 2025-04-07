@@ -6,8 +6,8 @@ import ProgressBar from './Progressbar'; //
 const reviewSteps = [
   { label: 'Start', path: '/' },
   { label: 'Bakery', path: '/bakery-selection' },
-  { label: 'Pastry', path: '/pastry-selection' },
-  { label: 'Rate Pastry', path: '/pastry-rating' },
+  { label: 'Product', path: '/product-selection' },
+  { label: 'Rate Product', path: '/product-rating' },
   { label: 'Rate Bakery', path: '/bakery-rating' },
   { label: 'Finish', path: '/thank-you' }
 ];

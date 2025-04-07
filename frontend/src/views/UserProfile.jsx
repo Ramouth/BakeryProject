@@ -106,7 +106,7 @@ const UserProfile = () => {
   const handleProfileUpdate = async () => {
     try {
       // In a real app, this would be an API call to update the user profile
-      // await userService.updateContact(currentUser.id, userInfo);
+      // await userService.updateUser(currentUser.id, userInfo);
       
       // For demo purposes, we'll just update the state
       setEditMode(false);

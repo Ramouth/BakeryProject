@@ -2,44 +2,46 @@ import { memo } from "react";
 import PropTypes from "prop-types";
 import Button from "../Button";
 
-const PastryList = ({ pastries, onEdit, onDelete }) => {
-  if (!pastries.length) {
-    return <p className="no-data">No pastries found. Create one to get started.</p>;
+const ProductList = ({ products, onEdit, onDelete }) => {
+  if (!products.length) {
+    return <p className="no-data">No products found. Create one to get started.</p>;
   }
 
   return (
     <div className="table-responsive">
-      <table className="table pastry-table">
+      <table className="table product-table">
         <thead>
           <tr>
             <th>ID</th>
-            <th>Pastry Name</th>
+            <th>Product Name</th>
             <th>Bakery</th>
+            <th>Category</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {pastries.map((pastry) => (
-            <tr key={pastry.id}>
-              <td>{pastry.id}</td>
-              <td>{pastry.name}</td>
+          {products.map((product) => (
+            <tr key={product.id}>
+              <td>{product.id}</td>
+              <td>{product.name}</td>
               <td>
-                {pastry.bakery ? pastry.bakery.name : "No Bakery"}
+                {product.bakery ? product.bakery.name : "No Bakery"}
               </td>
+              <td>{product.category || "No Category"}</td>
               <td className="actions">
                 <Button 
                   variant="secondary" 
                   size="small" 
-                  onClick={() => onEdit(pastry)}
-                  aria-label={`Edit ${pastry.name}`}
+                  onClick={() => onEdit(product)}
+                  aria-label={`Edit ${product.name}`}
                 >
                   Edit
                 </Button>
                 <Button 
                   variant="danger" 
                   size="small" 
-                  onClick={() => onDelete(pastry.id)}
-                  aria-label={`Delete ${pastry.name}`}
+                  onClick={() => onDelete(product.id)}
+                  aria-label={`Delete ${product.name}`}
                 >
                   Delete
                 </Button>
@@ -52,8 +54,8 @@ const PastryList = ({ pastries, onEdit, onDelete }) => {
   );
 };
 
-PastryList.propTypes = {
-  pastries: PropTypes.arrayOf(
+ProductList.propTypes = {
+  products: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
       name: PropTypes.string.isRequired,
@@ -67,4 +69,4 @@ PastryList.propTypes = {
 };
 
 // Use memo to prevent unnecessary re-renders
-export default memo(PastryList);
+export default memo(ProductList);
