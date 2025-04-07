@@ -24,7 +24,7 @@ const BakeryProfile = () => {
         name: "Lagkagehuset",
         location: "Torvegade 45, 1400 København K",
         zipCode: "1400",
-        description: "Lagkagehuset is a high-quality Danish bakery chain known for their wide selection of pastries, bread, and cakes. Their kanelsnegl (cinnamon rolls) are especially popular.",
+        description: "Lagkagehuset is a high-quality Danish bakery chain known for their wide selection of products, bread, and cakes. Their kanelsnegl (cinnamon rolls) are especially popular.",
         openingHours: {
           monday: "7:00 - 19:00",
           tuesday: "7:00 - 19:00",
@@ -60,7 +60,7 @@ const BakeryProfile = () => {
             userName: "Jacob P.",
             date: "October 18, 2024",
             rating: 4,
-            comment: "Great selection of Danish pastries. A bit pricey but the quality justifies it. Very good tebirkes."
+            comment: "Great selection of Danish products. A bit pricey but the quality justifies it. Very good tebirkes."
           },
           {
             id: 3,

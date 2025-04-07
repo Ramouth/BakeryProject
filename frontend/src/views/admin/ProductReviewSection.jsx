@@ -1,14 +1,14 @@
-// src/views/admin/BakeryReviewSection.jsx
+// src/views/admin/ProductReviewSection.jsx
 import { useState, useEffect } from "react";
-import BakeryReviewList from "../../components/admin/BakeryReviewList";
-import BakeryReviewForm from "../../components/admin/BakeryReviewForm";
+import ProductReviewList from "../../components/admin/ProductReviewList";
+import ProductReviewForm from "../../components/admin/ProductReviewForm";
 import Modal from "../../components/Modal";
 import Button from "../../components/Button";
 
-const BakeryReviewSection = () => {
+const ProductReviewSection = () => {
   // State management
   const [reviews, setReviews] = useState([]);
-  const [bakeries, setBakeries] = useState([]);
+  const [products, setProducts] = useState([]);
   const [users, setUsers] = useState([]); 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentReview, setCurrentReview] = useState({});
@@ -26,7 +26,7 @@ const BakeryReviewSection = () => {
     try {
       await Promise.all([
         fetchReviews(),
-        fetchBakeries(),
+        fetchProducts(),
         fetchUsers()
       ]);
     } catch (err) {
@@ -37,20 +37,20 @@ const BakeryReviewSection = () => {
     }
   };
 
-  // Fetch bakery reviews
+  // Fetch product reviews
   const fetchReviews = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:5000/bakeryreviews");
+      const response = await fetch("http://127.0.0.1:5000/productreviews");
       if (!response.ok) {
         throw new Error(`HTTP error ${response.status}`);
       }
       const data = await response.json();
       
       // Debug the response structure
-      console.log("Bakery reviews API response:", data);
+      console.log("Product reviews API response:", data);
       
       // Check the correct property name in the response
-      const reviewsArray = data.bakeryReviews || data.bakeryreviews || [];
+      const reviewsArray = data.productReviews || data.productreviews || [];
       setReviews(reviewsArray);
       
       return reviewsArray;
@@ -62,21 +62,21 @@ const BakeryReviewSection = () => {
     }
   };
 
-  // Fetch bakeries
-  const fetchBakeries = async () => {
+  // Fetch products
+  const fetchProducts = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:5000/bakeries");
+      const response = await fetch("http://127.0.0.1:5000/products");
       if (!response.ok) {
         throw new Error(`HTTP error ${response.status}`);
       }
       const data = await response.json();
-      console.log("Bakeries API response:", data);
-      const bakeriesArray = data.bakeries || [];
-      setBakeries(bakeriesArray);
-      return bakeriesArray;
+      console.log("Products API response:", data);
+      const productsArray = data.products || [];
+      setProducts(productsArray);
+      return productsArray;
     } catch (error) {
-      console.error("Error fetching bakeries:", error);
-      setBakeries([]);
+      console.error("Error fetching products:", error);
+      setProducts([]);
       return [];
     }
   };
@@ -123,20 +123,20 @@ const BakeryReviewSection = () => {
   };
 
   if (isLoading && !reviews.length) {
-    return <div className="loading">Loading bakery reviews...</div>;
+    return <div className="loading">Loading product reviews...</div>;
   }
 
   return (
     <div className="section">
       <div className="section-header">
-        <h2>Manage Bakery Reviews</h2>
+        <h2>Manage Product Reviews</h2>
         <Button onClick={openCreateModal}>Add New Review</Button>
       </div>
 
       {error && <div className="error-message">{error}</div>}
       
       {/* Pass an empty array if reviews is undefined to prevent the error */}
-      <BakeryReviewList 
+      <ProductReviewList 
         reviews={reviews || []} 
         updateReview={openEditModal} 
         updateCallback={fetchReviews} 
@@ -145,11 +145,11 @@ const BakeryReviewSection = () => {
       <Modal 
         isOpen={isModalOpen} 
         onClose={closeModal}
-        title={Object.keys(currentReview).length ? "Edit Bakery Review" : "Create Bakery Review"}
+        title={Object.keys(currentReview).length ? "Edit Product Review" : "Create Product Review"}
       >
-        <BakeryReviewForm 
+        <ProductReviewForm 
           existingReview={currentReview} 
-          bakeries={bakeries || []} 
+          products={products || []} 
           users={users || []} 
           updateCallback={handleFormSubmitComplete} 
         />
@@ -158,4 +158,4 @@ const BakeryReviewSection = () => {
   );
 };
 
-export default BakeryReviewSection;
+export default ProductReviewSection;

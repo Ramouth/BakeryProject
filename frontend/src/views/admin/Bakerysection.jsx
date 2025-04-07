@@ -1,5 +1,5 @@
+// src/views/admin/BakerySection.jsx
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { bakeryService } from "../../services";
 import Modal from "../../components/Modal";
 import Button from "../../components/Button";
 import BakeryForm from "../../components/admin/BakeryForm";
@@ -19,8 +19,13 @@ const useBakeryViewModel = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await bakeryService.getAllBakeries();
-      setBakeries(data || []);
+      const response = await fetch("http://127.0.0.1:5000/bakeries");
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`);
+      }
+      const data = await response.json();
+      console.log("Bakeries API response:", data);
+      setBakeries(data.bakeries || []);
     } catch (err) {
       setError("Failed to fetch bakeries. Please try again.");
       console.error(err);
@@ -50,29 +55,77 @@ const useBakeryViewModel = () => {
   }, []);
 
   // Form submission handler with optimistic updates
-  const handleFormSubmit = useCallback(async (bakeryData) => {
+  const handleFormSubmit = useCallback(async (formData) => {
     setIsLoading(true);
     try {
-      let updatedBakery;
+      let response;
+      
+      // Log the exact data being sent
+      console.log("Form data being submitted:", formData);
+      
+      // Check for required fields
+      if (!formData.name || !formData.zipCode || !formData.streetName || !formData.streetNumber) {
+        console.error("Missing required fields:", {
+          name: !!formData.name,
+          zipCode: !!formData.zipCode,
+          streetName: !!formData.streetName,
+          streetNumber: !!formData.streetNumber
+        });
+        throw new Error("Missing required fields");
+      }
       
       if (currentBakery.id) {
+        // Update existing bakery
         const optimisticBakeries = bakeries.map(b => 
-          b.id === currentBakery.id ? { ...b, ...bakeryData } : b
+          b.id === currentBakery.id ? { ...b, ...formData } : b
         );
         setBakeries(optimisticBakeries);
         
-        updatedBakery = await bakeryService.updateBakery(currentBakery.id, bakeryData);
+        response = await fetch(`http://127.0.0.1:5000/bakeries/update/${currentBakery.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData)
+        });
       } else {
-        updatedBakery = await bakeryService.createBakery(bakeryData);
-        setBakeries(prev => [...prev, updatedBakery.bakery]);
+        // Create new bakery
+        response = await fetch(`http://127.0.0.1:5000/bakeries/create`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData)
+        });
       }
+      
+      // Get response body regardless of status
+      const responseBody = await response.clone().text();
+      console.log("Response status:", response.status);
+      console.log("Response body:", responseBody);
+      
+      if (!response.ok) {
+        // Try to get more detailed error information
+        let errorMessage = `HTTP error ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+          console.error("API Error Details:", errorData);
+        } catch (e) {
+          console.error("Could not parse error response:", responseBody);
+        }
+        throw new Error(errorMessage);
+      }
+      
+      const data = await response.json();
+      console.log("Save bakery response:", data);
       
       closeModal();
       // Trigger a refresh to ensure data consistency
       setLastUpdate(Date.now());
     } catch (err) {
       console.error("Failed to save bakery:", err);
-      setError("Failed to save. Please check your data and try again.");
+      setError(`Failed to save: ${err.message}`);
       // Revert optimistic updates by re-fetching data
       fetchBakeries();
     } finally {
@@ -89,7 +142,14 @@ const useBakeryViewModel = () => {
         const optimisticBakeries = bakeries.filter(b => b.id !== id);
         setBakeries(optimisticBakeries);
         
-        await bakeryService.deleteBakery(id);
+        const response = await fetch(`http://127.0.0.1:5000/bakeries/delete/${id}`, {
+          method: 'DELETE'
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error ${response.status}`);
+        }
+        
         // Refresh data to ensure consistency
         setLastUpdate(Date.now());
       } catch (err) {

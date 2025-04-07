@@ -31,7 +31,7 @@ const useBakeryRankingsViewModel = () => {
       name: "Hart Bageri",
       location: "Gl. Kongevej 109, 1850 Frederiksberg",
       zipCode: "1850",
-      description: "Amazing sourdough bread and Danish pastries",
+      description: "Amazing sourdough bread and Danish products",
       rating: 4.8,
       reviewCount: 287,
       topItem: "Sourdough Bread",
@@ -42,7 +42,7 @@ const useBakeryRankingsViewModel = () => {
       name: "Lagkagehuest Torvegade",
       location: "Torvegade 45, 1400 København K",
       zipCode: "1400",
-      description: "High-quality Danish pastries and cakes",
+      description: "High-quality Danish products and cakes",
       rating: 4.7,
       reviewCount: 458,
       topItem: "Kanelsnegl",
@@ -53,7 +53,7 @@ const useBakeryRankingsViewModel = () => {
       name: "Andersen Bakery Thorvaldsensvej",
       location: "Thorvaldsensvej 2, 1871 Frederiksberg",
       zipCode: "1871",
-      description: "Authentic Danish pastries with a modern twist",
+      description: "Authentic Danish products with a modern twist",
       rating: 4.7,
       reviewCount: 178,
       topItem: "Tebirkes",
@@ -75,7 +75,7 @@ const useBakeryRankingsViewModel = () => {
       name: "Bageriet Brød",
       location: "Anker Heegaards Gade 2, 1572 København V",
       zipCode: "1572",
-      description: "Small artisan bakery with excellent bread and pastries",
+      description: "Small artisan bakery with excellent bread and products",
       rating: 4.5,
       reviewCount: 124,
       topItem: "Croissant",
@@ -212,7 +212,7 @@ const BakeryRankings = () => {
               className="search-dropdown"
             >
               <option value="bakeries">Find Bakeries</option>
-              <option value="pastries">Find Pastries</option>
+              <option value="products">Find Products</option>
               <option value="reviews">Browse Reviews</option>
             </select>
           </div>

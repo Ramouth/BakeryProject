@@ -1,11 +1,11 @@
 import { useState } from "react";
 
-const ContactForm = ({ existingContact = {}, updateCallback }) => {
-    const [firstName, setFirstName] = useState(existingContact.firstName || "");
-    const [lastName, setLastName] = useState(existingContact.lastName || "");
-    const [email, setEmail] = useState(existingContact.email || "");
+const UserForm = ({ existingUser = {}, updateCallback }) => {
+    const [firstName, setFirstName] = useState(existingUser.firstName || "");
+    const [lastName, setLastName] = useState(existingUser.lastName || "");
+    const [email, setEmail] = useState(existingUser.email || "");
 
-    const updating = Object.entries(existingContact).length !== 0
+    const updating = Object.entries(existingUser).length !== 0
 
     const onSubmit = async (e) => {
         e.preventDefault()
@@ -15,7 +15,7 @@ const ContactForm = ({ existingContact = {}, updateCallback }) => {
             lastName,
             email
         }
-        const url = "http://127.0.0.1:5000/contacts/" + (updating ? `update/${existingContact.id}` : "create")
+        const url = "http://127.0.0.1:5000/users/" + (updating ? `update/${existingUser.id}` : "create")
         const options = {
             method: updating ? "PATCH" : "POST",
             headers: {
@@ -66,4 +66,4 @@ const ContactForm = ({ existingContact = {}, updateCallback }) => {
     );
 };
 
-export default ContactForm
+export default UserForm

@@ -11,7 +11,7 @@ const ProductCategorySelection = () => {
   const [categories] = useState([
     {
       id: 'danish',
-      name: 'Danish Pastries',
+      name: 'Danish Products',
       products: [
         { id: 'kanelsnegl', name: 'Kanelsnegle' },
         { id: 'spandauer', name: 'Spandauer' },
@@ -93,7 +93,7 @@ const ProductCategorySelection = () => {
     <div className="container">
       <div className="category-selection-header">
         <h1>Product Categories</h1>
-        <p>Browse our product categories and discover the best-rated Danish pastries</p>
+        <p>Browse our product categories and discover the best-rated Danish products</p>
       </div>
 
       {loading ? (

@@ -41,13 +41,13 @@ export const UserProvider = ({ children }) => {
     try {
       const mockPassword = 'admin123';
       let user;
-      let contacts = [];
+      let users = [];
       
       try {
-        // Attempt to fetch contacts and find user
-        const response = await apiClient.get('/contacts');
-        contacts = response.contacts || [];
-        user = contacts.find(contact => contact.email === email);
+        // Attempt to fetch users and find user
+        const response = await apiClient.get('/users');
+        users = response.users || [];
+        user = users.find(user => user.email === email);
       } catch (apiError) {
         console.error('API connection error:', apiError);
         
@@ -119,12 +119,12 @@ export const UserProvider = ({ children }) => {
     setError(null);
     
     try {
-      const response = await apiClient.post('/contacts/create', userData);
+      const response = await apiClient.post('/users/create', userData);
       
-      if (response && response.contact) {
+      if (response && response.user) {
         // Auto-login after successful registration
         const newUser = {
-          ...response.contact,
+          ...response.user,
           isAdmin: false // New users are not admins by default
         };
         
@@ -146,7 +146,7 @@ export const UserProvider = ({ children }) => {
   const logout = useCallback(() => {
     setUser(null);
     // Clear any cached user data
-    apiClient.clearCacheForUrl('/contacts');
+    apiClient.clearCacheForUrl('/users');
   }, [setUser]);
   
   // Memoized context value to prevent unnecessary re-renders

@@ -6,7 +6,7 @@ const HomePage = () => {
   const { resetReview } = useReview();
   const [searchType, setSearchType] = useState('bakeries');
   const [selectedZipCode, setSelectedZipCode] = useState('');
-  const [selectedPastryType, setSelectedPastryType] = useState('');
+  const [selectedProductType, setSelectedProductType] = useState('');
   const [selectedRating, setSelectedRating] = useState('');
   
   // Reset review state when homepage loads
@@ -21,7 +21,7 @@ const HomePage = () => {
     console.log("Searching for:", {
       type: searchType,
       zipCode: selectedZipCode,
-      pastryType: selectedPastryType,
+      productType: selectedProductType,
       rating: selectedRating
     });
   };
@@ -41,7 +41,7 @@ const HomePage = () => {
                 className="search-dropdown"
               >
                 <option value="bakeries">Find Bakeries</option>
-                <option value="pastries">Find Pastries</option>
+                <option value="products">Find Products</option>
                 <option value="reviews">Browse Reviews</option>
                 <option value="topRated">Top Rated</option>
               </select>
@@ -64,14 +64,14 @@ const HomePage = () => {
                 </select>
               )}
               
-              {searchType === 'pastries' && (
+              {searchType === 'products' && (
                 <select 
-                  value={selectedPastryType} 
-                  onChange={(e) => setSelectedPastryType(e.target.value)}
+                  value={selectedProductType} 
+                  onChange={(e) => setSelectedProductType(e.target.value)}
                   className="search-dropdown"
                 >
-                  <option value="">All Pastry Types</option>
-                  <option value="danish">Danish Pastry</option>
+                  <option value="">All Product Types</option>
+                  <option value="danish">Danish Product</option>
                   <option value="bread">Bread</option>
                   <option value="cake">Cakes</option>
                   <option value="croissant">Croissants</option>
@@ -118,7 +118,7 @@ const HomePage = () => {
               <div className="homepage-placeholder-image">Hart Bageri</div>
             </div>
             <h3>Hart Bageri</h3>
-            <p>Famous for their sourdough bread and danish pastries</p>
+            <p>Famous for their sourdough bread and danish products</p>
             <div className="bakery-rating">4.8 ★</div>
           </div>
           
@@ -136,7 +136,7 @@ const HomePage = () => {
               <div className="homepage-placeholder-image">Andersen</div>
             </div>
             <h3>Andersen Bakery</h3>
-            <p>Traditional Danish pastries with a modern twist</p>
+            <p>Traditional Danish products with a modern twist</p>
             <div className="bakery-rating">4.7 ★</div>
           </div>
           

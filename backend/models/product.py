@@ -3,32 +3,37 @@ from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Index
 from sqlalchemy.orm import relationship
 from . import db
 
-class Pastry(db.Model):
-    """Pastry model representing bakery products"""
-    __tablename__ = 'pastry'
+class Product(db.Model):
+    """Product model representing bakery products"""
+    __tablename__ = 'product'
     
     id = Column(Integer, primary_key=True)
     name = Column(String(80), nullable=False)
     bakery_id = Column(Integer, ForeignKey('bakery.id', ondelete='CASCADE'), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    category = Column(String(50), nullable=True)
+    image_url = Column(String(255), nullable=True)
     
     # Relationships
-    bakery = relationship('Bakery', back_populates='pastries')
-    pastry_reviews = relationship('PastryReview', back_populates='pastry', cascade='all, delete-orphan')
+    bakery = relationship('Bakery', back_populates='products')
+    product_reviews = relationship('ProductReview', back_populates='product', cascade='all, delete-orphan')
     
     # Indexes for faster queries
     __table_args__ = (
-        Index('idx_pastry_name', 'name'),
-        Index('idx_pastry_bakery_id', 'bakery_id'),
+        Index('idx_product_name', 'name'),
+        Index('idx_product_bakery_id', 'bakery_id'),
     )
     
-    def __init__(self, name, bakery_id):
+    def __init__(self, name, bakery_id, category=None, image_url=None):
         self.name = name
         self.bakery_id = bakery_id
+        self.category = category
+        self.image_url = image_url
     
     def __repr__(self):
-        return f'<Pastry {self.name}>'
+        return f'<product {self.name}>'
     
     def to_json(self):
         """Convert to JSON serializable dictionary"""
@@ -36,6 +41,8 @@ class Pastry(db.Model):
             'id': self.id,
             'name': self.name,
             'bakeryId': self.bakery_id,
+            'category': self.category,
+            'imageUrl': self.image_url,
             'bakery': {
                 'id': self.bakery.id,
                 'name': self.bakery.name
