@@ -1,5 +1,5 @@
 from dal.bakery_dal import BakeryDAL
-from models import BakeryReview
+from models import db, Bakery, BakeryReview
 from sqlalchemy.exc import SQLAlchemyError
 
 class BakeryService:
