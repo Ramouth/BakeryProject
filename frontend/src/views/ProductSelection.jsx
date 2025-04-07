@@ -2,52 +2,52 @@ import { useState, useEffect } from 'react';
 import { useReview } from '../store/ReviewContext';
 import bakeryService from '../services/bakeryService'; // Import the bakery service
 
-const PastrySelection = () => {
-  const { selectedBakery, selectedPastry, setSelectedPastry, goToNextStep } = useReview();
-  const [pastries, setPastries] = useState([]);
+const ProductSelection = () => {
+  const { selectedBakery, selectedProduct, setSelectedProduct, goToNextStep } = useReview();
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [customPastryName, setCustomPastryName] = useState('');
+  const [customProductName, setCustomProductName] = useState('');
   const [showCustom, setShowCustom] = useState(false);
 
-  // Fetch pastries from API based on selected bakery
+  // Fetch products from API based on selected bakery
   useEffect(() => {
-    const fetchPastries = async () => {
+    const fetchProducts = async () => {
       if (selectedBakery) {
         try {
-          // Fetch pastries using the bakeryService.getBakeryPastries method
-          const pastriesData = await bakeryService.getBakeryPastries(selectedBakery.id);
-          setPastries(pastriesData);
+          // Fetch products using the bakeryService.getBakeryProducts method
+          const productsData = await bakeryService.getBakeryProducts(selectedBakery.id);
+          setProducts(productsData);
           setLoading(false);
         } catch (err) {
-          setError('Failed to load pastries. Please try again later.');
+          setError('Failed to load products. Please try again later.');
           setLoading(false);
         }
       }
     };
 
-    fetchPastries();
-  }, [selectedBakery]); // Re-fetch pastries when the selected bakery changes
+    fetchProducts();
+  }, [selectedBakery]); // Re-fetch products when the selected bakery changes
 
-  // Handle pastry selection
-  const handlePastrySelect = (pastry) => {
-    setSelectedPastry(pastry);
+  // Handle product selection
+  const handleProductSelect = (product) => {
+    setSelectedProduct(product);
     setShowCustom(false);
   };
 
   // Handle "Other" option
   const handleOtherSelect = () => {
     setShowCustom(true);
-    setSelectedPastry(null);
+    setSelectedProduct(null);
   };
 
-  // Handle custom pastry submission
-  const handleCustomPastrySubmit = () => {
-    if (customPastryName.trim().length > 0) {
-      setSelectedPastry({
+  // Handle custom product submission
+  const handleCustomProductSubmit = () => {
+    if (customProductName.trim().length > 0) {
+      setSelectedProduct({
         id: 'custom',
         name: 'Other',
-        customName: customPastryName,
+        customName: customProductName,
         bakeryId: selectedBakery.id,
       });
     }
@@ -55,13 +55,13 @@ const PastrySelection = () => {
 
   // Handle next step
   const handleNext = () => {
-    if (selectedPastry) {
-      goToNextStep('pastryRating');
+    if (selectedProduct) {
+      goToNextStep('productRating');
     }
   };
 
   if (loading) {
-    return <div className="container"><div className="card">Loading pastries...</div></div>;
+    return <div className="container"><div className="card">Loading products...</div></div>;
   }
 
   if (error) {
@@ -71,17 +71,17 @@ const PastrySelection = () => {
   return (
     <div className="container">
       <div className="card">
-        <h2>Choose a pastry</h2>
+        <h2>Choose a product</h2>
         <p>Selected bakery: {selectedBakery.name}</p>
 
         <div className="dropdown-list">
-          {pastries.map((pastry) => (
+          {products.map((product) => (
             <div 
-              key={pastry.id} 
-              className={`dropdown-item ${selectedPastry && selectedPastry.id === pastry.id ? 'selected' : ''}`}
-              onClick={() => handlePastrySelect(pastry)}
+              key={product.id} 
+              className={`dropdown-item ${selectedProduct && selectedProduct.id === product.id ? 'selected' : ''}`}
+              onClick={() => handleProductSelect(product)}
             >
-              {pastry.name}
+              {product.name}
             </div>
           ))}
           <div 
@@ -96,14 +96,14 @@ const PastrySelection = () => {
           <div className="form-group">
             <input
               type="text"
-              placeholder="Enter pastry name"
-              value={customPastryName}
-              onChange={(e) => setCustomPastryName(e.target.value)}
+              placeholder="Enter product name"
+              value={customProductName}
+              onChange={(e) => setCustomProductName(e.target.value)}
             />
             <button 
               className="btn"
-              onClick={handleCustomPastrySubmit}
-              disabled={customPastryName.trim().length === 0}
+              onClick={handleCustomProductSubmit}
+              disabled={customProductName.trim().length === 0}
             >
               add
             </button>
@@ -127,7 +127,7 @@ const PastrySelection = () => {
           <button 
             className="btn"
             onClick={handleNext}
-            disabled={!selectedPastry}
+            disabled={!selectedProduct}
           >
             next
           </button>
@@ -137,4 +137,4 @@ const PastrySelection = () => {
   );
 };
 
-export default PastrySelection;
+export default ProductSelection;

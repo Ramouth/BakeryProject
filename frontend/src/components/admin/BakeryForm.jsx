@@ -23,14 +23,48 @@ const validationRules = {
       if (!/^\d{4}$/.test(value)) return "Zip code must be a 4-digit number";
       return null;
     }
+  },
+  streetName: {
+    required: true,
+    validator: (value) => {
+      if (!value.trim()) return "Street name is required";
+      return null;
+    }
+  },
+  streetNumber: {
+    required: true,
+    validator: (value) => {
+      if (!value.trim()) return "Street number is required";
+      return null;
+    }
+  },
+  imageUrl: {
+    validator: (value) => {
+      if (value && value.trim().length > 0 && !/^https?:\/\//.test(value)) {
+        return "Image URL must start with http:// or https://";
+      }
+      return null;
+    }
+  },
+  websiteUrl: {
+    validator: (value) => {
+      if (value && value.trim().length > 0 && !/^https?:\/\//.test(value)) {
+        return "Website URL must start with http:// or https://";
+      }
+      return null;
+    }
   }
 };
 
 const BakeryForm = ({ bakery = {}, onSubmit, onCancel, isSubmitting = false }) => {
-  // Form state
+  // Form state with all bakery fields
   const [formData, setFormData] = useState({
     name: "",
-    zipCode: ""
+    zipCode: "",
+    streetName: "",
+    streetNumber: "",
+    imageUrl: "",
+    websiteUrl: ""
   });
   
   // Form errors state
@@ -44,7 +78,11 @@ const BakeryForm = ({ bakery = {}, onSubmit, onCancel, isSubmitting = false }) =
     if (bakery.id) {
       setFormData({
         name: bakery.name || "",
-        zipCode: bakery.zipCode || ""
+        zipCode: bakery.zipCode || "",
+        streetName: bakery.streetName || "",
+        streetNumber: bakery.streetNumber || "",
+        imageUrl: bakery.imageUrl || "",
+        websiteUrl: bakery.websiteUrl || ""
       });
     }
   }, [bakery]);
@@ -62,16 +100,21 @@ const BakeryForm = ({ bakery = {}, onSubmit, onCancel, isSubmitting = false }) =
     const newErrors = {};
     let isValid = true;
     
+    // Log the current form state
+    console.log("Current form data for validation:", formData);
+    
     // Check each field with its validation rule
     Object.keys(validationRules).forEach(fieldName => {
       const error = validateField(fieldName, formData[fieldName]);
       if (error) {
         newErrors[fieldName] = error;
         isValid = false;
+        console.warn(`Validation error for ${fieldName}:`, error);
       }
     });
     
     setErrors(newErrors);
+    console.log("Form valid:", isValid);
     return isValid;
   }, [formData, validateField]);
 
@@ -102,18 +145,22 @@ const BakeryForm = ({ bakery = {}, onSubmit, onCancel, isSubmitting = false }) =
   }, [isFormSubmitted, touched, validateField]);
 
   // Handle form submission
-  const handleSubmit = useCallback((e) => {
-    e.preventDefault();
-    setIsFormSubmitted(true);
-    
-    if (validateForm()) {
-      onSubmit({
-        name: formData.name.trim(),
-        zipCode: formData.zipCode.trim()
-      });
-    }
-  }, [formData, onSubmit, validateForm]);
-
+const handleSubmit = useCallback((e) => {
+  e.preventDefault();
+  setIsFormSubmitted(true);
+  
+  if (validateForm()) {
+    onSubmit({
+      name: formData.name.trim(),
+      zipCode: formData.zipCode.trim(),
+      streetName: formData.streetName.trim(),
+      streetNumber: formData.streetNumber.trim(),
+      // Change these to empty strings instead of null
+      imageUrl: formData.imageUrl.trim() || "",  // Changed from null to ""
+      websiteUrl: formData.websiteUrl.trim() || ""  // Changed from null to ""
+    });
+  }
+}, [formData, onSubmit, validateForm]);
   // Form is valid when there are no errors
   const isFormValid = useMemo(() => {
     return Object.values(errors).every(error => error === null || error === undefined);
@@ -122,7 +169,7 @@ const BakeryForm = ({ bakery = {}, onSubmit, onCancel, isSubmitting = false }) =
   return (
     <form onSubmit={handleSubmit} className="form bakery-form">
       <div className="form-group">
-        <label htmlFor="name">Bakery Name:</label>
+        <label htmlFor="name">Bakery Name: *</label>
         <input
           type="text"
           id="name"
@@ -140,7 +187,7 @@ const BakeryForm = ({ bakery = {}, onSubmit, onCancel, isSubmitting = false }) =
       </div>
       
       <div className="form-group">
-        <label htmlFor="zipCode">Zip Code:</label>
+        <label htmlFor="zipCode">Zip Code: *</label>
         <input
           type="text"
           id="zipCode"
@@ -155,6 +202,78 @@ const BakeryForm = ({ bakery = {}, onSubmit, onCancel, isSubmitting = false }) =
         />
         {touched.zipCode && errors.zipCode && (
           <div className="error-text">{errors.zipCode}</div>
+        )}
+      </div>
+      
+      <div className="form-group">
+        <label htmlFor="streetName">Street Name: *</label>
+        <input
+          type="text"
+          id="streetName"
+          name="streetName"
+          value={formData.streetName}
+          onChange={handleChange}
+          onBlur={() => setTouched(prev => ({ ...prev, streetName: true }))}
+          className={touched.streetName && errors.streetName ? "error" : ""}
+          disabled={isSubmitting}
+          required
+        />
+        {touched.streetName && errors.streetName && (
+          <div className="error-text">{errors.streetName}</div>
+        )}
+      </div>
+      
+      <div className="form-group">
+        <label htmlFor="streetNumber">Street Number: *</label>
+        <input
+          type="text"
+          id="streetNumber"
+          name="streetNumber"
+          value={formData.streetNumber}
+          onChange={handleChange}
+          onBlur={() => setTouched(prev => ({ ...prev, streetNumber: true }))}
+          className={touched.streetNumber && errors.streetNumber ? "error" : ""}
+          disabled={isSubmitting}
+          required
+        />
+        {touched.streetNumber && errors.streetNumber && (
+          <div className="error-text">{errors.streetNumber}</div>
+        )}
+      </div>
+      
+      <div className="form-group">
+        <label htmlFor="imageUrl">Image URL:</label>
+        <input
+          type="text"
+          id="imageUrl"
+          name="imageUrl"
+          value={formData.imageUrl}
+          onChange={handleChange}
+          onBlur={() => setTouched(prev => ({ ...prev, imageUrl: true }))}
+          className={touched.imageUrl && errors.imageUrl ? "error" : ""}
+          placeholder="https://example.com/image.jpg"
+          disabled={isSubmitting}
+        />
+        {touched.imageUrl && errors.imageUrl && (
+          <div className="error-text">{errors.imageUrl}</div>
+        )}
+      </div>
+      
+      <div className="form-group">
+        <label htmlFor="websiteUrl">Website URL:</label>
+        <input
+          type="text"
+          id="websiteUrl"
+          name="websiteUrl"
+          value={formData.websiteUrl}
+          onChange={handleChange}
+          onBlur={() => setTouched(prev => ({ ...prev, websiteUrl: true }))}
+          className={touched.websiteUrl && errors.websiteUrl ? "error" : ""}
+          placeholder="https://example.com"
+          disabled={isSubmitting}
+        />
+        {touched.websiteUrl && errors.websiteUrl && (
+          <div className="error-text">{errors.websiteUrl}</div>
         )}
       </div>
       
@@ -174,7 +293,11 @@ BakeryForm.propTypes = {
   bakery: PropTypes.shape({
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     name: PropTypes.string,
-    zipCode: PropTypes.string
+    zipCode: PropTypes.string,
+    streetName: PropTypes.string,
+    streetNumber: PropTypes.string,
+    imageUrl: PropTypes.string,
+    websiteUrl: PropTypes.string
   }),
   onSubmit: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,

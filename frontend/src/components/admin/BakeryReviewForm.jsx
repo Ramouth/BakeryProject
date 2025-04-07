@@ -1,13 +1,13 @@
 import { useState } from "react";
 
-const BakeryReviewForm = ({ existingReview = {}, updateCallback, contacts, bakeries }) => {
+const BakeryReviewForm = ({ existingReview = {}, updateCallback, users, bakeries }) => {
   const [review, setReview] = useState(existingReview.review || "");
   const [overallRating, setOverallRating] = useState(existingReview.overallRating || 1);
   const [serviceRating, setServiceRating] = useState(existingReview.serviceRating || 1);
   const [priceRating, setPriceRating] = useState(existingReview.priceRating || 1);
   const [atmosphereRating, setAtmosphereRating] = useState(existingReview.atmosphereRating || 1);
   const [locationRating, setLocationRating] = useState(existingReview.locationRating || 1);
-  const [contactId, setContactId] = useState(existingReview.contactId || "");
+  const [userId, setUserId] = useState(existingReview.userId || "");
   const [bakeryId, setBakeryId] = useState(existingReview.bakeryId || ""); 
 
   const updating = Object.entries(existingReview).length !== 0;
@@ -22,7 +22,7 @@ const BakeryReviewForm = ({ existingReview = {}, updateCallback, contacts, baker
       priceRating,
       atmosphereRating,
       locationRating,
-      contactId,
+      userId,
       bakeryId,
     };
 
@@ -108,17 +108,17 @@ const BakeryReviewForm = ({ existingReview = {}, updateCallback, contacts, baker
         />
       </div>
       
-      {/* Dropdown to select an existing contact (user) */}
+      {/* Dropdown to select an existing user (user) */}
       <div>
-        <label>Contact:</label>
+        <label>User:</label>
         <select
-          value={contactId}
-          onChange={(e) => setContactId(e.target.value)}
+          value={userId}
+          onChange={(e) => setUserId(e.target.value)}
         >
-          <option value="">--Select a Contact--</option>
-          {contacts.map((contact) => (
-            <option key={contact.id} value={contact.id}>
-              {contact.firstName} {contact.lastName}
+          <option value="">--Select a User--</option>
+          {users.map((user) => (
+            <option key={user.id} value={user.id}>
+              {user.firstName} {user.lastName}
             </option>
           ))}
         </select>

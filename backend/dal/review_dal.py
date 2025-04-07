@@ -1,11 +1,11 @@
-from models import db, BakeryReview, PastryReview
+from models import db, BakeryReview, productReview
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import func
 
 class ReviewDAL:
     """
     Data Access Layer for Review models
-    Handles all database operations for BakeryReview and PastryReview entities
+    Handles all database operations for BakeryReview and productReview entities
     """
     
     # Bakery Review methods
@@ -25,9 +25,9 @@ class ReviewDAL:
         return BakeryReview.query.filter_by(bakery_id=bakery_id).order_by(BakeryReview.created_at.desc()).all()
     
     @staticmethod
-    def get_bakery_reviews_by_contact(contact_id):
+    def get_bakery_reviews_by_user(user_id):
         """Get all bakery reviews by a specific user"""
-        return BakeryReview.query.filter_by(contact_id=contact_id).order_by(BakeryReview.created_at.desc()).all()
+        return BakeryReview.query.filter_by(user_id=user_id).order_by(BakeryReview.created_at.desc()).all()
     
     @staticmethod
     def create_bakery_review(review_data):
@@ -39,7 +39,7 @@ class ReviewDAL:
             price_rating=review_data['price_rating'],
             atmosphere_rating=review_data['atmosphere_rating'],
             location_rating=review_data['location_rating'],
-            contact_id=review_data['contact_id'],
+            user_id=review_data['user_id'],
             bakery_id=review_data['bakery_id']
         )
         db.session.add(review)
@@ -59,7 +59,7 @@ class ReviewDAL:
         review.price_rating = review_data['price_rating']
         review.atmosphere_rating = review_data['atmosphere_rating']
         review.location_rating = review_data['location_rating']
-        review.contact_id = review_data['contact_id']
+        review.user_id = review_data['user_id']
         review.bakery_id = review_data['bakery_id']
         
         db.session.commit()
@@ -76,47 +76,47 @@ class ReviewDAL:
         db.session.commit()
         return True
     
-    # Pastry Review methods
+    # product Review methods
     @staticmethod
-    def get_all_pastry_reviews():
-        """Get all pastry reviews ordered by creation date (newest first)"""
-        return PastryReview.query.order_by(PastryReview.created_at.desc()).all()
+    def get_all_product_reviews():
+        """Get all product reviews ordered by creation date (newest first)"""
+        return productReview.query.order_by(productReview.created_at.desc()).all()
     
     @staticmethod
-    def get_pastry_review_by_id(review_id):
-        """Get pastry review by ID"""
-        return PastryReview.query.get(review_id)
+    def get_product_review_by_id(review_id):
+        """Get product review by ID"""
+        return productReview.query.get(review_id)
     
     @staticmethod
-    def get_pastry_reviews_by_pastry(pastry_id):
-        """Get all reviews for a specific pastry"""
-        return PastryReview.query.filter_by(pastry_id=pastry_id).order_by(PastryReview.created_at.desc()).all()
+    def get_product_reviews_by_product(product_id):
+        """Get all reviews for a specific product"""
+        return productReview.query.filter_by(product_id=product_id).order_by(productReview.created_at.desc()).all()
     
     @staticmethod
-    def get_pastry_reviews_by_contact(contact_id):
-        """Get all pastry reviews by a specific user"""
-        return PastryReview.query.filter_by(contact_id=contact_id).order_by(PastryReview.created_at.desc()).all()
+    def get_product_reviews_by_user(user_id):
+        """Get all product reviews by a specific user"""
+        return productReview.query.filter_by(user_id=user_id).order_by(productReview.created_at.desc()).all()
     
     @staticmethod
-    def create_pastry_review(review_data):
-        """Create a new pastry review"""
-        review = PastryReview(
+    def create_product_review(review_data):
+        """Create a new product review"""
+        review = productReview(
             review=review_data['review'],
             overall_rating=review_data['overall_rating'],
             taste_rating=review_data['taste_rating'],
             price_rating=review_data['price_rating'],
             presentation_rating=review_data['presentation_rating'],
-            contact_id=review_data['contact_id'],
-            pastry_id=review_data['pastry_id']
+            user_id=review_data['user_id'],
+            product_id=review_data['product_id']
         )
         db.session.add(review)
         db.session.commit()
         return review
     
     @staticmethod
-    def update_pastry_review(review_id, review_data):
-        """Update an existing pastry review"""
-        review = ReviewDAL.get_pastry_review_by_id(review_id)
+    def update_product_review(review_id, review_data):
+        """Update an existing product review"""
+        review = ReviewDAL.get_product_review_by_id(review_id)
         if not review:
             return None
             
@@ -125,16 +125,16 @@ class ReviewDAL:
         review.taste_rating = review_data['taste_rating']
         review.price_rating = review_data['price_rating']
         review.presentation_rating = review_data['presentation_rating']
-        review.contact_id = review_data['contact_id']
-        review.pastry_id = review_data['pastry_id']
+        review.user_id = review_data['user_id']
+        review.product_id = review_data['product_id']
         
         db.session.commit()
         return review
     
     @staticmethod
-    def delete_pastry_review(review_id):
-        """Delete a pastry review"""
-        review = ReviewDAL.get_pastry_review_by_id(review_id)
+    def delete_product_review(review_id):
+        """Delete a product review"""
+        review = ReviewDAL.get_product_review_by_id(review_id)
         if not review:
             return False
             

@@ -1,20 +1,13 @@
-// src/components/admin/BakeryReviewList.jsx
+// src/components/admin/ProductReviewList.jsx
 import React from "react";
 import Button from "../Button";
 
-const BakeryReviewList = ({ reviews, updateReview, updateCallback }) => {
+const ProductReviewList = ({ reviews, updateReview, updateCallback }) => {
   // Ensure reviews is always an array to prevent the map error
   const safeReviews = Array.isArray(reviews) ? reviews : [];
   
   // Add logging to debug what's coming in
-  console.log("Reviews received in BakeryReviewList:", reviews);
-  console.log("Number of reviews:", safeReviews.length);
-  
-  // Log the structure of the first review
-  if (safeReviews.length > 0) {
-    console.log("First review structure:", Object.keys(safeReviews[0]));
-    console.log("First review full details:", JSON.stringify(safeReviews[0], null, 2));
-  }
+  console.log("Reviews received in ProductReviewList:", reviews);
 
   const onDelete = async (id) => {
     try {
@@ -26,7 +19,7 @@ const BakeryReviewList = ({ reviews, updateReview, updateCallback }) => {
       const options = {
         method: "DELETE",
       };
-      const response = await fetch(`http://127.0.0.1:5000/bakeryreviews/delete/${id}`, options);
+      const response = await fetch(`http://127.0.0.1:5000/productreviews/delete/${id}`, options);
       if (response.status === 200) {
         if (typeof updateCallback === 'function') {
           updateCallback();
@@ -41,9 +34,9 @@ const BakeryReviewList = ({ reviews, updateReview, updateCallback }) => {
 
   return (
     <div>
-      <h2>Bakery Reviews</h2>
+      <h2>Product Reviews</h2>
       {safeReviews.length === 0 ? (
-        <p>No bakery reviews found. Create one to get started.</p>
+        <p>No product reviews found. Create one to get started.</p>
       ) : (
         <div className="table-responsive">
           <table className="table">
@@ -51,12 +44,11 @@ const BakeryReviewList = ({ reviews, updateReview, updateCallback }) => {
               <tr>
                 <th>Review</th>
                 <th>Overall Rating</th>
-                <th>Service Rating</th>
+                <th>Taste Rating</th>
                 <th>Price Rating</th>
-                <th>Atmosphere Rating</th>
-                <th>Location Rating</th>
+                <th>Presentation Rating</th>
                 <th>User</th>
-                <th>Bakery</th>
+                <th>Product</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -65,12 +57,11 @@ const BakeryReviewList = ({ reviews, updateReview, updateCallback }) => {
                 <tr key={review.id}>
                   <td>{review.review || "No review text"}</td>
                   <td>{review.overallRating}</td>
-                  <td>{review.serviceRating}</td>
+                  <td>{review.tasteRating}</td>
                   <td>{review.priceRating}</td>
-                  <td>{review.atmosphereRating}</td>
-                  <td>{review.locationRating}</td>
+                  <td>{review.presentationRating}</td>
                   <td>{review.username || 'Anonymous'}</td>
-                  <td>{review.bakery?.name || review.bakery_name || review.bakeryName || '—'}</td>
+                  <td>{review.product?.name || review.product_name || review.productName || '—'}</td>
                   <td>
                     <Button 
                       variant="secondary" 
@@ -95,4 +86,4 @@ const BakeryReviewList = ({ reviews, updateReview, updateCallback }) => {
   );
 };
 
-export default BakeryReviewList;
+export default ProductReviewList;

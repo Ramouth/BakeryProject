@@ -44,37 +44,37 @@ const bakeryServiceFactory = createServiceFactory((api) => ({
   }
 }));
 
-// Pastry service factory
-const pastryServiceFactory = createServiceFactory((api) => ({
-  getAllPastries: async () => {
-    const response = await api.get('/pastries');
-    return response.pastries;
+// Product service factory
+const productServiceFactory = createServiceFactory((api) => ({
+  getAllProducts: async () => {
+    const response = await api.get('/products');
+    return response.products;
   },
   
-  getPastryById: async (id) => {
-    const response = await api.get(`/pastries/${id}`);
+  getProductById: async (id) => {
+    const response = await api.get(`/products/${id}`);
     return response;
   },
   
-  getPastriesByBakery: async (bakeryId) => {
-    const response = await api.get(`/pastries/bakery/${bakeryId}`);
-    return response.pastries;
+  getProductsByBakery: async (bakeryId) => {
+    const response = await api.get(`/products/bakery/${bakeryId}`);
+    return response.products;
   },
   
-  createPastry: async (pastryData) => {
-    return api.post('/pastries/create', pastryData);
+  createProduct: async (productData) => {
+    return api.post('/products/create', productData);
   },
   
-  updatePastry: async (id, pastryData) => {
-    return api.patch(`/pastries/update/${id}`, pastryData);
+  updateProduct: async (id, productData) => {
+    return api.patch(`/products/update/${id}`, productData);
   },
   
-  deletePastry: async (id) => {
-    return api.delete(`/pastries/delete/${id}`);
+  deleteProduct: async (id) => {
+    return api.delete(`/products/delete/${id}`);
   },
   
-  getPastryStats: async (id) => {
-    const response = await api.get(`/pastries/stats/${id}`);
+  getProductStats: async (id) => {
+    const response = await api.get(`/products/stats/${id}`);
     return response;
   }
 }));
@@ -104,58 +104,58 @@ const reviewServiceFactory = createServiceFactory((api) => ({
     return api.delete(`/bakeryreviews/delete/${id}`);
   },
   
-  // Pastry reviews
-  getAllPastryReviews: async () => {
-    const response = await api.get('/pastryreviews');
-    return response.pastryreviews;
+  // Product reviews
+  getAllProductReviews: async () => {
+    const response = await api.get('/productreviews');
+    return response.productreviews;
   },
   
-  getPastryReviewsByPastry: async (pastryId) => {
-    const response = await api.get(`/pastryreviews/pastry/${pastryId}`);
-    return response.pastryreviews;
+  getProductReviewsByProduct: async (productId) => {
+    const response = await api.get(`/productreviews/product/${productId}`);
+    return response.productreviews;
   },
   
-  createPastryReview: async (reviewData) => {
-    return api.post('/pastryreviews/create', reviewData);
+  createProductReview: async (reviewData) => {
+    return api.post('/productreviews/create', reviewData);
   },
   
-  updatePastryReview: async (id, reviewData) => {
-    return api.patch(`/pastryreviews/update/${id}`, reviewData);
+  updateProductReview: async (id, reviewData) => {
+    return api.patch(`/productreviews/update/${id}`, reviewData);
   },
   
-  deletePastryReview: async (id) => {
-    return api.delete(`/pastryreviews/delete/${id}`);
+  deleteProductReview: async (id) => {
+    return api.delete(`/productreviews/delete/${id}`);
   },
 }));
 
-// User/contact service factory
+// User/user service factory
 const userServiceFactory = createServiceFactory((api) => ({
-  getAllContacts: async () => {
-    const response = await api.get('/contacts');
-    return response.contacts;
+  getAllUsers: async () => {
+    const response = await api.get('/users');
+    return response.users;
   },
   
-  getContactById: async (id) => {
-    const response = await api.get(`/contacts/${id}`);
+  getUserById: async (id) => {
+    const response = await api.get(`/users/${id}`);
     return response;
   },
   
-  createContact: async (contactData) => {
-    return api.post('/contacts/create', contactData);
+  createUser: async (userData) => {
+    return api.post('/users/create', userData);
   },
   
-  updateContact: async (id, contactData) => {
-    return api.patch(`/contacts/update/${id}`, contactData);
+  updateUser: async (id, userData) => {
+    return api.patch(`/users/update/${id}`, userData);
   },
   
-  deleteContact: async (id) => {
-    return api.delete(`/contacts/delete/${id}`);
+  deleteUser: async (id) => {
+    return api.delete(`/users/delete/${id}`);
   }
 }));
 
 // Export service instances
 export const bakeryService = bakeryServiceFactory();
-export const pastryService = pastryServiceFactory();
+export const productService = productServiceFactory();
 export const reviewService = reviewServiceFactory();
 export const userService = userServiceFactory();
 

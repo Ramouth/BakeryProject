@@ -3,13 +3,13 @@ import { useReview } from '../store/ReviewContext';
 import { useNotification } from '../store/NotificationContext';
 import RatingBar from '../components/RatingComponent';
 
-const PastryRating = () => {
+const ProductRating = () => {
   const { 
     selectedBakery, 
-    selectedPastry, 
-    pastryRatings, 
-    setPastryRatings, 
-    submitPastryReview,
+    selectedProduct, 
+    productRatings, 
+    setProductRatings, 
+    submitProductReview,
     goToNextStep 
   } = useReview();
   
@@ -18,16 +18,16 @@ const PastryRating = () => {
   
   // Handle rating changes
   const handleRatingChange = (field, value) => {
-    setPastryRatings({
-      ...pastryRatings,
+    setProductRatings({
+      ...productRatings,
       [field]: value
     });
   };
   
   // Handle comments change
   const handleCommentsChange = (e) => {
-    setPastryRatings({
-      ...pastryRatings,
+    setProductRatings({
+      ...productRatings,
       comments: e.target.value
     });
   };
@@ -38,17 +38,17 @@ const PastryRating = () => {
     
     try {
       // Validate that overall rating is provided
-      if (pastryRatings.overall <= 0) {
+      if (productRatings.overall <= 0) {
         showError("Please provide an overall rating");
         setIsSubmitting(false);
         return;
       }
       
       // This will now handle anonymous reviews
-      await submitPastryReview();
+      await submitProductReview();
       
       // Show success notification
-      showSuccess("Pastry review saved successfully!");
+      showSuccess("Product review saved successfully!");
       
       // Navigate to next step
       goToNextStep('reviewOptions');
@@ -61,24 +61,24 @@ const PastryRating = () => {
     }
   };
   
-  // Display pastry name
-  const pastryName = selectedPastry.name === 'Other' 
-    ? selectedPastry.customName 
-    : selectedPastry.name;
+  // Display product name
+  const productName = selectedProduct.name === 'Other' 
+    ? selectedProduct.customName 
+    : selectedProduct.name;
   
   return (
     <div className="container">
       <div className="card">
         <h2>Your Review:</h2>
         <p>
-          {selectedBakery.name} - {pastryName}
+          {selectedBakery.name} - {productName}
         </p>
         
         <div className="rating-container">
           <div className="rating-row">
             <div className="rating-label">Overall:</div>
             <RatingBar 
-              rating={pastryRatings.overall} 
+              rating={productRatings.overall} 
               onChange={(value) => handleRatingChange('overall', value)} 
               max={10}
             />
@@ -87,7 +87,7 @@ const PastryRating = () => {
           <div className="rating-row">
             <div className="rating-label">Taste:</div>
             <RatingBar 
-              rating={pastryRatings.taste} 
+              rating={productRatings.taste} 
               onChange={(value) => handleRatingChange('taste', value)} 
               max={10}
             />
@@ -96,7 +96,7 @@ const PastryRating = () => {
           <div className="rating-row">
             <div className="rating-label">Value:</div>
             <RatingBar 
-              rating={pastryRatings.price} 
+              rating={productRatings.price} 
               onChange={(value) => handleRatingChange('price', value)} 
               max={10}
             />
@@ -105,7 +105,7 @@ const PastryRating = () => {
           <div className="rating-row">
             <div className="rating-label">Presentation:</div>
             <RatingBar 
-              rating={pastryRatings.presentation} 
+              rating={productRatings.presentation} 
               onChange={(value) => handleRatingChange('presentation', value)} 
               max={10}
             />
@@ -115,7 +115,7 @@ const PastryRating = () => {
         <div className="form-group">
           <textarea
             rows="3"
-            value={pastryRatings.comments}
+            value={productRatings.comments}
             onChange={handleCommentsChange}
             placeholder="Add additional comments..."
           />
@@ -124,7 +124,7 @@ const PastryRating = () => {
         <div className="nav-buttons">
           <button 
             className="btn"
-            onClick={() => goToNextStep('pastrySelection')}
+            onClick={() => goToNextStep('productSelection')}
             disabled={isSubmitting}
           >
             Back
@@ -142,4 +142,4 @@ const PastryRating = () => {
   );
 };
 
-export default PastryRating;
+export default ProductRating;

@@ -1,79 +1,133 @@
-from dal.user_dal import UserDAL
+from models import db, User
 from sqlalchemy.exc import SQLAlchemyError
+from werkzeug.security import generate_password_hash, check_password_hash
 
 class UserService:
     """Service class for user-related business logic"""
     
-    def __init__(self):
-        self.user_dal = UserDAL()
-
-    def get_all_contacts(self):
-        """Get all contacts ordered by name"""
-        return self.user_dal.get_all()
+    def get_all_users(self):
+        """Get all users ordered by username"""
+        return User.query.order_by(User.username).all()
     
-    def get_contact_by_id(self, contact_id):
-        """Get a specific contact by ID"""
-        return self.user_dal.get_by_id(contact_id)
+    def get_user_by_id(self, user_id):
+        """Get a specific user by ID"""
+        return User.query.get(user_id)
     
-    def get_contact_by_email(self, email):
-        """Get a contact by email address"""
-        return self.user_dal.get_by_email(email)
+    def get_user_by_email(self, email):
+        """Get a user by email address"""
+        return User.query.filter_by(email=email).first()
     
-    def search_contacts(self, search_term):
-        """Search contacts by name or email"""
-        return self.user_dal.search(search_term)
+    def get_user_by_username(self, username):
+        """Get a user by username"""
+        return User.query.filter_by(username=username).first()
     
-    def create_contact(self, contact_data):
-        """Create a new contact"""
-        # Check if email already exists
-        existing_contact = self.get_contact_by_email(contact_data['email'])
-        if existing_contact:
-            raise Exception("Email already in use")
-        
-        return self.user_dal.create(contact_data)
+    def search_users(self, search_term):
+        """Search users by username or email"""
+        return User.query.filter(
+            (User.username.ilike(f'%{search_term}%')) |
+            (User.email.ilike(f'%{search_term}%'))
+        ).order_by(User.username).all()
     
-    def update_contact(self, contact_id, contact_data):
-        """Update an existing contact"""
-        contact = self.get_contact_by_id(contact_id)
-        if not contact:
-            raise Exception("Contact not found")
-        
-        # Check if email already exists and belongs to a different contact
-        if 'email' in contact_data and contact_data['email'] != contact.email:
-            existing_contact = self.get_contact_by_email(contact_data['email'])
-            if existing_contact and existing_contact.id != contact_id:
+    def create_user(self, username, email, password, profile_picture=1, is_admin=False):
+        """Create a new user"""
+        try:
+            # Check if email already exists
+            existing_email = self.get_user_by_email(email)
+            if existing_email:
                 raise Exception("Email already in use")
-        
-        return self.user_dal.update(contact_id, contact_data)
+            
+            # Check if username already exists
+            existing_username = self.get_user_by_username(username)
+            if existing_username:
+                raise Exception("Username already in use")
+                
+            # Create user with hashed password
+            user = User(
+                username=username,
+                email=email,
+                profile_picture=profile_picture,
+                is_admin=is_admin
+            )
+            user.set_password(password)
+            
+            db.session.add(user)
+            db.session.commit()
+            return user
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise Exception(f"Database error: {str(e)}")
     
-    def delete_contact(self, contact_id):
-        """Delete a contact"""
-        contact = self.get_contact_by_id(contact_id)
-        if not contact:
-            raise Exception("Contact not found")
-        
-        return self.user_dal.delete(contact_id)
+    def update_user(self, user_id, username=None, email=None, profile_picture=None, is_admin=None):
+        """Update an existing user (password update handled separately)"""
+        try:
+            user = self.get_user_by_id(user_id)
+            if not user:
+                raise Exception("User not found")
+            
+            # Check if username is being updated and already exists
+            if username and username != user.username:
+                existing_username = self.get_user_by_username(username)
+                if existing_username:
+                    raise Exception("Username already in use")
+                user.username = username
+            
+            # Check if email is being updated and already exists
+            if email and email != user.email:
+                existing_email = self.get_user_by_email(email)
+                if existing_email:
+                    raise Exception("Email already in use")
+                user.email = email
+            
+            # Update profile picture if provided
+            if profile_picture is not None:
+                user.profile_picture = profile_picture
+                
+            # Update admin status if provided
+            if is_admin is not None:
+                user.is_admin = is_admin
+                
+            db.session.commit()
+            return user
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise Exception(f"Database error: {str(e)}")
     
-    def get_contact_stats(self, contact_id):
-        """Get statistics for a contact including review counts"""
-        from models import BakeryReview, PastryReview
-        
-        contact = self.get_contact_by_id(contact_id)
-        if not contact:
-            raise Exception("Contact not found")
-        
-        # Get review counts
-        bakery_review_count = BakeryReview.query.filter_by(contact_id=contact_id).count()
-        pastry_review_count = PastryReview.query.filter_by(contact_id=contact_id).count()
-        
-        return {
-            "id": contact.id,
-            "name": f"{contact.first_name} {contact.last_name}",
-            "email": contact.email,
-            "is_admin": contact.is_admin,
-            "review_counts": {
-                "bakery_reviews": bakery_review_count,
-                "pastry_reviews": pastry_review_count,
-                "total_reviews": bakery_review_count + pastry_review_count
-            }
-        }
+    def update_password(self, user_id, current_password, new_password):
+        """Update a user's password"""
+        try:
+            user = self.get_user_by_id(user_id)
+            if not user:
+                raise Exception("User not found")
+                
+            # Verify current password
+            if not user.check_password(current_password):
+                raise Exception("Current password is incorrect")
+                
+            # Update password
+            user.set_password(new_password)
+            db.session.commit()
+            return True
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise Exception(f"Database error: {str(e)}")
+    
+    def delete_user(self, user_id):
+        """Delete a user"""
+        try:
+            user = self.get_user_by_id(user_id)
+            if not user:
+                raise Exception("User not found")
+                
+            db.session.delete(user)
+            db.session.commit()
+            return True
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise Exception(f"Database error: {str(e)}")
+    
+    def authenticate_user(self, username, password):
+        """Authenticate a user by username and password"""
+        user = self.get_user_by_username(username)
+        if not user or not user.check_password(password):
+            return None
+        return user

@@ -1,13 +1,13 @@
 import { useState } from "react";
 
-const PastryReviewForm = ({ existingReview = {}, updateCallback, contacts, pastries }) => {
+const ProductReviewForm = ({ existingReview = {}, updateCallback, users, products }) => {
   const [review, setReview] = useState(existingReview.review || "");
   const [overallRating, setOverallRating] = useState(existingReview.overallRating || 1);
   const [tasteRating, setTasteRating] = useState(existingReview.tasteRating || 1);
   const [priceRating, setPriceRating] = useState(existingReview.priceRating || 1);
   const [presentationRating, setPresentationRating] = useState(existingReview.presentationRating || 1);
-  const [contactId, setContactId] = useState(existingReview.contactId || "");
-  const [pastryId, setPastryId] = useState(existingReview.pastryId || "");
+  const [userId, setUserId] = useState(existingReview.userId || "");
+  const [productId, setProductId] = useState(existingReview.productId || "");
 
   const updating = Object.entries(existingReview).length !== 0;
 
@@ -20,12 +20,12 @@ const PastryReviewForm = ({ existingReview = {}, updateCallback, contacts, pastr
       tasteRating,
       priceRating,
       presentationRating,
-      contactId,
-      pastryId,
+      userId,
+      productId,
     };
 
     const url =
-      "http://127.0.0.1:5000/pastryreviews/" +
+      "http://127.0.0.1:5000/productreviews/" +
       (updating ? `update/${existingReview.id}` : "create");
 
     const options = {
@@ -96,33 +96,33 @@ const PastryReviewForm = ({ existingReview = {}, updateCallback, contacts, pastr
         />
       </div>
       
-      {/* Dropdown to select an existing contact (user) */}
+      {/* Dropdown to select an existing user (user) */}
       <div>
-        <label>Contact:</label>
+        <label>User:</label>
         <select
-          value={contactId}
-          onChange={(e) => setContactId(e.target.value)}
+          value={userId}
+          onChange={(e) => setUserId(e.target.value)}
         >
-          <option value="">--Select a Contact--</option>
-          {contacts.map((contact) => (
-            <option key={contact.id} value={contact.id}>
-              {contact.firstName} {contact.lastName}
+          <option value="">--Select a User--</option>
+          {users.map((user) => (
+            <option key={user.id} value={user.id}>
+              {user.firstName} {user.lastName}
             </option>
           ))}
         </select>
       </div>
 
-      {/* Dropdown to select an existing pastry */}
+      {/* Dropdown to select an existing product */}
       <div>
-        <label>Pastry:</label>
+        <label>Product:</label>
         <select
-          value={pastryId}
-          onChange={(e) => setPastryId(e.target.value)}
+          value={productId}
+          onChange={(e) => setProductId(e.target.value)}
         >
-          <option value="">--Select a Pastry--</option>
-          {pastries.map((pastry) => (
-            <option key={pastry.id} value={pastry.id}>
-              {pastry.name}
+          <option value="">--Select a Product--</option>
+          {products.map((product) => (
+            <option key={product.id} value={product.id}>
+              {product.name}
             </option>
           ))}
         </select>
@@ -133,4 +133,4 @@ const PastryReviewForm = ({ existingReview = {}, updateCallback, contacts, pastr
   );
 };
 
-export default PastryReviewForm;
+export default ProductReviewForm;
