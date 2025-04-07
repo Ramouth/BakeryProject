@@ -3,7 +3,6 @@ from models import db, User
 from schemas import UserSchema
 from services.user_service import UserService
 from utils.caching import cache
-from utils.validators import validate_contact_data
 from marshmallow import ValidationError
 
 # Create blueprint
