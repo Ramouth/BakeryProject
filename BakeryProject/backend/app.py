@@ -1,5 +1,6 @@
 from flask import Flask, request
 from flask_cors import CORS
+from flask_migrate import Migrate
 from backend.models import db
 from backend.schemas import ma
 from backend.utils.caching import cache, configure_cache
@@ -25,7 +26,7 @@ def create_app(config_class=DevelopmentConfig):
     def log_request_info():
         app.logger.debug('Headers: %s', request.headers)
         app.logger.debug('Method: %s', request.method)
-    
+
     # Initialize extensions
     db.init_app(app)
     ma.init_app(app)
@@ -37,20 +38,24 @@ def create_app(config_class=DevelopmentConfig):
             "supports_credentials": True
         }
     })
+
+    # Initialize Flask-Migrate
+    migrate = Migrate(app, db)
+
     # Configure caching
     configure_cache(app)
-    
+
     # Register blueprints
     app.register_blueprint(bakery_bp, url_prefix='/bakeries')
     app.register_blueprint(pastry_bp, url_prefix='/pastries')
     app.register_blueprint(bakery_review_bp, url_prefix='/bakeryreviews')
     app.register_blueprint(pastry_review_bp, url_prefix='/pastryreviews')
     app.register_blueprint(user_bp, url_prefix='/contacts')
-    
-    # Create all database tables
-    with app.app_context():
-        db.create_all()
-    
+
+    # Don't create tables automatically; use Flask-Migrate for production
+    # with app.app_context():
+    #     db.create_all()
+
     return app
 
 if __name__ == '__main__':
