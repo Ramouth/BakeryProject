@@ -40,15 +40,17 @@ class UserService:
             existing_username = self.get_user_by_username(username)
             if existing_username:
                 raise Exception("Username already in use")
-                
-            # Create user with hashed password
+            
+            print(f"Creating user with: username={username}, email={email}, password=******, profile_picture={profile_picture}, is_admin={is_admin}")
+            
+            # Create user with the provided password
             user = User(
                 username=username,
                 email=email,
+                password=password,  # The User model will hash this
                 profile_picture=profile_picture,
                 is_admin=is_admin
             )
-            user.set_password(password)
             
             db.session.add(user)
             db.session.commit()
@@ -57,12 +59,14 @@ class UserService:
             db.session.rollback()
             raise Exception(f"Database error: {str(e)}")
     
-    def update_user(self, user_id, username=None, email=None, profile_picture=None, is_admin=None):
-        """Update an existing user (password update handled separately)"""
+    def update_user(self, user_id, username=None, email=None, profile_picture=None, is_admin=None, password=None):
+        """Update an existing user (with optional password update)"""
         try:
             user = self.get_user_by_id(user_id)
             if not user:
                 raise Exception("User not found")
+            
+            print(f"Updating user {user_id} with: username={username}, email={email}, profile_picture={profile_picture}, is_admin={is_admin}, password provided={password is not None}")
             
             # Check if username is being updated and already exists
             if username and username != user.username:
@@ -85,6 +89,10 @@ class UserService:
             # Update admin status if provided
             if is_admin is not None:
                 user.is_admin = is_admin
+                
+            # Update password if provided
+            if password:
+                user.set_password(password)
                 
             db.session.commit()
             return user

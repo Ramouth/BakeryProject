@@ -1,50 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../store/UserContext';
 import Button from '../components/Button';
 
 const Login = () => {
-  const { login, isLoading, error } = useUser();
+  const { login, isLoading, error, currentUser } = useUser();
   const navigate = useNavigate();
   
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [validationErrors, setValidationErrors] = useState({});
+  const [email, setEmail] = useState('admin@crumbcompass.com');
+  const [password, setPassword] = useState('admin123');
   
-  // Basic form validation
-  const validateForm = () => {
-    const errors = {};
-    
-    if (!email.trim()) {
-      errors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      errors.email = 'Email is invalid';
+  // Auto-redirect if already logged in
+  useEffect(() => {
+    if (currentUser && currentUser.isAdmin) {
+      navigate('/admin');
     }
-    
-    if (!password.trim()) {
-      errors.password = 'Password is required';
-    }
-    
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-  
+  }, [currentUser, navigate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
     
     try {
       const user = await login(email, password);
       
       if (user && user.isAdmin) {
         navigate('/admin');
-      } else {
-        setValidationErrors({ 
-          auth: 'You do not have admin privileges'
-        });
       }
     } catch (err) {
       // Error is already handled by the useUser hook
@@ -52,11 +32,32 @@ const Login = () => {
     }
   };
   
+  // One-click login button for convenience
+  const handleMockLogin = async () => {
+    try {
+      const user = await login('admin@crumbcompass.com', 'admin123');
+      if (user && user.isAdmin) {
+        navigate('/admin');
+      }
+    } catch (err) {
+      console.error('Mock login error:', err);
+    }
+  };
+  
   return (
     <div className="container">
       <div className="card">
         <h2>Admin Login</h2>
-        <p>Please log in to access the admin area</p>
+        <p>Use the one-click login button or enter credentials below</p>
+        
+        <div style={{ marginBottom: '20px', textAlign: 'center' }}>
+          <Button 
+            onClick={handleMockLogin}
+            disabled={isLoading}
+          >
+            One-Click Admin Login
+          </Button>
+        </div>
         
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
@@ -66,12 +67,8 @@ const Login = () => {
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className={validationErrors.email ? 'error' : ''}
               disabled={isLoading}
             />
-            {validationErrors.email && (
-              <div className="error-text">{validationErrors.email}</div>
-            )}
           </div>
           
           <div className="form-group">
@@ -81,17 +78,16 @@ const Login = () => {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className={validationErrors.password ? 'error' : ''}
               disabled={isLoading}
             />
-            {validationErrors.password && (
-              <div className="error-text">{validationErrors.password}</div>
-            )}
+            <p className="help-text" style={{ fontSize: '0.8rem', marginTop: '5px', color: '#666' }}>
+              (Any password will work - authentication is mocked)
+            </p>
           </div>
           
-          {(error || validationErrors.auth) && (
+          {error && (
             <div className="error-text auth-error">
-              {error || validationErrors.auth}
+              {error}
             </div>
           )}
           

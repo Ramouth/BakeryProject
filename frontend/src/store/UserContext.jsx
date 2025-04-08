@@ -10,8 +10,30 @@ export const UserProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // Load user from storage on mount
+  // Auto-login with mock admin user on mount
   useEffect(() => {
+    const autoLoginMockUser = () => {
+      try {
+        // Create mock admin user
+        const mockAdminUser = {
+          id: 'admin1',
+          username: 'admin',
+          email: 'admin@crumbcompass.com',
+          isAdmin: true,
+          profilePicture: 1
+        };
+        
+        // Set user in state and storage
+        setUser(mockAdminUser);
+        console.log('Auto-logged in with mock admin user');
+      } catch (error) {
+        console.error('Error setting up mock user:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    // Check if already logged in first
     const getUserFromStorage = () => {
       try {
         const storedUser = localStorage.getItem('currentUser');
@@ -22,11 +44,15 @@ export const UserProvider = ({ children }) => {
             ...parsedUser,
             isAdmin: parsedUser.isAdmin || false
           });
+          setIsLoading(false);
+        } else {
+          // No user in storage, create mock user
+          autoLoginMockUser();
         }
       } catch (error) {
         console.error('Error retrieving user from storage:', error);
-      } finally {
-        setIsLoading(false);
+        // If there's an error reading storage, create mock user
+        autoLoginMockUser();
       }
     };
     
@@ -39,57 +65,22 @@ export const UserProvider = ({ children }) => {
     setError(null);
     
     try {
-      const mockPassword = 'admin123';
-      let user;
-      let users = [];
+      // Always return the mock admin user regardless of credentials
+      const mockAdminUser = {
+        id: 'admin1',
+        username: 'admin',
+        email: 'admin@crumbcompass.com',
+        isAdmin: true,
+        profilePicture: 1
+      };
       
-      try {
-        // Attempt to fetch users and find user
-        const response = await apiClient.get('/users');
-        users = response.users || [];
-        user = users.find(user => user.email === email);
-      } catch (apiError) {
-        console.error('API connection error:', apiError);
-        
-        // Fallback to predefined admin users
-        const adminUsers = [
-          {
-            id: 'admin1',
-            firstName: 'Admin',
-            lastName: 'User',
-            email: 'admin@crumbcompass.com',
-            isAdmin: true
-          },
-          {
-            id: 'test1',
-            firstName: 'Test',
-            lastName: 'User',
-            email: 'test@test.com',
-            isAdmin: true
-          }
-        ];
-        
-        user = adminUsers.find(u => u.email === email);
-      }
-      
-      // Validate user and password
-      if (user && password === mockPassword) {
-        // Explicitly ensure isAdmin is set
-        const userData = {
-          ...user,
-          isAdmin: user.isAdmin === true // Ensure boolean value
-        };
-        
-        setUser(userData);
-        console.log('Logged in user:', userData); // Debug log
-        return userData;
-      } else {
-        throw new Error('Invalid email or password');
-      }
+      setUser(mockAdminUser);
+      console.log('Logged in with mock admin user');
+      return mockAdminUser;
     } catch (err) {
       const errorMessage = err.message || 'Login failed. Please try again.';
       setError(errorMessage);
-      console.error('Login error:', errorMessage); // Debug log
+      console.error('Login error:', errorMessage);
       throw new Error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -119,20 +110,15 @@ export const UserProvider = ({ children }) => {
     setError(null);
     
     try {
-      const response = await apiClient.post('/users/create', userData);
+      // Always return a mock user for testing
+      const mockUser = {
+        ...userData,
+        id: 'user1',
+        isAdmin: false
+      };
       
-      if (response && response.user) {
-        // Auto-login after successful registration
-        const newUser = {
-          ...response.user,
-          isAdmin: false // New users are not admins by default
-        };
-        
-        setUser(newUser);
-        return newUser;
-      } else {
-        throw new Error('Registration failed');
-      }
+      setUser(mockUser);
+      return mockUser;
     } catch (err) {
       const errorMessage = err.message || 'Registration failed. Please try again.';
       setError(errorMessage);

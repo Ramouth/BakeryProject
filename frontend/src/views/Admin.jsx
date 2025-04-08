@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Routes, Route, NavLink, useNavigate } from 'react-router-dom';
 import { useUser } from '../store/UserContext';
 import BakerySection from './admin/BakerySection';
@@ -56,15 +56,46 @@ const AdminHome = () => (
 const Admin = () => {
   const { currentUser, logout } = useUser();
   const navigate = useNavigate();
+  const [showWarning, setShowWarning] = useState(!currentUser?.isAdmin);
   
-  // Redirect if not admin
-  if (!currentUser || !currentUser.isAdmin) {
+  useEffect(() => {
+    // Update warning state if user changes
+    setShowWarning(!currentUser?.isAdmin);
+  }, [currentUser]);
+  
+  const createMockAdminUser = () => {
+    // Create mock admin user and refresh
+    localStorage.setItem('currentUser', JSON.stringify({
+      id: 'admin1',
+      username: 'admin',
+      email: 'admin@crumbcompass.com',
+      isAdmin: true
+    }));
+    window.location.reload();
+  };
+  
+  // Allow using admin panel even without proper admin status for this demo
+  const proceedAnyway = () => {
+    setShowWarning(false);
+  };
+  
+  if (showWarning) {
     return (
       <div className="container">
         <div className="card">
-          <h2>Access Denied</h2>
-          <p>You do not have permission to access the admin panel.</p>
-          <Button onClick={() => navigate('/')}>Return to Home</Button>
+          <h2>Mock Admin Access</h2>
+          <p>This is a demo environment. You can proceed to the admin panel even without proper admin privileges.</p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px' }}>
+            <Button onClick={createMockAdminUser} variant="primary">
+              Create Mock Admin User
+            </Button>
+            <Button onClick={proceedAnyway} variant="secondary">
+              Proceed Anyway
+            </Button>
+            <Button onClick={() => navigate('/')} variant="link">
+              Return Home
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -73,10 +104,28 @@ const Admin = () => {
   return (
     <div className="admin-container">
       <div className="admin-header">
+        <div className="logo-container">
+          <div className="brand-name">CrumbCompass Admin</div>
+          <div className="brand-subtitle">Bakery Management System</div>
+        </div>
         <div className="header-actions">
           <div className="user-info">
-            <span>Admin User</span>
+            <span>{currentUser?.username || 'Admin User'}</span>
           </div>
+          <Button 
+            variant="secondary" 
+            size="small"
+            onClick={() => navigate('/')}
+          >
+            Visit Site
+          </Button>
+          <Button 
+            variant="link" 
+            size="small"
+            onClick={logout}
+          >
+            Logout
+          </Button>
         </div>
       </div>
       
