@@ -88,36 +88,54 @@ const ReviewModal = ({ isOpen, onClose }) => {
         results = response.bakeries || [];
       } else {
         // For products, we need additional information about their bakeries
-        const products = response.products || [];
+        let products = response.products || [];
+        console.log('Original product results:', JSON.stringify(products, null, 2));
         
-        // For products, we'll process them to include more complete bakery info
-        const productsWithBakeryInfo = [];
+        // First, check if we have the expected data structure
+        const needsBakeryDetails = products.some(p => p.bakeryId && (!p.bakery || !p.bakery.name));
+        console.log('Needs to fetch bakery details:', needsBakeryDetails);
         
-        for (const product of products) {
-          try {
-            let updatedProduct = { ...product };
-            
-            // If product has a bakeryId but no bakery details, fetch them
-            if (product.bakeryId && (!product.bakery || !product.bakery.streetName)) {
-              console.log(`Fetching bakery details for product ${product.name} (bakeryId: ${product.bakeryId})`);
-              const bakeryResponse = await apiClient.get(`/bakeries/${product.bakeryId}`);
-              updatedProduct.bakery = bakeryResponse;
-            }
-            
-            // Log the product details for debugging
-            console.log('Processed product:', updatedProduct);
-            
-            productsWithBakeryInfo.push(updatedProduct);
-          } catch (err) {
-            console.error(`Error processing product ${product.id}:`, err);
-            productsWithBakeryInfo.push(product); // Add product even if we couldn't get bakery details
-          }
+        if (needsBakeryDetails) {
+          // We need to fetch bakery details for each product
+          const productsWithBakeries = await Promise.all(
+            products.map(async (product) => {
+              if (!product.bakery && product.bakeryId) {
+                try {
+                  // First, try to fetch bakery
+                  console.log(`Fetching bakery details for product ${product.id} (bakeryId: ${product.bakeryId})`);
+                  const bakeryResponse = await apiClient.get(`/bakeries/${product.bakeryId}`);
+                  console.log(`Bakery response for product ${product.id}:`, bakeryResponse);
+                  
+                  return {
+                    ...product,
+                    bakery: bakeryResponse
+                  };
+                } catch (err) {
+                  console.error(`Error fetching bakery for product ${product.id}:`, err);
+                  return product;
+                }
+              }
+              return product;
+            })
+          );
+          results = productsWithBakeries;
+        } else {
+          results = products;
         }
         
-        results = productsWithBakeryInfo;
+        // Log each product with its bakery info for debugging
+        console.log('Processed products:');
+        results.forEach((p, index) => {
+          console.log(`Product ${index + 1} - ${p.name} (ID: ${p.id})`);
+          console.log(`  bakeryId: ${p.bakeryId}`);
+          console.log(`  bakery: ${p.bakery ? JSON.stringify(p.bakery) : 'null'}`);
+          if (p.bakery) {
+            console.log(`  bakery.name: ${p.bakery.name}`);
+            console.log(`  bakery.streetName: ${p.bakery.streetName}`);
+          }
+        });
       }
       
-      console.log('Final search results:', results);
       setSearchResults(results);
     } catch (error) {
       console.error('Search error:', error);
@@ -162,9 +180,6 @@ const ReviewModal = ({ isOpen, onClose }) => {
         userId: null // Always set userId to null for now
       };
       
-      // Removed user ID assignment to ensure all reviews are anonymous
-      // This can be re-enabled once user authentication is fully implemented
-      
       if (reviewType === 'bakery') {
         // Bakery review specific fields
         reviewData = {
@@ -200,6 +215,12 @@ const ReviewModal = ({ isOpen, onClose }) => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Get bakery name with location
+  const getBakeryName = (product) => {
+    if (!product.bakery) return 'Unknown Bakery';
+    return product.bakery.name || 'Unknown Bakery';
   };
 
   // Get bakery address for a product
@@ -310,12 +331,11 @@ const ReviewModal = ({ isOpen, onClose }) => {
                       </>
                     ) : (
                       <>
-                        Bakery: {item.bakery?.name || 'Unknown'}
-                        {/* Only show address if we have it */}
+                        <div className="bakery-name">Bakery: {getBakeryName(item)}</div>
                         {getBakeryAddress(item) && (
-                          <span className="bakery-address">
-                            <br/>{getBakeryAddress(item)}
-                          </span>
+                          <div className="bakery-address">
+                            {getBakeryAddress(item)}
+                          </div>
                         )}
                       </>
                     )}
@@ -330,6 +350,12 @@ const ReviewModal = ({ isOpen, onClose }) => {
         {selectedItem && (
           <div className="rating-section">
             <h3>Rate {selectedItem.name}</h3>
+            {reviewType === 'product' && selectedItem.bakery && (
+              <p className="selected-bakery-info">
+                Bakery: {getBakeryName(selectedItem)}
+                {getBakeryAddress(selectedItem) && ` - ${getBakeryAddress(selectedItem)}`}
+              </p>
+            )}
             
             <div className="rating-container">
               <div className="rating-row">
