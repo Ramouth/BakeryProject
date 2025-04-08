@@ -87,9 +87,37 @@ const ReviewModal = ({ isOpen, onClose }) => {
       if (reviewType === 'bakery') {
         results = response.bakeries || [];
       } else {
-        results = response.products || [];
+        // For products, we need additional information about their bakeries
+        const products = response.products || [];
+        
+        // For products, we'll process them to include more complete bakery info
+        const productsWithBakeryInfo = [];
+        
+        for (const product of products) {
+          try {
+            let updatedProduct = { ...product };
+            
+            // If product has a bakeryId but no bakery details, fetch them
+            if (product.bakeryId && (!product.bakery || !product.bakery.streetName)) {
+              console.log(`Fetching bakery details for product ${product.name} (bakeryId: ${product.bakeryId})`);
+              const bakeryResponse = await apiClient.get(`/bakeries/${product.bakeryId}`);
+              updatedProduct.bakery = bakeryResponse;
+            }
+            
+            // Log the product details for debugging
+            console.log('Processed product:', updatedProduct);
+            
+            productsWithBakeryInfo.push(updatedProduct);
+          } catch (err) {
+            console.error(`Error processing product ${product.id}:`, err);
+            productsWithBakeryInfo.push(product); // Add product even if we couldn't get bakery details
+          }
+        }
+        
+        results = productsWithBakeryInfo;
       }
       
+      console.log('Final search results:', results);
       setSearchResults(results);
     } catch (error) {
       console.error('Search error:', error);
@@ -168,10 +196,40 @@ const ReviewModal = ({ isOpen, onClose }) => {
       onClose();
     } catch (error) {
       console.error('Review submission error:', error);
-      showError(`Failed to submit review: ${error.message || 'Unknown error'}`);
+      showError(`Failed to submit review: ${error.message || "Unknown error"}`);
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Get bakery address for a product
+  const getBakeryAddress = (product) => {
+    if (!product.bakery) return null;
+    
+    const bakery = product.bakery;
+    
+    // Check if bakery has address information
+    if (!bakery.streetName && !bakery.streetNumber && !bakery.zipCode) {
+      return null;
+    }
+    
+    // Construct the address string
+    let address = '';
+    if (bakery.streetName) {
+      address += bakery.streetName;
+      if (bakery.streetNumber) {
+        address += ' ' + bakery.streetNumber;
+      }
+    }
+    
+    if (bakery.zipCode) {
+      if (address.length > 0) {
+        address += ', ';
+      }
+      address += bakery.zipCode;
+    }
+    
+    return address;
   };
 
   return (
@@ -245,10 +303,22 @@ const ReviewModal = ({ isOpen, onClose }) => {
                 >
                   <div className="result-item-name">{item.name}</div>
                   <div className="result-item-details">
-                    {reviewType === 'bakery' 
-                      ? `${item.streetName || ''} ${item.streetNumber || ''}, ${item.zipCode || ''}`
-                      : `Bakery: ${item.bakery?.name || 'Unknown'}`
-                    }
+                    {reviewType === 'bakery' ? (
+                      <>
+                        {item.streetName && `${item.streetName} ${item.streetNumber || ''}`}
+                        {item.zipCode && (item.streetName ? `, ${item.zipCode}` : item.zipCode)}
+                      </>
+                    ) : (
+                      <>
+                        Bakery: {item.bakery?.name || 'Unknown'}
+                        {/* Only show address if we have it */}
+                        {getBakeryAddress(item) && (
+                          <span className="bakery-address">
+                            <br/>{getBakeryAddress(item)}
+                          </span>
+                        )}
+                      </>
+                    )}
                   </div>
                 </div>
               ))}
