@@ -1,0 +1,90 @@
+/* 
+ * Page Content Animations 
+ * These animations apply only to the main content,
+ * not to the navbar or footer
+ */
+
+/* Base animation for content section */
+.content-section {
+    animation: fadeIn 1s ease-in-out;
+  }
+  
+  /* Animation for all direct children of app-content */
+  .app-content > * {
+    animation: fadeIn 1s ease-in-out;
+  }
+  
+  /* Card animations */
+  .card {
+    animation: fadeIn 1s ease-in-out;
+  }
+  
+  /* Animation keyframes */
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeOut {
+    0% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+  }
+  
+  
+  .fade-out {
+    animation: fadeOut 1s ease-in-out forwards;
+  }
+  
+  /* Admin section specific animations */
+  .admin-content {
+    animation: fadeIn 1s ease-in-out;
+  }
+  
+  /* Form animations */
+  .form-group {
+    animation: fadeIn 1s ease-in-out;
+    animation-fill-mode: both;
+  }
+  
+  /* Staggered animations for form groups */
+  .form-group:nth-child(1) { animation-delay: 0.1s; }
+  .form-group:nth-child(2) { animation-delay: 0.2s; }
+  .form-group:nth-child(3) { animation-delay: 0.3s; }
+  .form-group:nth-child(4) { animation-delay: 0.4s; }
+  .form-group:nth-child(5) { animation-delay: 0.5s; }
+  
+  /* Button animation */
+  .btn {
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .btn:hover {
+    transform: translateY(-2px);
+  }
+  
+  /* Ensure navbar and footer don't have animations */
+  .app-header, .app-footer {
+    animation: none;
+  }
+  
+  /* Disable animations if user prefers reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }

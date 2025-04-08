@@ -1,0 +1,42 @@
+/* Layout Styles */
+.container {
+  max-width: var(--container-width);
+  margin: 20px auto;
+  padding: 20px;
+}
+
+/* App Layout - Updated to ensure footer stays at bottom */
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Full viewport height */
+}
+
+.app-content {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1; /* Takes available space */
+  min-height: 400px; /* Minimum height */
+}
+
+/* Form consistency */
+.form-container {
+  width: 100%;
+  max-width: 350px;
+  margin: 0 auto;
+}
+
+/* Responsive Layout */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+  
+  .app-content {
+    padding: 15px;
+  }
+}
+
+/* Auth Layout */
