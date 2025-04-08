@@ -1,58 +1,50 @@
 from . import ma
-from backend.models.pastry import Pastry  # ✅
+from backend.models.pastry import Pastry
 from marshmallow import fields, validate
 
 class PastrySchema(ma.SQLAlchemyAutoSchema):
     """Schema for serializing and deserializing Pastry objects"""
-    
+
     class Meta:
         model = Pastry
         load_instance = True
         include_fk = True
         include_relationships = True
-        # Exclude the bakery_id field to avoid collision
+        # We exclude bakery_id because we’re exposing it under the name bakeryId
         exclude = ("bakery_id",)
-    
+
     # Field customizations
-    id = fields.Integer(dump_only=True)  # Read-only field
+    id = fields.Integer(dump_only=True)
     name = fields.String(required=True, validate=validate.Length(min=1, max=80))
-    # Define bakeryId as a separate field without attribute mapping
-    bakeryId = fields.Integer(required=True)
+    bakeryId = fields.Integer(required=True)  # The external field name, used for input/output
     created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)
-    
-    # Nested fields - Include bakery details when serializing
-    bakery = fields.Nested('BakerySchema', only=('id', 'name'))
 
-    # Methods to handle the attribute mapping manually
+    # Use fully qualified path for the nested schema to avoid RegistryError
+    bakery = fields.Nested('backend.schemas.bakery_schema.BakerySchema', only=('id', 'name'))
+
+    # Custom dump: If a single object is dumped, make sure to pass its bakery_id as bakeryId.
     def dump(self, obj, *args, **kwargs):
-    # Check if obj is a list (many objects)
         if isinstance(obj, list):
-        # If it's a list, we can call the superclass dump with many=True
             return super().dump(obj, many=True, *args, **kwargs)
         else:
-            # Otherwise, it's a single object
             result = super().dump(obj, *args, **kwargs)
             result['bakeryId'] = obj.bakery_id if obj else None
             return result
 
-
+    # This helper method is used to dump a single instance; it mirrors the above logic.
     def _dump_single(self, obj):
-        # This method handles dumping a single pastry
         result = super().dump(obj)
         result['bakeryId'] = obj.bakery_id if obj else None
         return result
 
-
+    # Custom load: Map the incoming bakeryId field back to bakery_id for the model.
     def load(self, data, *args, **kwargs):
-        # Extract bakeryId from input data to use later
         bakery_id = data.get('bakeryId', None)
-        # Create a copy to avoid modifying the input
+        # Create a copy of the data to avoid modifying the input dictionary
         processed_data = {**data}
-        # If bakeryId is present, add it as bakery_id
         if 'bakeryId' in processed_data:
             processed_data['bakery_id'] = bakery_id
             del processed_data['bakeryId']
-        # Load the processed data
         result = super().load(processed_data, *args, **kwargs)
         return result

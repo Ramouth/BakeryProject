@@ -15,7 +15,11 @@ class Pastry(db.Model):
     
     # Relationships
     bakery = relationship('Bakery', back_populates='pastries')
-    pastry_reviews = relationship('PastryReview', back_populates='pastry', cascade='all, delete-orphan')
+    pastry_reviews = relationship(
+        'PastryReview',
+        back_populates='pastry',
+        cascade='all, delete-orphan'
+    )
     
     # Indexes for faster queries
     __table_args__ = (
@@ -26,20 +30,6 @@ class Pastry(db.Model):
     def __init__(self, name, bakery_id):
         self.name = name
         self.bakery_id = bakery_id
-    
+
     def __repr__(self):
         return f'<Pastry {self.name}>'
-    
-    def to_json(self):
-        """Convert to JSON serializable dictionary"""
-        return {
-            'id': self.id,
-            'name': self.name,
-            'bakeryId': self.bakery_id,
-            'bakery': {
-                'id': self.bakery.id,
-                'name': self.bakery.name
-            } if self.bakery else None,
-            'created_at': self.created_at.isoformat() if self.created_at else None,
-            'updated_at': self.updated_at.isoformat() if self.updated_at else None
-        }
