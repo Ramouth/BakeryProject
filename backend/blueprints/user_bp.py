@@ -46,15 +46,15 @@ def create_user():
     """Create a new user"""
     try:
         data = request.json
+        print("Received user creation data:", data)  # Debug log
         
         # Check required fields
         if not data.get('username') or not data.get('email') or not data.get('password'):
-            return jsonify({"message": "Username, email, and password are required"}), 400
-        
-        # Validate against schema
-        errors = user_schema.validate(data)
-        if errors:
-            return jsonify({"message": "Validation error", "errors": errors}), 400
+            missing_fields = []
+            if not data.get('username'): missing_fields.append("username")
+            if not data.get('email'): missing_fields.append("email")
+            if not data.get('password'): missing_fields.append("password")
+            return jsonify({"message": f"Missing required fields: {', '.join(missing_fields)}"}), 400
         
         # Create user through service
         user = user_service.create_user(
@@ -70,6 +70,7 @@ def create_user():
         
         return jsonify({"message": "User created!", "user": user_schema.dump(user)}), 201
     except Exception as e:
+        print(f"Error creating user: {str(e)}")  # Debug log
         return jsonify({"message": str(e)}), 400
 
 @user_bp.route('/update/<int:user_id>', methods=['PATCH'])
@@ -81,6 +82,10 @@ def update_user(user_id):
             return jsonify({"message": "User not found"}), 404
         
         data = request.json
+        print(f"Updating user {user_id} with data:", data)  # Debug log
+        
+        # Default password handling - if password is provided, use it
+        password = data.get('password')
         
         # Update user through service
         updated_user = user_service.update_user(
@@ -88,7 +93,8 @@ def update_user(user_id):
             username=data.get('username'),
             email=data.get('email'),
             profile_picture=data.get('profilePicture'),
-            is_admin=data.get('isAdmin')
+            is_admin=data.get('isAdmin'),
+            password=password  # Pass password to service if provided
         )
         
         # Invalidate cache
@@ -97,6 +103,7 @@ def update_user(user_id):
         
         return jsonify({"message": "User updated.", "user": user_schema.dump(updated_user)}), 200
     except Exception as e:
+        print(f"Error updating user: {str(e)}")  # Debug log
         return jsonify({"message": str(e)}), 400
 
 @user_bp.route('/delete/<int:user_id>', methods=['DELETE'])
