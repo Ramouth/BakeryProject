@@ -305,4 +305,133 @@
     margin-top: 8px;
   }
 
+  /* Enhanced styling for the ReviewModal component */
+
+  /* Better styling for search results */
+  .search-results {
+    max-height: 240px; /* Increased to show more results */
+    overflow-y: auto;
+    border: 1px solid var(--accent-200);
+    border-radius: var(--border-radius);
+    margin-top: 8px;
+  }
+
+  .search-result-item {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--accent-200);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .search-result-item:last-child {
+    border-bottom: none;
+  }
+
+  .search-result-item:hover {
+    background-color: var(--background-100);
+  }
+
+  .search-result-item.selected {
+    background-color: var(--primary-100);
+    border-left: 3px solid var(--primary-600);
+  }
+
+  /* Styling for the result item details */
+  .result-item-name {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-950);
+    margin-bottom: 4px;
+  }
+
+  .result-item-details {
+    font-size: 0.85rem;
+    color: var(--text-600);
+    line-height: 1.4;
+  }
+
+  /* Bakery information styling */
+  .bakery-name {
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+
+  .bakery-address {
+    margin-top: 2px;
+    padding-left: 4px;
+    font-size: 0.8rem;
+    color: var(--text-500);
+  }
+
+  /* Selected bakery info in rating section */
+  .selected-bakery-info {
+    margin-top: -10px;
+    margin-bottom: 15px;
+    padding: 8px;
+    background-color: var(--background-100);
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+    color: var(--text-800);
+    border-left: 3px solid var(--primary-300);
+  }
+
+  /* Review type buttons */
+  .review-type-buttons {
+    display: flex;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    border: 1px solid var(--accent-300);
+    margin-bottom: 15px;
+  }
+
+  .review-type-button {
+    flex: 1;
+    padding: 10px 15px;
+    background: var(--background-50);
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    text-align: center;
+  }
+
+  .review-type-button:hover {
+    background: var(--background-100);
+  }
+
+  .review-type-button.active {
+    background: var(--primary-600);
+    color: var(--text-50);
+  }
+
+  /* Search input styling */
+  .search-input-group {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .search-input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid var(--accent-300);
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: var(--primary-600);
+    box-shadow: 0 0 0 2px rgba(var(--primary-600-rgb), 0.2);
+  }
+
+  /* Search status messages */
+  .search-status {
+    padding: 10px;
+    text-align: center;
+    color: var(--text-600);
+    font-style: italic;
+    font-size: 0.9rem;
+  }
+
 }
