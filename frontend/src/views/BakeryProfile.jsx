@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import RatingBar from '../components/RatingComponent';
+import CroissantRating from '../components/CroissantRatingComponent.jsx';
 import bakeryLogo from '../assets/bageri-logo.jpeg';
 import bakeryHeader from '../assets/bageri.jpeg';
 import '../styles/bakery-profile.css';
@@ -35,38 +35,38 @@ const BakeryProfile = () => {
           sunday: "7:00 - 18:00"
         },
         ratings: {
-          overall: 4.7,
-          service: 4.5,
-          price: 4.0,
-          atmosphere: 4.6,
-          location: 4.8
+          overall: 9.4, // Values are 0-10 in backend, display as 0.5-5 croissants
+          service: 9.0,
+          price: 8.0,
+          atmosphere: 9.2,
+          location: 9.6
         },
         reviewCount: 458,
         popularProducts: [
-          { id: 1, name: "Kanelsnegl", rating: 4.9 },
-          { id: 2, name: "Tebirkes", rating: 4.7 },
-          { id: 3, name: "Rugbrød", rating: 4.8 }
+          { id: 1, name: "Kanelsnegl", rating: 9.8 }, // Rating is 0-10 in backend
+          { id: 2, name: "Tebirkes", rating: 9.4 },
+          { id: 3, name: "Rugbrød", rating: 9.6 }
         ],
         reviews: [
           {
             id: 1,
             userName: "Marie J.",
             date: "October 24, 2024",
-            rating: 5,
+            rating: 10, // Rating is 0-10 in backend, displayed as 5 croissants
             comment: "The kanelsnegl here is absolutely amazing! Perfectly sweet and flaky. My favorite bakery in Copenhagen."
           },
           {
             id: 2,
             userName: "Jacob P.",
             date: "October 18, 2024",
-            rating: 4,
+            rating: 8, // Rating is 0-10 in backend, displayed as 4 croissants
             comment: "Great selection of Danish products. A bit pricey but the quality justifies it. Very good tebirkes."
           },
           {
             id: 3,
             userName: "Sarah T.",
             date: "October 5, 2024",
-            rating: 5,
+            rating: 10, // Rating is 0-10 in backend, displayed as 5 croissants
             comment: "Love their sourdough bread! The location is convenient and staff is always friendly."
           }
         ]
@@ -90,6 +90,40 @@ const BakeryProfile = () => {
     );
   }
 
+  // Helper function to convert 0-10 rating to 0-5 display with improved croissant display
+const renderCroissantStars = (rating, size = 'medium') => {
+  // Convert 0-10 scale to 0-5 scale
+  const displayRating = rating / 2;
+  const fullCroissants = Math.floor(displayRating);
+  const hasHalfCroissant = displayRating % 1 >= 0.5;
+  const emptyCroissants = 5 - fullCroissants - (hasHalfCroissant ? 1 : 0);
+  
+  // Define size classes
+  const sizeClass = size === 'large' ? 'croissant-large' : 
+                   size === 'small' ? 'croissant-small' : '';
+  
+  return (
+    <div className={`croissant-display ${sizeClass}`}>
+      {/* Full croissants */}
+      {Array(fullCroissants).fill().map((_, i) => (
+        <span key={`full-${i}`} className="croissant-filled">🥐</span>
+      ))}
+      
+      {/* Half croissant */}
+      {hasHalfCroissant && (
+        <div className="croissant-half-container">
+          <span className="croissant-half">🥐</span>
+        </div>
+      )}
+      
+      {/* Empty croissants */}
+      {Array(emptyCroissants).fill().map((_, i) => (
+        <span key={`empty-${i}`} className="croissant-empty">🥐</span>
+      ))}
+    </div>
+  );
+};
+
   return (
     <div className="bakery-profile-container">
       {/* Bakery header image */}
@@ -109,8 +143,8 @@ const BakeryProfile = () => {
             <p className="bakery-address">{bakery.location}</p>
             
             <div className="bakery-rating-summary">
-              <span className="bakery-rating-value">{bakery.ratings.overall}</span>
-              <span className="bakery-rating-stars">★★★★★</span>
+              <span className="bakery-rating-value">{(bakery.ratings.overall / 2).toFixed(1)}</span>
+              {renderCroissantStars(bakery.ratings.overall)}
               <span className="bakery-review-count">({bakery.reviewCount} reviews)</span>
             </div>
           </div>
@@ -170,23 +204,23 @@ const BakeryProfile = () => {
                     <div className="rating-details">
                       <div className="rating-item">
                         <span className="rating-label">Overall:</span>
-                        <RatingBar rating={bakery.ratings.overall * 2} max={10} disabled={true} />
+                        <CroissantRating rating={bakery.ratings.overall} max={5} disabled={true} />
                       </div>
                       <div className="rating-item">
                         <span className="rating-label">Service:</span>
-                        <RatingBar rating={bakery.ratings.service * 2} max={10} disabled={true} />
+                        <CroissantRating rating={bakery.ratings.service} max={5} disabled={true} />
                       </div>
                       <div className="rating-item">
                         <span className="rating-label">Price:</span>
-                        <RatingBar rating={bakery.ratings.price * 2} max={10} disabled={true} />
+                        <CroissantRating rating={bakery.ratings.price} max={5} disabled={true} />
                       </div>
                       <div className="rating-item">
                         <span className="rating-label">Atmosphere:</span>
-                        <RatingBar rating={bakery.ratings.atmosphere * 2} max={10} disabled={true} />
+                        <CroissantRating rating={bakery.ratings.atmosphere} max={5} disabled={true} />
                       </div>
                       <div className="rating-item">
                         <span className="rating-label">Location:</span>
-                        <RatingBar rating={bakery.ratings.location * 2} max={10} disabled={true} />
+                        <CroissantRating rating={bakery.ratings.location} max={5} disabled={true} />
                       </div>
                     </div>
                   </div>
@@ -204,8 +238,8 @@ const BakeryProfile = () => {
                       <div className="popular-item-info">
                         <h4>{product.name}</h4>
                         <div className="popular-item-rating">
-                          <span>{product.rating}</span>
-                          <span className="stars">★★★★★</span>
+                          <span>{(product.rating / 2).toFixed(1)}</span>
+                          {renderCroissantStars(product.rating, 'small')}
                         </div>
                       </div>
                     </div>
@@ -229,7 +263,8 @@ const BakeryProfile = () => {
               
               <div className="reviews-summary">
                 <div className="reviews-total">
-                  <span className="large-rating">{bakery.ratings.overall}</span>
+                  <span className="large-rating">{(bakery.ratings.overall / 2).toFixed(1)}</span>
+                  {renderCroissantStars(bakery.ratings.overall, 'large')}
                   <span className="total-reviews">{bakery.reviewCount} reviews</span>
                 </div>
                 
@@ -245,9 +280,7 @@ const BakeryProfile = () => {
                     </div>
                     
                     <div className="review-rating">
-                      {Array.from({length: 5}).map((_, index) => (
-                        <span key={index} className={index < review.rating ? "star filled" : "star"}>★</span>
-                      ))}
+                      {renderCroissantStars(review.rating)}
                     </div>
                     
                     <p className="review-text">{review.comment}</p>
