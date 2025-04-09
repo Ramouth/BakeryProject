@@ -10,6 +10,8 @@ Flask-Cors==4.0.1
 email-validator==2.1.1
 python-dotenv==1.0.1
 Flask-Migrate==4.0.5
+gunicorn>=21.2.0
+psycopg2-binary>=2.9
 
 # Caching
 Flask-Caching==2.1.0
