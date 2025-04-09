@@ -101,9 +101,9 @@ const CroissantRating = ({
       
       {showValue && (
         <div className="rating-value">
-          {(hoveredRating || displayRating).toFixed(hoveredRating % 1 === 0 ? 0 : 1)}/{max}
-        </div>
-      )}
+            {(hoveredRating || displayRating).toFixed((hoveredRating || displayRating) % 1 === 0 ? 0 : 1)}/{max}
+     </div>
+    )}
     </div>
   );
 };

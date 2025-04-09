@@ -103,8 +103,8 @@
     overflow: hidden;
     color: transparent;
     text-shadow: 0 0 0 #ccc;
-    opacity: 0.3;
-    filter: grayscale(85%);
+    opacity: 0;
+    filter: grayscale(0%);
   }
   
   /* Rating value text */
