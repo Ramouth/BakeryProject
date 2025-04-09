@@ -43,3 +43,5 @@ backend/services/__pycache__/
 backend/utils/__pycache__/
 .vscode/
 backend/my_env/
+
+backend/instance/bakery_reviews.db
