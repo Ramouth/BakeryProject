@@ -1,0 +1,130 @@
+/* Improved Croissant Display for Profile Pages */
+.croissant-display {
+    display: flex;
+    align-items: center;
+    margin: 0 5px;
+  }
+  
+  .croissant-filled {
+    color: #bd8a42; /* Primary color for filled croissants */
+    font-size: 1.2rem;
+  }
+  
+  .croissant-empty {
+    color: #ccc; /* Grey color for unfilled croissants */
+    opacity: 0.3;
+    filter: grayscale(85%);
+    font-size: 1.2rem;
+  }
+  
+  .croissant-half-container {
+    position: relative;
+    width: 0.6rem; /* Half width */
+    height: 1.2rem;
+    overflow: hidden;
+    margin-right: 7px;
+  }
+  
+  .croissant-half {
+    position: absolute;
+    left: 0;
+    font-size: 1.2rem;
+    color: #bd8a42; /* Primary color for filled half */
+  }
+  
+  /* Sizes */
+  .croissant-display.croissant-large .croissant-filled,
+  .croissant-display.croissant-large .croissant-empty {
+    font-size: 1.8rem;
+  }
+  
+  .croissant-display.croissant-large .croissant-half-container {
+    width: 0.9rem;
+    height: 1.8rem;
+    margin-right: 10px;
+  }
+  
+  .croissant-display.croissant-large .croissant-half {
+    font-size: 1.8rem;
+  }
+  
+  .croissant-display.croissant-small .croissant-filled,
+  .croissant-display.croissant-small .croissant-empty {
+    font-size: 0.9rem;
+  }
+  
+  .croissant-display.croissant-small .croissant-half-container {
+    width: 0.45rem;
+    height: 0.9rem;
+    margin-right: 5px;
+  }
+  
+  .croissant-display.croissant-small .croissant-half {
+    font-size: 0.9rem;
+  }
+  
+  /* Bakery Rating Summary Styles */
+  .bakery-rating-summary,
+  .product-rating-summary {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+  }
+  
+  .bakery-rating-value,
+  .product-rating-value {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: var(--primary-600);
+    margin-right: 5px;
+  }
+  
+  .bakery-review-count,
+  .product-review-count {
+    margin-left: 5px;
+    color: var(--text-600);
+    font-size: 0.85rem;
+  }
+  
+  /* Reviews section styling */
+  .reviews-total {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .large-rating {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--primary-600);
+    margin-bottom: 5px;
+  }
+  
+  .review-rating {
+    margin-bottom: 10px;
+  }
+  
+  /* Popular items styling */
+  .popular-item-rating {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 3px;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .croissant-display.croissant-large .croissant-filled,
+    .croissant-display.croissant-large .croissant-empty {
+      font-size: 1.5rem;
+    }
+    
+    .croissant-display.croissant-large .croissant-half-container {
+      width: 0.75rem;
+      height: 1.5rem;
+    }
+    
+    .croissant-display.croissant-large .croissant-half {
+      font-size: 1.5rem;
+    }
+  }
