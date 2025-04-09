@@ -1,6 +1,6 @@
 # schemas/product_schema.py
 from . import ma
-from models.product import Product
+from models.product_models import Product
 from marshmallow import fields, validate, post_dump, post_load
 
 class ProductSchema(ma.SQLAlchemyAutoSchema):
