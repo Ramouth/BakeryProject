@@ -30,6 +30,12 @@
 /* Import review modal styles */
 @import 'review-modal.css';
 
+/* Import croissant rating styles */
+@import 'croissant-rating.css';
+
+/* Import croissant display styles */
+@import 'croissant-display.css';
+
 /* Import responsive styles last to override other styles as needed */
 @import 'responsive.css';
 

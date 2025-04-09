@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import Modal from './Modal';
 import Button from './Button';
-import RatingBar from './RatingComponent';
+import CroissantRating from './CroissantRatingComponent';
 import { useNotification } from '../store/NotificationContext';
 import { useUser } from '../store/UserContext';
 import apiClient from '../services/api';
@@ -20,7 +20,7 @@ const ReviewModal = ({ isOpen, onClose }) => {
   const [hasSearched, setHasSearched] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Review form data
+  // Review form data - ratings now store values 1-10 even though display is 0.5-5
   const [overallRating, setOverallRating] = useState(0);
   const [ratings, setRatings] = useState({
     // Bakery ratings
@@ -50,11 +50,11 @@ const ReviewModal = ({ isOpen, onClose }) => {
     setHasSearched(false);
     setOverallRating(0);
     setRatings({
-      service: 0,
-      price: 0,
-      atmosphere: 0,
-      location: 0,
-      taste: 0,
+      service: 0, 
+      price: 0,    
+      atmosphere: 0, 
+      location: 0,   
+      taste: 0,  
       presentation: 0
     });
     setComments('');
@@ -89,11 +89,9 @@ const ReviewModal = ({ isOpen, onClose }) => {
       } else {
         // For products, we need additional information about their bakeries
         let products = response.products || [];
-        console.log('Original product results:', JSON.stringify(products, null, 2));
         
         // First, check if we have the expected data structure
         const needsBakeryDetails = products.some(p => p.bakeryId && (!p.bakery || !p.bakery.name));
-        console.log('Needs to fetch bakery details:', needsBakeryDetails);
         
         if (needsBakeryDetails) {
           // We need to fetch bakery details for each product
@@ -102,9 +100,7 @@ const ReviewModal = ({ isOpen, onClose }) => {
               if (!product.bakery && product.bakeryId) {
                 try {
                   // First, try to fetch bakery
-                  console.log(`Fetching bakery details for product ${product.id} (bakeryId: ${product.bakeryId})`);
                   const bakeryResponse = await apiClient.get(`/bakeries/${product.bakeryId}`);
-                  console.log(`Bakery response for product ${product.id}:`, bakeryResponse);
                   
                   return {
                     ...product,
@@ -122,18 +118,6 @@ const ReviewModal = ({ isOpen, onClose }) => {
         } else {
           results = products;
         }
-        
-        // Log each product with its bakery info for debugging
-        console.log('Processed products:');
-        results.forEach((p, index) => {
-          console.log(`Product ${index + 1} - ${p.name} (ID: ${p.id})`);
-          console.log(`  bakeryId: ${p.bakeryId}`);
-          console.log(`  bakery: ${p.bakery ? JSON.stringify(p.bakery) : 'null'}`);
-          if (p.bakery) {
-            console.log(`  bakery.name: ${p.bakery.name}`);
-            console.log(`  bakery.streetName: ${p.bakery.streetName}`);
-          }
-        });
       }
       
       setSearchResults(results);
@@ -146,7 +130,7 @@ const ReviewModal = ({ isOpen, onClose }) => {
     }
   };
 
-  // Handle rating changes
+  // Handle rating changes - value will already be 1-10 scale from CroissantRating
   const handleRatingChange = (field, value) => {
     if (field === 'overall') {
       setOverallRating(value);
@@ -360,10 +344,10 @@ const ReviewModal = ({ isOpen, onClose }) => {
             <div className="rating-container">
               <div className="rating-row">
                 <div className="rating-label">Overall:</div>
-                <RatingBar 
+                <CroissantRating 
                   rating={overallRating} 
-                  onChange={(value) => handleRatingChange('overall', value)} 
-                  max={10}
+                  onChange={(value) => handleRatingChange('overall', value)}
+                  max={5}
                 />
               </div>
               
@@ -372,37 +356,37 @@ const ReviewModal = ({ isOpen, onClose }) => {
                 <>
                   <div className="rating-row">
                     <div className="rating-label">Service:</div>
-                    <RatingBar 
+                    <CroissantRating 
                       rating={ratings.service} 
                       onChange={(value) => handleRatingChange('service', value)} 
-                      max={10}
+                      max={5}
                     />
                   </div>
                   
                   <div className="rating-row">
                     <div className="rating-label">Price:</div>
-                    <RatingBar 
+                    <CroissantRating 
                       rating={ratings.price} 
                       onChange={(value) => handleRatingChange('price', value)} 
-                      max={10}
+                      max={5}
                     />
                   </div>
                   
                   <div className="rating-row">
                     <div className="rating-label">Atmosphere:</div>
-                    <RatingBar 
+                    <CroissantRating 
                       rating={ratings.atmosphere} 
                       onChange={(value) => handleRatingChange('atmosphere', value)} 
-                      max={10}
+                      max={5}
                     />
                   </div>
                   
                   <div className="rating-row">
                     <div className="rating-label">Location:</div>
-                    <RatingBar 
+                    <CroissantRating 
                       rating={ratings.location} 
                       onChange={(value) => handleRatingChange('location', value)} 
-                      max={10}
+                      max={5}
                     />
                   </div>
                 </>
@@ -411,28 +395,28 @@ const ReviewModal = ({ isOpen, onClose }) => {
                 <>
                   <div className="rating-row">
                     <div className="rating-label">Taste:</div>
-                    <RatingBar 
+                    <CroissantRating 
                       rating={ratings.taste} 
                       onChange={(value) => handleRatingChange('taste', value)} 
-                      max={10}
+                      max={5}
                     />
                   </div>
                   
                   <div className="rating-row">
                     <div className="rating-label">Price:</div>
-                    <RatingBar 
+                    <CroissantRating 
                       rating={ratings.price} 
                       onChange={(value) => handleRatingChange('price', value)} 
-                      max={10}
+                      max={5}
                     />
                   </div>
                   
                   <div className="rating-row">
                     <div className="rating-label">Presentation:</div>
-                    <RatingBar 
+                    <CroissantRating 
                       rating={ratings.presentation} 
                       onChange={(value) => handleRatingChange('presentation', value)} 
-                      max={10}
+                      max={5}
                     />
                   </div>
                 </>

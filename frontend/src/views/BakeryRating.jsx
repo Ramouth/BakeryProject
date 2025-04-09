@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useReview } from '../store/ReviewContext';
 import { useNotification } from '../store/NotificationContext';
-import RatingBar from '../components/RatingComponent';
+import CroissantRating from '../components/CroissantRatingComponent.jsx';
 
 const BakeryRating = () => {
   const { 
@@ -15,7 +15,7 @@ const BakeryRating = () => {
   const { showSuccess, showError } = useNotification();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Handle rating changes
+  // Handle rating changes - rating will already be in 1-10 scale from CroissantRating component
   const handleRatingChange = (field, value) => {
     setBakeryRatings({
       ...bakeryRatings,
@@ -65,52 +65,52 @@ const BakeryRating = () => {
       <div className="card">
         <h2>Bakery Rating</h2>
         <p>
-          Rate {selectedBakery.name}
+          Rate {selectedBakery.name} with Croissants!
         </p>
         
         <div className="rating-container">
           <div className="rating-row">
             <div className="rating-label">Overall:</div>
-            <RatingBar 
+            <CroissantRating 
               rating={bakeryRatings.overall} 
               onChange={(value) => handleRatingChange('overall', value)} 
-              max={10}
+              max={5}
             />
           </div>
           
           <div className="rating-row">
             <div className="rating-label">Service:</div>
-            <RatingBar 
+            <CroissantRating 
               rating={bakeryRatings.service} 
               onChange={(value) => handleRatingChange('service', value)} 
-              max={10}
+              max={5}
             />
           </div>
           
           <div className="rating-row">
             <div className="rating-label">Price:</div>
-            <RatingBar 
+            <CroissantRating 
               rating={bakeryRatings.price} 
               onChange={(value) => handleRatingChange('price', value)} 
-              max={10}
+              max={5}
             />
           </div>
           
           <div className="rating-row">
             <div className="rating-label">Atmosphere:</div>
-            <RatingBar 
+            <CroissantRating 
               rating={bakeryRatings.atmosphere} 
               onChange={(value) => handleRatingChange('atmosphere', value)} 
-              max={10}
+              max={5}
             />
           </div>
           
           <div className="rating-row">
             <div className="rating-label">Location:</div>
-            <RatingBar 
+            <CroissantRating 
               rating={bakeryRatings.location} 
               onChange={(value) => handleRatingChange('location', value)} 
-              max={10}
+              max={5}
             />
           </div>
         </div>

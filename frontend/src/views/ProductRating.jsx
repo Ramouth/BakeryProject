@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useReview } from '../store/ReviewContext';
 import { useNotification } from '../store/NotificationContext';
-import RatingBar from '../components/RatingComponent';
+import CroissantRating from '../components/CroissantRatingComponent.jsx';
 
 const ProductRating = () => {
   const { 
@@ -16,7 +16,7 @@ const ProductRating = () => {
   const { showSuccess, showError } = useNotification();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Handle rating changes
+  // Handle rating changes - rating will already be in 1-10 scale from CroissantRating component
   const handleRatingChange = (field, value) => {
     setProductRatings({
       ...productRatings,
@@ -77,37 +77,37 @@ const ProductRating = () => {
         <div className="rating-container">
           <div className="rating-row">
             <div className="rating-label">Overall:</div>
-            <RatingBar 
+            <CroissantRating 
               rating={productRatings.overall} 
               onChange={(value) => handleRatingChange('overall', value)} 
-              max={10}
+              max={5}
             />
           </div>
           
           <div className="rating-row">
             <div className="rating-label">Taste:</div>
-            <RatingBar 
+            <CroissantRating 
               rating={productRatings.taste} 
               onChange={(value) => handleRatingChange('taste', value)} 
-              max={10}
+              max={5}
             />
           </div>
           
           <div className="rating-row">
             <div className="rating-label">Value:</div>
-            <RatingBar 
+            <CroissantRating 
               rating={productRatings.price} 
               onChange={(value) => handleRatingChange('price', value)} 
-              max={10}
+              max={5}
             />
           </div>
           
           <div className="rating-row">
             <div className="rating-label">Presentation:</div>
-            <RatingBar 
+            <CroissantRating 
               rating={productRatings.presentation} 
               onChange={(value) => handleRatingChange('presentation', value)} 
-              max={10}
+              max={5}
             />
           </div>
         </div>
