@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { reviewService } from '../services';
+import * as reviewService from '../services/reviewService';
 import { useUser } from './UserContext';
 
 // Create context

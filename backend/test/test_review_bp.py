@@ -90,59 +90,59 @@ def test_delete_bakery_review(client, mocker):
     assert response.json == {"message": "Bakery review deleted!"}
 
 
-def test_get_pastry_reviews(client, mocker):
-    mock_reviews = [{"id": 1, "review": "Delicious pastry!"}]
-    mocker.patch("services.review_service.ReviewService.get_all_pastry_reviews", return_value=mock_reviews)
+def test_get_product_reviews(client, mocker):
+    mock_reviews = [{"id": 1, "review": "Delicious product!"}]
+    mocker.patch("services.review_service.ReviewService.get_all_product_reviews", return_value=mock_reviews)
 
-    response = client.get("/pastryreview/")
+    response = client.get("/productreview/")
     assert response.status_code == 200
-    assert response.json == {"pastryreviews": mock_reviews}
+    assert response.json == {"productreviews": mock_reviews}
 
 
-def test_create_pastry_review(client, mocker):
+def test_create_product_review(client, mocker):
     mock_data = {
         "review": "Amazing taste!",
         "overallRating": 10,
         "tasteRating": 9,
         "priceRating": 8,
         "presentationRating": 10,
-        "pastryId": 1,
+        "productId": 1,
     }
     mock_review = {"id": 1, "review": "Amazing taste!"}
-    mocker.patch("models.Pastry.query.get", return_value=True)
-    mocker.patch("services.review_service.ReviewService.create_pastry_review", return_value=mock_review)
+    mocker.patch("models.Product.query.get", return_value=True)
+    mocker.patch("services.review_service.ReviewService.create_product_review", return_value=mock_review)
     mocker.patch("utils.caching.cache.delete")
 
-    response = client.post("/pastryreview/create", json=mock_data)
+    response = client.post("/productreview/create", json=mock_data)
     assert response.status_code == 201
-    assert response.json == {"message": "Pastry review created!", "review": mock_review}
+    assert response.json == {"message": "Product review created!", "review": mock_review}
 
 
-def test_update_pastry_review(client, mocker):
+def test_update_product_review(client, mocker):
     mock_data = {
-        "review": "Updated pastry review",
+        "review": "Updated product review",
         "overallRating": 9,
         "tasteRating": 8,
         "priceRating": 7,
         "presentationRating": 9,
-        "pastryId": 1,
+        "productId": 1,
     }
-    mock_review = {"id": 1, "review": "Updated pastry review"}
-    mocker.patch("models.PastryReview.query.get", return_value=True)
-    mocker.patch("models.Pastry.query.get", return_value=True)
-    mocker.patch("services.review_service.ReviewService.update_pastry_review", return_value=mock_review)
+    mock_review = {"id": 1, "review": "Updated product review"}
+    mocker.patch("models.ProductReview.query.get", return_value=True)
+    mocker.patch("models.Product.query.get", return_value=True)
+    mocker.patch("services.review_service.ReviewService.update_product_review", return_value=mock_review)
     mocker.patch("utils.caching.cache.delete")
 
-    response = client.patch("/pastryreview/update/1", json=mock_data)
+    response = client.patch("/productreview/update/1", json=mock_data)
     assert response.status_code == 200
-    assert response.json == {"message": "Pastry review updated.", "review": mock_review}
+    assert response.json == {"message": "Product review updated.", "review": mock_review}
 
 
-def test_delete_pastry_review(client, mocker):
-    mocker.patch("models.PastryReview.query.get", return_value=True)
-    mocker.patch("services.review_service.ReviewService.delete_pastry_review")
+def test_delete_product_review(client, mocker):
+    mocker.patch("models.ProductReview.query.get", return_value=True)
+    mocker.patch("services.review_service.ReviewService.delete_product_review")
     mocker.patch("utils.caching.cache.delete")
 
-    response = client.delete("/pastryreview/delete/1")
+    response = client.delete("/productreview/delete/1")
     assert response.status_code == 200
-    assert response.json == {"message": "Pastry review deleted!"}
+    assert response.json == {"message": "Product review deleted!"}

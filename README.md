@@ -87,7 +87,7 @@ docker-compose up
 cd backend
 
 # Create and activate virtual environment
-python -m venv venv
+python -m venv venv # To force 3.12.2: py -3.12 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install dependencies

@@ -103,12 +103,12 @@ def test_get_bakery_stats(client, mocker):
     assert response.status_code == 200
     assert response.json == mock_stats
 
-def test_get_bakery_pastries(client, mocker):
-    """Test the get_bakery_pastries route"""
-    mock_pastries = [{"id": 1, "name": "Croissant"}, {"id": 2, "name": "Danish"}]
+def test_get_bakery_products(client, mocker):
+    """Test the get_bakery_products route"""
+    mock_products = [{"id": 1, "name": "Croissant"}, {"id": 2, "name": "Danish"}]
     mocker.patch("backend.services.bakery_service.BakeryService.get_bakery_by_id", return_value=True)
-    mocker.patch("backend.services.pastry_service.PastryService.get_pastries_by_bakery", return_value=mock_pastries)
+    mocker.patch("backend.services.product_service.ProductService.get_products_by_bakery", return_value=mock_products)
 
-    response = client.get('/bakeries/1/pastries')
+    response = client.get('/bakeries/1/products')
     assert response.status_code == 200
-    assert response.json == {"pastries": mock_pastries}
+    assert response.json == {"products": mock_products}
