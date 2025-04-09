@@ -2,6 +2,10 @@ from flask import Flask
 from .models import db
 from .schemas import ma
 from .utils.caching import cache, configure_cache
+from flask_migrate import Migrate   # Import Flask-Migrate
+
+# Create a global migrate instance
+migrate = Migrate()
 
 def create_app(config_object=None):
     """
@@ -20,6 +24,7 @@ def create_app(config_object=None):
     db.init_app(app)
     ma.init_app(app)
     configure_cache(app)
+    migrate.init_app(app, db)  # Initialize Flask-Migrate and register its CLI commands
 
     # Register blueprints
     with app.app_context():

@@ -4,7 +4,7 @@ from flask_migrate import Migrate
 from backend.models import db
 from backend.schemas import ma
 from backend.utils.caching import cache, configure_cache
-from backend.config import Config, DevelopmentConfig, ProductionConfig
+from backend.config import DevelopmentConfig, ProductionConfig
 
 import logging
 
@@ -32,7 +32,7 @@ def create_app(config_class=DevelopmentConfig):
     ma.init_app(app)
     CORS(app, resources={
         r"/*": {
-            "origins": ["http://localhost:5173"],
+            "origins": ["http://localhost:5173", "http://192.168.0.20:5173"],
             "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization", "Access-Control-Allow-Origin"],
             "supports_credentials": True
