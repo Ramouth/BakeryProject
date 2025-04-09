@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useUser } from '../store/UserContext';
 import { useNavigate } from 'react-router-dom';
-import { reviewService, userService } from '../services';
+import * as reviewService from '../services/reviewService';
+import * as userService from '../services/userService';
 import Button from '../components/Button';
 import '../styles/profile.css';
 
@@ -45,7 +46,7 @@ const UserProfile = () => {
       const stats = {
         totalReviews: 12,
         bakeryReviews: 5,
-        pastryReviews: 7,
+        productReviews: 7,
         averageRating: 4.2,
         mostRecentReview: '2024-04-01T12:00:00Z'
       };
@@ -62,7 +63,7 @@ const UserProfile = () => {
         },
         {
           id: 2,
-          type: 'pastry',
+          type: 'product',
           itemName: 'Kanelsnegl (Lagkagehuset)',
           rating: 4.8,
           date: '2024-04-01T12:15:00Z',
@@ -74,11 +75,11 @@ const UserProfile = () => {
           itemName: 'Andersen Bakery',
           rating: 4.2,
           date: '2024-03-22T10:30:00Z',
-          comment: 'Traditional Danish pastries with great quality.'
+          comment: 'Traditional Danish products with great quality.'
         },
         {
           id: 4,
-          type: 'pastry',
+          type: 'product',
           itemName: 'Tebirkes (Andersen Bakery)',
           rating: 4.1,
           date: '2024-03-22T10:45:00Z',
@@ -263,7 +264,7 @@ const UserProfile = () => {
                           <div className="review-header">
                             <h3 className="review-item-name">{review.itemName}</h3>
                             <span className="review-type-badge">
-                              {review.type === 'bakery' ? 'Bakery' : 'Pastry'}
+                              {review.type === 'bakery' ? 'Bakery' : 'Product'}
                             </span>
                           </div>
                           
@@ -302,8 +303,8 @@ const UserProfile = () => {
                     </div>
                     
                     <div className="stat-card">
-                      <div className="stat-value">{userStats.pastryReviews}</div>
-                      <div className="stat-label">Pastry Reviews</div>
+                      <div className="stat-value">{userStats.productReviews}</div>
+                      <div className="stat-label">Product Reviews</div>
                     </div>
                     
                     <div className="stat-card">
