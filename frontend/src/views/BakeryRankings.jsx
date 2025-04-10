@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import apiClient from '../services/api';
 import SearchDropdown from '../components/SearchDropdown';
 import '../styles/bakery-rankings.css';
 
@@ -9,159 +10,96 @@ const useBakeryRankingsViewModel = () => {
   const [bakeries, setBakeries] = useState([]);
   const [filteredBakeries, setFilteredBakeries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchType, setSearchType] = useState('bakeries');
   const [selectedZipCode, setSelectedZipCode] = useState('');
   const [selectedRating, setSelectedRating] = useState('');
 
-  // Mock data for bakery rankings
-  const mockBakeries = [
-    {
-      id: 1,
-      name: "Juno The Bakery",
-      location: "Århusgade 48, 2100 København Ø",
-      zipCode: "2100",
-      description: "Famous for their cardamom buns and sourdough bread",
-      rating: 4.9,
-      reviewCount: 342,
-      topItem: "Cardamom Bun",
-      image: "juno.jpg"
-    },
-    {
-      id: 2,
-      name: "Hart Bageri",
-      location: "Gl. Kongevej 109, 1850 Frederiksberg",
-      zipCode: "1850",
-      description: "Amazing sourdough bread and Danish products",
-      rating: 4.8,
-      reviewCount: 287,
-      topItem: "Sourdough Bread",
-      image: "hart.jpg"
-    },
-    {
-      id: 3,
-      name: "Lagkagehuest Torvegade",
-      location: "Torvegade 45, 1400 København K",
-      zipCode: "1400",
-      description: "High-quality Danish products and cakes",
-      rating: 4.7,
-      reviewCount: 458,
-      topItem: "Kanelsnegl",
-      image: "lagkagehuset.jpg"
-    },
-    {
-      id: 4,
-      name: "Andersen Bakery Thorvaldsensvej",
-      location: "Thorvaldsensvej 2, 1871 Frederiksberg",
-      zipCode: "1871",
-      description: "Authentic Danish products with a modern twist",
-      rating: 4.7,
-      reviewCount: 178,
-      topItem: "Tebirkes",
-      image: "andersen.jpg"
-    },
-    {
-      id: 5,
-      name: "Meyers Bageri",
-      location: "Jægersborggade 9, 2200 København N",
-      zipCode: "2200",
-      description: "Organic artisanal bakery with focus on sustainability",
-      rating: 4.6,
-      reviewCount: 196,
-      topItem: "Rugbrød",
-      image: "meyers.jpg"
-    },
-    {
-      id: 6,
-      name: "Bageriet Brød",
-      location: "Anker Heegaards Gade 2, 1572 København V",
-      zipCode: "1572",
-      description: "Small artisan bakery with excellent bread and products",
-      rating: 4.5,
-      reviewCount: 124,
-      topItem: "Croissant",
-      image: "brod.jpg"
-    },
-    {
-      id: 7,
-      name: "Sankt Peders Bageri",
-      location: "Sankt Peders Stræde 29, 1453 København K",
-      zipCode: "1453",
-      description: "Historic bakery famous for 'Onsdagssnegle' (Wednesday cinnamon rolls)",
-      rating: 4.5,
-      reviewCount: 267,
-      topItem: "Onsdagssnegl",
-      image: "sankt-peders.jpg"
-    },
-    {
-      id: 8,
-      name: "Buka Bakery",
-      location: "Jagtvej 59, 2200 København N",
-      zipCode: "2200",
-      description: "Modern bakery with a focus on sourdough and seasonal ingredients",
-      rating: 4.4,
-      reviewCount: 98,
-      topItem: "Chocolate Croissant",
-      image: "buka.jpg"
-    },
-    {
-      id: 9,
-      name: "Alice Copenhagen",
-      location: "Galionsvej 37, 1437 København K",
-      zipCode: "1437",
-      description: "French-inspired bakery with exceptional viennoiserie",
-      rating: 4.3,
-      reviewCount: 87,
-      topItem: "Pain au Chocolat",
-      image: "alice.jpg"
-    },
-    {
-      id: 10,
-      name: "Mirabelle",
-      location: "Guldbergsgade 29, 2200 København N",
-      zipCode: "2200",
-      description: "Organic bakery and restaurant with focus on local ingredients",
-      rating: 4.2,
-      reviewCount: 156,
-      topItem: "Sourdough Croissant",
-      image: "mirabelle.jpg"
+  // Fetch bakeries from API with caching
+  const fetchBakeries = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Use apiClient with default caching (60 seconds)
+      const response = await apiClient.get('/bakeries', true);
+      setBakeries(response.bakeries);
+      setFilteredBakeries(response.bakeries);
+    } catch (error) {
+      console.error('Error fetching bakeries:', error);
+      setError('Failed to load bakeries. Please try again later.');
+    } finally {
+      setLoading(false);
     }
-  ];
-
-  // Handle search submission
-  const handleSearch = (searchParams) => {
-    const { type, zipCode, rating } = searchParams;
-    
-    // Filter bakeries based on search parameters
-    let filtered = [...mockBakeries];
-    
-    if (zipCode) {
-      filtered = filtered.filter(bakery => bakery.zipCode === zipCode);
-    }
-    
-    if (rating) {
-      const ratingValue = parseInt(rating);
-      filtered = filtered.filter(bakery => bakery.rating >= ratingValue);
-    }
-    
-    setFilteredBakeries(filtered);
   };
 
-  // Simulate API fetch
-  useEffect(() => {
-    setLoading(true);
-    // Simulate API delay
-    const timer = setTimeout(() => {
-      setBakeries(mockBakeries);
-      setFilteredBakeries(mockBakeries);
-      setLoading(false);
-    }, 500);
+  // Handle search submission
+  const handleSearch = async (searchParams) => {
+    const { type, zipCode, rating } = searchParams;
     
-    return () => clearTimeout(timer);
+    setLoading(true);
+    setError(null);
+    
+    try {
+      if (zipCode || rating) {
+        // For specific filters, we can use the search endpoint if available
+        if (zipCode && !rating) {
+          // If we have a dedicated endpoint for zip code search
+          try {
+            // Using a dynamic URL with parameters to ensure proper caching
+            const response = await apiClient.get(`/bakeries/search?q=${zipCode}`, true);
+            setFilteredBakeries(response.bakeries || []);
+          } catch (error) {
+            // Fallback to client-side filtering
+            const filtered = bakeries.filter(bakery => bakery.zipCode === zipCode);
+            setFilteredBakeries(filtered);
+          }
+        } else {
+          // Filter bakeries client-side for complex filters
+          let filtered = [...bakeries];
+          
+          if (zipCode) {
+            filtered = filtered.filter(bakery => bakery.zipCode === zipCode);
+          }
+          
+          if (rating) {
+            const ratingValue = parseFloat(rating);
+            filtered = filtered.filter(bakery => {
+              const avgRating = bakery.average_rating || 0;
+              return avgRating >= ratingValue;
+            });
+          }
+          
+          setFilteredBakeries(filtered);
+        }
+      } else if (type === 'bakeries' && searchType === 'bakeries') {
+        // If no filters and type is bakeries, fetch all bakeries with caching
+        await fetchBakeries();
+      }
+    } catch (error) {
+      console.error('Error during search:', error);
+      setError('Search failed. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch data on initial component mount with caching
+  useEffect(() => {
+    fetchBakeries();
   }, []);
+
+  // Re-fetch when search type changes
+  useEffect(() => {
+    if (searchType === 'bakeries') {
+      fetchBakeries();
+    }
+  }, [searchType]);
 
   return {
     bakeries: filteredBakeries,
     loading,
+    error,
     searchType,
     setSearchType,
     selectedZipCode,
@@ -174,9 +112,11 @@ const useBakeryRankingsViewModel = () => {
 
 // View component
 const BakeryRankings = () => {
+  // Component code remains the same
   const {
     bakeries,
     loading,
+    error,
     searchType,
     setSearchType,
     selectedZipCode,
@@ -186,13 +126,91 @@ const BakeryRankings = () => {
     handleSearch
   } = useBakeryRankingsViewModel();
 
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    handleSearch({
-      type: searchType,
-      zipCode: selectedZipCode,
-      rating: selectedRating
-    });
+  const handleSearchSubmit = (searchParams) => {
+    handleSearch(searchParams);
+  };
+
+  // Search options for dropdown
+  const searchTypes = [
+    { value: 'bakeries', label: 'Find Bakeries' },
+    { value: 'products', label: 'Find Products' }
+  ];
+
+  const filterOptions = {
+    bakeries: [
+      {
+        name: 'zipCode',
+        options: [
+          { value: '', label: 'All Postal Codes' },
+          { value: '1050', label: '1050 - Inner City' },
+          { value: '1400', label: '1400 - København K' },
+          { value: '1437', label: '1437 - København K' },
+          { value: '1453', label: '1453 - København K' },
+          { value: '1500', label: '1500 - Vesterbro' },
+          { value: '1572', label: '1572 - København V' },
+          { value: '1850', label: '1850 - Frederiksberg' },
+          { value: '1871', label: '1871 - Frederiksberg' },
+          { value: '2000', label: '2000 - Frederiksberg' },
+          { value: '2100', label: '2100 - Østerbro' },
+          { value: '2200', label: '2200 - Nørrebro' },
+          { value: '2300', label: '2300 - Amager' }
+        ]
+      },
+      {
+        name: 'rating',
+        options: [
+          { value: '', label: 'All Ratings' },
+          { value: '5', label: '5+ Stars' },
+          { value: '4.5', label: '4.5+ Stars' },
+          { value: '4', label: '4+ Stars' },
+          { value: '3.5', label: '3.5+ Stars' },
+          { value: '3', label: '3+ Stars' }
+        ]
+      }
+    ],
+    products: [
+      {
+        name: 'category',
+        options: [
+          { value: '', label: 'All Categories' },
+          { value: 'bread', label: 'Bread' },
+          { value: 'danish', label: 'Danish Pastry' },
+          { value: 'cake', label: 'Cakes' },
+          { value: 'viennoiserie', label: 'Viennoiserie' }
+        ]
+      },
+      {
+        name: 'rating',
+        options: [
+          { value: '', label: 'All Ratings' },
+          { value: '5', label: '5+ Stars' },
+          { value: '4.5', label: '4.5+ Stars' },
+          { value: '4', label: '4+ Stars' },
+          { value: '3.5', label: '3.5+ Stars' },
+          { value: '3', label: '3+ Stars' }
+        ]
+      }
+    ]
+  };
+
+  // Helper function to format address
+  const formatAddress = (bakery) => {
+    const addressParts = [];
+    if (bakery.streetName) addressParts.push(bakery.streetName);
+    if (bakery.streetNumber) addressParts.push(bakery.streetNumber);
+    if (bakery.zipCode) addressParts.push(bakery.zipCode);
+    
+    return addressParts.join(' ');
+  };
+
+  // Helper function to get average rating or 0
+  const getBakeryRating = (bakery) => {
+    return bakery.average_rating || bakery.ratings?.overall || 0;
+  };
+
+  // Helper function to get review count
+  const getReviewCount = (bakery) => {
+    return bakery.review_count || 0;
   };
 
   return (
@@ -203,94 +221,53 @@ const BakeryRankings = () => {
       </div>
       
       {/* Search Component */}
-      <div className="search-container">
-        <form onSubmit={handleSearchSubmit} className="search-dropdown-form">
-          <div className="search-type-selector">
-            <select 
-              value={searchType} 
-              onChange={(e) => setSearchType(e.target.value)}
-              className="search-dropdown"
-            >
-              <option value="bakeries">Find Bakeries</option>
-              <option value="products">Find Products</option>
-              <option value="reviews">Browse Reviews</option>
-            </select>
-          </div>
-          
-          <div className="search-filters">
-            {searchType === 'bakeries' && (
-              <select 
-                value={selectedZipCode} 
-                onChange={(e) => setSelectedZipCode(e.target.value)}
-                className="search-dropdown"
-              >
-                <option value="">All Copenhagen</option>
-                <option value="1050">1050 - Inner City</option>
-                <option value="1400">1400 - København K</option>
-                <option value="1437">1437 - København K</option>
-                <option value="1453">1453 - København K</option>
-                <option value="1500">1500 - Vesterbro</option>
-                <option value="1572">1572 - København V</option>
-                <option value="1850">1850 - Frederiksberg</option>
-                <option value="1871">1871 - Frederiksberg</option>
-                <option value="2000">2000 - Frederiksberg</option>
-                <option value="2100">2100 - Østerbro</option>
-                <option value="2200">2200 - Nørrebro</option>
-                <option value="2300">2300 - Amager</option>
-              </select>
-            )}
-            
-            <select 
-              value={selectedRating} 
-              onChange={(e) => setSelectedRating(e.target.value)}
-              className="search-dropdown"
-            >
-              <option value="">All Ratings</option>
-              <option value="5">5+ Stars</option>
-              <option value="4.5">4.5+ Stars</option>
-              <option value="4">4+ Stars</option>
-              <option value="3.5">3.5+ Stars</option>
-              <option value="3">3+ Stars</option>
-            </select>
-          </div>
-          
-          <button type="submit" className="search-button">Search</button>
-        </form>
-      </div>
+      <SearchDropdown 
+        onSearch={handleSearchSubmit}
+        searchTypes={searchTypes}
+        filterOptions={filterOptions}
+      />
 
       {/* Bakery Rankings List */}
       <div className="bakery-rankings">
         {loading ? (
           <div className="loading">Loading bakeries...</div>
+        ) : error ? (
+          <div className="error-message">{error}</div>
+        ) : bakeries.length === 0 ? (
+          <div className="no-results">No bakeries found matching your criteria.</div>
         ) : (
           <div className="bakery-list">
             {bakeries.map((bakery, index) => (
-              <div className="bakery-card" key={bakery.id}>
+              <Link to={`/bakery/${bakery.id}`} className="bakery-card" key={bakery.id}>
                 <div className="bakery-rank">{index + 1}</div>
                 <div className="bakery-image">
                   <div className="placeholder-image">
                     {bakery.name}
-                    {bakery.rating >= 4.7 && (
+                    {getBakeryRating(bakery) >= 4.7 && (
                       <div className="top-review-badge">TOP REVIEW</div>
                     )}
                   </div>
                 </div>
                 <div className="bakery-details">
                   <h3>{bakery.name}</h3>
-                  <p className="bakery-location">{bakery.location}</p>
-                  <p className="bakery-description">{bakery.description}</p>
+                  <p className="bakery-location">{formatAddress(bakery)}</p>
+                  <p className="bakery-description">
+                    {bakery.description || "A wonderful bakery in Copenhagen offering delicious products."}
+                  </p>
                   <div className="bakery-meta">
                     <div className="bakery-rating">
-                      <span className="rating-value">{bakery.rating}</span>
+                      <span className="rating-value">{getBakeryRating(bakery).toFixed(1)}</span>
                       <span className="stars">★★★★★</span>
-                      <span className="review-count">({bakery.reviewCount} reviews)</span>
+                      <span className="review-count">({getReviewCount(bakery)} reviews)</span>
                     </div>
-                    <div className="top-item">
-                      <strong>Must try:</strong> {bakery.topItem}
-                    </div>
+                    {bakery.topProduct && (
+                      <div className="top-item">
+                        <strong>Must try:</strong> {bakery.topProduct}
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}
