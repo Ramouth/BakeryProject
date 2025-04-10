@@ -104,7 +104,6 @@ cd frontend
 
 # Install dependencies
 npm install
-npm install react-router-dom prop-types
 
 # Start development server
 npm run dev
