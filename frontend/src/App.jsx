@@ -6,18 +6,13 @@ import { NotificationProvider } from './store/NotificationContext';
 import NavBar from './components/NavBar';
 import Footer from './components/Footer';
 import AuthGuard from './components/AuthGuard';
-import ProgressTracker from './components/ProgressTracker';
 import BakeryProfile from './views/BakeryProfile';
 import apiClient from './services/api';
 
 // Lazy load views for code splitting and performance
 const HomePage = lazy(() => import('./views/Homepage'));
-const Start = lazy(() => import('./views/Start'));
-const BakerySelection = lazy(() => import('./views/BakerySelection'));
-const ProductSelection = lazy(() => import('./views/ProductSelection'));
 const ProductRating = lazy(() => import('./views/ProductRating'));
 const BakeryRating = lazy(() => import('./views/BakeryRating'));
-const ThankYou = lazy(() => import('./views/ThankYou'));
 const Admin = lazy(() => import('./views/Admin'));
 const Login = lazy(() => import('./views/Login'));
 const BakeryRankings = lazy(() => import('./views/BakeryRankings')); 
@@ -90,12 +85,8 @@ function App() {
                   <Suspense fallback={<Loading />}>
                     <Routes>
                       <Route path="/" element={<HomePage key="homepage-component" />} />
-                      <Route path="/start" element={<Start />} />
-                      <Route path="/bakery-selection" element={<BakerySelection />} />
-                      <Route path="/product-selection" element={<ProductSelection />} />
                       <Route path="/product-rating" element={<ProductRating />} />
                       <Route path="/bakery-rating" element={<BakeryRating />} />
-                      <Route path="/thank-you" element={<ThankYou />} />
                       <Route path="/login" element={<Login />} />
                       <Route path="/profile" element={<UserProfile />} />
                       <Route path="/bakery-rankings" element={<BakeryRankings />} />
