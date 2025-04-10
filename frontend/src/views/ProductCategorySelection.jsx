@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import apiClient from '../services/api';
 
 const ProductCategorySelection = () => {
   const navigate = useNavigate();
@@ -7,8 +8,8 @@ const ProductCategorySelection = () => {
   const [activeCategory, setActiveCategory] = useState(null);
   const [loading, setLoading] = useState(true);
   
-  // Mock data for categories and their products
-  const [categories] = useState([
+  // Predefined categories structure - this will always be shown regardless of API data
+  const categories = [
     {
       id: 'danish',
       name: 'Danish Products',
@@ -30,8 +31,8 @@ const ProductCategorySelection = () => {
       ]
     },
     {
-      id: 'croissants',
-      name: 'Croissants',
+      id: 'viennoiserie',
+      name: 'Viennoiserie',
       products: [
         { id: 'classic-croissant', name: 'Classic Croissant' },
         { id: 'chocolate-croissant', name: 'Chocolate Croissant' },
@@ -59,15 +60,24 @@ const ProductCategorySelection = () => {
         { id: 'brunsviger', name: 'Brunsviger' }
       ]
     }
-  ]);
+  ];
 
   useEffect(() => {
-    // Simulate API call
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 500);
+    // Check for existing products in the API with caching enabled
+    const fetchProducts = async () => {
+      try {
+        // Use the apiClient with caching enabled (60 seconds default)
+        const response = await apiClient.get('/products', true);
+        console.log(`Found ${response.products?.length || 0} products in the database`);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        // Set loading to false regardless of API response
+        setLoading(false);
+      }
+    };
     
-    return () => clearTimeout(timer);
+    fetchProducts();
   }, []);
 
   // Handle mouse enter on category
