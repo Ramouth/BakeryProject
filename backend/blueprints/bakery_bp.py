@@ -24,6 +24,37 @@ def get_bakeries():
     bakeries = bakery_service.get_all_bakeries()
     return jsonify({"bakeries": bakeries_schema.dump(bakeries)})
 
+@bakery_bp.route('/top', methods=['GET'])
+@cache.cached(timeout=120)  # Cache for 2 minutes
+def get_top_bakeries():
+    """Get top rated bakeries"""
+    try:
+        limit = request.args.get('limit', default=4, type=int)
+        
+        # Get all bakeries first
+        bakeries = bakery_service.get_all_bakeries()
+        
+        # For each bakery, get its stats (using the same logic as the profile page)
+        for bakery in bakeries:
+            stats = bakery_service.get_bakery_stats(bakery.id)
+            bakery.average_rating = stats.get('average_rating', 0)
+            bakery.review_count = stats.get('review_count', 0)
+        
+        # Sort by average rating (highest first)
+        sorted_bakeries = sorted(
+            bakeries, 
+            key=lambda b: b.average_rating if hasattr(b, 'average_rating') else 0,
+            reverse=True
+        )
+        
+        # Return only the requested number of bakeries
+        top_bakeries = sorted_bakeries[:limit]
+        
+        return jsonify({"bakeries": bakeries_schema.dump(top_bakeries)})
+    except Exception as e:
+        app.logger.error(f"Error getting top bakeries: {str(e)}")
+        return jsonify({"message": str(e), "bakeries": []}), 500
+
 @bakery_bp.route('/<int:bakery_id>', methods=['GET'])
 @cache.cached(timeout=60, key_prefix='get_bakery')  # Cache with proper key
 def get_bakery(bakery_id):
