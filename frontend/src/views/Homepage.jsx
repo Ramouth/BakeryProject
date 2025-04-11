@@ -1,18 +1,46 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useReview } from '../store/ReviewContext';
+import apiClient from '../services/api';
+import { useNotification } from '../store/NotificationContext';
 
 const HomePage = () => {
   const { resetReview } = useReview();
+  const { showError } = useNotification();
   const [searchType, setSearchType] = useState('bakeries');
   const [selectedZipCode, setSelectedZipCode] = useState('');
   const [selectedProductType, setSelectedProductType] = useState('');
   const [selectedRating, setSelectedRating] = useState('');
+  const [topBakeries, setTopBakeries] = useState([]);
+  const [loading, setLoading] = useState(false);
   
   // Reset review state when homepage loads
   useEffect(() => {
     resetReview();
-  }, [resetReview]);
+    
+    // Fetch top bakeries from API
+    const fetchTopBakeries = async () => {
+      setLoading(true);
+      try {
+        // Use the dedicated top bakeries endpoint with caching enabled
+        const response = await apiClient.get('/bakeries/top?limit=4', true);
+        
+        if (response && response.bakeries && response.bakeries.length > 0) {
+          setTopBakeries(response.bakeries);
+        } else {
+          setTopBakeries([]);
+        }
+      } catch (error) {
+        console.error('Error fetching top bakeries:', error);
+        showError('Unable to load top bakeries');
+        setTopBakeries([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchTopBakeries();
+  }, [resetReview, showError]);
 
   // Handle search submission
   const handleSearchSubmit = (e) => {
@@ -112,43 +140,55 @@ const HomePage = () => {
         <h2>Explore Copenhagens most cozy bakeries</h2>
         <p>Top four ranked bakeries, currently:</p>
         
-        <div className="homepage-bakery-grid">
-          <div className="homepage-bakery-card">
-            <div className="homepage-bakery-image">
-              <div className="homepage-placeholder-image">Hart Bageri</div>
-            </div>
-            <h3>Hart Bageri</h3>
-            <p>Famous for their sourdough bread and danish products</p>
-            <div className="bakery-rating">4.8 ★</div>
+        {loading ? (
+          <div className="loading-container">
+            <div className="loading-spinner"></div>
+            <p>Loading top bakeries...</p>
           </div>
-          
-          <div className="homepage-bakery-card">
-            <div className="homepage-bakery-image">
-              <div className="homepage-placeholder-image">Juno</div>
-            </div>
-            <h3>Juno The Bakery</h3>
-            <p>Known for their amazing cardamom buns</p>
-            <div className="bakery-rating">4.9 ★</div>
+        ) : topBakeries.length > 0 ? (
+          <div className="homepage-bakery-grid">
+            {topBakeries.map(bakery => {
+              // Simply use the provided average_rating directly
+              const rating = bakery.average_rating || 0;
+              
+              // Format for display (adjusted to 5-star scale if needed)
+              const displayRating = (rating > 10 ? (rating / 2) : rating).toFixed(1);
+              
+              // Generate a short description based on available data
+              const getDescription = () => {
+                if (bakery.description) return bakery.description;
+                
+                // If no description, create one from bakery data
+                const parts = [];
+                if (bakery.streetName && bakery.zipCode) {
+                  parts.push(`Located at ${bakery.streetName} ${bakery.streetNumber || ''} in ${bakery.zipCode}`);
+                }
+                
+                return parts.length > 0 ? parts.join('. ') : 'Delicious bakery in Copenhagen';
+              };
+              
+              return (
+                <Link to={`/bakery/${bakery.id}`} key={bakery.id} className="homepage-bakery-card">
+                  <div className="homepage-bakery-image">
+                    <div className="homepage-placeholder-image">
+                      {bakery.imageUrl ? (
+                        <img src={bakery.imageUrl} alt={bakery.name} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                      ) : bakery.name}
+                    </div>
+                  </div>
+                  <h3>{bakery.name}</h3>
+                  <p>{getDescription()}</p>
+                  <div className="bakery-rating">{displayRating} ★</div>
+                </Link>
+              );
+            })}
           </div>
-          
-          <div className="homepage-bakery-card">
-            <div className="homepage-bakery-image">
-              <div className="homepage-placeholder-image">Andersen</div>
-            </div>
-            <h3>Andersen Bakery</h3>
-            <p>Traditional Danish products with a modern twist</p>
-            <div className="bakery-rating">4.7 ★</div>
+        ) : (
+          <div className="no-bakeries-message">
+            <p>No bakeries available at the moment. Please check back later!</p>
+            <Link to="/bakery-rankings" className="btn">View All Bakeries</Link>
           </div>
-          
-          <div className="homepage-bakery-card">
-            <div className="homepage-bakery-image">
-              <div className="homepage-placeholder-image">Lagkagehuset</div>
-            </div>
-            <h3>Lagkagehuset</h3>
-            <p>Popular chain with consistently delicious offerings</p>
-            <div className="bakery-rating">4.5 ★</div>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
