@@ -103,7 +103,7 @@ const HomePage = () => {
         <div className="promo-content">
           <h2>Plan your bakery visit</h2>
           <p>Get custom recommendations for all the things you're into with our product rankings.</p>
-          <Link to="/bakery-selection" className="btn">View rankings</Link>
+          <Link to="/bakery-rankings" className="btn">View rankings</Link>
         </div>
       </div>
       
