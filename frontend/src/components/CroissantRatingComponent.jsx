@@ -92,7 +92,7 @@ const CroissantRating = ({
               
               {/* The actual croissant with appropriate fill level */}
               <div className={`croissant ${fillClass}`}>
-                🥐
+                🍪
               </div>
             </div>
           );
