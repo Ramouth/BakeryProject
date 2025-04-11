@@ -2,8 +2,8 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import Modal from "../../components/Modal";
 import Button from "../../components/Button";
-import BakeryForm from "../../components/admin/BakeryForm";
-import BakeryList from "../../components/admin/BakeryList";
+import BakeryForm from "../../components/admin/AdminBakeryModal";
+import BakeryList from "../../components/admin/AdminBakeryList";
 
 // BakeryViewModel - handles business logic for the view
 const useBakeryViewModel = () => {

@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { productService, bakeryService } from "../../services";
 import Modal from "../../components/Modal";
 import Button from "../../components/Button";
-import ProductForm from "../../components/admin/ProductForm";
-import ProductList from "../../components/admin/ProductList";
+import ProductForm from "../../components/admin/AdminProductModal";
+import ProductList from "../../components/admin/AdminProductList";
 
 const ProductSection = () => {
   const [products, setProducts] = useState([]);

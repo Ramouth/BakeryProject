@@ -1,7 +1,7 @@
 // src/views/admin/ProductReviewSection.jsx
 import { useState, useEffect } from "react";
-import ProductReviewList from "../../components/admin/ProductReviewList";
-import ProductReviewForm from "../../components/admin/ProductReviewForm";
+import ProductReviewList from "../../components/admin/AdminProductReviewList";
+import ProductReviewForm from "../../components/admin/AdminProductReviewModal";
 import Modal from "../../components/Modal";
 import Button from "../../components/Button";
 
