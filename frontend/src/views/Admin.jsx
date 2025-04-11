@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, NavLink, useNavigate } from 'react-router-dom';
 import { useUser } from '../store/UserContext';
-import BakerySection from './admin/BakerySection';
-import ProductSection from './admin/ProductSection';
-import UserSection from './admin/UserSection';
-import BakeryReviewSection from './admin/BakeryReviewSection';
-import ProductReviewSection from './admin/ProductReviewSection';
+import BakerySection from './admin/AdminBakeryView';
+import ProductSection from './admin/AdminProductView';
+import UserSection from './admin/AdminUserView';
+import BakeryReviewSection from './admin/AdminBakeryReviewView';
+import ProductReviewSection from './admin/AdminProductReviewView';
 import Button from '../components/Button';
 
 // Admin dashboard home page

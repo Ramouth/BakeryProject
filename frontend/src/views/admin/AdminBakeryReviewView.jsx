@@ -1,7 +1,7 @@
 // src/views/admin/BakeryReviewSection.jsx
 import { useState, useEffect } from "react";
-import BakeryReviewList from "../../components/admin/BakeryReviewList";
-import BakeryReviewForm from "../../components/admin/BakeryReviewForm";
+import BakeryReviewList from "../../components/admin/AdminBakeryReviewList";
+import BakeryReviewForm from "../../components/admin/AdminBakeryReviewModal";
 import Modal from "../../components/Modal";
 import Button from "../../components/Button";
 

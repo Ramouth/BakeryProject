@@ -2,8 +2,8 @@
 import { useState, useEffect, useCallback } from "react";
 import Modal from "../../components/Modal";
 import Button from "../../components/Button";
-import UserList from "../../components/admin/UserList";
-import UserForm from "../../components/admin/UserForm";
+import UserList from "../../components/admin/AdminUserList";
+import UserForm from "../../components/admin/AdminUserModal";
 import { userService } from "../../services";
 
 const UserSection = () => {
