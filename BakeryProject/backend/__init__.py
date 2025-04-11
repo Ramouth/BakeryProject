@@ -3,6 +3,7 @@ from .models import db
 from .schemas import ma
 from .utils.caching import cache, configure_cache
 from flask_migrate import Migrate   # Import Flask-Migrate
+from .app import create_app
 
 # Create a global migrate instance
 migrate = Migrate()

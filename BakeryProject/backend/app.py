@@ -1,4 +1,3 @@
-# Flask application factory and entry point for the BakeryProject backend.
 # This file sets up the Flask app, including configuration, extensions, blueprints, and CORS.
 # It can be run directly for development or loaded by a WSGI server for production.
 
@@ -38,7 +37,7 @@ def create_app(config_class=DevelopmentConfig):
     # Initialize extensions
     db.init_app(app)   # Initialize SQLAlchemy (database)
     ma.init_app(app)   # Initialize Marshmallow (serialization)
-    
+
     # Enable Cross-Origin Resource Sharing (CORS) for the frontend (adjust origins as needed)
     CORS(app, resources={
         r"/*": {
@@ -49,21 +48,26 @@ def create_app(config_class=DevelopmentConfig):
         }
     })
 
-    # Set up database migration support
-    # Note: Flask-Migrate is also configured via the separate migrate.py CLI script.
+    # Set up database migration support (Flask-Migrate)
     migrate = Migrate(app, db)
 
-    # Configure caching for the application (using Flask-Caching if enabled in config)
-    configure_cache(app)  # Sets up cache with app config (e.g., cache type, default timeout)
+    # Configure caching (using Flask-Caching, if enabled in config)
+    configure_cache(app)
 
     # Register blueprints for different parts of the API
-    app.register_blueprint(bakery_bp, url_prefix='/bakeries')       # Bakery-related routes
-    app.register_blueprint(pastry_bp, url_prefix='/pastries')       # Pastry-related routes
-    app.register_blueprint(bakery_review_bp, url_prefix='/bakeryreviews')  # Bakery review routes
-    app.register_blueprint(pastry_review_bp, url_prefix='/pastryreviews')  # Pastry review routes
-    app.register_blueprint(user_bp, url_prefix='/contacts')         # User/contacts routes
+    app.register_blueprint(bakery_bp, url_prefix='/bakeries')
+    app.register_blueprint(pastry_bp, url_prefix='/pastries')
+    app.register_blueprint(bakery_review_bp, url_prefix='/bakeryreviews')
+    app.register_blueprint(pastry_review_bp, url_prefix='/pastryreviews')
+    app.register_blueprint(user_bp, url_prefix='/contacts')
 
-    # Define a simple root endpoint for testing connectivity
+    # Optional: import models to ensure SQLAlchemy sees them (in some setups)
+    from .models.bakery import Bakery
+    from .models.pastry import Pastry
+    from .models.review import BakeryReview, PastryReview
+    from .models.user import Contact
+
+    # Root route for health-check
     @app.route('/')
     def index():
         return {"message": "BakeryProject API is running"}, 200
@@ -71,10 +75,9 @@ def create_app(config_class=DevelopmentConfig):
     return app
 
 # Create a global WSGI application instance
-# This allows running the app via WSGI servers (e.g., Gunicorn) by pointing to "app"
+# When deploying in production, consider using ProductionConfig instead
 app = create_app()  # default to DevelopmentConfig; use ProductionConfig for production
 
 # Run the Flask development server if this script is executed directly
 if __name__ == '__main__':
     app.run(debug=True)
-
