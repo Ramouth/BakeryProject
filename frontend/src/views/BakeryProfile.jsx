@@ -94,19 +94,19 @@ const BakeryProfile = () => {
       <div className={`croissant-display ${sizeClass}`}>
         {/* Full croissants */}
         {Array(fullCroissants).fill().map((_, i) => (
-          <span key={`full-${i}`} className="croissant-filled">🥐</span>
+          <span key={`full-${i}`} className="croissant-filled">🍪</span>
         ))}
         
         {/* Half croissant */}
         {hasHalfCroissant && (
           <div className="croissant-half-container">
-            <span className="croissant-half">🥐</span>
+            <span className="croissant-half">🍪</span>
           </div>
         )}
         
         {/* Empty croissants */}
         {Array(emptyCroissants).fill().map((_, i) => (
-          <span key={`empty-${i}`} className="croissant-empty">🥐</span>
+          <span key={`empty-${i}`} className="croissant-empty">🍪</span>
         ))}
       </div>
     );
