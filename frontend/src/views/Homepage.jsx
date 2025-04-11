@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useReview } from '../store/ReviewContext';
 import apiClient from '../services/api';
@@ -14,6 +14,46 @@ const HomePage = () => {
   const [topBakeries, setTopBakeries] = useState([]);
   const [loading, setLoading] = useState(false);
   
+  // Memoized function to efficiently fetch bakery stats with batching
+  const fetchBakeryStatsInBatches = useCallback(async (bakeries, batchSize = 2) => {
+    const result = [...bakeries];
+    
+    // Process bakeries in batches to avoid too many concurrent requests
+    for (let i = 0; i < result.length; i += batchSize) {
+      const batch = result.slice(i, i + batchSize);
+      
+      // Process a batch of bakeries concurrently, but limit the batch size
+      await Promise.all(
+        batch.map(async (bakery, index) => {
+          try {
+            // Fetch bakery stats which include proper ratings
+            const statsResponse = await apiClient.get(`/bakeries/${bakery.id}/stats`, true);
+            
+            // Update the bakery in the original array with stats data
+            result[i + index] = {
+              ...bakery,
+              // Use the stats ratings if available
+              average_rating: statsResponse.average_rating || 0,
+              review_count: statsResponse.review_count || 0,
+              ratings: statsResponse.ratings || {
+                overall: 0,
+                service: 0,
+                price: 0,
+                atmosphere: 0,
+                location: 0
+              }
+            };
+          } catch (error) {
+            console.error(`Error fetching stats for bakery ${bakery.id}:`, error);
+            // Keep the original bakery data if stats couldn't be fetched
+          }
+        })
+      );
+    }
+    
+    return result;
+  }, []);
+  
   // Reset review state when homepage loads
   useEffect(() => {
     resetReview();
@@ -26,7 +66,9 @@ const HomePage = () => {
         const response = await apiClient.get('/bakeries/top?limit=4', true);
         
         if (response && response.bakeries && response.bakeries.length > 0) {
-          setTopBakeries(response.bakeries);
+          // Get bakery stats in optimized batches
+          const bakeriesWithStats = await fetchBakeryStatsInBatches(response.bakeries);
+          setTopBakeries(bakeriesWithStats);
         } else {
           setTopBakeries([]);
         }
@@ -40,7 +82,7 @@ const HomePage = () => {
     };
     
     fetchTopBakeries();
-  }, [resetReview, showError]);
+  }, [resetReview, showError, fetchBakeryStatsInBatches]);
 
   // Handle search submission
   const handleSearchSubmit = (e) => {
@@ -148,11 +190,21 @@ const HomePage = () => {
         ) : topBakeries.length > 0 ? (
           <div className="homepage-bakery-grid">
             {topBakeries.map(bakery => {
-              // Simply use the provided average_rating directly
-              const rating = bakery.average_rating || 0;
+              // Get the rating from various possible sources, with fallbacks
+              let rating = 0;
               
-              // Format for display (adjusted to 5-star scale if needed)
-              const displayRating = (rating > 10 ? (rating / 2) : rating).toFixed(1);
+              // First try to use average_rating directly
+              if (typeof bakery.average_rating === 'number') {
+                rating = bakery.average_rating;
+              } 
+              // Then try to use the overall rating from ratings object
+              else if (bakery.ratings && typeof bakery.ratings.overall === 'number') {
+                rating = bakery.ratings.overall;
+              }
+              
+              // Format for display (ensure the rating is on a 5-star scale)
+              // If the rating is on a 10-point scale (greater than 5), convert it to a 5-point scale
+              const displayRating = (rating > 5 ? (rating / 2) : rating).toFixed(1);
               
               // Generate a short description based on available data
               const getDescription = () => {
@@ -169,16 +221,62 @@ const HomePage = () => {
               
               return (
                 <Link to={`/bakery/${bakery.id}`} key={bakery.id} className="homepage-bakery-card">
-                  <div className="homepage-bakery-image">
-                    <div className="homepage-placeholder-image">
-                      {bakery.imageUrl ? (
-                        <img src={bakery.imageUrl} alt={bakery.name} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
-                      ) : bakery.name}
+                  <div style={{ 
+                    position: 'relative', 
+                    height: '100%', 
+                    display: 'flex', 
+                    flexDirection: 'column',
+                    overflow: 'hidden' // Prevent content from spilling out
+                  }}>
+                    <div className="homepage-bakery-image">
+                      <div className="homepage-placeholder-image">
+                        {bakery.imageUrl ? (
+                          <img src={bakery.imageUrl} alt={bakery.name} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                        ) : bakery.name}
+                      </div>
+                    </div>
+                    
+                    {/* Limit bakery name to 2 lines and show ellipsis if longer */}
+                    <h3 style={{
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      marginBottom: '8px',
+                      marginTop: '12px'
+                    }}>
+                      {bakery.name}
+                    </h3>
+                    
+                    {/* Add margin at the bottom of the card and limit lines to prevent overlap */}
+                    <p style={{ 
+                      flex: '1', 
+                      marginBottom: '75px', // Increased space for rating
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 3, // Limit to 3 lines
+                      WebkitBoxOrient: 'vertical'
+                    }}>
+                      {getDescription()}
+                    </p>
+                    
+                    {/* Position rating at bottom left with improved styling */}
+                    <div className="bakery-rating" style={{ 
+                      position: 'absolute', 
+                      bottom: '10px', 
+                      left: '10px',
+                      padding: '4px 8px',
+                      fontWeight: 'bold',
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)', // More opaque background
+                      borderRadius: '4px',
+                      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                      zIndex: 2 // Ensure it's above other content
+                    }}>
+                      {displayRating} 🍪
                     </div>
                   </div>
-                  <h3>{bakery.name}</h3>
-                  <p>{getDescription()}</p>
-                  <div className="bakery-rating">{displayRating} ★</div>
                 </Link>
               );
             })}
