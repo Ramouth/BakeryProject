@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { productService, bakeryService } from "../../services";
+import productService from "../../services/productService";
+import bakeryService from "../../services/bakeryService";
 import Modal from "../../components/Modal";
 import Button from "../../components/Button";
 import ProductForm from "../../components/admin/AdminProductModal";

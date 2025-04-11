@@ -4,7 +4,7 @@ import Modal from "../../components/Modal";
 import Button from "../../components/Button";
 import UserList from "../../components/admin/AdminUserList";
 import UserForm from "../../components/admin/AdminUserModal";
-import { userService } from "../../services";
+import userService from "../../services/userService";
 
 const UserSection = () => {
   // State management
