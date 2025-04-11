@@ -34,7 +34,6 @@ const ProductReviewList = ({ reviews, updateReview, updateCallback }) => {
 
   return (
     <div>
-      <h2>Product Reviews</h2>
       {safeReviews.length === 0 ? (
         <p>No product reviews found. Create one to get started.</p>
       ) : (
