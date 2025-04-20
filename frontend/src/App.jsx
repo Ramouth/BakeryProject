@@ -15,6 +15,7 @@ const ProductRating = lazy(() => import('./views/ProductRating'));
 const BakeryRating = lazy(() => import('./views/BakeryRating'));
 const Admin = lazy(() => import('./views/Admin'));
 const Login = lazy(() => import('./views/Login'));
+const SignUp = lazy(() => import('./views/SignUp'));
 const BakeryRankings = lazy(() => import('./views/BakeryRankings')); 
 const ProductRankings = lazy(() => import('./views/ProductRankings'));
 const ProductCategorySelection = lazy(() => import('./views/ProductCategorySelection'));
@@ -88,6 +89,7 @@ function App() {
                       <Route path="/product-rating" element={<ProductRating />} />
                       <Route path="/bakery-rating" element={<BakeryRating />} />
                       <Route path="/login" element={<Login />} />
+                      <Route path="/signup" element={<SignUp />} />
                       <Route path="/profile" element={<UserProfile />} />
                       <Route path="/bakery-rankings" element={<BakeryRankings />} />
                       <Route path="/product-categories" element={<ProductCategorySelection />} />
