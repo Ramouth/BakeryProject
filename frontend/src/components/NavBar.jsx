@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useUser } from '../store/UserContext';
 import ThemeToggle from './ThemeToggle';
-import ReviewModal from './ReviewModal'; // This now uses our connected ReviewModal
+import ReviewModal from './ReviewModal';
 
 // Import the review modal CSS
 import '../styles/review-modal.css';
@@ -43,8 +43,6 @@ const NavBar = () => {
                 <span className="separator"></span>
                 <span>Review</span>
               </button>
-              <Link to="/profile" className="profile-icon">
-              </Link>
               <Link to="/profile" className="profile-icon" title="View Profile">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -58,8 +56,14 @@ const NavBar = () => {
                 Log in
               </Link>
               
-              <button onClick={openReviewModal} className="sign-up-button">
-                Write a Review
+              <Link to="/signup" className="sign-up-button">
+                Sign up
+              </Link>
+              
+              <button onClick={openReviewModal} className="review-button">
+                <span className="plus-icon">+</span>
+                <span className="separator"></span>
+                <span>Review</span>
               </button>
             </>
           )}
