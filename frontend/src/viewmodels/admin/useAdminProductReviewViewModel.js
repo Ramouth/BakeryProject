@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import apiClient from '../../services/api';
 import { ProductReview } from '../../models/Review';
 import { Product } from '../../models/Product';
-import { showErrorNotification, showSuccessNotification } from '../../utils/notifications';
+import { useNotification } from '../../store/NotificationContext';
 
 export const useAdminProductReviewViewModel = () => {
   const [reviews, setReviews] = useState([]);
@@ -12,6 +12,7 @@ export const useAdminProductReviewViewModel = () => {
   const [currentReview, setCurrentReview] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { showSuccess, showError } = useNotification();
 
   const fetchReviews = useCallback(async () => {
     setIsLoading(true);
@@ -31,11 +32,11 @@ export const useAdminProductReviewViewModel = () => {
       setUsers(usersResponse.users || []);
     } catch (err) {
       setError('Failed to fetch data. Please try again.');
-      showErrorNotification('Failed to fetch data.');
+      showError('Failed to fetch data.');
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [showError]);
 
   useEffect(() => {
     fetchReviews();
@@ -62,23 +63,23 @@ export const useAdminProductReviewViewModel = () => {
       if (currentReview?.id) {
         // Update
         await apiClient.patch(`/productreviews/update/${currentReview.id}`, reviewData, false);
-        showSuccessNotification('Review updated successfully!');
+        showSuccess('Review updated successfully!');
       } else {
         // Create
         await apiClient.post('/productreviews/create', reviewData, false);
-        showSuccessNotification('Review created successfully!');
+        showSuccess('Review created successfully!');
       }
       
       handleCloseModal();
       await fetchReviews();
     } catch (err) {
       setError(err.message || 'Failed to save review.');
-      showErrorNotification(`Failed to save review: ${err.message}`);
+      showError(`Failed to save review: ${err.message}`);
       throw err; // Re-throw for form error handling
     } finally {
       setIsLoading(false);
     }
-  }, [currentReview, handleCloseModal, fetchReviews]);
+  }, [currentReview, handleCloseModal, fetchReviews, showSuccess, showError]);
 
   const handleDeleteReview = useCallback(async (id) => {
     if (!window.confirm('Are you sure you want to delete this review?')) {
@@ -88,15 +89,15 @@ export const useAdminProductReviewViewModel = () => {
     setIsLoading(true);
     try {
       await apiClient.delete(`/productreviews/delete/${id}`, false);
-      showSuccessNotification('Review deleted successfully!');
+      showSuccess('Review deleted successfully!');
       await fetchReviews();
     } catch (err) {
       setError(err.message || 'Failed to delete review.');
-      showErrorNotification(`Failed to delete review: ${err.message}`);
+      showError(`Failed to delete review: ${err.message}`);
     } finally {
       setIsLoading(false);
     }
-  }, [fetchReviews]);
+  }, [fetchReviews, showSuccess, showError]);
 
   return {
     reviews,

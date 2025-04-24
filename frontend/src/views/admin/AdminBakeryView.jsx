@@ -1,4 +1,4 @@
-import { useAdminBakeryViewModel } from '../../viewmodels/useAdminBakeryViewModel';
+import { useAdminBakeryViewModel } from '../../viewmodels/admin/useAdminBakeryViewModel';
 import Modal from '../../components/Modal';
 import Button from '../../components/Button';
 import BakeryForm from '../../components/admin/AdminBakeryModal';

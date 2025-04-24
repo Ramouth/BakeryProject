@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import apiClient from '../../services/api';
 import { Bakery } from '../../models/Bakery';
-import { showErrorNotification, showSuccessNotification } from '../../utils/notifications';
+import { useNotification } from '../../store/NotificationContext';
 
 export const useAdminBakeryViewModel = () => {
   const [bakeries, setBakeries] = useState([]);
@@ -9,6 +9,7 @@ export const useAdminBakeryViewModel = () => {
   const [currentBakery, setCurrentBakery] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { showSuccess, showError } = useNotification();
 
   const fetchBakeries = useCallback(async () => {
     setIsLoading(true);
@@ -19,11 +20,11 @@ export const useAdminBakeryViewModel = () => {
       setBakeries(bakeryModels);
     } catch (err) {
       setError('Failed to fetch bakeries. Please try again.');
-      showErrorNotification('Failed to fetch bakeries.');
+      showError('Failed to fetch bakeries.');
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [showError]);
 
   useEffect(() => {
     fetchBakeries();
@@ -50,23 +51,23 @@ export const useAdminBakeryViewModel = () => {
       if (currentBakery?.id) {
         // Update
         await apiClient.patch(`/bakeries/update/${currentBakery.id}`, bakeryData, false);
-        showSuccessNotification('Bakery updated successfully!');
+        showSuccess('Bakery updated successfully!');
       } else {
         // Create
         await apiClient.post('/bakeries/create', bakeryData, false);
-        showSuccessNotification('Bakery created successfully!');
+        showSuccess('Bakery created successfully!');
       }
       
       handleCloseModal();
       await fetchBakeries();
     } catch (err) {
       setError(err.message || 'Failed to save bakery.');
-      showErrorNotification(`Failed to save bakery: ${err.message}`);
+      showError(`Failed to save bakery: ${err.message}`);
       throw err; // Re-throw for form error handling
     } finally {
       setIsLoading(false);
     }
-  }, [currentBakery, handleCloseModal, fetchBakeries]);
+  }, [currentBakery, handleCloseModal, fetchBakeries, showSuccess, showError]);
 
   const handleDeleteBakery = useCallback(async (id) => {
     if (!window.confirm('Are you sure you want to delete this bakery?')) {
@@ -76,15 +77,15 @@ export const useAdminBakeryViewModel = () => {
     setIsLoading(true);
     try {
       await apiClient.delete(`/bakeries/delete/${id}`, false);
-      showSuccessNotification('Bakery deleted successfully!');
+      showSuccess('Bakery deleted successfully!');
       await fetchBakeries();
     } catch (err) {
       setError(err.message || 'Failed to delete bakery.');
-      showErrorNotification(`Failed to delete bakery: ${err.message}`);
+      showError(`Failed to delete bakery: ${err.message}`);
     } finally {
       setIsLoading(false);
     }
-  }, [fetchBakeries]);
+  }, [fetchBakeries, showSuccess, showError]);
 
   return {
     bakeries,

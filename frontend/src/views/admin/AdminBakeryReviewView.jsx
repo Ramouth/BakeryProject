@@ -1,4 +1,4 @@
-import { useAdminBakeryReviewViewModel } from '../../viewmodels/useAdminBakeryReviewViewModel';
+import { useAdminBakeryReviewViewModel } from '../../viewmodels/admin/useAdminBakeryReviewViewModel';
 import BakeryReviewList from '../../components/admin/AdminBakeryReviewList';
 import BakeryReviewForm from '../../components/admin/AdminBakeryReviewModal';
 import Modal from '../../components/Modal';

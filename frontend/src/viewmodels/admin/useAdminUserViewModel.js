@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import apiClient from '../../services/api';
-import { showErrorNotification, showSuccessNotification } from '../../utils/notifications';
+import { useNotification } from '../../store/NotificationContext';
 
 export const useAdminUserViewModel = () => {
   const [users, setUsers] = useState([]);
@@ -8,6 +8,7 @@ export const useAdminUserViewModel = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { showSuccess, showError } = useNotification();
 
   const fetchUsers = useCallback(async () => {
     setIsLoading(true);
@@ -17,11 +18,11 @@ export const useAdminUserViewModel = () => {
       setUsers(response.users || []);
     } catch (err) {
       setError('Failed to fetch users. Please try again.');
-      showErrorNotification('Failed to fetch users.');
+      showError('Failed to fetch users.');
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [showError]);
 
   useEffect(() => {
     fetchUsers();
@@ -48,23 +49,23 @@ export const useAdminUserViewModel = () => {
       if (currentUser?.id) {
         // Update
         await apiClient.patch(`/users/update/${currentUser.id}`, userData, false);
-        showSuccessNotification('User updated successfully!');
+        showSuccess('User updated successfully!');
       } else {
         // Create
         await apiClient.post('/users/create', userData, false);
-        showSuccessNotification('User created successfully!');
+        showSuccess('User created successfully!');
       }
       
       handleCloseModal();
       await fetchUsers();
     } catch (err) {
       setError(err.message || 'Failed to save user.');
-      showErrorNotification(`Failed to save user: ${err.message}`);
+      showError(`Failed to save user: ${err.message}`);
       throw err; // Re-throw for form error handling
     } finally {
       setIsLoading(false);
     }
-  }, [currentUser, handleCloseModal, fetchUsers]);
+  }, [currentUser, handleCloseModal, fetchUsers, showSuccess, showError]);
 
   const handleDeleteUser = useCallback(async (id) => {
     if (!window.confirm('Are you sure you want to delete this user?')) {
@@ -74,15 +75,15 @@ export const useAdminUserViewModel = () => {
     setIsLoading(true);
     try {
       await apiClient.delete(`/users/delete/${id}`, false);
-      showSuccessNotification('User deleted successfully!');
+      showSuccess('User deleted successfully!');
       await fetchUsers();
     } catch (err) {
       setError(err.message || 'Failed to delete user.');
-      showErrorNotification(`Failed to delete user: ${err.message}`);
+      showError(`Failed to delete user: ${err.message}`);
     } finally {
       setIsLoading(false);
     }
-  }, [fetchUsers]);
+  }, [fetchUsers, showSuccess, showError]);
 
   return {
     users,
