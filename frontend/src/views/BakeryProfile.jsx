@@ -1,55 +1,24 @@
-import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import CroissantRating from '../components/CroissantRatingComponent.jsx';
-import apiClient from '../services/api';
+import { useBakeryProfileViewModel } from '../viewmodels/useBakeryProfileViewModel';
+import CroissantRating from '../components/CroissantRatingComponent';
 import bakeryLogo from '../assets/bageri-logo.jpeg';
 import bakeryHeader from '../assets/bageri.jpeg';
 import '../styles/bakery-profile.css';
 
 const BakeryProfile = () => {
   const { bakeryId } = useParams();
-  const [bakery, setBakery] = useState(null);
-  const [bakeryProducts, setBakeryProducts] = useState([]);
-  const [bakeryReviews, setBakeryReviews] = useState([]);
-  const [bakeryStats, setBakeryStats] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('about');
-
-  useEffect(() => {
-    const fetchBakeryData = async () => {
-      setLoading(true);
-      setError(null);
-      
-      try {
-        // Fetch bakery details with caching (60 seconds default)
-        const bakeryResponse = await apiClient.get(`/bakeries/${bakeryId}`, true);
-        setBakery(bakeryResponse);
-        
-        // Fetch bakery stats with caching
-        const statsResponse = await apiClient.get(`/bakeries/${bakeryId}/stats`, true);
-        setBakeryStats(statsResponse);
-        
-        // Fetch bakery products with caching
-        const productsResponse = await apiClient.get(`/bakeries/${bakeryId}/products`, true);
-        setBakeryProducts(productsResponse.products || []);
-        
-        // Fetch bakery reviews with caching (shorter cache time as reviews change more frequently)
-        const reviewsResponse = await apiClient.get(`/bakeryreviews/bakery/${bakeryId}`, true);
-        setBakeryReviews(reviewsResponse.bakeryReviews || []);
-        
-      } catch (error) {
-        console.error('Error fetching bakery data:', error);
-        setError('Failed to load bakery information. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (bakeryId) {
-      fetchBakeryData();
-    }
-  }, [bakeryId]);
+  const {
+    bakery,
+    bakeryProducts,
+    bakeryReviews,
+    bakeryStats,
+    loading,
+    error,
+    activeTab,
+    setActiveTab,
+    getTopRatedProducts,
+    formatDate
+  } = useBakeryProfileViewModel(bakeryId);
 
   if (loading) {
     return (
@@ -78,33 +47,26 @@ const BakeryProfile = () => {
     );
   }
 
-  // Helper function to convert 0-10 rating to 0-5 display with improved croissant display
+  // Helper function to render croissant stars
   const renderCroissantStars = (rating, size = 'medium') => {
-    // Convert 0-10 scale to 0-5 scale
     const displayRating = rating / 2;
     const fullCroissants = Math.floor(displayRating);
     const hasHalfCroissant = displayRating % 1 >= 0.5;
     const emptyCroissants = 5 - fullCroissants - (hasHalfCroissant ? 1 : 0);
     
-    // Define size classes
     const sizeClass = size === 'large' ? 'croissant-large' : 
                      size === 'small' ? 'croissant-small' : '';
     
     return (
       <div className={`croissant-display ${sizeClass}`}>
-        {/* Full croissants */}
         {Array(fullCroissants).fill().map((_, i) => (
           <span key={`full-${i}`} className="croissant-filled">🍪</span>
         ))}
-        
-        {/* Half croissant */}
         {hasHalfCroissant && (
           <div className="croissant-half-container">
             <span className="croissant-half">🍪</span>
           </div>
         )}
-        
-        {/* Empty croissants */}
         {Array(emptyCroissants).fill().map((_, i) => (
           <span key={`empty-${i}`} className="croissant-empty">🍪</span>
         ))}
@@ -112,51 +74,7 @@ const BakeryProfile = () => {
     );
   };
 
-  // Helper function to format address
-  const formatAddress = () => {
-    const addressParts = [];
-    if (bakery.streetName) addressParts.push(bakery.streetName);
-    if (bakery.streetNumber) addressParts.push(bakery.streetNumber);
-    if (bakery.zipCode) addressParts.push(bakery.zipCode);
-    
-    return addressParts.join(' ');
-  };
-
-  // Get and sort top rated products
-  const getTopRatedProducts = () => {
-    // If we have products with reviews, sort them by rating
-    return bakeryProducts
-      .filter(product => product.rating || product.average_rating)
-      .sort((a, b) => {
-        const ratingA = a.rating || a.average_rating || 0;
-        const ratingB = b.rating || b.average_rating || 0;
-        return ratingB - ratingA;
-      })
-      .slice(0, 3); // Get top 3
-  };
-
-  // Format date to readable string
-  const formatDate = (dateString) => {
-    if (!dateString) return '';
-    
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
-
-  // Rating values from bakeryStats or defaults
-  const ratings = bakeryStats?.ratings || {
-    overall: 0,
-    service: 0,
-    price: 0,
-    atmosphere: 0, 
-    location: 0
-  };
-
-  // Mock opening hours until backend provides them
+  // Mock opening hours
   const openingHours = {
     monday: "7:00 - 19:00",
     tuesday: "7:00 - 19:00",
@@ -167,18 +85,20 @@ const BakeryProfile = () => {
     sunday: "7:00 - 18:00"
   };
 
-  // Get review count
-  const reviewCount = bakeryStats?.review_count || bakeryReviews.length || 0;
+  const ratings = bakeryStats?.ratings || {
+    overall: 0,
+    service: 0,
+    price: 0,
+    atmosphere: 0,
+    location: 0
+  };
 
-  // Get bakery image URL or use default
+  const reviewCount = bakeryStats?.review_count || bakeryReviews.length || 0;
   const bakeryImageUrl = bakery.imageUrl || bakeryHeader;
-  
-  // Get bakery logo URL or use default
   const bakeryLogoUrl = bakery.logoUrl || bakeryLogo;
 
   return (
     <div className="bakery-profile-container">
-      {/* Bakery header image */}
       <div className="bakery-header" style={{ backgroundImage: `url(${bakeryImageUrl})` }}>
         <div className="bakery-header-overlay">
           <div className="bakery-logo-container">
@@ -187,12 +107,11 @@ const BakeryProfile = () => {
         </div>
       </div>
 
-      {/* Rest of the component remains the same */}
       <div className="bakery-content">
         <div className="bakery-info-header">
           <div className="bakery-title-section">
             <h1>{bakery.name}</h1>
-            <p className="bakery-address">{formatAddress()}</p>
+            <p className="bakery-address">{bakery.address}</p>
             
             <div className="bakery-rating-summary">
               <span className="bakery-rating-value">{((ratings.overall || 0) / 2).toFixed(1)}</span>
@@ -207,7 +126,6 @@ const BakeryProfile = () => {
           </div>
         </div>
 
-        {/* Navigation tabs */}
         <div className="bakery-tabs">
           <button 
             className={`tab-button ${activeTab === 'about' ? 'active' : ''}`}
@@ -229,7 +147,6 @@ const BakeryProfile = () => {
           </button>
         </div>
 
-        {/* Tab content */}
         <div className="tab-content">
           {activeTab === 'about' && (
             <div className="about-section">
@@ -244,39 +161,23 @@ const BakeryProfile = () => {
                   <div className="hours-section">
                     <h3>Opening Hours</h3>
                     <ul className="hours-list">
-                      <li><span>Monday:</span> {openingHours.monday}</li>
-                      <li><span>Tuesday:</span> {openingHours.tuesday}</li>
-                      <li><span>Wednesday:</span> {openingHours.wednesday}</li>
-                      <li><span>Thursday:</span> {openingHours.thursday}</li>
-                      <li><span>Friday:</span> {openingHours.friday}</li>
-                      <li><span>Saturday:</span> {openingHours.saturday}</li>
-                      <li><span>Sunday:</span> {openingHours.sunday}</li>
+                      {Object.entries(openingHours).map(([day, hours]) => (
+                        <li key={day}>
+                          <span>{day.charAt(0).toUpperCase() + day.slice(1)}:</span> {hours}
+                        </li>
+                      ))}
                     </ul>
                   </div>
                   
                   <div className="ratings-section">
                     <h3>Detailed Ratings</h3>
                     <div className="rating-details">
-                      <div className="rating-item">
-                        <span className="rating-label">Overall:</span>
-                        <CroissantRating rating={ratings.overall || 0} max={5} disabled={true} />
-                      </div>
-                      <div className="rating-item">
-                        <span className="rating-label">Service:</span>
-                        <CroissantRating rating={ratings.service || 0} max={5} disabled={true} />
-                      </div>
-                      <div className="rating-item">
-                        <span className="rating-label">Price:</span>
-                        <CroissantRating rating={ratings.price || 0} max={5} disabled={true} />
-                      </div>
-                      <div className="rating-item">
-                        <span className="rating-label">Atmosphere:</span>
-                        <CroissantRating rating={ratings.atmosphere || 0} max={5} disabled={true} />
-                      </div>
-                      <div className="rating-item">
-                        <span className="rating-label">Location:</span>
-                        <CroissantRating rating={ratings.location || 0} max={5} disabled={true} />
-                      </div>
+                      {Object.entries(ratings).map(([label, value]) => (
+                        <div key={label} className="rating-item">
+                          <span className="rating-label">{label.charAt(0).toUpperCase() + label.slice(1)}:</span>
+                          <CroissantRating rating={value} max={5} disabled={true} />
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -288,9 +189,7 @@ const BakeryProfile = () => {
                   {getTopRatedProducts().length > 0 ? (
                     getTopRatedProducts().map(product => (
                       <Link to={`/product/${product.id}`} key={product.id} className="popular-item">
-                        <div className="popular-item-img-placeholder">
-                          {/* Product image would go here */}
-                        </div>
+                        <div className="popular-item-img-placeholder"></div>
                         <div className="popular-item-info">
                           <h4>{product.name}</h4>
                           <div className="popular-item-rating">
@@ -316,9 +215,7 @@ const BakeryProfile = () => {
                   {bakeryProducts.map(product => (
                     <Link to={`/product/${product.id}`} key={product.id} className="product-card">
                       <div className="product-image">
-                        <div className="placeholder-image">
-                          {/* Product image would go here */}
-                        </div>
+                        <div className="placeholder-image"></div>
                       </div>
                       <div className="product-details">
                         <h3>{product.name}</h3>

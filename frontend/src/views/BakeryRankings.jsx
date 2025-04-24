@@ -1,136 +1,16 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import apiClient from '../services/api';
+import { useBakeryRankingsViewModel } from '../viewmodels/useBakeryRankingsViewModel';
 import SearchDropdown from '../components/SearchDropdown';
 import '../styles/bakery-rankings.css';
 
-// MVVM pattern - ViewModel logic
-const useBakeryRankingsViewModel = () => {
-  // State for the bakery rankings
-  const [bakeries, setBakeries] = useState([]);
-  const [filteredBakeries, setFilteredBakeries] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [searchType, setSearchType] = useState('bakeries');
-  const [selectedZipCode, setSelectedZipCode] = useState('');
-  const [selectedRating, setSelectedRating] = useState('');
-
-  // Fetch bakeries from API with caching
-  const fetchBakeries = async () => {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      // Use apiClient with default caching (60 seconds)
-      const response = await apiClient.get('/bakeries', true);
-      setBakeries(response.bakeries);
-      setFilteredBakeries(response.bakeries);
-    } catch (error) {
-      console.error('Error fetching bakeries:', error);
-      setError('Failed to load bakeries. Please try again later.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Handle search submission
-  const handleSearch = async (searchParams) => {
-    const { type, zipCode, rating } = searchParams;
-    
-    setLoading(true);
-    setError(null);
-    
-    try {
-      if (zipCode || rating) {
-        // For specific filters, we can use the search endpoint if available
-        if (zipCode && !rating) {
-          // If we have a dedicated endpoint for zip code search
-          try {
-            // Using a dynamic URL with parameters to ensure proper caching
-            const response = await apiClient.get(`/bakeries/search?q=${zipCode}`, true);
-            setFilteredBakeries(response.bakeries || []);
-          } catch (error) {
-            // Fallback to client-side filtering
-            const filtered = bakeries.filter(bakery => bakery.zipCode === zipCode);
-            setFilteredBakeries(filtered);
-          }
-        } else {
-          // Filter bakeries client-side for complex filters
-          let filtered = [...bakeries];
-          
-          if (zipCode) {
-            filtered = filtered.filter(bakery => bakery.zipCode === zipCode);
-          }
-          
-          if (rating) {
-            const ratingValue = parseFloat(rating);
-            filtered = filtered.filter(bakery => {
-              const avgRating = bakery.average_rating || 0;
-              return avgRating >= ratingValue;
-            });
-          }
-          
-          setFilteredBakeries(filtered);
-        }
-      } else if (type === 'bakeries' && searchType === 'bakeries') {
-        // If no filters and type is bakeries, fetch all bakeries with caching
-        await fetchBakeries();
-      }
-    } catch (error) {
-      console.error('Error during search:', error);
-      setError('Search failed. Please try again later.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Fetch data on initial component mount with caching
-  useEffect(() => {
-    fetchBakeries();
-  }, []);
-
-  // Re-fetch when search type changes
-  useEffect(() => {
-    if (searchType === 'bakeries') {
-      fetchBakeries();
-    }
-  }, [searchType]);
-
-  return {
-    bakeries: filteredBakeries,
-    loading,
-    error,
-    searchType,
-    setSearchType,
-    selectedZipCode,
-    setSelectedZipCode,
-    selectedRating,
-    setSelectedRating,
-    handleSearch
-  };
-};
-
-// View component
 const BakeryRankings = () => {
-  // Component code remains the same
   const {
     bakeries,
     loading,
     error,
-    searchType,
-    setSearchType,
-    selectedZipCode,
-    setSelectedZipCode,
-    selectedRating,
-    setSelectedRating,
     handleSearch
   } = useBakeryRankingsViewModel();
 
-  const handleSearchSubmit = (searchParams) => {
-    handleSearch(searchParams);
-  };
-
-  // Search options for dropdown
   const searchTypes = [
     { value: 'bakeries', label: 'Find Bakeries' },
     { value: 'products', label: 'Find Products' }
@@ -160,7 +40,6 @@ const BakeryRankings = () => {
         name: 'rating',
         options: [
           { value: '', label: 'All Ratings' },
-          { value: '5', label: '5+ Stars' },
           { value: '4.5', label: '4.5+ Stars' },
           { value: '4', label: '4+ Stars' },
           { value: '3.5', label: '3.5+ Stars' },
@@ -168,49 +47,11 @@ const BakeryRankings = () => {
         ]
       }
     ],
-    products: [
-      {
-        name: 'category',
-        options: [
-          { value: '', label: 'All Categories' },
-          { value: 'bread', label: 'Bread' },
-          { value: 'danish', label: 'Danish Pastry' },
-          { value: 'cake', label: 'Cakes' },
-          { value: 'viennoiserie', label: 'Viennoiserie' }
-        ]
-      },
-      {
-        name: 'rating',
-        options: [
-          { value: '', label: 'All Ratings' },
-          { value: '5', label: '5+ Stars' },
-          { value: '4.5', label: '4.5+ Stars' },
-          { value: '4', label: '4+ Stars' },
-          { value: '3.5', label: '3.5+ Stars' },
-          { value: '3', label: '3+ Stars' }
-        ]
-      }
-    ]
+    products: []
   };
 
-  // Helper function to format address
-  const formatAddress = (bakery) => {
-    const addressParts = [];
-    if (bakery.streetName) addressParts.push(bakery.streetName);
-    if (bakery.streetNumber) addressParts.push(bakery.streetNumber);
-    if (bakery.zipCode) addressParts.push(bakery.zipCode);
-    
-    return addressParts.join(' ');
-  };
-
-  // Helper function to get average rating or 0
   const getBakeryRating = (bakery) => {
-    return bakery.average_rating || bakery.ratings?.overall || 0;
-  };
-
-  // Helper function to get review count
-  const getReviewCount = (bakery) => {
-    return bakery.review_count || 0;
+    return bakery.average_rating || 0;
   };
 
   return (
@@ -220,14 +61,12 @@ const BakeryRankings = () => {
         <p>Discover the best bakeries based on user reviews and ratings</p>
       </div>
       
-      {/* Search Component */}
       <SearchDropdown 
-        onSearch={handleSearchSubmit}
+        onSearch={handleSearch}
         searchTypes={searchTypes}
         filterOptions={filterOptions}
       />
 
-      {/* Bakery Rankings List */}
       <div className="bakery-rankings">
         {loading ? (
           <div className="loading">Loading bakeries...</div>
@@ -250,7 +89,7 @@ const BakeryRankings = () => {
                 </div>
                 <div className="bakery-details">
                   <h3>{bakery.name}</h3>
-                  <p className="bakery-location">{formatAddress(bakery)}</p>
+                  <p className="bakery-location">{bakery.address}</p>
                   <p className="bakery-description">
                     {bakery.description || "A wonderful bakery in Copenhagen offering delicious products."}
                   </p>
@@ -258,13 +97,8 @@ const BakeryRankings = () => {
                     <div className="bakery-rating">
                       <span className="rating-value">{getBakeryRating(bakery).toFixed(1)}</span>
                       <span className="stars">★★★★★</span>
-                      <span className="review-count">({getReviewCount(bakery)} reviews)</span>
+                      <span className="review-count">({bakery.review_count} reviews)</span>
                     </div>
-                    {bakery.topProduct && (
-                      <div className="top-item">
-                        <strong>Must try:</strong> {bakery.topProduct}
-                      </div>
-                    )}
                   </div>
                 </div>
               </Link>
