@@ -1,4 +1,4 @@
-import { useAdminProductReviewViewModel } from '../../viewmodels/useAdminProductReviewViewModel';
+import { useAdminProductReviewViewModel } from '../../viewmodels/admin/useAdminProductReviewViewModel';
 import ProductReviewList from '../../components/admin/AdminProductReviewList';
 import ProductReviewForm from '../../components/admin/AdminProductReviewModal';
 import Modal from '../../components/Modal';

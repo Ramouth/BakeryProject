@@ -1,4 +1,4 @@
-import { useAdminUserViewModel } from '../../viewmodels/useAdminUserViewModel';
+import { useAdminUserViewModel } from '../../viewmodels/admin/useAdminUserViewModel';
 import Modal from '../../components/Modal';
 import Button from '../../components/Button';
 import UserList from '../../components/admin/AdminUserList';
