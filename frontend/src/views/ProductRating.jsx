@@ -1,70 +1,17 @@
-import { useState } from 'react';
-import { useReview } from '../store/ReviewContext';
-import { useNotification } from '../store/NotificationContext';
+import { useProductRatingViewModel } from '../viewmodels/useProductRatingViewModel';
 import CroissantRating from '../components/CroissantRatingComponent.jsx';
 
 const ProductRating = () => {
-  const { 
-    selectedBakery, 
-    selectedProduct, 
-    productRatings, 
-    setProductRatings, 
-    submitProductReview,
-    goToNextStep 
-  } = useReview();
-  
-  const { showSuccess, showError } = useNotification();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // Handle rating changes - rating will already be in 1-10 scale from CroissantRating component
-  const handleRatingChange = (field, value) => {
-    setProductRatings({
-      ...productRatings,
-      [field]: value
-    });
-  };
-  
-  // Handle comments change
-  const handleCommentsChange = (e) => {
-    setProductRatings({
-      ...productRatings,
-      comments: e.target.value
-    });
-  };
-  
-  // Handle form submission - now directly uses the ReviewContext method
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    
-    try {
-      // Validate that overall rating is provided
-      if (productRatings.overall <= 0) {
-        showError("Please provide an overall rating");
-        setIsSubmitting(false);
-        return;
-      }
-      
-      // This will now handle anonymous reviews
-      await submitProductReview();
-      
-      // Show success notification
-      showSuccess("Product review saved successfully!");
-      
-      // Navigate to next step
-      goToNextStep('reviewOptions');
-    } catch (err) {
-      // Show error notification
-      showError(`Failed to submit review: ${err.message || "Please try again"}`);
-      console.error('Error submitting review:', err);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-  
-  // Display product name
-  const productName = selectedProduct.name === 'Other' 
-    ? selectedProduct.customName 
-    : selectedProduct.name;
+  const {
+    selectedBakery,
+    productRatings,
+    isSubmitting,
+    productName,
+    handleRatingChange,
+    handleCommentsChange,
+    handleSubmit,
+    goToNextStep
+  } = useProductRatingViewModel();
   
   return (
     <div className="container">

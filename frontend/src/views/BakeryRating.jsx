@@ -1,64 +1,16 @@
-import { useState } from 'react';
-import { useReview } from '../store/ReviewContext';
-import { useNotification } from '../store/NotificationContext';
+import { useBakeryRatingViewModel } from '../viewmodels/useBakeryRatingViewModel';
 import CroissantRating from '../components/CroissantRatingComponent.jsx';
 
 const BakeryRating = () => {
-  const { 
-    selectedBakery, 
-    bakeryRatings, 
-    setBakeryRatings, 
-    submitBakeryReview,
-    goToNextStep 
-  } = useReview();
-  
-  const { showSuccess, showError } = useNotification();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // Handle rating changes - rating will already be in 1-10 scale from CroissantRating component
-  const handleRatingChange = (field, value) => {
-    setBakeryRatings({
-      ...bakeryRatings,
-      [field]: value
-    });
-  };
-  
-  // Handle comments change
-  const handleCommentsChange = (e) => {
-    setBakeryRatings({
-      ...bakeryRatings,
-      comments: e.target.value
-    });
-  };
-  
-  // Handle form submission - now directly uses the ReviewContext method
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    
-    try {
-      // Validate overall rating is provided
-      if (bakeryRatings.overall <= 0) {
-        showError("Please provide an overall rating");
-        setIsSubmitting(false);
-        return;
-      }
-      
-      // This will now handle anonymous reviews
-      await submitBakeryReview();
-      
-      // Show success notification
-      showSuccess("Bakery review saved successfully!");
-      
-      // Navigate to next step
-      goToNextStep('experienceRating');
-    } catch (err) {
-      // Show error notification
-      showError(`Failed to submit review: ${err.message || "Please try again"}`);
-      console.error('Error submitting review:', err);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const {
+    selectedBakery,
+    bakeryRatings,
+    isSubmitting,
+    handleRatingChange,
+    handleCommentsChange,
+    handleSubmit,
+    goToNextStep
+  } = useBakeryRatingViewModel();
   
   return (
     <div className="container">
