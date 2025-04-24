@@ -8,6 +8,7 @@ import Footer from './components/Footer';
 import AuthGuard from './components/AuthGuard';
 import BakeryProfile from './views/BakeryProfile';
 import apiClient from './services/api';
+import Admin from './views/AdminDashboard';
 
 // Lazy load views for code splitting and performance
 const HomePage = lazy(() => import('./views/Homepage'));
@@ -99,7 +100,7 @@ function App() {
                       <Route path="/bakery/:bakeryId" element={<BakeryProfile />} />
                       <Route path="/product/:productId" element={<ProductProfile />} />
                       <Route 
-                        path="/admin/*" 
+                        path="/admin-dashboard/*" 
                         element={
                           <AuthGuard>
                             <Admin />

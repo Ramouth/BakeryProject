@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import bakeryService from '../services/bakeryService';
 import reviewService from '../services/reviewService';
-import productService from '../services/productService';
 import apiClient from '../services/api';
 import productService from '../services/productService';
 import { Bakery } from '../models/Bakery';
