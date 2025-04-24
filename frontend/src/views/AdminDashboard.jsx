@@ -1,83 +1,74 @@
-import { useState, useEffect } from 'react';
-import { Routes, Route, NavLink, useNavigate } from 'react-router-dom';
-import { useUser } from '../store/UserContext';
-import BakerySection from './admin/AdminBakeryView';
-import ProductSection from './admin/AdminProductView';
-import UserSection from './admin/AdminUserView';
-import BakeryReviewSection from './admin/AdminBakeryReviewView';
-import ProductReviewSection from './admin/AdminProductReviewView';
+import { Routes, Route, NavLink } from 'react-router-dom';
+import { useAdminDashboardViewModel } from '../viewmodels/useAdminDashboardViewModel';
+import AdminBakeryView from './admin/AdminBakeryView';
+import AdminProductView from './admin/AdminProductView';
+import AdminUserView from './admin/AdminUserView';
+import AdminBakeryReviewView from './admin/AdminBakeryReviewView';
+import AdminProductReviewView from './admin/AdminProductReviewView';
 import Button from '../components/Button';
 
-// Admin dashboard home page
-const AdminHome = () => (
-  <div className="admin-home">
-    <h2>Welcome to the Admin Dashboard</h2>
-    <p>Select a section from the sidebar to manage your bakery data.</p>
-    
-    <div className="admin-stats">
-      <div className="stat-card">
-        <h3>25</h3>
-        <p>Bakeries</p>
-      </div>
-      <div className="stat-card">
-        <h3>84</h3>
-        <p>Products</p>
-      </div>
-      <div className="stat-card">
-        <h3>132</h3>
-        <p>Reviews</p>
-      </div>
-      <div className="stat-card">
-        <h3>56</h3>
-        <p>Users</p>
-      </div>
-    </div>
+const AdminHome = ({ stats, recentActivity, loading, formatDate }) => {
+  if (loading) {
+    return <div className="loading">Loading dashboard data...</div>;
+  }
 
-    <div className="admin-recent-activity">
-      <h3>Recent Activity</h3>
-      <div className="activity-list">
-        <div className="activity-item">
-          <span className="activity-time">Today, 14:23</span>
-          <span className="activity-text">New review for "Lagkagehuset"</span>
+  return (
+    <div className="admin-home">
+      <h2>Welcome to the Admin Dashboard</h2>
+      <p>Select a section from the sidebar to manage your bakery data.</p>
+      
+      <div className="admin-stats">
+        <div className="stat-card">
+          <h3>{stats.bakeries}</h3>
+          <p>Bakeries</p>
         </div>
-        <div className="activity-item">
-          <span className="activity-time">Today, 10:45</span>
-          <span className="activity-text">New bakery added: "Bageriet"</span>
+        <div className="stat-card">
+          <h3>{stats.products}</h3>
+          <p>Products</p>
         </div>
-        <div className="activity-item">
-          <span className="activity-time">Yesterday, 16:30</span>
-          <span className="activity-text">New product: "Kanelsnegl" for Andersen Bakery</span>
+        <div className="stat-card">
+          <h3>{stats.reviews}</h3>
+          <p>Reviews</p>
+        </div>
+        <div className="stat-card">
+          <h3>{stats.users}</h3>
+          <p>Users</p>
+        </div>
+      </div>
+
+      <div className="admin-recent-activity">
+        <h3>Recent Activity</h3>
+        <div className="activity-list">
+          {recentActivity.map((activity, index) => (
+            <div key={index} className="activity-item">
+              <span className="activity-time">{formatDate(activity.time)}</span>
+              <span className="activity-text">{activity.text}</span>
+            </div>
+          ))}
+          {recentActivity.length === 0 && (
+            <div className="activity-item">
+              <span className="activity-text">No recent activity</span>
+            </div>
+          )}
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 const Admin = () => {
-  const { currentUser, logout } = useUser();
-  const navigate = useNavigate();
-  const [showWarning, setShowWarning] = useState(!currentUser?.isAdmin);
-  
-  useEffect(() => {
-    // Update warning state if user changes
-    setShowWarning(!currentUser?.isAdmin);
-  }, [currentUser]);
-  
-  const createMockAdminUser = () => {
-    // Create mock admin user and refresh
-    localStorage.setItem('currentUser', JSON.stringify({
-      id: 'admin1',
-      username: 'admin',
-      email: 'admin@crumbcompass.com',
-      isAdmin: true
-    }));
-    window.location.reload();
-  };
-  
-  // Allow using admin panel even without proper admin status for this demo
-  const proceedAnyway = () => {
-    setShowWarning(false);
-  };
+  const {
+    currentUser,
+    logout,
+    navigate,
+    showWarning,
+    loading,
+    stats,
+    recentActivity,
+    createMockAdminUser,
+    proceedAnyway,
+    formatDate
+  } = useAdminDashboardViewModel();
   
   if (showWarning) {
     return (
@@ -169,12 +160,22 @@ const Admin = () => {
         
         <main className="admin-content">
           <Routes>
-            <Route path="/" element={<AdminHome />} />
-            <Route path="/bakeries" element={<BakerySection />} />
-            <Route path="/products" element={<ProductSection />} />
-            <Route path="/users" element={<UserSection />} />
-            <Route path="/bakery-reviews" element={<BakeryReviewSection />} />
-            <Route path="/product-reviews" element={<ProductReviewSection />} />
+            <Route 
+              path="/" 
+              element={
+                <AdminHome 
+                  stats={stats} 
+                  recentActivity={recentActivity} 
+                  loading={loading} 
+                  formatDate={formatDate} 
+                />
+              } 
+            />
+            <Route path="/bakeries" element={<AdminBakeryView />} />
+            <Route path="/products" element={<AdminProductView />} />
+            <Route path="/users" element={<AdminUserView />} />
+            <Route path="/bakery-reviews" element={<AdminBakeryReviewView />} />
+            <Route path="/product-reviews" element={<AdminProductReviewView />} />
           </Routes>
         </main>
       </div>
