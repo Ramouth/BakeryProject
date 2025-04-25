@@ -8,12 +8,13 @@ import Footer from './components/Footer';
 import AuthGuard from './components/AuthGuard';
 import BakeryProfile from './views/BakeryProfile';
 import apiClient from './services/api';
+import Admin from './views/AdminDashboard';
 
 // Lazy load views for code splitting and performance
 const HomePage = lazy(() => import('./views/Homepage'));
 const ProductRating = lazy(() => import('./views/ProductRating'));
 const BakeryRating = lazy(() => import('./views/BakeryRating'));
-const Admin = lazy(() => import('./views/Admin'));
+const AdminDashboard = lazy(() => import('./views/AdminDashboard'));
 const Login = lazy(() => import('./views/Login'));
 const SignUp = lazy(() => import('./views/SignUp'));
 const BakeryRankings = lazy(() => import('./views/BakeryRankings')); 
@@ -99,7 +100,7 @@ function App() {
                       <Route path="/bakery/:bakeryId" element={<BakeryProfile />} />
                       <Route path="/product/:productId" element={<ProductProfile />} />
                       <Route 
-                        path="/admin/*" 
+                        path="/admin-dashboard/*" 
                         element={
                           <AuthGuard>
                             <Admin />

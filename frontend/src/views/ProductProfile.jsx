@@ -1,112 +1,23 @@
-import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import apiClient from '../services/api';
+import { useProductProfileViewModel } from '../viewmodels/useProductProfileViewModel';
 import RatingBar from '../components/RatingComponent';
 import '../styles/product-profile.css';
 
 const ProductProfile = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
-  const [product, setProduct] = useState(null);
-  const [bakery, setBakery] = useState(null);
-  const [productReviews, setProductReviews] = useState([]);
-  const [similarProducts, setSimilarProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('reviews');
-
-  useEffect(() => {
-    const fetchProductData = async () => {
-      setLoading(true);
-      setError(null);
-      
-      try {
-        // Fetch product details with caching (60 seconds default)
-        const productResponse = await apiClient.get(`/products/${productId}`, true);
-        setProduct(productResponse);
-        
-        // If we have a bakery ID, fetch bakery details with caching
-        if (productResponse.bakeryId) {
-          const bakeryResponse = await apiClient.get(`/bakeries/${productResponse.bakeryId}`, true);
-          setBakery(bakeryResponse);
-          
-          // Fetch similar products (other products from same bakery) with caching
-          try {
-            const similarResponse = await apiClient.get(`/products/bakery/${productResponse.bakeryId}`, true);
-            // Filter out the current product and limit to 3 items
-            const filtered = similarResponse.products
-              .filter(item => item.id !== parseInt(productId))
-              .slice(0, 3);
-            setSimilarProducts(filtered);
-          } catch (error) {
-            console.error('Error fetching similar products:', error);
-            setSimilarProducts([]);
-          }
-        }
-        
-        // Fetch product reviews with caching (shorter time as reviews change more often)
-        try {
-          const reviewsResponse = await apiClient.get(`/productreviews/product/${productId}`, true);
-          setProductReviews(reviewsResponse.productReviews || []);
-        } catch (error) {
-          console.error('Error fetching product reviews:', error);
-          setProductReviews([]);
-        }
-        
-      } catch (error) {
-        console.error('Error fetching product data:', error);
-        setError('Failed to load product information. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (productId) {
-      fetchProductData();
-    }
-  }, [productId]);
-
-  // Calculate ratings from reviews
-  const calculateRatings = () => {
-    if (!productReviews || productReviews.length === 0) {
-      return {
-        overall: 0,
-        taste: 0,
-        price: 0,
-        presentation: 0
-      };
-    }
-    
-    const sumRatings = productReviews.reduce((acc, review) => {
-      return {
-        overall: acc.overall + (review.overallRating || 0),
-        taste: acc.taste + (review.tasteRating || 0),
-        price: acc.price + (review.priceRating || 0),
-        presentation: acc.presentation + (review.presentationRating || 0)
-      };
-    }, { overall: 0, taste: 0, price: 0, presentation: 0 });
-    
-    const count = productReviews.length;
-    
-    return {
-      overall: sumRatings.overall / count,
-      taste: sumRatings.taste / count,
-      price: sumRatings.price / count,
-      presentation: sumRatings.presentation / count
-    };
-  };
-
-  // Format date
-  const formatDate = (dateString) => {
-    if (!dateString) return '';
-    
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
+  const {
+    product,
+    bakery,
+    productReviews,
+    similarProducts,
+    loading,
+    error,
+    activeTab,
+    setActiveTab,
+    calculateRatings,
+    formatDate
+  } = useProductProfileViewModel(productId);
 
   if (loading) {
     return (
@@ -138,21 +49,8 @@ const ProductProfile = () => {
   const ratings = calculateRatings();
   const reviewCount = productReviews.length;
 
-  // Format bakery address
-  const formatBakeryAddress = () => {
-    if (!bakery) return '';
-    
-    const addressParts = [];
-    if (bakery.streetName) addressParts.push(bakery.streetName);
-    if (bakery.streetNumber) addressParts.push(bakery.streetNumber);
-    if (bakery.zipCode) addressParts.push(bakery.zipCode);
-    
-    return addressParts.join(' ');
-  };
-
   return (
     <div className="product-profile-container">
-      {/* Product header */}
       <div className="product-header">
         <div className="product-header-content">
           <div className="product-bakery">
@@ -167,7 +65,6 @@ const ProductProfile = () => {
         </div>
         <div className="product-image-container">
           <div className="product-image-placeholder">
-            {/* If product has an image URL, use it here */}
             {product.imageUrl && (
               <img src={product.imageUrl} alt={product.name} className="product-image" />
             )}
@@ -175,7 +72,6 @@ const ProductProfile = () => {
         </div>
       </div>
 
-      {/* Navigation tabs */}
       <div className="product-tabs">
         <button 
           className={`tab-button ${activeTab === 'reviews' ? 'active' : ''}`}
@@ -191,7 +87,6 @@ const ProductProfile = () => {
         </button>
       </div>
 
-      {/* Tab content */}
       <div className="product-content">
         {activeTab === 'reviews' && (
           <div className="reviews-section">
@@ -202,22 +97,12 @@ const ProductProfile = () => {
               </div>
               
               <div className="rating-details">
-                <div className="rating-item">
-                  <span className="rating-label">Overall:</span>
-                  <RatingBar rating={ratings.overall} max={10} disabled={true} />
-                </div>
-                <div className="rating-item">
-                  <span className="rating-label">Taste:</span>
-                  <RatingBar rating={ratings.taste} max={10} disabled={true} />
-                </div>
-                <div className="rating-item">
-                  <span className="rating-label">Price:</span>
-                  <RatingBar rating={ratings.price} max={10} disabled={true} />
-                </div>
-                <div className="rating-item">
-                  <span className="rating-label">Presentation:</span>
-                  <RatingBar rating={ratings.presentation} max={10} disabled={true} />
-                </div>
+                {Object.entries(ratings).map(([label, value]) => (
+                  <div key={label} className="rating-item">
+                    <span className="rating-label">{label.charAt(0).toUpperCase() + label.slice(1)}:</span>
+                    <RatingBar rating={value} max={10} disabled={true} />
+                  </div>
+                ))}
               </div>
               
               <button className="btn btn-primary">Write a Review</button>
@@ -270,7 +155,7 @@ const ProductProfile = () => {
                 <p>{product.availability || 'Available daily'}</p>
                 {bakery && (
                   <p>
-                    Available at <Link to={`/bakery/${bakery.id}`}>{bakery.name}</Link>, {formatBakeryAddress()}
+                    Available at <Link to={`/bakery/${bakery.id}`}>{bakery.name}</Link>, {bakery.address}
                   </p>
                 )}
               </div>
