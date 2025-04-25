@@ -1,5 +1,4 @@
-from models import db, product
-from sqlalchemy.exc import SQLAlchemyError
+from models import db, Product as product
 from sqlalchemy import func
 
 class productDAL:
@@ -62,21 +61,21 @@ class productDAL:
     @staticmethod
     def get_top_rated(limit=5):
         """Get top rated products based on review score"""
-        from models import productReview
+        from models import ProductReview
         
         # Use SQLAlchemy aggregation to get average ratings
         result = db.session.query(
             product,
-            func.avg(productReview.overall_rating).label('avg_rating'),
-            func.count(productReview.id).label('review_count')
+            func.avg(ProductReview.overall_rating).label('avg_rating'),
+            func.count(ProductReview.id).label('review_count')
         ).join(
-            productReview, product.id == productReview.product_id
+            ProductReview, product.id == ProductReview.product_id
         ).group_by(
             product.id
         ).order_by(
-            func.avg(productReview.overall_rating).desc()
+            func.avg(ProductReview.overall_rating).desc()
         ).having(
-            func.count(productReview.id) > 0
+            func.count(ProductReview.id) > 0
         ).limit(limit).all()
         
         return result

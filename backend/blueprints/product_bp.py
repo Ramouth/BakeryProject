@@ -1,11 +1,10 @@
 from flask import Blueprint, request, jsonify
-from models import db, Product, Bakery
+from models import Product, Bakery
 from schemas import ProductSchema
 from services.product_service import ProductService
 from utils.caching import cache
 from flask import current_app as app
 from utils.caching import cache_key_with_query
-import logging
 
 # Create blueprint
 product_bp = Blueprint('product', __name__)

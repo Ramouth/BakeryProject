@@ -1,5 +1,4 @@
 from models import db, User
-from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import func
 
 class UserDAL:

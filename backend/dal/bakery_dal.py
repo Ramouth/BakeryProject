@@ -1,5 +1,4 @@
 from models import db, Bakery
-from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import func
 
 class BakeryDAL:

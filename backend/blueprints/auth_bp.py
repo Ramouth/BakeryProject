@@ -1,8 +1,6 @@
 from flask import Blueprint, request, jsonify
-from models import db, User
 from schemas import UserSchema
 from services.user_service import UserService
-from utils.caching import cache
 
 # Create blueprint
 auth_bp = Blueprint('auth', __name__)

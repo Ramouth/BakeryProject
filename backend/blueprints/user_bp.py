@@ -1,9 +1,7 @@
 from flask import Blueprint, request, jsonify
-from models import db, User
 from schemas import UserSchema
 from services.user_service import UserService
 from utils.caching import cache
-from marshmallow import ValidationError
 
 # Create blueprint
 user_bp = Blueprint('user', __name__)
