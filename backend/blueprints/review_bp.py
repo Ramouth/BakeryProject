@@ -4,7 +4,6 @@ from schemas import BakeryReviewSchema, ProductReviewSchema
 from services.review_service import ReviewService
 from utils.caching import cache
 from sqlalchemy.orm import joinedload
-import traceback
 
 # Create blueprints
 bakery_review_bp = Blueprint('bakeryreview', __name__)

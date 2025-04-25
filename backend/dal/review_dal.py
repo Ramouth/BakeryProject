@@ -1,5 +1,4 @@
-from models import db, BakeryReview, productReview
-from sqlalchemy.exc import SQLAlchemyError
+from models import db, BakeryReview, ProductReview as productReview
 from sqlalchemy import func
 
 class ReviewDAL:

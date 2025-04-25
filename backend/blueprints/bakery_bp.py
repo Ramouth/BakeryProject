@@ -1,10 +1,9 @@
 from flask import Blueprint, request, jsonify, current_app as app
-from models import db, Bakery
+from models import db
 from schemas import BakerySchema
 from services.bakery_service import BakeryService
 from utils.caching import cache
 from utils.caching import cache_key_with_query
-import logging
 
 
 # Create blueprint
