@@ -1,7 +1,6 @@
 from dal.bakery_dal import BakeryDAL
 from models import db, Bakery, BakeryReview
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import func
 
 class BakeryService:
     """Service class for bakery-related business logic"""
