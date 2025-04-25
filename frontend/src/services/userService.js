@@ -1,48 +1,31 @@
+import { BaseService } from './baseService';
 import apiClient from './api';
 
-/**
- * Service for handling user-related API calls
- */
-const userService = {
-  /**
-   * Get all users
-   * @returns {Promise<Array>} - List of users
-   */
-  getAllUsers: async () => {
-    const response = await apiClient.get('/users');
-    return response.users;
-  },
+class UserService extends BaseService {
+  constructor() {
+    super('/users');
+  }
 
-  /**
-   * Create a new user
-   * @param {Object} userData - User data
-   * @returns {Promise<Object>} - Created user
-   */
-  createUser: async (userData) => {
-    const response = await apiClient.post('/users/create', userData);
+  async register(userData) {
+    // Registration might have a different endpoint structure
+    const response = await apiClient.post('/users/register', userData);
     return response;
-  },
+  }
 
-  /**
-   * Update an existing user
-   * @param {string|number} id - User ID
-   * @param {Object} userData - Updated user data
-   * @returns {Promise<Object>} - Updated user
-   */
-  updateUser: async (id, userData) => {
-    const response = await apiClient.patch(`/users/update/${id}`, userData);
+  async login(credentials) {
+    const response = await apiClient.post('/users/login', credentials);
     return response;
-  },
+  }
 
-  /**
-   * Delete a user
-   * @param {string|number} id - User ID
-   * @returns {Promise<Object>} - Deletion response
-   */
-  deleteUser: async (id) => {
-    const response = await apiClient.delete(`/users/delete/${id}`);
+  async getCurrentUser() {
+    const response = await apiClient.get('/users/me', true);
     return response;
-  },
-};
+  }
 
-export default userService;
+  async updateProfile(userData) {
+    const response = await apiClient.patch('/users/profile', userData);
+    return response;
+  }
+}
+
+export default new UserService();
