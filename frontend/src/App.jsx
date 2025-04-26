@@ -99,14 +99,7 @@ function App() {
                       <Route path="/product-rankings/:categoryId/:productId" element={<ProductRankings />} />
                       <Route path="/bakery/:bakeryId" element={<BakeryProfile />} />
                       <Route path="/product/:productId" element={<ProductProfile />} />
-                      <Route 
-                        path="/admin-dashboard/*" 
-                        element={
-                          <AuthGuard>
-                            <Admin />
-                          </AuthGuard>
-                        } 
-                      />
+                      <Route path="/admin-dashboard/*" element={  <AuthGuard><Admin /></AuthGuard>}/>
                     </Routes>
                   </Suspense>
                 </main>

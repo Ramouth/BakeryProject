@@ -125,32 +125,32 @@ const Admin = () => {
           <nav>
             <ul>
               <li>
-                <NavLink to="/admin" end className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to="/admin-dashboard" end className={({ isActive }) => isActive ? 'active' : ''}>
                   Dashboard
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/admin/bakeries" className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to="/admin-dashboard/bakeries" className={({ isActive }) => isActive ? 'active' : ''}>
                   Bakeries
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/admin/products" className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to="/admin-dashboard/products" className={({ isActive }) => isActive ? 'active' : ''}>
                   Products
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/admin/users" className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to="/admin-dashboard/users" className={({ isActive }) => isActive ? 'active' : ''}>
                   Users
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/admin/bakery-reviews" className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to="/admin-dashboard/bakery-reviews" className={({ isActive }) => isActive ? 'active' : ''}>
                   Bakery Reviews
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/admin/product-reviews" className={({ isActive }) => isActive ? 'active' : ''}>
+                <NavLink to="/admin-dashboard/product-reviews" className={({ isActive }) => isActive ? 'active' : ''}>
                   Product Reviews
                 </NavLink>
               </li>
@@ -171,11 +171,11 @@ const Admin = () => {
                 />
               } 
             />
-            <Route path="/bakeries" element={<AdminBakeryView />} />
-            <Route path="/products" element={<AdminProductView />} />
-            <Route path="/users" element={<AdminUserView />} />
-            <Route path="/bakery-reviews" element={<AdminBakeryReviewView />} />
-            <Route path="/product-reviews" element={<AdminProductReviewView />} />
+            <Route path="bakeries" element={<AdminBakeryView />} />
+            <Route path="products" element={<AdminProductView />} />
+            <Route path="users" element={<AdminUserView />} />
+            <Route path="bakery-reviews" element={<AdminBakeryReviewView />} />
+            <Route path="product-reviews" element={<AdminProductReviewView />} />
           </Routes>
         </main>
       </div>
