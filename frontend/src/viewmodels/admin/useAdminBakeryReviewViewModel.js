@@ -18,19 +18,43 @@ export const useAdminBakeryReviewViewModel = () => {
     setIsLoading(true);
     setError(null);
     try {
+      // Fetch reviews, bakeries, and users in parallel
       const [reviewsResponse, bakeriesResponse, usersResponse] = await Promise.all([
-        apiClient.get('/bakeryreviews', true),
+        apiClient.get('/bakeryreviews', false), // Fetch fresh data, don't use cache
         apiClient.get('/bakeries', true),
         apiClient.get('/users', true)
       ]);
       
-      const reviewModels = (reviewsResponse.bakeryReviews || []).map(r => BakeryReview.fromApiResponse(r));
-      const bakeryModels = (bakeriesResponse.bakeries || []).map(b => Bakery.fromApiResponse(b));
+      console.log("Bakery reviews API response:", reviewsResponse);
       
-      setReviews(reviewModels);
-      setBakeries(bakeryModels);
+      // Extract reviews and add bakery information
+      let bakeryReviews = reviewsResponse.bakeryReviews || [];
+      const bakeryMap = {};
+      
+      // Create a lookup map for bakeries
+      if (bakeriesResponse.bakeries && bakeriesResponse.bakeries.length > 0) {
+        bakeriesResponse.bakeries.forEach(bakery => {
+          bakeryMap[bakery.id] = bakery;
+        });
+      }
+      
+      // Enhance reviews with bakery data
+      bakeryReviews = bakeryReviews.map(review => {
+        const bakery = bakeryMap[review.bakeryId];
+        return {
+          ...review,
+          bakery: bakery || null,
+          bakery_name: bakery ? bakery.name : 'Unknown Bakery'
+        };
+      });
+      
+      setReviews(bakeryReviews);
+      setBakeries(bakeriesResponse.bakeries || []);
       setUsers(usersResponse.users || []);
+      
+      console.log("Processed bakery reviews:", bakeryReviews);
     } catch (err) {
+      console.error("Failed to fetch review data:", err);
       setError('Failed to fetch data. Please try again.');
       showError('Failed to fetch data.');
     } finally {
@@ -48,7 +72,8 @@ export const useAdminBakeryReviewViewModel = () => {
   }, []);
 
   const handleOpenEditModal = useCallback((review) => {
-    setCurrentReview(review);
+    // Make a copy to avoid reference issues
+    setCurrentReview({...review});
     setIsModalOpen(true);
   }, []);
 
