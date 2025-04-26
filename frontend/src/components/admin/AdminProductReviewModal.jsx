@@ -1,126 +1,169 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import Button from "../Button";
 
-const ProductReviewForm = ({ existingReview = {}, updateCallback, users, products }) => {
-  const [review, setReview] = useState(existingReview.review || "");
-  const [overallRating, setOverallRating] = useState(existingReview.overallRating || 1);
-  const [tasteRating, setTasteRating] = useState(existingReview.tasteRating || 1);
-  const [priceRating, setPriceRating] = useState(existingReview.priceRating || 1);
-  const [presentationRating, setPresentationRating] = useState(existingReview.presentationRating || 1);
-  const [userId, setUserId] = useState(existingReview.userId || "");
-  const [productId, setProductId] = useState(existingReview.productId || "");
+const ProductReviewForm = ({ existingReview = {}, onSubmit, onCancel, users = [], products = [], isSubmitting = false }) => {
+  const [formData, setFormData] = useState({
+    review: "",
+    overallRating: 1,
+    tasteRating: 1,
+    priceRating: 1,
+    presentationRating: 1,
+    userId: "",
+    productId: ""
+  });
 
-  const updating = Object.entries(existingReview).length !== 0;
-
-  const onSubmit = async (e) => {
-    e.preventDefault();
-
-    const data = {
-      review,
-      overallRating,
-      tasteRating,
-      priceRating,
-      presentationRating,
-      userId,
-      productId,
-    };
-
-    const url =
-      "http://127.0.0.1:5000/productreviews/" +
-      (updating ? `update/${existingReview.id}` : "create");
-
-    const options = {
-      method: updating ? "PATCH" : "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    };
-
-    const response = await fetch(url, options);
-    if (response.status !== 201 && response.status !== 200) {
-      const data = await response.json();
-      alert(data.message);
-    } else {
-      updateCallback();
+  // Initialize form with review data when provided
+  useEffect(() => {
+    if (existingReview && existingReview.id) {
+      setFormData({
+        review: existingReview.review || "",
+        overallRating: existingReview.overallRating || 1,
+        tasteRating: existingReview.tasteRating || 1,
+        priceRating: existingReview.priceRating || 1,
+        presentationRating: existingReview.presentationRating || 1,
+        userId: existingReview.userId || "",
+        productId: existingReview.productId || ""
+      });
     }
+  }, [existingReview]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    // Convert numeric values to integers
+    const reviewData = {
+      ...formData,
+      overallRating: parseInt(formData.overallRating),
+      tasteRating: parseInt(formData.tasteRating),
+      priceRating: parseInt(formData.priceRating),
+      presentationRating: parseInt(formData.presentationRating),
+      userId: formData.userId ? parseInt(formData.userId) : null,
+      productId: parseInt(formData.productId)
+    };
+    
+    onSubmit(reviewData);
+  };
+
+  // Helper to check if we're in edit mode
+  const isEditing = existingReview && existingReview.id;
+
   return (
-    <form onSubmit={onSubmit}>
-      <div>
-        <label htmlFor="review">Review:</label>
+    <form onSubmit={handleSubmit} className="form review-form">
+      <div className="form-group">
+        <label htmlFor="review">Review Text:</label>
         <textarea
           id="review"
-          value={review}
-          onChange={(e) => setReview(e.target.value)}
-        />
-      </div>
-      <div>
-        <label>Overall Rating:</label>
-        <input
-          type="number"
-          min="1"
-          max="10"
-          value={overallRating}
-          onChange={(e) => setOverallRating(e.target.value)}
-        />
-      </div>
-      <div>
-        <label>Taste Rating:</label>
-        <input
-          type="number"
-          min="1"
-          max="10"
-          value={tasteRating}
-          onChange={(e) => setTasteRating(e.target.value)}
-        />
-      </div>
-      <div>
-        <label>Price Rating:</label>
-        <input
-          type="number"
-          min="1"
-          max="10"
-          value={priceRating}
-          onChange={(e) => setPriceRating(e.target.value)}
-        />
-      </div>
-      <div>
-        <label>Presentation Rating:</label>
-        <input
-          type="number"
-          min="1"
-          max="10"
-          value={presentationRating}
-          onChange={(e) => setPresentationRating(e.target.value)}
+          name="review"
+          value={formData.review}
+          onChange={handleChange}
+          className="form-textarea"
+          rows="4"
+          disabled={isSubmitting}
+          required
         />
       </div>
       
-      {/* Dropdown to select an existing user (user) */}
-      <div>
-        <label>User:</label>
+      <div className="form-group">
+        <label htmlFor="overallRating">Overall Rating (1-10):</label>
+        <input
+          type="number"
+          id="overallRating"
+          name="overallRating"
+          min="1"
+          max="10"
+          value={formData.overallRating}
+          onChange={handleChange}
+          disabled={isSubmitting}
+          required
+        />
+      </div>
+      
+      <div className="form-group">
+        <label htmlFor="tasteRating">Taste Rating (1-10):</label>
+        <input
+          type="number"
+          id="tasteRating"
+          name="tasteRating"
+          min="1"
+          max="10"
+          value={formData.tasteRating}
+          onChange={handleChange}
+          disabled={isSubmitting}
+          required
+        />
+      </div>
+      
+      <div className="form-group">
+        <label htmlFor="priceRating">Price Rating (1-10):</label>
+        <input
+          type="number"
+          id="priceRating"
+          name="priceRating"
+          min="1"
+          max="10"
+          value={formData.priceRating}
+          onChange={handleChange}
+          disabled={isSubmitting}
+          required
+        />
+      </div>
+      
+      <div className="form-group">
+        <label htmlFor="presentationRating">Presentation Rating (1-10):</label>
+        <input
+          type="number"
+          id="presentationRating"
+          name="presentationRating"
+          min="1"
+          max="10"
+          value={formData.presentationRating}
+          onChange={handleChange}
+          disabled={isSubmitting}
+          required
+        />
+      </div>
+      
+      {/* User dropdown */}
+      <div className="form-group">
+        <label htmlFor="userId">User (optional):</label>
         <select
-          value={userId}
-          onChange={(e) => setUserId(e.target.value)}
+          id="userId"
+          name="userId"
+          value={formData.userId}
+          onChange={handleChange}
+          disabled={isSubmitting}
         >
-          <option value="">--Select a User--</option>
-          {users.map((user) => (
+          <option value="">Anonymous</option>
+          {Array.isArray(users) && users.map((user) => (
             <option key={user.id} value={user.id}>
-              {user.firstName} {user.lastName}
+              {user.username || `${user.firstName || ''} ${user.lastName || ''}`}
             </option>
           ))}
         </select>
       </div>
 
-      {/* Dropdown to select an existing product */}
-      <div>
-        <label>Product:</label>
+      {/* Product dropdown */}
+      <div className="form-group">
+        <label htmlFor="productId">Product: *</label>
         <select
-          value={productId}
-          onChange={(e) => setProductId(e.target.value)}
+          id="productId"
+          name="productId"
+          value={formData.productId}
+          onChange={handleChange}
+          disabled={isSubmitting}
+          required
         >
           <option value="">--Select a Product--</option>
-          {products.map((product) => (
+          {Array.isArray(products) && products.map((product) => (
             <option key={product.id} value={product.id}>
               {product.name}
             </option>
@@ -128,9 +171,43 @@ const ProductReviewForm = ({ existingReview = {}, updateCallback, users, product
         </select>
       </div>
 
-      <button type="submit">{updating ? "Update Review" : "Create Review"}</button>
+      <div className="form-actions">
+        <Button 
+          type="button" 
+          variant="secondary" 
+          onClick={onCancel}
+          disabled={isSubmitting}
+        >
+          Cancel
+        </Button>
+        <Button 
+          type="submit"
+          variant="primary"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Saving..." : isEditing ? "Update Review" : "Create Review"}
+        </Button>
+      </div>
     </form>
   );
+};
+
+ProductReviewForm.propTypes = {
+  existingReview: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    review: PropTypes.string,
+    overallRating: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    tasteRating: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    priceRating: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    presentationRating: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    userId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    productId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+  }),
+  onSubmit: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+  users: PropTypes.array,
+  products: PropTypes.array,
+  isSubmitting: PropTypes.bool
 };
 
 export default ProductReviewForm;
