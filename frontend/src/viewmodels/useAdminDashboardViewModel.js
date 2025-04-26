@@ -32,27 +32,31 @@ export const useAdminDashboardViewModel = () => {
           apiClient.get('/productreviews', true),
           apiClient.get('/users', true)
         ]);
-
+  
+        // Map IDs to names
+        const bakeryMap = new Map((bakeries.bakeries || []).map(b => [b.id, b.name]));
+        const productMap = new Map((products.products || []).map(p => [p.id, p.name]));
+  
         setStats({
           bakeries: bakeries.bakeries?.length || 0,
           products: products.products?.length || 0,
           reviews: (bakeryReviews.bakeryReviews?.length || 0) + (productReviews.productReviews?.length || 0),
           users: users.users?.length || 0
         });
-
+  
         const recent = [
           ...(bakeryReviews.bakeryReviews || []).slice(0, 3).map(r => ({
             type: 'bakery_review',
             time: r.created_at,
-            text: `New review for "${r.bakery_name || 'Unknown Bakery'}"`
+            text: `New review for "${bakeryMap.get(r.bakeryId) || 'Unknown Bakery'}"`
           })),
           ...(productReviews.productReviews || []).slice(0, 3).map(r => ({
             type: 'product_review',
             time: r.created_at,
-            text: `New review for "${r.product_name || 'Unknown Product'}"`
+            text: `New review for "${productMap.get(r.productId) || 'Unknown Product'}"`
           }))
         ].sort((a, b) => new Date(b.time) - new Date(a.time)).slice(0, 5);
-
+  
         setRecentActivity(recent);
       } catch (error) {
         console.error('Failed to fetch dashboard data:', error);
@@ -60,9 +64,10 @@ export const useAdminDashboardViewModel = () => {
         setLoading(false);
       }
     };
-
+  
     fetchDashboardData();
   }, [showWarning]);
+  
 
   const createMockAdminUser = () => {
     localStorage.setItem('currentUser', JSON.stringify({
