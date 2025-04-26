@@ -18,19 +18,43 @@ export const useAdminProductReviewViewModel = () => {
     setIsLoading(true);
     setError(null);
     try {
+      // Fetch reviews, products, and users in parallel without caching for fresh data
       const [reviewsResponse, productsResponse, usersResponse] = await Promise.all([
-        apiClient.get('/productreviews', true),
+        apiClient.get('/productreviews', false), // Don't use cache for reviews
         apiClient.get('/products', true),
         apiClient.get('/users', true)
       ]);
       
-      const reviewModels = (reviewsResponse.productReviews || []).map(r => ProductReview.fromApiResponse(r));
-      const productModels = (productsResponse.products || []).map(p => Product.fromApiResponse(p));
+      console.log("Product reviews API response:", reviewsResponse);
       
-      setReviews(reviewModels);
-      setProducts(productModels);
+      // Extract reviews and add product information
+      let productReviews = reviewsResponse.productReviews || [];
+      const productMap = {};
+      
+      // Create a lookup map for products
+      if (productsResponse.products && productsResponse.products.length > 0) {
+        productsResponse.products.forEach(product => {
+          productMap[product.id] = product;
+        });
+      }
+      
+      // Enhance reviews with product data
+      productReviews = productReviews.map(review => {
+        const product = productMap[review.productId];
+        return {
+          ...review,
+          product: product || null,
+          product_name: product ? product.name : 'Unknown Product'
+        };
+      });
+      
+      console.log("Processed product reviews:", productReviews);
+      
+      setReviews(productReviews);
+      setProducts(productsResponse.products || []);
       setUsers(usersResponse.users || []);
     } catch (err) {
+      console.error("Failed to fetch review data:", err);
       setError('Failed to fetch data. Please try again.');
       showError('Failed to fetch data.');
     } finally {
@@ -48,7 +72,8 @@ export const useAdminProductReviewViewModel = () => {
   }, []);
 
   const handleOpenEditModal = useCallback((review) => {
-    setCurrentReview(review);
+    // Make a copy to avoid reference issues
+    setCurrentReview({...review});
     setIsModalOpen(true);
   }, []);
 
