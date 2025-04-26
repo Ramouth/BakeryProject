@@ -1,16 +1,12 @@
-from dal.bakery_dal import BakeryDAL
 from models import db, Bakery, BakeryReview
 from sqlalchemy.exc import SQLAlchemyError
 
 class BakeryService:
     """Service class for bakery-related business logic"""
 
-    def __init__(self):
-        self.bakery_dal = BakeryDAL()
-
     def get_all_bakeries(self):
         """Get all bakeries ordered by name"""
-        bakeries = self.bakery_dal.get_all()
+        bakeries = Bakery.query.order_by(Bakery.name).all()
         
         # Enhance bakeries with rating information
         for bakery in bakeries:
@@ -24,7 +20,7 @@ class BakeryService:
 
     def get_bakery_by_id(self, bakery_id):
         """Get a specific bakery by ID"""
-        bakery = self.bakery_dal.get_by_id(bakery_id)
+        bakery = Bakery.query.get(bakery_id)
         if bakery:
             # Add rating information
             stats = self.get_bakery_stats(bakery_id)
@@ -35,7 +31,7 @@ class BakeryService:
 
     def get_bakeries_by_zip(self, zip_code):
         """Get bakeries by zip code"""
-        return self.bakery_dal.get_by_zip(zip_code)
+        return Bakery.query.filter_by(zip_code=zip_code).order_by(Bakery.name).all()
 
     def search_bakeries(self, search_term):
         """Search bakeries by name using case-insensitive partial matching"""
@@ -81,11 +77,21 @@ class BakeryService:
     
     def delete_bakery(self, bakery_id):
         """Delete a bakery"""
-        return self.bakery_dal.delete(bakery_id)
+        try:
+            bakery = self.get_bakery_by_id(bakery_id)
+            if not bakery:
+                return False
+                
+            db.session.delete(bakery)
+            db.session.commit()
+            return True
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise Exception(f"Database error: {str(e)}")
 
     def get_bakery_stats(self, bakery_id):
         """Get statistics for a bakery including review averages"""
-        bakery = self.bakery_dal.get_by_id(bakery_id)
+        bakery = Bakery.query.get(bakery_id)
         if not bakery:
             raise Exception("Bakery not found")
 
