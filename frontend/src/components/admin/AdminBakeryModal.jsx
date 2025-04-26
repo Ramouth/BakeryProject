@@ -1,3 +1,4 @@
+// src/components/admin/AdminBakeryModal.jsx
 import { useState, useEffect, useCallback, useMemo } from "react";
 import PropTypes from "prop-types";
 import Button from "../Button";
@@ -75,7 +76,7 @@ const BakeryForm = ({ bakery = {}, onSubmit, onCancel, isSubmitting = false }) =
 
   // Initialize form with bakery data when provided
   useEffect(() => {
-    if (bakery.id) {
+    if (bakery && bakery.id) {
       setFormData({
         name: bakery.name || "",
         zipCode: bakery.zipCode || "",
@@ -145,26 +146,30 @@ const BakeryForm = ({ bakery = {}, onSubmit, onCancel, isSubmitting = false }) =
   }, [isFormSubmitted, touched, validateField]);
 
   // Handle form submission
-const handleSubmit = useCallback((e) => {
-  e.preventDefault();
-  setIsFormSubmitted(true);
-  
-  if (validateForm()) {
-    onSubmit({
-      name: formData.name.trim(),
-      zipCode: formData.zipCode.trim(),
-      streetName: formData.streetName.trim(),
-      streetNumber: formData.streetNumber.trim(),
-      // Change these to empty strings instead of null
-      imageUrl: formData.imageUrl.trim() || "",  // Changed from null to ""
-      websiteUrl: formData.websiteUrl.trim() || ""  // Changed from null to ""
-    });
-  }
-}, [formData, onSubmit, validateForm]);
+  const handleSubmit = useCallback((e) => {
+    e.preventDefault();
+    setIsFormSubmitted(true);
+    
+    if (validateForm()) {
+      // Fixed: The API expects empty strings for optional fields, not null values
+      onSubmit({
+        name: formData.name.trim(),
+        zipCode: formData.zipCode.trim(),
+        streetName: formData.streetName.trim(),
+        streetNumber: formData.streetNumber.trim(),
+        imageUrl: formData.imageUrl.trim() || "",
+        websiteUrl: formData.websiteUrl.trim() || ""
+      });
+    }
+  }, [formData, onSubmit, validateForm]);
+
   // Form is valid when there are no errors
   const isFormValid = useMemo(() => {
     return Object.values(errors).every(error => error === null || error === undefined);
   }, [errors]);
+
+  // Helper to check if bakery exists and has an id
+  const isEditing = bakery && bakery.id;
 
   return (
     <form onSubmit={handleSubmit} className="form bakery-form">
@@ -282,7 +287,7 @@ const handleSubmit = useCallback((e) => {
           Cancel
         </Button>
         <Button type="submit" variant="primary" disabled={isSubmitting || (isFormSubmitted && !isFormValid)}>
-          {isSubmitting ? "Saving..." : bakery.id ? "Update" : "Create"}
+          {isSubmitting ? "Saving..." : isEditing ? "Update" : "Create"}
         </Button>
       </div>
     </form>

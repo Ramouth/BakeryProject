@@ -1,138 +1,187 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import Button from "../Button";
 
-const BakeryReviewForm = ({ existingReview = {}, updateCallback, users, bakeries }) => {
-  const [review, setReview] = useState(existingReview.review || "");
-  const [overallRating, setOverallRating] = useState(existingReview.overallRating || 1);
-  const [serviceRating, setServiceRating] = useState(existingReview.serviceRating || 1);
-  const [priceRating, setPriceRating] = useState(existingReview.priceRating || 1);
-  const [atmosphereRating, setAtmosphereRating] = useState(existingReview.atmosphereRating || 1);
-  const [locationRating, setLocationRating] = useState(existingReview.locationRating || 1);
-  const [userId, setUserId] = useState(existingReview.userId || "");
-  const [bakeryId, setBakeryId] = useState(existingReview.bakeryId || ""); 
+const BakeryReviewForm = ({ existingReview = {}, onSubmit, onCancel, users = [], bakeries = [], isSubmitting = false }) => {
+  const [formData, setFormData] = useState({
+    review: "",
+    overallRating: 1,
+    serviceRating: 1,
+    priceRating: 1,
+    atmosphereRating: 1,
+    locationRating: 1,
+    userId: "",
+    bakeryId: ""
+  });
 
-  const updating = Object.entries(existingReview).length !== 0;
-
-  const onSubmit = async (e) => {
-    e.preventDefault();
-
-    const data = {
-      review,
-      overallRating,
-      serviceRating,
-      priceRating,
-      atmosphereRating,
-      locationRating,
-      userId,
-      bakeryId,
-    };
-
-    const url =
-      "http://127.0.0.1:5000/bakeryreviews/" +
-      (updating ? `update/${existingReview.id}` : "create");
-
-    const options = {
-      method: updating ? "PATCH" : "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    };
-
-    const response = await fetch(url, options);
-    if (response.status !== 201 && response.status !== 200) {
-      const data = await response.json();
-      alert(data.message);
-    } else {
-      updateCallback();
+  // Initialize form with review data when provided
+  useEffect(() => {
+    if (existingReview && existingReview.id) {
+      setFormData({
+        review: existingReview.review || "",
+        overallRating: existingReview.overallRating || 1,
+        serviceRating: existingReview.serviceRating || 1,
+        priceRating: existingReview.priceRating || 1,
+        atmosphereRating: existingReview.atmosphereRating || 1,
+        locationRating: existingReview.locationRating || 1,
+        userId: existingReview.userId || "",
+        bakeryId: existingReview.bakeryId || ""
+      });
     }
+  }, [existingReview]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    // Convert numeric values to integers
+    const reviewData = {
+      ...formData,
+      overallRating: parseInt(formData.overallRating),
+      serviceRating: parseInt(formData.serviceRating),
+      priceRating: parseInt(formData.priceRating),
+      atmosphereRating: parseInt(formData.atmosphereRating),
+      locationRating: parseInt(formData.locationRating),
+      userId: formData.userId ? parseInt(formData.userId) : null,
+      bakeryId: parseInt(formData.bakeryId)
+    };
+    
+    onSubmit(reviewData);
+  };
+
+  // Helper to check if we're in edit mode
+  const isEditing = existingReview && existingReview.id;
+
   return (
-    <form onSubmit={onSubmit}>
-      <div>
-        <label htmlFor="review">Review:</label>
+    <form onSubmit={handleSubmit} className="form review-form">
+      <div className="form-group">
+        <label htmlFor="review">Review Text:</label>
         <textarea
           id="review"
-          value={review}
-          onChange={(e) => setReview(e.target.value)}
-        />
-      </div>
-      <div>
-        <label>Overall Rating:</label>
-        <input
-          type="number"
-          min="1"
-          max="10"
-          value={overallRating}
-          onChange={(e) => setOverallRating(e.target.value)}
-        />
-      </div>
-      <div>
-        <label>Service Rating:</label>
-        <input
-          type="number"
-          min="1"
-          max="10"
-          value={serviceRating}
-          onChange={(e) => setServiceRating(e.target.value)}
-        />
-      </div>
-      <div>
-        <label>Price Rating:</label>
-        <input
-          type="number"
-          min="1"
-          max="10"
-          value={priceRating}
-          onChange={(e) => setPriceRating(e.target.value)}
-        />
-      </div>
-      <div>
-        <label>Atmosphere Rating:</label>
-        <input
-          type="number"
-          min="1"
-          max="10"
-          value={atmosphereRating}
-          onChange={(e) => setAtmosphereRating(e.target.value)}
-        />
-      </div>
-      <div>
-        <label>Location Rating:</label>
-        <input
-          type="number"
-          min="1"
-          max="10"
-          value={locationRating}
-          onChange={(e) => setLocationRating(e.target.value)}
+          name="review"
+          value={formData.review}
+          onChange={handleChange}
+          className="form-textarea"
+          rows="4"
+          disabled={isSubmitting}
+          required
         />
       </div>
       
-      {/* Dropdown to select an existing user (user) */}
-      <div>
-        <label>User:</label>
+      <div className="form-group">
+        <label htmlFor="overallRating">Overall Rating (1-10):</label>
+        <input
+          type="number"
+          id="overallRating"
+          name="overallRating"
+          min="1"
+          max="10"
+          value={formData.overallRating}
+          onChange={handleChange}
+          disabled={isSubmitting}
+          required
+        />
+      </div>
+      
+      <div className="form-group">
+        <label htmlFor="serviceRating">Service Rating (1-10):</label>
+        <input
+          type="number"
+          id="serviceRating"
+          name="serviceRating"
+          min="1"
+          max="10"
+          value={formData.serviceRating}
+          onChange={handleChange}
+          disabled={isSubmitting}
+          required
+        />
+      </div>
+      
+      <div className="form-group">
+        <label htmlFor="priceRating">Price Rating (1-10):</label>
+        <input
+          type="number"
+          id="priceRating"
+          name="priceRating"
+          min="1"
+          max="10"
+          value={formData.priceRating}
+          onChange={handleChange}
+          disabled={isSubmitting}
+          required
+        />
+      </div>
+      
+      <div className="form-group">
+        <label htmlFor="atmosphereRating">Atmosphere Rating (1-10):</label>
+        <input
+          type="number"
+          id="atmosphereRating"
+          name="atmosphereRating"
+          min="1"
+          max="10"
+          value={formData.atmosphereRating}
+          onChange={handleChange}
+          disabled={isSubmitting}
+          required
+        />
+      </div>
+      
+      <div className="form-group">
+        <label htmlFor="locationRating">Location Rating (1-10):</label>
+        <input
+          type="number"
+          id="locationRating"
+          name="locationRating"
+          min="1"
+          max="10"
+          value={formData.locationRating}
+          onChange={handleChange}
+          disabled={isSubmitting}
+          required
+        />
+      </div>
+      
+      {/* User dropdown */}
+      <div className="form-group">
+        <label htmlFor="userId">User (optional):</label>
         <select
-          value={userId}
-          onChange={(e) => setUserId(e.target.value)}
+          id="userId"
+          name="userId"
+          value={formData.userId}
+          onChange={handleChange}
+          disabled={isSubmitting}
         >
-          <option value="">--Select a User--</option>
-          {users.map((user) => (
+          <option value="">Anonymous</option>
+          {Array.isArray(users) && users.map((user) => (
             <option key={user.id} value={user.id}>
-              {user.firstName} {user.lastName}
+              {user.username || `${user.firstName || ''} ${user.lastName || ''}`}
             </option>
           ))}
         </select>
       </div>
 
-      {/* Dropdown to select an existing bakery */}
-      <div>
-        <label>Bakery:</label>
+      {/* Bakery dropdown */}
+      <div className="form-group">
+        <label htmlFor="bakeryId">Bakery: *</label>
         <select
-          value={bakeryId}
-          onChange={(e) => setBakeryId(e.target.value)}
+          id="bakeryId"
+          name="bakeryId"
+          value={formData.bakeryId}
+          onChange={handleChange}
+          disabled={isSubmitting}
+          required
         >
           <option value="">--Select a Bakery--</option>
-          {bakeries.map((bakery) => (
+          {Array.isArray(bakeries) && bakeries.map((bakery) => (
             <option key={bakery.id} value={bakery.id}>
               {bakery.name}
             </option>
@@ -140,9 +189,44 @@ const BakeryReviewForm = ({ existingReview = {}, updateCallback, users, bakeries
         </select>
       </div>
 
-      <button type="submit">{updating ? "Update Review" : "Create Review"}</button>
+      <div className="form-actions">
+        <Button 
+          type="button" 
+          variant="secondary" 
+          onClick={onCancel}
+          disabled={isSubmitting}
+        >
+          Cancel
+        </Button>
+        <Button 
+          type="submit"
+          variant="primary"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Saving..." : isEditing ? "Update Review" : "Create Review"}
+        </Button>
+      </div>
     </form>
   );
+};
+
+BakeryReviewForm.propTypes = {
+  existingReview: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    review: PropTypes.string,
+    overallRating: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    serviceRating: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    priceRating: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    atmosphereRating: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    locationRating: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    userId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    bakeryId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+  }),
+  onSubmit: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+  users: PropTypes.array,
+  bakeries: PropTypes.array,
+  isSubmitting: PropTypes.bool
 };
 
 export default BakeryReviewForm;

@@ -1,4 +1,4 @@
-// src/components/admin/ProductForm.jsx
+// src/components/admin/AdminProductModal.jsx
 import { useState, useEffect, useCallback } from "react";
 import PropTypes from "prop-types";
 import Button from "../Button";
@@ -15,7 +15,7 @@ const ProductForm = ({ product = {}, bakeries = [], onSubmit, onCancel, isSubmit
 
   // Initialize form with product data when provided
   useEffect(() => {
-    if (product.id) {
+    if (product && product.id) {
       setFormData({
         name: product.name || "",
         bakeryId: product.bakeryId || "",
@@ -86,6 +86,9 @@ const ProductForm = ({ product = {}, bakeries = [], onSubmit, onCancel, isSubmit
     }
   };
 
+  // Helper to check if product exists and has an id
+  const isEditing = product && product.id;
+
   return (
     <form onSubmit={handleSubmit} className="form product-form">
       <div className="form-group">
@@ -155,7 +158,7 @@ const ProductForm = ({ product = {}, bakeries = [], onSubmit, onCancel, isSubmit
           Cancel
         </Button>
         <Button type="submit" variant="primary" disabled={isSubmitting}>
-          {isSubmitting ? "Saving..." : product.id ? "Update" : "Create"}
+          {isSubmitting ? "Saving..." : isEditing ? "Update" : "Create"}
         </Button>
       </div>
     </form>

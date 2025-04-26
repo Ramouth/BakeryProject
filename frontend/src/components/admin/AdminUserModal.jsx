@@ -17,7 +17,7 @@ const UserForm = ({ existingUser = {}, updateCallback, isSubmitting = false }) =
 
   // Initialize form with user data when provided
   useEffect(() => {
-    if (existingUser.id) {
+    if (existingUser && existingUser.id) {
       setFormData({
         username: existingUser.username || "",
         email: existingUser.email || "",
@@ -87,11 +87,17 @@ const UserForm = ({ existingUser = {}, updateCallback, isSubmitting = false }) =
       // Debug the data we're about to send
       console.log("Submitting user data:", formData);
       
-      const url = existingUser.id 
+      const url = existingUser && existingUser.id 
         ? `http://127.0.0.1:5000/users/update/${existingUser.id}` 
         : "http://127.0.0.1:5000/users/create";
       
-      const method = existingUser.id ? "PATCH" : "POST";
+      const method = existingUser && existingUser.id ? "PATCH" : "POST";
+      
+      // Make sure profilePicture is a number
+      const userData = {
+        ...formData,
+        profilePicture: Number(formData.profilePicture) || 1
+      };
       
       // Always include password in the payload
       const response = await fetch(url, {
@@ -99,7 +105,7 @@ const UserForm = ({ existingUser = {}, updateCallback, isSubmitting = false }) =
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(userData)
       });
       
       // Log the raw response for debugging
@@ -139,6 +145,9 @@ const UserForm = ({ existingUser = {}, updateCallback, isSubmitting = false }) =
       }));
     }
   };
+
+  // Helper to check if user exists and has an id
+  const isEditing = existingUser && existingUser.id;
 
   return (
     <form onSubmit={handleSubmit} className="form user-form">
@@ -186,7 +195,7 @@ const UserForm = ({ existingUser = {}, updateCallback, isSubmitting = false }) =
         />
         {errors.password && <div className="error-text">{errors.password}</div>}
         <p className="help-text" style={{ fontSize: '0.8rem', color: '#666', marginTop: '4px' }}>
-          {existingUser.id ? 
+          {isEditing ? 
             "Enter a new password to change it, or keep the default for no change." : 
             "Enter a password for the new user."}
         </p>
@@ -235,7 +244,7 @@ const UserForm = ({ existingUser = {}, updateCallback, isSubmitting = false }) =
           variant="primary" 
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Saving..." : existingUser.id ? "Update" : "Create"}
+          {isSubmitting ? "Saving..." : isEditing ? "Update" : "Create"}
         </Button>
       </div>
     </form>
