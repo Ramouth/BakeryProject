@@ -13,6 +13,9 @@ const AdminBakeryReviewView = () => {
     currentReview,
     isLoading,
     error,
+    searchTerm,
+    setSearchTerm,
+    filteredReviews,
     handleOpenCreateModal,
     handleOpenEditModal,
     handleCloseModal,
@@ -22,11 +25,28 @@ const AdminBakeryReviewView = () => {
 
   return (
     <div className="section">
-      <div className="section-header">
+      <div className="section-header" style={{ marginBottom: '20px' }}>
         <h2>Manage Bakery Reviews</h2>
         <Button onClick={handleOpenCreateModal} disabled={isLoading}>
           Add New Review
         </Button>
+      </div>
+
+      {/* Search Input */}
+      <div className="search-bar" style={{ marginBottom: '20px' }}>
+        <input
+          type="text"
+          placeholder="Search reviews by content..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{
+            padding: '8px 12px',
+            border: '1px solid var(--accent-300)',
+            borderRadius: 'var(--border-radius)',
+            width: '100%',
+            maxWidth: '400px'
+          }}
+        />
       </div>
 
       {error && <div className="error-message">{error}</div>}
@@ -35,7 +55,7 @@ const AdminBakeryReviewView = () => {
         <div className="loading">Loading bakery reviews...</div>
       ) : (
         <BakeryReviewList 
-          reviews={reviews} 
+          reviews={filteredReviews} 
           updateReview={handleOpenEditModal} 
           updateCallback={handleDeleteReview} 
         />
@@ -50,7 +70,9 @@ const AdminBakeryReviewView = () => {
           existingReview={currentReview} 
           bakeries={bakeries} 
           users={users} 
-          updateCallback={handleSaveReview} 
+          onSubmit={handleSaveReview}
+          onCancel={handleCloseModal}
+          isSubmitting={isLoading}
         />
       </Modal>
     </div>

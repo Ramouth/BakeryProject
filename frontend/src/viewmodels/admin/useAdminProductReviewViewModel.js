@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import apiClient from '../../services/api';
 import { ProductReview } from '../../models/Review';
 import { Product } from '../../models/Product';
@@ -12,6 +12,7 @@ export const useAdminProductReviewViewModel = () => {
   const [currentReview, setCurrentReview] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const { showSuccess, showError } = useNotification();
 
   const fetchReviews = useCallback(async () => {
@@ -65,6 +66,18 @@ export const useAdminProductReviewViewModel = () => {
   useEffect(() => {
     fetchReviews();
   }, [fetchReviews]);
+
+  // Filter reviews based on search term
+  const filteredReviews = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return reviews;
+    }
+    
+    const normalizedSearchTerm = searchTerm.toLowerCase().trim();
+    return reviews.filter(review => 
+      review.review && review.review.toLowerCase().includes(normalizedSearchTerm)
+    );
+  }, [reviews, searchTerm]);
 
   const handleOpenCreateModal = useCallback(() => {
     setCurrentReview(null);
@@ -132,6 +145,9 @@ export const useAdminProductReviewViewModel = () => {
     currentReview,
     isLoading,
     error,
+    searchTerm,
+    setSearchTerm,
+    filteredReviews,
     handleOpenCreateModal,
     handleOpenEditModal,
     handleCloseModal,

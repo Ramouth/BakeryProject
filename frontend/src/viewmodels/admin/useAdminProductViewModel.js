@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import apiClient from '../../services/api';
 import { Product } from '../../models/Product';
 import { Bakery } from '../../models/Bakery';
@@ -11,6 +11,7 @@ export const useAdminProductViewModel = () => {
   const [currentProduct, setCurrentProduct] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const { showSuccess, showError } = useNotification();
 
   const fetchProducts = useCallback(async () => {
@@ -38,6 +39,18 @@ export const useAdminProductViewModel = () => {
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
+
+  // Filter products based on search term
+  const filteredProducts = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return products;
+    }
+    
+    const normalizedSearchTerm = searchTerm.toLowerCase().trim();
+    return products.filter(product => 
+      product.name.toLowerCase().includes(normalizedSearchTerm)
+    );
+  }, [products, searchTerm]);
 
   const handleOpenCreateModal = useCallback(() => {
     setCurrentProduct(null);
@@ -108,6 +121,9 @@ export const useAdminProductViewModel = () => {
     currentProduct,
     isLoading,
     error,
+    searchTerm,
+    setSearchTerm,
+    filteredProducts,
     handleOpenCreateModal,
     handleOpenEditModal,
     handleCloseModal,

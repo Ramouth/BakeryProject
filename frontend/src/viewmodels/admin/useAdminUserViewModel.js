@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import apiClient from '../../services/api';
 import { useNotification } from '../../store/NotificationContext';
 
@@ -8,6 +8,7 @@ export const useAdminUserViewModel = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const { showSuccess, showError } = useNotification();
 
   const fetchUsers = useCallback(async () => {
@@ -27,6 +28,18 @@ export const useAdminUserViewModel = () => {
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
+
+  // Filter users based on search term
+  const filteredUsers = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return users;
+    }
+    
+    const normalizedSearchTerm = searchTerm.toLowerCase().trim();
+    return users.filter(user => 
+      user.username && user.username.toLowerCase().includes(normalizedSearchTerm)
+    );
+  }, [users, searchTerm]);
 
   const handleOpenCreateModal = useCallback(() => {
     setCurrentUser(null);
@@ -91,6 +104,9 @@ export const useAdminUserViewModel = () => {
     currentUser,
     isLoading,
     error,
+    searchTerm,
+    setSearchTerm,
+    filteredUsers,
     handleOpenCreateModal,
     handleOpenEditModal,
     handleCloseModal,
