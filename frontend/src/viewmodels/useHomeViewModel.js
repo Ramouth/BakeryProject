@@ -100,7 +100,8 @@ export const useHomeViewModel = () => {
       rating = bakery.ratings.overall;
     }
     
-    return (rating > 5 ? (rating / 2) : rating).toFixed(1);
+    // Always divide by 2 to convert from 10-scale to 5-scale
+    return (rating / 2).toFixed(1);
   };
 
   return {
