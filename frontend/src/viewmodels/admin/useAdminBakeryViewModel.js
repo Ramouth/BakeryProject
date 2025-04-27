@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import apiClient from '../../services/api';
 import { Bakery } from '../../models/Bakery';
 import { useNotification } from '../../store/NotificationContext';
@@ -9,6 +9,7 @@ export const useAdminBakeryViewModel = () => {
   const [currentBakery, setCurrentBakery] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const { showSuccess, showError } = useNotification();
 
   const fetchBakeries = useCallback(async () => {
@@ -29,6 +30,18 @@ export const useAdminBakeryViewModel = () => {
   useEffect(() => {
     fetchBakeries();
   }, [fetchBakeries]);
+
+  // Filter bakeries based on search term
+  const filteredBakeries = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return bakeries;
+    }
+    
+    const normalizedSearchTerm = searchTerm.toLowerCase().trim();
+    return bakeries.filter(bakery => 
+      bakery.name.toLowerCase().includes(normalizedSearchTerm)
+    );
+  }, [bakeries, searchTerm]);
 
   const handleOpenCreateModal = useCallback(() => {
     setCurrentBakery(null);
@@ -93,6 +106,9 @@ export const useAdminBakeryViewModel = () => {
     currentBakery,
     isLoading,
     error,
+    searchTerm,
+    setSearchTerm,
+    filteredBakeries,
     handleOpenCreateModal,
     handleOpenEditModal,
     handleCloseModal,

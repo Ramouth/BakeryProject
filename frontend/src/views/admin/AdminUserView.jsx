@@ -11,6 +11,9 @@ const AdminUserView = () => {
     currentUser,
     isLoading,
     error,
+    searchTerm,
+    setSearchTerm,
+    filteredUsers,
     handleOpenCreateModal,
     handleOpenEditModal,
     handleCloseModal,
@@ -20,11 +23,28 @@ const AdminUserView = () => {
 
   return (
     <div className="section user-section">
-      <div className="section-header">
+      <div className="section-header" style={{ marginBottom: '20px' }}>
         <h2>Manage Users</h2>
         <Button onClick={handleOpenCreateModal} disabled={isLoading}>
           Create New User
         </Button>
+      </div>
+
+      {/* Search Input */}
+      <div className="search-bar" style={{ marginBottom: '20px' }}>
+        <input
+          type="text"
+          placeholder="Search users by username..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{
+            padding: '8px 12px',
+            border: '1px solid var(--accent-300)',
+            borderRadius: 'var(--border-radius)',
+            width: '100%',
+            maxWidth: '400px'
+          }}
+        />
       </div>
 
       {error && <div className="error-message">{error}</div>}
@@ -33,7 +53,7 @@ const AdminUserView = () => {
         <div className="loading">Loading users...</div>
       ) : (
         <UserList 
-          users={users} 
+          users={filteredUsers} 
           updateUser={handleOpenEditModal} 
           updateCallback={handleDeleteUser} 
         />
