@@ -158,7 +158,8 @@ const HomePage = () => {
                     left: '10px',
                     padding: '4px 8px',
                     fontWeight: 'bold',
-                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    backgroundColor: 'var(--primary-100)',
+                    filter: 'brightness(0.96)', // Makes the color slightly darker
                     borderRadius: '4px',
                     boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
                     zIndex: 2
