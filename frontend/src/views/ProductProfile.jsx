@@ -48,13 +48,19 @@ const ProductProfile = () => {
 
   const ratings = calculateRatings();
   const reviewCount = productReviews.length;
+  
+  // Format bakery name for URL
+  const formatBakeryNameForUrl = (name) => {
+    if (!name) return '';
+    return name.toLowerCase().replace(/\s+/g, '-');
+  };
 
   return (
     <div className="product-profile-container">
       <div className="product-header">
         <div className="product-header-content">
           <div className="product-bakery">
-            {bakery && <Link to={`/bakery/${bakery.id}`}>{bakery.name}</Link>}
+            {bakery && <Link to={`/bakery/${encodeURIComponent(formatBakeryNameForUrl(bakery.name))}`}>{bakery.name}</Link>}
           </div>
           <h1>{product.name}</h1>
           <div className="product-rating-summary">
@@ -155,7 +161,7 @@ const ProductProfile = () => {
                 <p>{product.availability || 'Available daily'}</p>
                 {bakery && (
                   <p>
-                    Available at <Link to={`/bakery/${bakery.id}`}>{bakery.name}</Link>, {bakery.address}
+                    Available at <Link to={`/bakery/${encodeURIComponent(formatBakeryNameForUrl(bakery.name))}`}>{bakery.name}</Link>, {bakery.address}
                   </p>
                 )}
               </div>
@@ -182,7 +188,7 @@ const ProductProfile = () => {
                       <div className="similar-product-info">
                         <h4>{item.name}</h4>
                         <div className="similar-product-bakery">
-                          {bakery && <Link to={`/bakery/${bakery.id}`}>{bakery.name}</Link>}
+                          {bakery && <Link to={`/bakery/${encodeURIComponent(formatBakeryNameForUrl(bakery.name))}`}>{bakery.name}</Link>}
                         </div>
                         <Link to={`/product/${item.id}`} className="btn btn-small">View</Link>
                       </div>

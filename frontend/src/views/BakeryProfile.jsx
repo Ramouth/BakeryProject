@@ -1,12 +1,31 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useEffect } from 'react-router-dom';
 import { useBakeryProfileViewModel } from '../viewmodels/useBakeryProfileViewModel';
 import CroissantRating from '../components/CroissantRatingComponent';
 import bakeryLogo from '../assets/bageri-logo.jpeg';
 import bakeryHeader from '../assets/bageri.jpeg';
 import '../styles/bakery-profile.css';
+import apiClient from '../services/api';
 
 const BakeryProfile = () => {
-  const { bakeryId } = useParams();
+  const { bakeryName } = useParams();
+  
+  // Clear relevant cache when component mounts or bakeryName changes
+  useEffect(() => {
+    console.log(`BakeryProfile mounted/updated for ${bakeryName}`);
+    
+    // Force clear all bakery-related caches
+    apiClient.clearCacheForUrl(`/bakeries`);
+    apiClient.invalidateCacheByTags(['bakery-reviews', 'api-request']);
+    
+    // Debug the cache state
+    apiClient.debugCache();
+    
+    // Cleanup on unmount
+    return () => {
+      console.log(`BakeryProfile unmounting for ${bakeryName}`);
+    };
+  }, [bakeryName]);
+  
   const {
     bakery,
     bakeryProducts,
@@ -18,13 +37,13 @@ const BakeryProfile = () => {
     setActiveTab,
     getTopRatedProducts,
     formatDate
-  } = useBakeryProfileViewModel(bakeryId);
+  } = useBakeryProfileViewModel(bakeryName);
 
   if (loading) {
     return (
       <div className="loading-container">
         <div className="loading-spinner"></div>
-        <p>Loading bakery information...</p>
+        <p>Loading bakery information for {bakeryName}...</p>
       </div>
     );
   }
@@ -41,7 +60,7 @@ const BakeryProfile = () => {
   if (!bakery) {
     return (
       <div className="error-container">
-        <p className="error-message">Bakery not found</p>
+        <p className="error-message">Bakery not found: {bakeryName}</p>
         <Link to="/bakery-rankings" className="btn btn-primary">Back to Bakeries</Link>
       </div>
     );
