@@ -1,4 +1,5 @@
-import { useParams, Link, useEffect } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
+import { useEffect } from 'react';
 import { useBakeryProfileViewModel } from '../viewmodels/useBakeryProfileViewModel';
 import CroissantRating from '../components/CroissantRatingComponent';
 import bakeryLogo from '../assets/bageri-logo.jpeg';
