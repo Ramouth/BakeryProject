@@ -18,6 +18,11 @@ const HomePage = () => {
     getBakeryRating
   } = useHomeViewModel();
 
+  // Format bakery name for URL
+  const formatBakeryNameForUrl = (name) => {
+    return name.toLowerCase().replace(/\s+/g, '-');
+  };
+
   return (
     <div className="container">
       {/* Hero section with search dropdown */}
@@ -112,7 +117,11 @@ const HomePage = () => {
         ) : topBakeries.length > 0 ? (
           <div className="homepage-bakery-grid">
             {topBakeries.map(bakery => (
-              <Link to={`/bakery/${bakery.id}`} key={bakery.id} className="homepage-bakery-card">
+              <Link 
+                to={`/bakery/${encodeURIComponent(formatBakeryNameForUrl(bakery.name))}`} 
+                key={bakery.id} 
+                className="homepage-bakery-card"
+              >
                 <div style={{ 
                   position: 'relative', 
                   height: '100%', 

@@ -15,6 +15,11 @@ const ProductRankings = () => {
     categoryId
   } = useProductRankingsViewModel();
 
+  // Format bakery name for URL
+  const formatBakeryNameForUrl = (name) => {
+    return name.toLowerCase().replace(/\s+/g, '-');
+  };
+
   // Show error message
   if (error) {
     return (
@@ -87,7 +92,7 @@ const ProductRankings = () => {
                     <span className="rank-number">{item.rank}</span>
                   </div>
                   <div className="col-bakery">
-                    <Link to={`/bakery/${item.bakeryId}`}>
+                    <Link to={`/bakery/${encodeURIComponent(formatBakeryNameForUrl(item.bakeryName))}`}>
                       <h3>{item.bakeryName}</h3>
                       <span className="bakery-address">{item.address}</span>
                     </Link>

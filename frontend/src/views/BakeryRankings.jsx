@@ -54,6 +54,11 @@ const BakeryRankings = () => {
     return bakery.average_rating || 0;
   };
 
+  // Format bakery name for URL
+  const formatBakeryNameForUrl = (name) => {
+    return name.toLowerCase().replace(/\s+/g, '-');
+  };
+
   return (
     <div className="container">
       <div className="rankings-header">
@@ -77,7 +82,11 @@ const BakeryRankings = () => {
         ) : (
           <div className="bakery-list">
             {bakeries.map((bakery, index) => (
-              <Link to={`/bakery/${bakery.id}`} className="bakery-card" key={bakery.id}>
+              <Link 
+                to={`/bakery/${encodeURIComponent(formatBakeryNameForUrl(bakery.name))}`} 
+                className="bakery-card" 
+                key={bakery.id}
+              >
                 <div className="bakery-rank">{index + 1}</div>
                 <div className="bakery-image">
                   <div className="placeholder-image">
