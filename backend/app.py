@@ -1,3 +1,4 @@
+# backend/app.py
 from flask import Flask, request
 from flask_cors import CORS
 from config import Config, DevelopmentConfig, ProductionConfig
