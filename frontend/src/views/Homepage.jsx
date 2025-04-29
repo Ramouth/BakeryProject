@@ -1,122 +1,71 @@
+// src/views/Homepage.jsx
 import { Link } from 'react-router-dom';
 import { useHomeViewModel } from '../viewmodels/useHomeViewModel';
+import { useFacetedSearchViewModel } from '../viewmodels/useFacetedSearchViewModel';
+import FacetedSearch from '../components/FacetedSearch';
 
 const HomePage = () => {
   const {
-    searchType,
-    setSearchType,
-    selectedZipCode,
-    setSelectedZipCode,
-    selectedProductType,
-    setSelectedProductType,
-    selectedRating,
-    setSelectedRating,
     topBakeries,
-    loading,
-    handleSearchSubmit,
-    getBakeryDescription,
-    getBakeryRating
+    loading: topBakeriesLoading,
   } = useHomeViewModel();
 
-  // Format bakery name for URL
-  const formatBakeryNameForUrl = (name) => {
-    return name.toLowerCase().replace(/\s+/g, '-');
-  };
+  const {
+    searchResults,
+    isLoading: searchResultsLoading,
+    handleSearch,
+    formatBakeryNameForUrl,
+    getBakeryDescription,
+    getBakeryRating
+  } = useFacetedSearchViewModel();
+
+  // Determine what to display: search results or top bakeries
+  const displayItems = searchResults.length > 0 ? searchResults : topBakeries;
+  const isLoading = searchResultsLoading || topBakeriesLoading;
+  const isSearchActive = searchResults.length > 0;
 
   return (
     <div className="container">
-      {/* Hero section with search dropdown */}
+      {/* Hero section with search */}
       <div className="hero-section">
         <h1>Denmark's first ever bakery guide</h1>
         
-        <div className="search-container">
-          <form onSubmit={handleSearchSubmit} className="search-dropdown-form">
-            <div className="search-type-selector">
-              <select 
-                value={searchType} 
-                onChange={(e) => setSearchType(e.target.value)}
-                className="search-dropdown"
-              >
-                <option value="bakeries">Find Bakeries</option>
-                <option value="products">Find Products</option>
-                <option value="reviews">Browse Reviews</option>
-                <option value="topRated">Top Rated</option>
-              </select>
-            </div>
-            
-            <div className="search-filters">
-              {searchType === 'bakeries' && (
-                <select 
-                  value={selectedZipCode} 
-                  onChange={(e) => setSelectedZipCode(e.target.value)}
-                  className="search-dropdown"
-                >
-                  <option value="">All Copenhagen</option>
-                  <option value="1050">1050 - Inner City</option>
-                  <option value="1500">1500 - Vesterbro</option>
-                  <option value="2000">2000 - Frederiksberg</option>
-                  <option value="2100">2100 - Østerbro</option>
-                  <option value="2200">2200 - Nørrebro</option>
-                  <option value="2300">2300 - Amager</option>
-                </select>
-              )}
-              
-              {searchType === 'products' && (
-                <select 
-                  value={selectedProductType} 
-                  onChange={(e) => setSelectedProductType(e.target.value)}
-                  className="search-dropdown"
-                >
-                  <option value="">All Product Types</option>
-                  <option value="danish">Danish Product</option>
-                  <option value="bread">Bread</option>
-                  <option value="cake">Cakes</option>
-                  <option value="croissant">Croissants</option>
-                  <option value="cinnamon">Cinnamon Rolls</option>
-                </select>
-              )}
-              
-              {searchType === 'reviews' || searchType === 'topRated' ? (
-                <select 
-                  value={selectedRating} 
-                  onChange={(e) => setSelectedRating(e.target.value)}
-                  className="search-dropdown"
-                >
-                  <option value="">All Ratings</option>
-                  <option value="5">5+ Stars</option>
-                  <option value="4">4+ Stars</option>
-                  <option value="3">3+ Stars</option>
-                </select>
-              ) : null}
-            </div>
-            
-            <button type="submit" className="search-button">Search</button>
-          </form>
-        </div>
+        {/* Faceted Search Component */}
+        <FacetedSearch onSearch={handleSearch} />
       </div>
       
       {/* Promotional card section */}
-      <div className="promo-card">
-        <div className="promo-content">
-          <h2>Plan your bakery visit</h2>
-          <p>Get custom recommendations for all the things you're into with our product rankings.</p>
-          <Link to="/bakery-rankings" className="btn">View rankings</Link>
+      {!isSearchActive && (
+        <div className="promo-card">
+          <div className="promo-content">
+            <h2>Plan your bakery visit</h2>
+            <p>Get custom recommendations for all the things you're into with our product rankings.</p>
+            <Link to="/bakery-rankings" className="btn">View rankings</Link>
+          </div>
         </div>
-      </div>
+      )}
       
-      {/* Top bakeries section */}
+      {/* Results section (either search results or top bakeries) */}
       <div className="top-bakeries">
-        <h2>Explore Copenhagens most cozy bakeries</h2>
-        <p>Top four ranked bakeries, currently:</p>
+        <h2>
+          {isSearchActive 
+            ? "Search Results" 
+            : "Explore Copenhagens most cozy bakeries"}
+        </h2>
+        <p>
+          {isSearchActive 
+            ? `Found ${searchResults.length} bakeries matching your criteria` 
+            : "Top four ranked bakeries, currently:"}
+        </p>
         
-        {loading ? (
+        {isLoading ? (
           <div className="loading-container">
             <div className="loading-spinner"></div>
-            <p>Loading top bakeries...</p>
+            <p>Loading bakeries...</p>
           </div>
-        ) : topBakeries.length > 0 ? (
+        ) : displayItems.length > 0 ? (
           <div className="homepage-bakery-grid">
-            {topBakeries.map(bakery => (
+            {displayItems.map(bakery => (
               <Link 
                 to={`/bakery/${encodeURIComponent(formatBakeryNameForUrl(bakery.name))}`} 
                 key={bakery.id} 
@@ -181,8 +130,10 @@ const HomePage = () => {
           </div>
         ) : (
           <div className="no-bakeries-message">
-            <p>No bakeries available at the moment. Please check back later!</p>
-            <Link to="/bakery-rankings" className="btn">View All Bakeries</Link>
+            <p>No bakeries match your search criteria. Try adjusting your filters!</p>
+            <button className="btn" onClick={() => handleSearch([])}>
+              Reset Filters
+            </button>
           </div>
         )}
       </div>

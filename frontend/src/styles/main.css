@@ -41,3 +41,5 @@
 
 /* Import footer styles */
 @import 'footer.css';
+
+@import 'faceted-search.css';
