@@ -265,6 +265,9 @@ const FacetedSearch = ({ onSearch }) => {
         results = sortResults(results, filters.sort);
       }
 
+      // Only keep top 3 bakeries
+      results = results.slice(0, 3);
+
       // Update result count
       setResultCount(results.length);
       
@@ -448,7 +451,7 @@ const FacetedSearch = ({ onSearch }) => {
             onClick={handleSearchClick}
             disabled={isLoading || isSearching}
           >
-            {isSearching ? 'Searching...' : `Show ${resultCount} results`}
+            {isSearching ? 'Searching...' : `Show Top 3 Results`}
           </button>
         </div>
       </div>
