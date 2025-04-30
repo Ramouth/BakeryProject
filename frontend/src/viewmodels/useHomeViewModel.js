@@ -23,18 +23,30 @@ export const useHomeViewModel = () => {
         batch.map(async (bakery, index) => {
           try {
             const statsResponse = await apiClient.get(`/bakeries/${bakery.id}/stats`, true);
+            
+            // Explicitly store average_rating in a consistent place
+            let average_rating = 0;
+            if (statsResponse && typeof statsResponse.average_rating === 'number') {
+              average_rating = statsResponse.average_rating;
+            } else if (statsResponse && statsResponse.ratings && typeof statsResponse.ratings.overall === 'number') {
+              average_rating = statsResponse.ratings.overall;
+            }
+            
             result[i + index] = {
               ...bakery,
-              average_rating: statsResponse.average_rating || 0,
+              average_rating: average_rating, // Ensure this is stored consistently
               review_count: statsResponse.review_count || 0,
               ratings: statsResponse.ratings || {
-                overall: 0,
+                overall: average_rating, // Use the same value for consistency
                 service: 0,
                 price: 0,
                 atmosphere: 0,
                 location: 0
               }
             };
+            
+            // Debugging
+            console.log(`Bakery ${bakery.id} rating set to ${result[i + index].average_rating}`);
           } catch (error) {
             console.error(`Error fetching stats for bakery ${bakery.id}:`, error);
           }
@@ -137,13 +149,41 @@ export const useHomeViewModel = () => {
     
     const parts = [];
     if (bakery.streetName && bakery.zipCode) {
-      parts.push(`Located at ${bakery.streetName} ${bakery.streetNumber || ''} in ${bakery.zipCode}`);
+      // Add district info based on zip code
+      const districts = {
+        '1050': 'Inner City', 
+        '1060': 'København K',
+        '1100': 'København K',
+        '1150': 'København K',
+        '1200': 'København K',
+        '1300': 'København K',
+        '1400': 'København K',
+        '1500': 'København V',
+        '1600': 'København V',
+        '1700': 'København V',
+        '1800': 'Frederiksberg C',
+        '1850': 'Frederiksberg C',
+        '1900': 'Frederiksberg C',
+        '2000': 'Frederiksberg',
+        '2100': 'København Ø',
+        '2200': 'København N',
+        '2300': 'København S',
+        '2400': 'København NV',
+        '2450': 'København SV',
+        '2500': 'Valby',
+        '2700': 'Brønshøj',
+        '2720': 'Vanløse'
+      };
+      
+      const district = districts[bakery.zipCode] || 'Copenhagen';
+      parts.push(`Located at ${bakery.streetName} ${bakery.streetNumber || ''} in ${bakery.zipCode} ${district}`);
     }
     
     return parts.length > 0 ? parts.join('. ') : 'Delicious bakery in Copenhagen';
   };
 
   const getBakeryRating = (bakery) => {
+    // Fixed: Always use average_rating if available
     let rating = 0;
     
     if (typeof bakery.average_rating === 'number') {
