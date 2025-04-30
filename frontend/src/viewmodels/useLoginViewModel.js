@@ -11,7 +11,7 @@ export const useLoginViewModel = () => {
   
   useEffect(() => {
     if (currentUser && currentUser.isAdmin) {
-      navigate('/admin');
+      navigate('/admin-dashboard');
     }
   }, [currentUser, navigate]);
 
@@ -22,7 +22,7 @@ export const useLoginViewModel = () => {
       const user = await login(email, password);
       
       if (user && user.isAdmin) {
-        navigate('/admin');
+        navigate('/admin-dashboard');
       }
     } catch (err) {
       console.error('Login error:', err);
@@ -33,7 +33,7 @@ export const useLoginViewModel = () => {
     try {
       const user = await login('admin@crumbcompass.com', 'admin123');
       if (user && user.isAdmin) {
-        navigate('/admin');
+        navigate('/admin-dashboard');
       }
     } catch (err) {
       console.error('Mock login error:', err);
