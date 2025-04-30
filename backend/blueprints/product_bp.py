@@ -5,7 +5,7 @@ from services.product_service import ProductService
 from utils.caching import cache
 from flask import current_app as app
 from utils.caching import cache_key_with_query
-from utils.cors_helper import handle_preflight  # ✅ Added
+# Removed: from utils.cors_helper import handle_preflight
 
 # Create blueprint
 product_bp = Blueprint('product', __name__)
@@ -48,10 +48,8 @@ def get_product(product_id):
 @cache.cached(timeout=60)
 def get_product_stats(product_id):
     """Get statistics for a product including review averages"""
-    preflight_response = handle_preflight()
-    if preflight_response:
-        return preflight_response
-
+    # Removed preflight handling
+    
     try:
         stats = product_service.get_product_stats(product_id)
         return jsonify(stats), 200
