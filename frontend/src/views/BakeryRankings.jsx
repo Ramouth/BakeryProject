@@ -105,7 +105,7 @@ const BakeryRankings = () => {
                   <div className="bakery-meta">
                     <div className="bakery-rating">
                       <span className="rating-value">{getBakeryRating(bakery).toFixed(1)}</span>
-                      <span className="stars">★★★★★</span>
+                      <span className="cookie">🍪</span>
                       <span className="review-count">({bakery.review_count} reviews)</span>
                     </div>
                   </div>
