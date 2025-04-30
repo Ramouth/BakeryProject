@@ -4,20 +4,24 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 from flask_cors import CORS
 from datetime import timedelta
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Initialize Flask app
 app = Flask(__name__)
 
 # Configure JWT
-app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'your-secret-key-change-this-in-production')  # CHANGE THIS IN PRODUCTION!
+app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 jwt = JWTManager(app)
 
-# Configure CORS
-# For development, you might want to allow all origins, but in production, specify your domains
+# Configure CORS with environment variables
+allowed_origins = os.environ.get('ALLOWED_ORIGINS', 'http://localhost:3000').split(',')
 CORS(app, resources={
     r"/*": {
-        "origins": os.environ.get('ALLOWED_ORIGINS', 'http://localhost:3000').split(','),
+        "origins": allowed_origins,
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"]
     }
@@ -82,4 +86,6 @@ def admin_only():
     return jsonify({"message": "Admin access granted"}), 200
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Use environment variables for debug mode
+    debug_mode = os.environ.get('FLASK_ENV') == 'development'
+    app.run(debug=debug_mode)
