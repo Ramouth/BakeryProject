@@ -50,8 +50,14 @@ const BakeryRankings = () => {
     products: []
   };
 
+  // Convert backend rating (1-10) to display rating (0.5-5)
   const getBakeryRating = (bakery) => {
-    return bakery.average_rating || 0;
+    // Get the bakery's average rating or default to 0
+    const rating = bakery.average_rating || 0;
+    
+    // Divide by 2 to convert from 10-scale to 5-scale
+    // Backend consistently stores ratings on a 1-10 scale
+    return (rating / 2).toFixed(1);
   };
 
   // Format bakery name for URL
@@ -91,7 +97,7 @@ const BakeryRankings = () => {
                 <div className="bakery-image">
                   <div className="placeholder-image">
                     {bakery.name}
-                    {getBakeryRating(bakery) >= 4.7 && (
+                    {bakery.average_rating >= 9.4 && (
                       <div className="top-review-badge">TOP REVIEW</div>
                     )}
                   </div>
@@ -104,9 +110,9 @@ const BakeryRankings = () => {
                   </p>
                   <div className="bakery-meta">
                     <div className="bakery-rating">
-                      <span className="rating-value">{getBakeryRating(bakery).toFixed(1)}</span>
+                      <span className="rating-value">{getBakeryRating(bakery)}</span>
                       <span className="cookie">🍪</span>
-                      <span className="review-count">({bakery.review_count} reviews)</span>
+                      <span className="review-count">({bakery.review_count || 0} reviews)</span>
                     </div>
                   </div>
                 </div>
