@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import apiClient from '../services/api';
+import ProductCategories from '../models/ProductCategories';
 
 export const useProductRankingsViewModel = () => {
   const { categoryId, productId } = useParams();
@@ -12,22 +13,6 @@ export const useProductRankingsViewModel = () => {
   const [error, setError] = useState(null);
   const [allProducts, setAllProducts] = useState([]);
   const [bakeries, setBakeries] = useState({});
-
-  const productCategories = {
-    'danish': { name: 'Danish Products', filter: 'danish' },
-    'bread': { name: 'Breads', filter: 'bread' },
-    'viennoiserie': { name: 'Viennoiserie', filter: 'viennoiserie' },
-    'cakes': { name: 'Cakes & Tarts', filter: 'cakes' },
-    'specialty': { name: 'Specialty Items', filter: 'specialty' }
-  };
-
-  const defaultCategories = [
-    { id: 'danish', name: 'Danish Products' },
-    { id: 'bread', name: 'Breads' },
-    { id: 'viennoiserie', name: 'Viennoiserie' },
-    { id: 'cakes', name: 'Cakes & Tarts' },
-    { id: 'specialty', name: 'Specialty Items' }
-  ];
 
   const fetchAllProducts = async () => {
     try {
@@ -76,24 +61,45 @@ export const useProductRankingsViewModel = () => {
     return name.toLowerCase().replace(/[^a-z0-9]/g, '-');
   };
 
-  const organizeProductsByCategory = (products, category) => {
-    if (category && productCategories[category]) {
-      const categoryFilter = productCategories[category].filter;
+  const organizeProductsByCategory = (products, categoryIdParam) => {
+    // Get category data from our ProductCategories class
+    const allCategories = ProductCategories.getAllCategories();
+    
+    if (categoryIdParam && ProductCategories.getCategoryById(categoryIdParam)) {
+      // If a valid category ID is provided, filter products by that category
+      const categoryData = ProductCategories.getCategoryById(categoryIdParam);
+      const categoryFilter = categoryData.id;
+      
+      // Filter API products that match this category
       const categoryProducts = products.filter(
         product => product.category && product.category.toLowerCase().includes(categoryFilter)
       );
       
       const productTypeMap = {};
-      categoryProducts.forEach(product => {
-        const normalizedName = normalizeProductName(product.name);
+      
+      // Use the products from our ProductCategories class to create the product types
+      categoryData.products.forEach(definedProduct => {
+        const normalizedName = normalizeProductName(definedProduct.name);
+        
+        // Find matching products from the API data
+        const matchingProducts = categoryProducts.filter(apiProduct => 
+          apiProduct.name.toLowerCase().includes(definedProduct.name.toLowerCase())
+        );
+        
         if (!productTypeMap[normalizedName]) {
           productTypeMap[normalizedName] = {
             id: normalizedName,
-            name: product.name,
-            products: []
+            name: definedProduct.name,
+            description: definedProduct.description,
+            products: matchingProducts.length > 0 ? matchingProducts : [{ 
+              id: normalizedName,
+              name: definedProduct.name,
+              category: categoryData.id,
+              // Add default bakery ID for demonstration
+              bakeryId: 1 
+            }]
           };
         }
-        productTypeMap[normalizedName].products.push(product);
       });
       
       setProductTypes(Object.values(productTypeMap));
@@ -107,39 +113,32 @@ export const useProductRankingsViewModel = () => {
         generateProductRankings(firstProductType.id, Object.values(productTypeMap));
       }
     } else {
+      // If no category is selected, show featured products from each category
       const featuredProducts = [];
       
-      defaultCategories.forEach(category => {
-        const matchingProduct = products.find(
-          product => product.category && product.category.toLowerCase().includes(category.id)
-        );
-        
-        if (matchingProduct) {
+      allCategories.forEach(category => {
+        if (category.products && category.products.length > 0) {
+          const featuredProduct = category.products[0]; // Take the first product
+          
+          // Find matching products from the API data
+          const matchingProducts = products.filter(apiProduct => 
+            apiProduct.name.toLowerCase().includes(featuredProduct.name.toLowerCase())
+          );
+          
           featuredProducts.push({
-            id: normalizeProductName(matchingProduct.name),
-            name: matchingProduct.name,
-            products: [matchingProduct]
+            id: normalizeProductName(featuredProduct.name),
+            name: featuredProduct.name,
+            description: featuredProduct.description,
+            products: matchingProducts.length > 0 ? matchingProducts : [{ 
+              id: normalizeProductName(featuredProduct.name),
+              name: featuredProduct.name,
+              category: category.id,
+              // Add default bakery ID for demonstration
+              bakeryId: 1 
+            }]
           });
         }
       });
-      
-      if (featuredProducts.length < 5) {
-        const popularProducts = products
-          .filter(product => {
-            return !featuredProducts.some(fp => 
-              normalizeProductName(fp.name) === normalizeProductName(product.name)
-            );
-          })
-          .slice(0, 5 - featuredProducts.length);
-          
-        popularProducts.forEach(product => {
-          featuredProducts.push({
-            id: normalizeProductName(product.name),
-            name: product.name,
-            products: [product]
-          });
-        });
-      }
       
       setProductTypes(featuredProducts);
       
@@ -258,7 +257,8 @@ export const useProductRankingsViewModel = () => {
 
   const getCategoryName = () => {
     if (!categoryId) return 'All Categories';
-    return productCategories[categoryId]?.name || 'Products';
+    const category = ProductCategories.getCategoryById(categoryId);
+    return category ? category.name : 'Products';
   };
 
   useEffect(() => {
