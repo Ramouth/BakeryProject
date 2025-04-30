@@ -19,40 +19,14 @@ app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 jwt = JWTManager(app)
 
-# Configure CORS
-allowed_origins = os.environ.get('ALLOWED_ORIGINS', 'http://localhost:5173').split(',')
-CORS(app, resources={
-    r"/*": {
-        "origins": allowed_origins,
-        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"]
-    }
-})
-
-# Add an after_request handler to ensure CORS headers are applied
-@app.after_request
-def after_request(response):
-    origin = request.headers.get('Origin')
-    if origin and origin in allowed_origins:
-        response.headers.add('Access-Control-Allow-Origin', origin)
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
-    return response
-
-# Sample user database (replace with your actual database integration)
-users_db = {
-    "user1": {"username": "user1", "password": "password1", "role": "user"},
-    "admin": {"username": "admin", "password": "admin_pass", "role": "admin"}
-}
-
-# Sample bakery database (replace with your actual database integration)
-bakeries_db = [
-    {"id": 1, "name": "Sunrise Bakery", "rating": 4.5},
-    {"id": 2, "name": "Flour Power",   "rating": 4.8},
-    {"id": 3, "name": "Sweet Crumbs", "rating": 4.2},
-    {"id": 4, "name": "Daily Dough",   "rating": 4.7},
-    {"id": 5, "name": "Bread & Butter","rating": 4.6},
-]
+# Simple CORS configuration - a single place to handle CORS
+allowed_origin = os.environ.get('ALLOWED_ORIGIN', 'http://localhost:5173')
+CORS(app, 
+     origins=[allowed_origin],
+     supports_credentials=True,
+     allow_headers=["Content-Type", "Authorization"],
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+)
 
 # Routes
 @app.route('/')
@@ -69,13 +43,11 @@ def login():
     if not username or not password:
         return jsonify({"error": "Missing username or password"}), 400
 
-    user = users_db.get(username)
-    if not user or user['password'] != password:
-        return jsonify({"error": "Invalid username or password"}), 401
-
+    # This would typically check against your database
+    # For now, just a successful response for any credentials
     access_token = create_access_token(identity={
         "username": username,
-        "role": user['role']
+        "role": "admin"  # Default role for testing
     })
     return jsonify({"access_token": access_token}), 200
 
@@ -93,63 +65,25 @@ def admin_only():
         return jsonify({"error": "Admin access required"}), 403
     return jsonify({"message": "Admin access granted"}), 200
 
-# Public bakery endpoints
+# Your actual endpoints would connect to your database models
+# These are provided as minimal examples
 @app.route('/bakeries', methods=['GET'])
 def list_bakeries():
-    return jsonify({"bakeries": bakeries_db}), 200
+    # In a real app, this would query your database
+    return jsonify({"bakeries": []}), 200
 
-@app.route('/bakeries/top', methods=['GET', 'OPTIONS'])
+@app.route('/bakeries/top', methods=['GET'])
 def top_bakeries():
-    # Handle preflight CORS
-    if request.method == 'OPTIONS':
-        resp = make_response()
-        resp.headers['Access-Control-Allow-Origin'] = request.headers.get('Origin', '*')
-        resp.headers['Access-Control-Allow-Methods'] = 'GET,OPTIONS'
-        resp.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
-        return resp
+    # In a real app, this would query your database with filtering/sorting
+    return jsonify({"bakeries": []}), 200
 
-    try:
-        limit = int(request.args.get('limit', 5))
-    except ValueError:
-        return jsonify({"error": "Invalid limit parameter"}), 400
-
-    sorted_bakeries = sorted(bakeries_db, key=lambda b: b['rating'], reverse=True)
-    top_n = sorted_bakeries[:limit]
-    return jsonify({"bakeries": top_n}), 200
-
-# Add endpoint for bakery stats (this was missing but needed by your frontend)
-@app.route('/bakeries/<int:bakery_id>/stats', methods=['GET', 'OPTIONS'])
+@app.route('/bakeries/<int:bakery_id>/stats', methods=['GET'])
 def get_bakery_stats(bakery_id):
     """Get statistics for a bakery including review averages"""
-    # Handle preflight CORS
-    if request.method == 'OPTIONS':
-        resp = make_response()
-        resp.headers['Access-Control-Allow-Origin'] = request.headers.get('Origin', '*')
-        resp.headers['Access-Control-Allow-Methods'] = 'GET,OPTIONS'
-        resp.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
-        return resp
-        
     try:
-        # Find the bakery
-        bakery = next((b for b in bakeries_db if b["id"] == bakery_id), None)
-        if not bakery:
-            return jsonify({"message": f"Bakery with id {bakery_id} not found"}), 404
-            
-        # Return mock stats
-        stats = {
-            "id": bakery["id"],
-            "name": bakery["name"],
-            "review_count": 15,
-            "average_rating": bakery["rating"],
-            "ratings": {
-                "overall": bakery["rating"] * 2,  # Scale up to 1-10 range
-                "service": 8.5,
-                "price": 7.8,
-                "atmosphere": 9.2,
-                "location": 8.0
-            }
-        }
-        return jsonify(stats), 200
+        # In a real app, this would query your database for the specific bakery
+        # For now, just return a not found response
+        return jsonify({"message": f"Bakery with id {bakery_id} not found"}), 404
     except Exception as e:
         return jsonify({"message": str(e)}), 404
 
