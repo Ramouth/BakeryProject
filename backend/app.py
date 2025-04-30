@@ -20,7 +20,7 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 jwt = JWTManager(app)
 
 # Configure CORS
-allowed_origins = os.environ.get('ALLOWED_ORIGINS', 'http://localhost:3000').split(',')
+allowed_origins = os.environ.get('ALLOWED_ORIGINS', 'http://localhost:5173').split(',')
 CORS(app, resources={
     r"/*": {
         "origins": allowed_origins,
@@ -28,6 +28,16 @@ CORS(app, resources={
         "allow_headers": ["Content-Type", "Authorization"]
     }
 })
+
+# Add an after_request handler to ensure CORS headers are applied
+@app.after_request
+def after_request(response):
+    origin = request.headers.get('Origin')
+    if origin and origin in allowed_origins:
+        response.headers.add('Access-Control-Allow-Origin', origin)
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
+    return response
 
 # Sample user database (replace with your actual database integration)
 users_db = {
@@ -106,6 +116,42 @@ def top_bakeries():
     sorted_bakeries = sorted(bakeries_db, key=lambda b: b['rating'], reverse=True)
     top_n = sorted_bakeries[:limit]
     return jsonify({"bakeries": top_n}), 200
+
+# Add endpoint for bakery stats (this was missing but needed by your frontend)
+@app.route('/bakeries/<int:bakery_id>/stats', methods=['GET', 'OPTIONS'])
+def get_bakery_stats(bakery_id):
+    """Get statistics for a bakery including review averages"""
+    # Handle preflight CORS
+    if request.method == 'OPTIONS':
+        resp = make_response()
+        resp.headers['Access-Control-Allow-Origin'] = request.headers.get('Origin', '*')
+        resp.headers['Access-Control-Allow-Methods'] = 'GET,OPTIONS'
+        resp.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
+        return resp
+        
+    try:
+        # Find the bakery
+        bakery = next((b for b in bakeries_db if b["id"] == bakery_id), None)
+        if not bakery:
+            return jsonify({"message": f"Bakery with id {bakery_id} not found"}), 404
+            
+        # Return mock stats
+        stats = {
+            "id": bakery["id"],
+            "name": bakery["name"],
+            "review_count": 15,
+            "average_rating": bakery["rating"],
+            "ratings": {
+                "overall": bakery["rating"] * 2,  # Scale up to 1-10 range
+                "service": 8.5,
+                "price": 7.8,
+                "atmosphere": 9.2,
+                "location": 8.0
+            }
+        }
+        return jsonify(stats), 200
+    except Exception as e:
+        return jsonify({"message": str(e)}), 404
 
 if __name__ == '__main__':
     debug_mode = os.environ.get('FLASK_ENV') == 'development'
