@@ -8,6 +8,8 @@ const HomePage = () => {
   const {
     topBakeries,
     loading: topBakeriesLoading,
+    getBakeryDescription,
+    getBakeryRating,
   } = useHomeViewModel();
 
   const {
@@ -15,8 +17,6 @@ const HomePage = () => {
     isLoading: searchResultsLoading,
     handleSearch,
     formatBakeryNameForUrl,
-    getBakeryDescription,
-    getBakeryRating,
     resetFilters
   } = useFacetedSearchViewModel();
 
@@ -24,6 +24,21 @@ const HomePage = () => {
   const displayItems = searchResults.length > 0 ? searchResults : topBakeries;
   const isLoading = searchResultsLoading || topBakeriesLoading;
   const isSearchActive = searchResults.length > 0;
+
+  // Helper function to get proper bakery rating
+  const getDisplayRating = (bakery) => {
+    // Try to get rating from different possible sources
+    let rating = 0;
+    
+    if (typeof bakery.average_rating === 'number') {
+      rating = bakery.average_rating;
+    } else if (bakery.ratings && typeof bakery.ratings.overall === 'number') {
+      rating = bakery.ratings.overall;
+    }
+    
+    // Always divide by 2 to convert from 10-scale to 5-scale
+    return (rating / 2).toFixed(1);
+  };
 
   return (
     <div className="container">
@@ -134,7 +149,7 @@ const HomePage = () => {
                     boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
                     zIndex: 2
                   }}>
-                    {getBakeryRating(bakery)} 🍪
+                    {getDisplayRating(bakery)} 🍪
                   </div>
                 </div>
               </Link>

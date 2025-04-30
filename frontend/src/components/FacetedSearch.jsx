@@ -54,7 +54,7 @@ const FacetedSearch = ({ onSearch }) => {
         if (bakeryResponse.bakeries) {
           // Map Copenhagen postal codes to their districts
           const postalCodeMapping = {
-            '1050': 'Inner City',
+            '1050': 'København K',
             '1060': 'København K',
             '1100': 'København K',
             '1150': 'København K',
@@ -134,11 +134,18 @@ const FacetedSearch = ({ onSearch }) => {
           const filteredProducts = response.products
             .filter(product => product.category === selectedCategory);
 
-          // Create product options for dropdown
-          const productOptions = filteredProducts.map(product => ({
-            value: product.id.toString(),
-            label: product.name
-          }));
+          // Create product options for dropdown and ensure uniqueness by name
+          const productMap = new Map();
+          filteredProducts.forEach(product => {
+            if (!productMap.has(product.name)) {
+              productMap.set(product.name, {
+                value: product.id.toString(),
+                label: product.name
+              });
+            }
+          });
+
+          const productOptions = Array.from(productMap.values());
 
           setProducts([
             { value: "", label: "All Products" },
@@ -188,21 +195,32 @@ const FacetedSearch = ({ onSearch }) => {
       let results = bakeryResponse.bakeries || [];
 
       // Make sure each bakery has average_rating in the correct format
-      results = results.map(bakery => {
-        // Extract the average rating from bakery stats if available
-        let rating = 0;
-        if (typeof bakery.average_rating === 'number') {
-          rating = bakery.average_rating;
-        } else if (bakery.ratings && typeof bakery.ratings.overall === 'number') {
-          rating = bakery.ratings.overall;
+      results = await Promise.all(results.map(async (bakery) => {
+        // Try to fetch bakery stats to get the proper rating
+        try {
+          const statsResponse = await apiClient.get(`/bakeries/${bakery.id}/stats`, true);
+          
+          // Extract the average rating from bakery stats if available
+          let rating = 0;
+          if (statsResponse && typeof statsResponse.average_rating === 'number') {
+            rating = statsResponse.average_rating;
+          } else if (statsResponse && statsResponse.ratings && typeof statsResponse.ratings.overall === 'number') {
+            rating = statsResponse.ratings.overall;
+          }
+          
+          // Ensure it's consistently stored in average_rating
+          return {
+            ...bakery,
+            average_rating: rating
+          };
+        } catch (err) {
+          // If stats endpoint fails, use any existing rating or default to 0
+          return {
+            ...bakery,
+            average_rating: bakery.average_rating || 0
+          };
         }
-        
-        // Ensure it's consistently stored in average_rating
-        return {
-          ...bakery,
-          average_rating: rating
-        };
-      });
+      }));
 
       // Apply category filter
       if (filters.category) {
