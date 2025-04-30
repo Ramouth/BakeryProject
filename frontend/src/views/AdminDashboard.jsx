@@ -5,6 +5,7 @@ import AdminProductView from './admin/AdminProductView';
 import AdminUserView from './admin/AdminUserView';
 import AdminBakeryReviewView from './admin/AdminBakeryReviewView';
 import AdminProductReviewView from './admin/AdminProductReviewView';
+import AdminCategoriesManager from '../components/admin/AdminCategoriesManager';
 import Button from '../components/Button';
 
 const AdminHome = ({ stats, recentActivity, loading, formatDate }) => {
@@ -154,6 +155,11 @@ const Admin = () => {
                   Product Reviews
                 </NavLink>
               </li>
+              <li>
+                <NavLink to="/admin-dashboard/product-categories" className={({ isActive }) => isActive ? 'active' : ''}>
+                  Product Categories
+                </NavLink>
+              </li>
             </ul>
           </nav>
         </aside>
@@ -176,6 +182,7 @@ const Admin = () => {
             <Route path="users" element={<AdminUserView />} />
             <Route path="bakery-reviews" element={<AdminBakeryReviewView />} />
             <Route path="product-reviews" element={<AdminProductReviewView />} />
+            <Route path="product-categories" element={<AdminCategoriesManager />} />
           </Routes>
         </main>
       </div>

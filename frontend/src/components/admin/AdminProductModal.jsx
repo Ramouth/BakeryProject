@@ -1,124 +1,156 @@
-// src/components/admin/AdminProductModal.jsx
-import { useState, useEffect, useCallback } from "react";
-import PropTypes from "prop-types";
-import Button from "../Button";
+// frontend/src/components/admin/AdminProductModal.jsx
+import { useState, useEffect } from 'react';
+import Button from '../Button';
+import ProductCategories from '../../models/ProductCategories';
 
-const ProductForm = ({ product = {}, bakeries = [], onSubmit, onCancel, isSubmitting = false }) => {
+/**
+ * Admin form component for creating and editing products
+ * Uses the ProductCategories singleton for category and subcategory options
+ */
+const AdminProductForm = ({ product, bakeries, onSubmit, onCancel, isSubmitting }) => {
   const [formData, setFormData] = useState({
-    name: "",
-    bakeryId: "",
-    category: "",
-    imageUrl: ""
+    name: '',
+    bakeryId: '',
+    categoryId: '',
+    subcategoryId: '',
+    imageUrl: ''
   });
   const [errors, setErrors] = useState({});
-  const [touched, setTouched] = useState({});
+  const [categoryOptions, setCategoryOptions] = useState([]);
+  const [subcategoryOptions, setSubcategoryOptions] = useState([]);
 
-  // Initialize form with product data when provided
   useEffect(() => {
-    if (product && product.id) {
+    if (product) {
       setFormData({
-        name: product.name || "",
-        bakeryId: product.bakeryId || "",
-        category: product.category || "",
-        imageUrl: product.imageUrl || ""
+        name: product.name || '',
+        bakeryId: product.bakeryId || '',
+        categoryId: product.categoryId || '',
+        subcategoryId: product.subcategoryId || '',
+        imageUrl: product.imageUrl || '',
+        description: product.description || ''
       });
+      
+      // Load subcategory options for the product's category
+      if (product.categoryId) {
+        setSubcategoryOptions(ProductCategories.getSubcategoryOptions(product.categoryId));
+      }
     }
+    
+    // Get category options from ProductCategories class
+    setCategoryOptions(ProductCategories.getCategoryOptions());
   }, [product]);
 
-  // Form validation
   const validateForm = () => {
     const newErrors = {};
     
     if (!formData.name.trim()) {
-      newErrors.name = "Product name is required";
+      newErrors.name = 'Name is required';
     }
     
     if (!formData.bakeryId) {
-      newErrors.bakeryId = "Please select a bakery";
+      newErrors.bakeryId = 'Bakery is required';
     }
     
-    // Log validation state
-    console.log("Validating product form data:", formData);
-    console.log("Validation errors:", newErrors);
+    if (!formData.categoryId) {
+      newErrors.categoryId = 'Category is required';
+    }
+    
+    if (!formData.subcategoryId) {
+      newErrors.subcategoryId = 'Subcategory is required';
+    }
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle field change
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
     
-    setTouched(prev => ({
-      ...prev,
-      [name]: true
-    }));
+    // If changing category, update subcategory options
+    if (name === 'categoryId') {
+      setSubcategoryOptions(ProductCategories.getSubcategoryOptions(value));
+      
+      // Reset subcategory selection when category changes
+      setFormData(prev => ({
+        ...prev,
+        subcategoryId: ''
+      }));
+    }
     
-    // Clear error when field is changed
+    // Clear error for this field
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
-        [name]: null
+        [name]: undefined
       }));
     }
   };
 
-  // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (validateForm()) {
-      // Create data object for submission - using empty strings instead of null
-      const productData = {
-        name: formData.name.trim(),
-        bakeryId: formData.bakeryId,
-        category: formData.category.trim() || "",
-        imageUrl: formData.imageUrl.trim() || ""
-      };
-      
-      console.log("Submitting product data:", productData);
-      onSubmit(productData);
+    if (!validateForm()) {
+      return;
+    }
+    
+    try {
+      await onSubmit(formData);
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setErrors(prev => ({
+        ...prev,
+        form: error.message || 'Failed to save product'
+      }));
     }
   };
 
-  // Helper to check if product exists and has an id
-  const isEditing = product && product.id;
-
   return (
-    <form onSubmit={handleSubmit} className="form product-form">
+    <form onSubmit={handleSubmit} className="admin-form">
+      {errors.form && (
+        <div className="error-message" style={{ marginBottom: '15px' }}>
+          {errors.form}
+        </div>
+      )}
+      
       <div className="form-group">
-        <label htmlFor="name">Product Name: *</label>
+        <label htmlFor="name">Product Name*</label>
         <input
           type="text"
           id="name"
           name="name"
           value={formData.name}
           onChange={handleChange}
-          className={errors.name ? "error" : ""}
-          disabled={isSubmitting}
-          required
+          className={errors.name ? 'error' : ''}
         />
         {errors.name && <div className="error-text">{errors.name}</div>}
       </div>
       
       <div className="form-group">
-        <label htmlFor="bakeryId">Select Bakery: *</label>
+        <label htmlFor="description">Description</label>
+        <textarea
+          id="description"
+          name="description"
+          value={formData.description || ''}
+          onChange={handleChange}
+          rows="3"
+        />
+      </div>
+      
+      <div className="form-group">
+        <label htmlFor="bakeryId">Bakery*</label>
         <select
           id="bakeryId"
           name="bakeryId"
           value={formData.bakeryId}
           onChange={handleChange}
-          className={errors.bakeryId ? "error" : ""}
-          disabled={isSubmitting}
-          required
+          className={errors.bakeryId ? 'error' : ''}
         >
-          <option value="">--Select a Bakery--</option>
-          {bakeries.map((bakery) => (
+          <option value="">Select Bakery</option>
+          {bakeries.map(bakery => (
             <option key={bakery.id} value={bakery.id}>
               {bakery.name}
             </option>
@@ -128,60 +160,74 @@ const ProductForm = ({ product = {}, bakeries = [], onSubmit, onCancel, isSubmit
       </div>
       
       <div className="form-group">
-        <label htmlFor="category">Category:</label>
-        <input
-          type="text"
-          id="category"
-          name="category"
-          value={formData.category}
+        <label htmlFor="categoryId">Category*</label>
+        <select
+          id="categoryId"
+          name="categoryId"
+          value={formData.categoryId}
           onChange={handleChange}
-          placeholder="e.g., Danish, Bread, Cake"
-          disabled={isSubmitting}
-        />
+          className={errors.categoryId ? 'error' : ''}
+        >
+          <option value="">Select Category</option>
+          {categoryOptions.map(option => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+        {errors.categoryId && <div className="error-text">{errors.categoryId}</div>}
       </div>
       
       <div className="form-group">
-        <label htmlFor="imageUrl">Image URL:</label>
+        <label htmlFor="subcategoryId">Subcategory*</label>
+        <select
+          id="subcategoryId"
+          name="subcategoryId"
+          value={formData.subcategoryId}
+          onChange={handleChange}
+          className={errors.subcategoryId ? 'error' : ''}
+          disabled={!formData.categoryId} // Disable until category is selected
+        >
+          <option value="">Select Subcategory</option>
+          {subcategoryOptions.map(option => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+        {errors.subcategoryId && <div className="error-text">{errors.subcategoryId}</div>}
+      </div>
+      
+      <div className="form-group">
+        <label htmlFor="imageUrl">Image URL</label>
         <input
           type="text"
           id="imageUrl"
           name="imageUrl"
           value={formData.imageUrl}
           onChange={handleChange}
-          placeholder="https://example.com/image.jpg"
-          disabled={isSubmitting}
         />
       </div>
       
       <div className="form-actions">
-        <Button type="button" variant="secondary" onClick={onCancel} disabled={isSubmitting}>
+        <Button 
+          type="button" 
+          onClick={onCancel} 
+          variant="secondary"
+          disabled={isSubmitting}
+        >
           Cancel
         </Button>
-        <Button type="submit" variant="primary" disabled={isSubmitting}>
-          {isSubmitting ? "Saving..." : isEditing ? "Update" : "Create"}
+        <Button 
+          type="submit" 
+          variant="primary"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'Saving...' : (product ? 'Update Product' : 'Create Product')}
         </Button>
       </div>
     </form>
   );
 };
 
-ProductForm.propTypes = {
-  product: PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    name: PropTypes.string,
-    bakeryId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    category: PropTypes.string,
-    imageUrl: PropTypes.string
-  }),
-  bakeries: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-      name: PropTypes.string.isRequired
-    })
-  ),
-  onSubmit: PropTypes.func.isRequired,
-  onCancel: PropTypes.func.isRequired,
-  isSubmitting: PropTypes.bool
-};
-
-export default ProductForm;
+export default AdminProductForm;
