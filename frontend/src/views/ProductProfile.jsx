@@ -1,11 +1,15 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { useProductProfileViewModel } from '../viewmodels/useProductProfileViewModel';
+import ReviewModal from '../components/ReviewModal';
 import RatingBar from '../components/RatingComponent';
 import '../styles/product-profile.css';
 
 const ProductProfile = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  
   const {
     product,
     bakery,
@@ -18,6 +22,14 @@ const ProductProfile = () => {
     calculateRatings,
     formatDate
   } = useProductProfileViewModel(productId);
+
+  const openReviewModal = () => {
+    setIsReviewModalOpen(true);
+  };
+
+  const closeReviewModal = () => {
+    setIsReviewModalOpen(false);
+  };
 
   if (loading) {
     return (
@@ -111,7 +123,7 @@ const ProductProfile = () => {
                 ))}
               </div>
               
-              <button className="btn btn-primary">Write a Review</button>
+              <button className="btn btn-primary" onClick={openReviewModal}>Write a Review</button>
             </div>
             
             <div className="reviews-list">
@@ -200,6 +212,14 @@ const ProductProfile = () => {
           </div>
         )}
       </div>
+
+      {/* Review Modal */}
+      <ReviewModal 
+        isOpen={isReviewModalOpen} 
+        onClose={closeReviewModal}
+        initialReviewType="product"
+        initialSelectedItem={product}
+      />
     </div>
   );
 };
