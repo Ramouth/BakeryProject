@@ -1,5 +1,3 @@
-// frontend/src/models/ProductCategories.js
-
 /**
  * Singleton class for managing product categories throughout the application
  * Supports hierarchical structure with categories and subcategories
