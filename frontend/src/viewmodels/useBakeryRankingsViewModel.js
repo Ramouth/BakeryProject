@@ -5,11 +5,17 @@ import { Bakery } from '../models/Bakery';
 export const useBakeryRankingsViewModel = () => {
   const [bakeries, setBakeries] = useState([]);
   const [filteredBakeries, setFilteredBakeries] = useState([]);
+  const [displayedBakeries, setDisplayedBakeries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchType, setSearchType] = useState('bakeries');
   const [selectedZipCode, setSelectedZipCode] = useState('');
   const [selectedRating, setSelectedRating] = useState('');
+  
+  // Pagination state
+  const [pageSize, setPageSize] = useState(25);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
 
   // Fetch bakery stats in batches to avoid overwhelming the server
   const fetchBakeryStatsInBatches = useCallback(async (bakeries, batchSize = 5) => {
@@ -74,13 +80,33 @@ export const useBakeryRankingsViewModel = () => {
       
       setBakeries(sortedBakeries);
       setFilteredBakeries(sortedBakeries);
+      updateDisplayedBakeries(sortedBakeries, 1, pageSize);
     } catch (error) {
       console.error('Error loading bakeries:', error);
       setError('Failed to load bakeries. Please try again later.');
     } finally {
       setLoading(false);
     }
-  }, [fetchBakeryStatsInBatches]);
+  }, [fetchBakeryStatsInBatches, pageSize]);
+
+  const updateDisplayedBakeries = (allBakeries, page, size) => {
+    const startIndex = (page - 1) * size;
+    const endIndex = startIndex + size;
+    const slicedBakeries = allBakeries.slice(startIndex, endIndex);
+    
+    // Check if there are more bakeries to load
+    setHasMore(endIndex < allBakeries.length);
+    
+    // For the first page, replace the displayed bakeries
+    // For subsequent pages, append to the existing displayed bakeries
+    if (page === 1) {
+      setDisplayedBakeries(slicedBakeries);
+    } else {
+      setDisplayedBakeries(prev => [...prev, ...slicedBakeries]);
+    }
+    
+    setCurrentPage(page);
+  };
 
   const handleSearch = async (searchParams) => {
     const { zipCode, rating } = searchParams;
@@ -122,6 +148,8 @@ export const useBakeryRankingsViewModel = () => {
       });
       
       setFilteredBakeries(filteredResults);
+      // Reset to page 1 when searching
+      updateDisplayedBakeries(filteredResults, 1, pageSize);
     } catch (error) {
       console.error('Search error:', error);
       setError('Search failed. Please try again later.');
@@ -130,12 +158,21 @@ export const useBakeryRankingsViewModel = () => {
     }
   };
 
+  // Load more bakeries
+  const loadMore = () => {
+    if (hasMore && !loading) {
+      const nextPage = currentPage + 1;
+      updateDisplayedBakeries(filteredBakeries, nextPage, pageSize);
+    }
+  };
+
   useEffect(() => {
     fetchBakeries();
   }, [fetchBakeries]);
 
   return {
-    bakeries: filteredBakeries,
+    bakeries: displayedBakeries,
+    totalBakeries: filteredBakeries.length,
     loading,
     error,
     searchType,
@@ -144,6 +181,8 @@ export const useBakeryRankingsViewModel = () => {
     setSelectedZipCode,
     selectedRating,
     setSelectedRating,
-    handleSearch
+    handleSearch,
+    hasMore,
+    loadMore
   };
 };

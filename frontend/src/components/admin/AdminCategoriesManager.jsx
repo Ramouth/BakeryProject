@@ -1,4 +1,3 @@
-// frontend/src/components/admin/AdminCategoriesManager.jsx
 import { useState } from 'react';
 import useProductCategories from '../../hooks/useProductCategories';
 import Button from '../Button';

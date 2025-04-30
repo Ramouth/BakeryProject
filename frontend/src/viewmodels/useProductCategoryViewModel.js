@@ -15,18 +15,28 @@ export const useProductCategoryViewModel = () => {
         setLoading(true);
         
         // First check if products exist in the API
-        const response = await apiClient.get('/products', true);
+        const response = await apiClient.get('/products', true).catch(err => {
+          console.warn('Failed to fetch products from API, using local data instead', err);
+          return { products: [] };
+        });
         console.log(`Found ${response.products?.length || 0} products in the database`);
         
         // Get categories from our ProductCategories class
         const allCategories = ProductCategories.getAllCategories();
-        setCategories(allCategories);
-      } catch (error) {
-        console.error('Error fetching products:', error);
+        console.log('Categories loaded:', allCategories);
         
-        // Even if API request fails, still use the ProductCategories data
-        const allCategories = ProductCategories.getAllCategories();
-        setCategories(allCategories);
+        // Ensure each category has a subcategories array
+        const safeCategories = allCategories.map(category => ({
+          ...category,
+          subcategories: category.subcategories || []
+        }));
+        
+        setCategories(safeCategories);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        
+        // Even if there's an error, set an empty array as fallback
+        setCategories([]);
       } finally {
         setLoading(false);
       }
@@ -43,9 +53,11 @@ export const useProductCategoryViewModel = () => {
     setActiveCategory(null);
   };
 
-  const navigateToProduct = (categoryId, productId) => {
+  const navigateToProduct = (categoryId, subcategoryId, productId) => {
     if (productId) {
-      navigate(`/product-rankings/${categoryId}/${productId}`);
+      navigate(`/product/${productId}`);
+    } else if (subcategoryId) {
+      navigate(`/product-rankings/${categoryId}/${subcategoryId}`);
     } else {
       navigate(`/product-rankings/${categoryId}`);
     }

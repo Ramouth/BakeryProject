@@ -1,4 +1,3 @@
-// frontend/src/components/admin/AdminProductModal.jsx
 import { useState, useEffect } from 'react';
 import Button from '../Button';
 import ProductCategories from '../../models/ProductCategories';

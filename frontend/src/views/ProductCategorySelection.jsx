@@ -1,43 +1,60 @@
-// frontend/src/views/ProductCategorySelection.jsx
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useProductCategories from '../hooks/useProductCategories';
+import ProductCategories from '../models/ProductCategories';
 
 const ProductCategorySelection = () => {
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState(null);
-  const [activeSubcategory, setActiveSubcategory] = useState(null);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  
-  // Use our custom hook to access categories
-  const { categories } = useProductCategories();
+  const [isMobile, setIsMobile] = useState(false);
 
+  // Load categories directly from ProductCategories class
   useEffect(() => {
-    if (categories.length > 0) {
+    try {
+      const allCategories = ProductCategories.getAllCategories() || [];
+      console.log("Categories loaded:", allCategories);
+      setCategories(allCategories);
+    } catch (error) {
+      console.error("Error loading categories:", error);
+      setCategories([]);
+    } finally {
       setLoading(false);
     }
-  }, [categories]);
+  }, []);
 
-  const handleCategoryMouseEnter = (categoryId) => {
+  // Check for mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
+
+  const handleMouseEnter = (categoryId) => {
     setActiveCategory(categoryId);
-    setActiveSubcategory(null);
-  };
-
-  const handleSubcategoryMouseEnter = (subcategoryId) => {
-    setActiveSubcategory(subcategoryId);
   };
 
   const handleMouseLeave = () => {
     setActiveCategory(null);
-    setActiveSubcategory(null);
   };
 
-  const navigateToSubcategory = (categoryId, subcategoryId) => {
+  const handleCategoryClick = (categoryId, e) => {
+    if (isMobile) {
+      e.preventDefault();
+      setActiveCategory(activeCategory === categoryId ? null : categoryId);
+    }
+  };
+
+  const navigateToSubcategory = (categoryId, subcategoryId, e) => {
+    e.preventDefault();
     navigate(`/product-rankings/${categoryId}/${subcategoryId}`);
-  };
-
-  const navigateToProduct = (categoryId, subcategoryId, productId) => {
-    navigate(`/product/${productId}`);
   };
 
   return (
@@ -54,67 +71,42 @@ const ProductCategorySelection = () => {
         </div>
       ) : (
         <div className="category-grid">
-          {categories.map((category) => (
+          {Array.isArray(categories) && categories.map((category) => (
             <div 
               key={category.id}
               className={`category-card ${activeCategory === category.id ? 'active' : ''}`}
-              onMouseEnter={() => handleCategoryMouseEnter(category.id)}
-              onMouseLeave={handleMouseLeave}
+              onMouseEnter={!isMobile ? () => handleMouseEnter(category.id) : undefined}
+              onMouseLeave={!isMobile ? handleMouseLeave : undefined}
+              onClick={(e) => handleCategoryClick(category.id, e)}
             >
-              <div className="category-content" style={{ backgroundImage: "url('/src/assets/bread.jpeg')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
+              <div 
+                className="category-content" 
+                style={{ 
+                  backgroundImage: "url('/src/assets/bread.jpeg')", 
+                  backgroundSize: 'cover', 
+                  backgroundPosition: 'center' 
+                }}
+              >
                 <h2>{category.name}</h2>
-                {category.description && <p className="category-description">{category.description}</p>}
               </div>
 
-              {/* First-level overlay that shows subcategories */}
-              {activeCategory === category.id && !activeSubcategory && (
-                <div className="subcategory-overlay">
-                  <h3>Select a type</h3>
-                  <ul className="subcategory-list">
-                    {category.subcategories.map((subcategory) => (
-                      <li key={subcategory.id}>
-                        <a 
-                          href="#" 
-                          className="subcategory-link"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            navigateToSubcategory(category.id, subcategory.id);
-                          }}
-                          onMouseEnter={() => handleSubcategoryMouseEnter(subcategory.id)}
-                        >
-                          {subcategory.name}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Second-level overlay that shows products when a subcategory is hovered */}
-              {activeCategory === category.id && activeSubcategory && (
-                <div className="product-overlay">
-                  <h3>
-                    {category.subcategories.find(s => s.id === activeSubcategory)?.name}
-                  </h3>
-                  <ul className="product-list">
-                    {category.subcategories
-                      .find(s => s.id === activeSubcategory)
-                      ?.products.map((product) => (
-                        <li key={product.id}>
-                          <a 
-                            href="#" 
-                            onClick={(e) => {
-                              e.preventDefault();
-                              navigateToProduct(category.id, activeSubcategory, product.id);
-                            }}
-                          >
-                            {product.name}
-                          </a>
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-              )}
+              {/* Subcategory overlay (first level) */}
+              <div className="subcategory-overlay" style={{ display: activeCategory === category.id ? undefined : 'none' }}>
+                <h3>Select a type</h3>
+                <ul className="subcategory-list">
+                  {Array.isArray(category.subcategories) && category.subcategories.map((subcategory) => (
+                    <li key={subcategory.id}>
+                      <a 
+                        href="#" 
+                        className="subcategory-link"
+                        onClick={(e) => navigateToSubcategory(category.id, subcategory.id, e)}
+                      >
+                        {subcategory.name}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           ))}
         </div>
