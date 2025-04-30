@@ -1,14 +1,18 @@
 import { Link } from 'react-router-dom';
 import { useBakeryRankingsViewModel } from '../viewmodels/useBakeryRankingsViewModel';
 import SearchDropdown from '../components/SearchDropdown';
+import Button from '../components/Button';
 import '../styles/bakery-rankings.css';
 
 const BakeryRankings = () => {
   const {
     bakeries,
+    totalBakeries,
     loading,
     error,
-    handleSearch
+    handleSearch,
+    hasMore,
+    loadMore
   } = useBakeryRankingsViewModel();
 
   const searchTypes = [
@@ -79,46 +83,65 @@ const BakeryRankings = () => {
       />
 
       <div className="bakery-rankings">
-        {loading ? (
+        {loading && bakeries.length === 0 ? (
           <div className="loading">Loading bakeries...</div>
         ) : error ? (
           <div className="error-message">{error}</div>
         ) : bakeries.length === 0 ? (
           <div className="no-results">No bakeries found matching your criteria.</div>
         ) : (
-          <div className="bakery-list">
-            {bakeries.map((bakery, index) => (
-              <Link 
-                to={`/bakery/${encodeURIComponent(formatBakeryNameForUrl(bakery.name))}`} 
-                className="bakery-card" 
-                key={bakery.id}
-              >
-                <div className="bakery-rank">{index + 1}</div>
-                <div className="bakery-image">
-                  <div className="placeholder-image">
-                    {bakery.name}
-                    {bakery.average_rating >= 9.4 && (
-                      <div className="top-review-badge">TOP REVIEW</div>
-                    )}
-                  </div>
-                </div>
-                <div className="bakery-details">
-                  <h3>{bakery.name}</h3>
-                  <p className="bakery-location">{bakery.address}</p>
-                  <p className="bakery-description">
-                    {bakery.description || "A wonderful bakery in Copenhagen offering delicious products."}
-                  </p>
-                  <div className="bakery-meta">
-                    <div className="bakery-rating">
-                      <span className="rating-value">{getBakeryRating(bakery)}</span>
-                      <span className="cookie">🍪</span>
-                      <span className="review-count">({bakery.review_count || 0} reviews)</span>
+          <>
+            <div className="bakery-count-info">
+              Showing {bakeries.length} of {totalBakeries} bakeries
+            </div>
+            
+            <div className="bakery-list">
+              {bakeries.map((bakery, index) => (
+                <Link 
+                  to={`/bakery/${encodeURIComponent(formatBakeryNameForUrl(bakery.name))}`} 
+                  className="bakery-card" 
+                  key={bakery.id}
+                >
+                  <div className="bakery-rank">{index + 1}</div>
+                  <div className="bakery-image">
+                    <div className="placeholder-image">
+                      {bakery.name}
+                      {bakery.average_rating >= 9.4 && (
+                        <div className="top-review-badge">TOP REVIEW</div>
+                      )}
                     </div>
                   </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+                  <div className="bakery-details">
+                    <h3>{bakery.name}</h3>
+                    <p className="bakery-location">{bakery.address}</p>
+                    <p className="bakery-description">
+                      {bakery.description || "A wonderful bakery in Copenhagen offering delicious products."}
+                    </p>
+                    <div className="bakery-meta">
+                      <div className="bakery-rating">
+                        <span className="rating-value">{getBakeryRating(bakery)}</span>
+                        <span className="cookie">🍪</span>
+                        <span className="review-count">({bakery.review_count || 0} reviews)</span>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            
+            {hasMore && (
+              <div className="load-more-container">
+                <Button 
+                  onClick={loadMore} 
+                  disabled={loading}
+                  variant="secondary"
+                  className="load-more-button"
+                >
+                  {loading ? 'Loading...' : 'Load More Bakeries'}
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
