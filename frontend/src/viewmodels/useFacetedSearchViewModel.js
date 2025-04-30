@@ -34,8 +34,46 @@ export const useFacetedSearchViewModel = () => {
           apiClient.get('/products', true)
         ]);
         
-        // Set initial search results
-        setSearchResults(bakeryResponse.bakeries || []);
+        // Process bakeries to ensure they have proper rating values
+        let bakeries = bakeryResponse.bakeries || [];
+        
+        // Make sure each bakery has average_rating in the correct format
+        bakeries = await Promise.all(bakeries.map(async (bakery) => {
+          try {
+            // Try to fetch bakery stats to get the proper rating
+            const statsResponse = await apiClient.get(`/bakeries/${bakery.id}/stats`, true);
+            
+            // Extract the average rating from bakery stats if available
+            let rating = 0;
+            if (statsResponse && typeof statsResponse.average_rating === 'number') {
+              rating = statsResponse.average_rating;
+            } else if (statsResponse && statsResponse.ratings && typeof statsResponse.ratings.overall === 'number') {
+              rating = statsResponse.ratings.overall;
+            }
+            
+            // Ensure it's consistently stored in average_rating
+            return {
+              ...bakery,
+              average_rating: rating
+            };
+          } catch (err) {
+            // If stats endpoint fails, use any existing rating or default to 0
+            return {
+              ...bakery,
+              average_rating: bakery.average_rating || 0
+            };
+          }
+        }));
+        
+        // Sort bakeries by rating (highest first)
+        bakeries = bakeries.sort((a, b) => {
+          const aRating = a.average_rating || 0;
+          const bRating = b.average_rating || 0;
+          return bRating - aRating;
+        });
+        
+        // Only show top 3 bakeries
+        setSearchResults(bakeries.slice(0, 3));
         
         // Extract categories from products
         if (productResponse.products) {
@@ -74,7 +112,8 @@ export const useFacetedSearchViewModel = () => {
 
   // Handle search results from faceted search component
   const handleSearch = useCallback((results) => {
-    setSearchResults(results);
+    // Limit search results to top 3 bakeries
+    setSearchResults(results.slice(0, 3));
     
     // Update applied filters based on current search
     // This would be more complex in a real app, extracting the filters from the search
@@ -91,18 +130,56 @@ export const useFacetedSearchViewModel = () => {
       sort: 'rating'
     });
     
-    // Reload all results
+    // Reload all top 3 results
     loadAllResults();
   }, []);
 
-  // Load all results without filters
+  // Load all results without filters, limited to top 3
   const loadAllResults = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     
     try {
       const response = await apiClient.get('/bakeries', true);
-      setSearchResults(response.bakeries || []);
+      let bakeries = response.bakeries || [];
+      
+      // Process bakeries to ensure they have proper rating values
+      bakeries = await Promise.all(bakeries.map(async (bakery) => {
+        try {
+          // Try to fetch bakery stats to get the proper rating
+          const statsResponse = await apiClient.get(`/bakeries/${bakery.id}/stats`, true);
+          
+          // Extract the average rating from bakery stats if available
+          let rating = 0;
+          if (statsResponse && typeof statsResponse.average_rating === 'number') {
+            rating = statsResponse.average_rating;
+          } else if (statsResponse && statsResponse.ratings && typeof statsResponse.ratings.overall === 'number') {
+            rating = statsResponse.ratings.overall;
+          }
+          
+          // Ensure it's consistently stored in average_rating
+          return {
+            ...bakery,
+            average_rating: rating
+          };
+        } catch (err) {
+          // If stats endpoint fails, use any existing rating or default to 0
+          return {
+            ...bakery,
+            average_rating: bakery.average_rating || 0
+          };
+        }
+      }));
+      
+      // Sort bakeries by rating (highest first)
+      bakeries = bakeries.sort((a, b) => {
+        const aRating = a.average_rating || 0;
+        const bRating = b.average_rating || 0;
+        return bRating - aRating;
+      });
+      
+      // Only return top 3 bakeries
+      setSearchResults(bakeries.slice(0, 3));
     } catch (err) {
       console.error('Error loading results:', err);
       setError('Failed to load results. Please try again.');
@@ -117,7 +194,7 @@ export const useFacetedSearchViewModel = () => {
     return name.toLowerCase().replace(/\s+/g, '-');
   }, []);
 
-  // Get bakery rating
+  // Get bakery rating - consistent with BakeryRankings
   const getBakeryRating = useCallback((bakery) => {
     if (!bakery) return 0;
     
@@ -147,37 +224,6 @@ export const useFacetedSearchViewModel = () => {
     return parts.length > 0 ? parts.join('. ') : 'Delicious bakery in Copenhagen';
   }, []);
 
-  // Filter search results by category
-  const filterByCategory = useCallback((categoryId) => {
-    setAppliedFilters(prev => ({
-      ...prev,
-      category: categoryId
-    }));
-    
-    // In a real app, you would call an API with the filter
-    // Here we'll simulate by updating the appliedFilters and triggering a search
-  }, []);
-
-  // Filter search results by price range
-  const filterByPriceRange = useCallback((priceRangeId) => {
-    setAppliedFilters(prev => ({
-      ...prev,
-      priceRange: priceRangeId
-    }));
-    
-    // In a real app, you would call an API with the filter
-  }, []);
-
-  // Filter search results by rating
-  const filterByRating = useCallback((ratingValue) => {
-    setAppliedFilters(prev => ({
-      ...prev,
-      rating: ratingValue
-    }));
-    
-    // In a real app, you would call an API with the filter
-  }, []);
-
   return {
     searchResults,
     isLoading,
@@ -189,9 +235,6 @@ export const useFacetedSearchViewModel = () => {
     availableRatings,
     handleSearch,
     resetFilters,
-    filterByCategory,
-    filterByPriceRange,
-    filterByRating,
     formatBakeryNameForUrl,
     getBakeryRating,
     getBakeryDescription
