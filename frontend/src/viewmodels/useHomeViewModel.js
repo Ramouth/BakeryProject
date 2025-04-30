@@ -51,15 +51,67 @@ export const useHomeViewModel = () => {
       const response = await apiClient.get('/bakeries/top?limit=4', true);
       
       if (response && response.bakeries && response.bakeries.length > 0) {
-        const bakeriesWithStats = await fetchBakeryStatsInBatches(response.bakeries);
+        // Fetch stats for all bakeries
+        let bakeriesWithStats = await fetchBakeryStatsInBatches(response.bakeries);
+        
+        // Sort by average rating (highest first)
+        bakeriesWithStats = bakeriesWithStats.sort((a, b) => {
+          const ratingA = a.average_rating || 0;
+          const ratingB = b.average_rating || 0;
+          return ratingB - ratingA;
+        });
+        
         setTopBakeries(bakeriesWithStats);
       } else {
-        setTopBakeries([]);
+        // If there's no data from /bakeries/top endpoint, fetch all bakeries
+        try {
+          const allBakeriesResponse = await apiClient.get('/bakeries', true);
+          if (allBakeriesResponse && allBakeriesResponse.bakeries && allBakeriesResponse.bakeries.length > 0) {
+            // Fetch stats for all bakeries
+            let bakeriesWithStats = await fetchBakeryStatsInBatches(allBakeriesResponse.bakeries);
+            
+            // Sort by average rating (highest first)
+            bakeriesWithStats = bakeriesWithStats.sort((a, b) => {
+              const ratingA = a.average_rating || 0;
+              const ratingB = b.average_rating || 0;
+              return ratingB - ratingA;
+            });
+            
+            // Take only top 4
+            setTopBakeries(bakeriesWithStats.slice(0, 4));
+          } else {
+            setTopBakeries([]);
+          }
+        } catch (error) {
+          console.error('Error fetching all bakeries:', error);
+          setTopBakeries([]);
+        }
       }
     } catch (error) {
       console.error('Error fetching top bakeries:', error);
       showError('Unable to load top bakeries');
-      setTopBakeries([]);
+      
+      // Attempt to fetch all bakeries as a fallback
+      try {
+        const allBakeriesResponse = await apiClient.get('/bakeries', true);
+        if (allBakeriesResponse && allBakeriesResponse.bakeries && allBakeriesResponse.bakeries.length > 0) {
+          let bakeriesWithStats = await fetchBakeryStatsInBatches(allBakeriesResponse.bakeries);
+          
+          // Sort and take top 4
+          bakeriesWithStats = bakeriesWithStats.sort((a, b) => {
+            const ratingA = a.average_rating || 0;
+            const ratingB = b.average_rating || 0;
+            return ratingB - ratingA;
+          }).slice(0, 4);
+          
+          setTopBakeries(bakeriesWithStats);
+        } else {
+          setTopBakeries([]);
+        }
+      } catch (err) {
+        console.error('Error fetching fallback bakeries:', err);
+        setTopBakeries([]);
+      }
     } finally {
       setLoading(false);
     }
@@ -100,8 +152,11 @@ export const useHomeViewModel = () => {
       rating = bakery.ratings.overall;
     }
     
-    // Always divide by 2 to convert from 10-scale to 5-scale
-    return (rating / 2).toFixed(1);
+    // ALWAYS divide by 2 to convert from 10-scale to 5-scale
+    // Backend consistently stores ratings on a 1-10 scale
+    rating = rating / 2;
+    
+    return rating.toFixed(1);
   };
 
   return {
