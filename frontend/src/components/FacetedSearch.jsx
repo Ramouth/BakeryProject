@@ -1,5 +1,5 @@
 // src/components/FacetedSearch.jsx
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import apiClient from '../services/api';
 import '../styles/faceted-search.css';
