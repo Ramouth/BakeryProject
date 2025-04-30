@@ -1,59 +1,85 @@
-# backend/app.py
-from flask import Flask, request
+# app.py
+from flask import Flask, jsonify, request
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from flask_cors import CORS
-from config import Config, DevelopmentConfig, ProductionConfig
-from models import db
-from schemas import ma
-from utils.caching import cache, configure_cache
-import logging
+from datetime import timedelta
+import os
 
-# Import blueprints
-from blueprints.bakery_bp import bakery_bp
-from blueprints.product_bp import product_bp
-from blueprints.review_bp import bakery_review_bp, product_review_bp
-from blueprints.user_bp import user_bp
-from blueprints.auth_bp import auth_bp
+# Initialize Flask app
+app = Flask(__name__)
 
-def create_app(config_class=DevelopmentConfig):
-    """Create and configure the Flask application"""
-    app = Flask(__name__)
-    app.config.from_object(config_class)
+# Configure JWT
+app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'your-secret-key-change-this-in-production')  # CHANGE THIS IN PRODUCTION!
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
+jwt = JWTManager(app)
 
-    app.url_map.strict_slashes = False
+# Configure CORS
+# For development, you might want to allow all origins, but in production, specify your domains
+CORS(app, resources={
+    r"/*": {
+        "origins": os.environ.get('ALLOWED_ORIGINS', 'http://localhost:3000').split(','),
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
 
-    @app.before_request
-    def log_request_info():
-        app.logger.debug('Headers: %s', request.headers)
-        app.logger.debug('Method: %s', request.method)
-    
-    # Initialize extensions
-    db.init_app(app)
-    ma.init_app(app)
-    CORS(app, resources={
-        r"/*": {
-            "origins": ["http://localhost:5173"],
-            "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-            "allow_headers": ["Content-Type", "Authorization", "Access-Control-Allow-Origin"],
-            "supports_credentials": True
-        }
+# Sample user database (replace with your actual database integration)
+users_db = {
+    "user1": {
+        "username": "user1",
+        "password": "password1",  # In production, use hashed passwords!
+        "role": "user"
+    },
+    "admin": {
+        "username": "admin",
+        "password": "admin_pass",  # In production, use hashed passwords!
+        "role": "admin"
+    }
+}
+
+# Routes
+@app.route('/')
+def index():
+    return jsonify({"message": "Welcome to the Flask JWT Auth API"})
+
+@app.route('/login', methods=['POST'])
+def login():
+    if not request.is_json:
+        return jsonify({"error": "Missing JSON in request"}), 400
+
+    username = request.json.get('username', None)
+    password = request.json.get('password', None)
+
+    if not username or not password:
+        return jsonify({"error": "Missing username or password"}), 400
+
+    user = users_db.get(username, None)
+    if not user or user['password'] != password:  # In production, check hashed passwords!
+        return jsonify({"error": "Invalid username or password"}), 401
+
+    # Create JWT token
+    access_token = create_access_token(identity={
+        "username": username,
+        "role": user['role']
     })
-    # Configure caching
-    configure_cache(app)
     
-    # Register blueprints
-    app.register_blueprint(bakery_bp, url_prefix='/bakeries')
-    app.register_blueprint(product_bp, url_prefix='/products') 
-    app.register_blueprint(bakery_review_bp, url_prefix='/bakeryreviews')
-    app.register_blueprint(product_review_bp, url_prefix='/productreviews') 
-    app.register_blueprint(user_bp, url_prefix='/users') 
-    app.register_blueprint(auth_bp, url_prefix='/auth') 
+    return jsonify({"access_token": access_token}), 200
+
+@app.route('/protected', methods=['GET'])
+@jwt_required()
+def protected():
+    # Access the identity of the current user
+    current_user = get_jwt_identity()
+    return jsonify({"logged_in_as": current_user}), 200
+
+@app.route('/admin', methods=['GET'])
+@jwt_required()
+def admin_only():
+    current_user = get_jwt_identity()
+    if current_user.get('role') != 'admin':
+        return jsonify({"error": "Admin access required"}), 403
     
-    # Create all database tables
-    with app.app_context():
-        db.create_all()
-    
-    return app
+    return jsonify({"message": "Admin access granted"}), 200
 
 if __name__ == '__main__':
-    app = create_app()
     app.run(debug=True)
