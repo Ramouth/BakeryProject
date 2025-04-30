@@ -7,16 +7,21 @@ import { useNotification } from '../store/NotificationContext';
 import { useUser } from '../store/UserContext';
 import apiClient from '../services/api';
 
-const ReviewModal = ({ isOpen, onClose }) => {
+const ReviewModal = ({ 
+  isOpen, 
+  onClose, 
+  initialReviewType = 'bakery',
+  initialSelectedItem = null
+}) => {
   const { showSuccess, showError } = useNotification();
   const { currentUser } = useUser();
   
   // State for form inputs and UI control
-  const [reviewType, setReviewType] = useState('bakery'); // 'bakery' or 'product'
+  const [reviewType, setReviewType] = useState(initialReviewType); // 'bakery' or 'product'
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(initialSelectedItem);
   const [hasSearched, setHasSearched] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -35,18 +40,36 @@ const ReviewModal = ({ isOpen, onClose }) => {
   });
   const [comments, setComments] = useState('');
   
-  // Reset state when modal is opened
+  // Reset state when modal is opened or when initialSelectedItem changes
   useEffect(() => {
     if (isOpen) {
-      resetForm();
+      // Keep the initial review type if provided
+      setReviewType(initialReviewType);
+      
+      // If an initial item is provided, use it
+      if (initialSelectedItem) {
+        setSelectedItem(initialSelectedItem);
+        
+        // Set the bakery name for search if it's a bakery
+        if (initialReviewType === 'bakery' && initialSelectedItem.name) {
+          setSearchTerm(initialSelectedItem.name);
+        } 
+        // Set the product name for search if it's a product
+        else if (initialReviewType === 'product' && initialSelectedItem.name) {
+          setSearchTerm(initialSelectedItem.name);
+        }
+      } else {
+        // Reset everything if no initial item is provided
+        resetForm();
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, initialReviewType, initialSelectedItem]);
   
   const resetForm = () => {
-    setReviewType('bakery');
+    setReviewType(initialReviewType || 'bakery');
     setSearchTerm('');
     setSearchResults([]);
-    setSelectedItem(null);
+    setSelectedItem(initialSelectedItem || null);
     setHasSearched(false);
     setOverallRating(0);
     setRatings({
@@ -121,6 +144,14 @@ const ReviewModal = ({ isOpen, onClose }) => {
       }
       
       setSearchResults(results);
+      
+      // If we have an initialSelectedItem and it matches one of the search results, select it
+      if (initialSelectedItem) {
+        const matchingResult = results.find(result => result.id === initialSelectedItem.id);
+        if (matchingResult) {
+          setSelectedItem(matchingResult);
+        }
+      }
     } catch (error) {
       console.error('Search error:', error);
       showError(`Error searching for ${reviewType === 'bakery' ? 'bakeries' : 'products'}`);
@@ -161,7 +192,7 @@ const ReviewModal = ({ isOpen, onClose }) => {
       let reviewData = {
         review: comments || `Review for ${selectedItem.name}`,
         overallRating: overallRating,
-        userId: null // Always set userId to null for now
+        userId: currentUser?.id || null // Use the user's ID if logged in, null otherwise
       };
       
       if (reviewType === 'bakery') {
@@ -268,67 +299,69 @@ const ReviewModal = ({ isOpen, onClose }) => {
           </div>
         </div>
         
-        {/* Search Section */}
-        <div className="search-section">
-          <h3>Find a {reviewType === 'bakery' ? 'Bakery' : 'Product'}</h3>
-          <div className="search-input-group">
-            <input 
-              type="text" 
-              value={searchTerm} 
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder={`Enter ${reviewType} name`}
-              className="search-input"
-              onKeyPress={(e) => {
-                if (e.key === 'Enter') {
-                  handleSearch();
-                }
-              }}
-            />
-            <Button 
-              onClick={handleSearch}
-              disabled={searchTerm.trim().length < 2 || isSearching}
-            >
-              {isSearching ? 'Searching...' : 'Search'}
-            </Button>
-          </div>
-          
-          {isSearching ? (
-            <div className="search-status">Searching...</div>
-          ) : hasSearched && searchResults.length === 0 ? (
-            <div className="search-status">No results found</div>
-          ) : null}
-          
-          {searchResults.length > 0 && (
-            <div className="search-results">
-              {searchResults.map(item => (
-                <div 
-                  key={item.id} 
-                  className={`search-result-item ${selectedItem && selectedItem.id === item.id ? 'selected' : ''}`}
-                  onClick={() => setSelectedItem(item)}
-                >
-                  <div className="result-item-name">{item.name}</div>
-                  <div className="result-item-details">
-                    {reviewType === 'bakery' ? (
-                      <>
-                        {item.streetName && `${item.streetName} ${item.streetNumber || ''}`}
-                        {item.zipCode && (item.streetName ? `, ${item.zipCode}` : item.zipCode)}
-                      </>
-                    ) : (
-                      <>
-                        <div className="bakery-name">Bakery: {getBakeryName(item)}</div>
-                        {getBakeryAddress(item) && (
-                          <div className="bakery-address">
-                            {getBakeryAddress(item)}
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </div>
-                </div>
-              ))}
+        {/* Search Section - Only shown if no initialSelectedItem or if the user changed the review type */}
+        {(!selectedItem || (initialSelectedItem && initialSelectedItem.id !== selectedItem?.id)) && (
+          <div className="search-section">
+            <h3>Find a {reviewType === 'bakery' ? 'Bakery' : 'Product'}</h3>
+            <div className="search-input-group">
+              <input 
+                type="text" 
+                value={searchTerm} 
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder={`Enter ${reviewType} name`}
+                className="search-input"
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearch();
+                  }
+                }}
+              />
+              <Button 
+                onClick={handleSearch}
+                disabled={searchTerm.trim().length < 2 || isSearching}
+              >
+                {isSearching ? 'Searching...' : 'Search'}
+              </Button>
             </div>
-          )}
-        </div>
+            
+            {isSearching ? (
+              <div className="search-status">Searching...</div>
+            ) : hasSearched && searchResults.length === 0 ? (
+              <div className="search-status">No results found</div>
+            ) : null}
+            
+            {searchResults.length > 0 && (
+              <div className="search-results">
+                {searchResults.map(item => (
+                  <div 
+                    key={item.id} 
+                    className={`search-result-item ${selectedItem && selectedItem.id === item.id ? 'selected' : ''}`}
+                    onClick={() => setSelectedItem(item)}
+                  >
+                    <div className="result-item-name">{item.name}</div>
+                    <div className="result-item-details">
+                      {reviewType === 'bakery' ? (
+                        <>
+                          {item.streetName && `${item.streetName} ${item.streetNumber || ''}`}
+                          {item.zipCode && (item.streetName ? `, ${item.zipCode}` : item.zipCode)}
+                        </>
+                      ) : (
+                        <>
+                          <div className="bakery-name">Bakery: {getBakeryName(item)}</div>
+                          {getBakeryAddress(item) && (
+                            <div className="bakery-address">
+                              {getBakeryAddress(item)}
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
         
         {/* Rating Section - only shown when an item is selected */}
         {selectedItem && (

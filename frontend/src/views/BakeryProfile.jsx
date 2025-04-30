@@ -1,7 +1,9 @@
+// Update the BakeryProfile.jsx file to add review functionality
 import { useParams, Link } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useBakeryProfileViewModel } from '../viewmodels/useBakeryProfileViewModel';
 import CroissantRating from '../components/CroissantRatingComponent';
+import ReviewModal from '../components/ReviewModal';
 import bakeryLogo from '../assets/bageri-logo.jpeg';
 import bakeryHeader from '../assets/bageri.jpeg';
 import '../styles/bakery-profile.css';
@@ -9,6 +11,7 @@ import apiClient from '../services/api';
 
 const BakeryProfile = () => {
   const { bakeryName } = useParams();
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   
   // Clear relevant cache when component mounts or bakeryName changes
   useEffect(() => {
@@ -39,6 +42,14 @@ const BakeryProfile = () => {
     getTopRatedProducts,
     formatDate
   } = useBakeryProfileViewModel(bakeryName);
+
+  const openReviewModal = () => {
+    setIsReviewModalOpen(true);
+  };
+
+  const closeReviewModal = () => {
+    setIsReviewModalOpen(false);
+  };
 
   if (loading) {
     return (
@@ -141,7 +152,7 @@ const BakeryProfile = () => {
           </div>
           
           <div className="bakery-actions">
-            <button className="btn btn-primary">Write a Review</button>
+            <button className="btn btn-primary" onClick={openReviewModal}>Write a Review</button>
             <button className="btn btn-secondary">Share</button>
           </div>
         </div>
@@ -269,7 +280,7 @@ const BakeryProfile = () => {
                   <span className="total-reviews">{reviewCount} reviews</span>
                 </div>
                 
-                <button className="btn btn-primary">Write a Review</button>
+                <button className="btn btn-primary" onClick={openReviewModal}>Write a Review</button>
               </div>
               
               <div className="reviews-list">
@@ -300,6 +311,14 @@ const BakeryProfile = () => {
           )}
         </div>
       </div>
+
+      {/* Review Modal */}
+      <ReviewModal 
+        isOpen={isReviewModalOpen} 
+        onClose={closeReviewModal}
+        initialReviewType="bakery"
+        initialSelectedItem={bakery}
+      />
     </div>
   );
 };
