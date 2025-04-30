@@ -9,7 +9,6 @@ const FacetedSearch = ({ onSearch }) => {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [locations, setLocations] = useState([]);
-  const [priceRanges, setPriceRanges] = useState([]);
   const [ratingOptions, setRatingOptions] = useState([]);
   const [sortOptions] = useState([
     { value: 'rating', label: 'Highest Rated' },
@@ -21,7 +20,6 @@ const FacetedSearch = ({ onSearch }) => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedProduct, setSelectedProduct] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
-  const [selectedPriceRange, setSelectedPriceRange] = useState("");
   const [selectedRating, setSelectedRating] = useState("");
   const [selectedSort, setSelectedSort] = useState("rating");
   
@@ -54,42 +52,55 @@ const FacetedSearch = ({ onSearch }) => {
 
         // Process locations (using zipCodes from bakeries)
         if (bakeryResponse.bakeries) {
+          // Map Copenhagen postal codes to their districts
+          const postalCodeMapping = {
+            '1050': 'Inner City',
+            '1060': 'København K',
+            '1100': 'København K',
+            '1150': 'København K',
+            '1200': 'København K',
+            '1300': 'København K',
+            '1400': 'København K',
+            '1500': 'København V',
+            '1600': 'København V',
+            '1700': 'København V',
+            '1800': 'Frederiksberg C',
+            '1850': 'Frederiksberg C',
+            '1900': 'Frederiksberg C',
+            '2000': 'Frederiksberg',
+            '2100': 'København Ø',
+            '2200': 'København N',
+            '2300': 'København S',
+            '2400': 'København NV',
+            '2450': 'København SV',
+            '2500': 'Valby',
+            '2700': 'Brønshøj',
+            '2720': 'Vanløse',
+            '2740': 'Skovlunde',
+            '2750': 'Ballerup'
+          };
+          
           const uniqueLocations = [...new Set(bakeryResponse.bakeries
             .map(bakery => bakery.zipCode)
             .filter(Boolean))]
-            .map(zipCode => ({ value: zipCode, label: `${zipCode} Copenhagen` }));
+            .map(zipCode => {
+              const district = postalCodeMapping[zipCode] || 'Copenhagen';
+              return { 
+                value: zipCode, 
+                label: `${zipCode} - ${district}` 
+              };
+            });
           
           setLocations([{ value: "", label: "All Locations" }, ...uniqueLocations]);
         }
 
-        // Process price ranges (using product data)
-        // Establish realistic price ranges based on product data
-        setPriceRanges([
-          { value: "", label: "Any Price" },
-          { value: "under-50", label: "Under 50 kr", minPrice: 0, maxPrice: 50 },
-          { value: "50-100", label: "50-100 kr", minPrice: 50, maxPrice: 100 },
-          { value: "over-100", label: "Over 100 kr", minPrice: 100, maxPrice: null }
-        ]);
-
-        // Set up rating options - dynamically calculated from reviews
-        // We'll get all product & bakery reviews and calculate available rating ranges
-        const [bakeryReviewsResponse, productReviewsResponse] = await Promise.all([
-          apiClient.get('/bakeryreviews', true),
-          apiClient.get('/productreviews', true)
-        ]);
-        
-        // Extract and process all ratings
-        const bakeryRatings = (bakeryReviewsResponse.bakeryReviews || []).map(r => r.overallRating/2);
-        const productRatings = (productReviewsResponse.productReviews || []).map(r => r.overallRating/2);
-        const allRatings = [...bakeryRatings, ...productRatings];
-        
-        // Create rating options based on actual data
+        // Set up rating options - simplify to match display format
         const ratingFilterOptions = [
           { value: "", label: "Any Rating" },
-          { value: "4", label: "4+ Stars", minRating: 4 },
-          { value: "3", label: "3+ Stars", minRating: 3 },
-          { value: "2", label: "2+ Stars", minRating: 2 },
-          { value: "1", label: "1+ Stars", minRating: 1 }
+          { value: "4.5", label: "4.5+ Stars" },
+          { value: "4", label: "4+ Stars" },
+          { value: "3.5", label: "3.5+ Stars" },
+          { value: "3", label: "3+ Stars" }
         ];
         
         setRatingOptions(ratingFilterOptions);
@@ -176,6 +187,23 @@ const FacetedSearch = ({ onSearch }) => {
       
       let results = bakeryResponse.bakeries || [];
 
+      // Make sure each bakery has average_rating in the correct format
+      results = results.map(bakery => {
+        // Extract the average rating from bakery stats if available
+        let rating = 0;
+        if (typeof bakery.average_rating === 'number') {
+          rating = bakery.average_rating;
+        } else if (bakery.ratings && typeof bakery.ratings.overall === 'number') {
+          rating = bakery.ratings.overall;
+        }
+        
+        // Ensure it's consistently stored in average_rating
+        return {
+          ...bakery,
+          average_rating: rating
+        };
+      });
+
       // Apply category filter
       if (filters.category) {
         // First, get all products in this category
@@ -204,43 +232,13 @@ const FacetedSearch = ({ onSearch }) => {
         results = results.filter(bakery => bakery.zipCode === filters.location);
       }
 
-      // Apply price range filter
-      if (filters.priceRange) {
-        // Find the selected price range
-        const priceRange = priceRanges.find(range => range.value === filters.priceRange);
-        
-        if (priceRange) {
-          // Get all products that match this price range
-          const productsInRange = productResponse.products.filter(product => {
-            // In a real app, you'd have actual price data
-            // Here we're simulating prices based on id
-            const simulatedPrice = (product.id % 150) + 20;
-            
-            if (priceRange.minPrice !== null && simulatedPrice < priceRange.minPrice) {
-              return false;
-            }
-            
-            if (priceRange.maxPrice !== null && simulatedPrice > priceRange.maxPrice) {
-              return false;
-            }
-            
-            return true;
-          });
-          
-          // Filter bakeries to only those that have products in this price range
-          const bakeryIds = new Set(productsInRange.map(p => p.bakeryId));
-          results = results.filter(bakery => bakeryIds.has(bakery.id));
-        }
-      }
-
       // Apply rating filter
       if (filters.rating) {
         const minRating = parseFloat(filters.rating);
         results = results.filter(bakery => {
-          // Calculate average rating from ratings object
-          const ratings = bakery.ratings || {};
-          const averageRating = ratings.overall ? ratings.overall / 2 : 0; // Convert to 5-star scale
-          return averageRating >= minRating;
+          // Ensure we have the rating in a 0-5 scale for comparison
+          const avgRating = (bakery.average_rating || 0) / 2;
+          return avgRating >= minRating;
         });
       }
 
@@ -266,8 +264,8 @@ const FacetedSearch = ({ onSearch }) => {
     switch (sortBy) {
       case 'rating':
         return [...results].sort((a, b) => {
-          const aRating = a.ratings?.overall || 0;
-          const bRating = b.ratings?.overall || 0;
+          const aRating = a.average_rating || 0;
+          const bRating = b.average_rating || 0;
           return bRating - aRating;
         });
       case 'popular':
@@ -302,9 +300,6 @@ const FacetedSearch = ({ onSearch }) => {
       case 'location':
         setSelectedLocation(value);
         break;
-      case 'priceRange':
-        setSelectedPriceRange(value);
-        break;
       case 'rating':
         setSelectedRating(value);
         break;
@@ -320,7 +315,6 @@ const FacetedSearch = ({ onSearch }) => {
       category: filterName === 'category' ? value : selectedCategory,
       product: filterName === 'product' ? value : selectedProduct,
       location: filterName === 'location' ? value : selectedLocation,
-      priceRange: filterName === 'priceRange' ? value : selectedPriceRange,
       rating: filterName === 'rating' ? value : selectedRating,
       sort: filterName === 'sort' ? value : selectedSort
     };
@@ -335,7 +329,6 @@ const FacetedSearch = ({ onSearch }) => {
       category: selectedCategory,
       product: selectedProduct,
       location: selectedLocation,
-      priceRange: selectedPriceRange,
       rating: selectedRating,
       sort: selectedSort
     };
@@ -398,22 +391,6 @@ const FacetedSearch = ({ onSearch }) => {
         </div>
 
         <div className="filter-row">
-          <div className="filter-group">
-            <label htmlFor="price-filter">Price Range</label>
-            <select
-              id="price-filter"
-              value={selectedPriceRange}
-              onChange={(e) => handleFilterChange('priceRange', e.target.value)}
-              disabled={isLoading}
-            >
-              {priceRanges.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
           <div className="filter-group">
             <label htmlFor="rating-filter">Rating</label>
             <select
