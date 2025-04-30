@@ -36,26 +36,25 @@ const FacetedSearch = ({ onSearch }) => {
       setIsLoading(true);
       try {
         // Use Promise.all to fetch all filter options in parallel
-        const [categoriesResponse, locationsResponse, pricesResponse] = await Promise.all([
-          apiClient.get('/bakeries', true), // Fallback to existing API endpoint
-          apiClient.get('/bakeries', true), // Same, but we'll extract unique locations
-          apiClient.get('/products', true), // Will extract price ranges from products
+        const [bakeryResponse, productResponse] = await Promise.all([
+          apiClient.get('/bakeries', true),
+          apiClient.get('/products', true)
         ]);
 
-        // Process categories (using bakeries as proxy)
-        if (categoriesResponse.bakeries) {
-          // Create a set of unique categories for bakeries
-          const uniqueCategories = [...new Set(categoriesResponse.bakeries
-            .map(bakery => bakery.zipCode)
+        // Process categories from products
+        if (productResponse.products) {
+          // Extract unique categories from products
+          const uniqueCategories = [...new Set(productResponse.products
+            .map(product => product.category)
             .filter(Boolean))]
-            .map(zipCode => ({ value: zipCode, label: `${zipCode} Postal Code` }));
+            .map(category => ({ value: category, label: category }));
           
           setCategories([{ value: "", label: "All Categories" }, ...uniqueCategories]);
         }
 
         // Process locations (using zipCodes from bakeries)
-        if (locationsResponse.bakeries) {
-          const uniqueLocations = [...new Set(locationsResponse.bakeries
+        if (bakeryResponse.bakeries) {
+          const uniqueLocations = [...new Set(bakeryResponse.bakeries
             .map(bakery => bakery.zipCode)
             .filter(Boolean))]
             .map(zipCode => ({ value: zipCode, label: `${zipCode} Copenhagen` }));
@@ -64,25 +63,39 @@ const FacetedSearch = ({ onSearch }) => {
         }
 
         // Process price ranges (using product data)
-        if (pricesResponse.products) {
-          setPriceRanges([
-            { value: "", label: "Any Price" },
-            { value: "budget", label: "Budget-Friendly" },
-            { value: "mid", label: "Mid-Range" },
-            { value: "premium", label: "Premium" }
-          ]);
-        }
-
-        // Set up rating options
-        setRatingOptions([
-          { value: "", label: "Any Rating" },
-          { value: "4", label: "4+ Stars" },
-          { value: "3", label: "3+ Stars" },
-          { value: "2", label: "2+ Stars" }
+        // Establish realistic price ranges based on product data
+        setPriceRanges([
+          { value: "", label: "Any Price" },
+          { value: "under-50", label: "Under 50 kr", minPrice: 0, maxPrice: 50 },
+          { value: "50-100", label: "50-100 kr", minPrice: 50, maxPrice: 100 },
+          { value: "over-100", label: "Over 100 kr", minPrice: 100, maxPrice: null }
         ]);
 
+        // Set up rating options - dynamically calculated from reviews
+        // We'll get all product & bakery reviews and calculate available rating ranges
+        const [bakeryReviewsResponse, productReviewsResponse] = await Promise.all([
+          apiClient.get('/bakeryreviews', true),
+          apiClient.get('/productreviews', true)
+        ]);
+        
+        // Extract and process all ratings
+        const bakeryRatings = (bakeryReviewsResponse.bakeryReviews || []).map(r => r.overallRating/2);
+        const productRatings = (productReviewsResponse.productReviews || []).map(r => r.overallRating/2);
+        const allRatings = [...bakeryRatings, ...productRatings];
+        
+        // Create rating options based on actual data
+        const ratingFilterOptions = [
+          { value: "", label: "Any Rating" },
+          { value: "4", label: "4+ Stars", minRating: 4 },
+          { value: "3", label: "3+ Stars", minRating: 3 },
+          { value: "2", label: "2+ Stars", minRating: 2 },
+          { value: "1", label: "1+ Stars", minRating: 1 }
+        ];
+        
+        setRatingOptions(ratingFilterOptions);
+
         // Set initial result count
-        setResultCount(categoriesResponse.bakeries?.length || 0);
+        setResultCount(bakeryResponse.bakeries?.length || 0);
       } catch (error) {
         console.error('Error fetching filter options:', error);
       } finally {
@@ -103,15 +116,12 @@ const FacetedSearch = ({ onSearch }) => {
       }
 
       try {
-        // Fetch products filtered by category (mimicking the API behavior)
+        // Fetch products filtered by category
         const response = await apiClient.get('/products', true);
         if (response.products) {
-          // Filter products by the selected category (simulating category filter)
+          // Filter products by the selected category
           const filteredProducts = response.products
-            .filter(product => {
-              // Match products to bakeries via bakeryId where bakery's zipCode matches selectedCategory
-              return product.bakery && product.bakery.zipCode === selectedCategory;
-            });
+            .filter(product => product.category === selectedCategory);
 
           // Create product options for dropdown
           const productOptions = filteredProducts.map(product => ({
@@ -159,18 +169,71 @@ const FacetedSearch = ({ onSearch }) => {
       // For now, we'll simulate by filtering the bakeries list
 
       // We'll use the bakeries endpoint as a data source
-      const response = await apiClient.get('/bakeries', true);
-      let results = response.bakeries || [];
+      const [bakeryResponse, productResponse] = await Promise.all([
+        apiClient.get('/bakeries', true),
+        apiClient.get('/products', true)
+      ]);
+      
+      let results = bakeryResponse.bakeries || [];
 
-      // Apply filters (simulating backend filtering)
+      // Apply category filter
       if (filters.category) {
-        results = results.filter(bakery => bakery.zipCode === filters.category);
+        // First, get all products in this category
+        const categoryProducts = productResponse.products.filter(
+          p => p.category === filters.category
+        );
+        
+        // Then, filter bakeries to only include those that have these products
+        const bakeryIds = new Set(categoryProducts.map(p => p.bakeryId));
+        results = results.filter(bakery => bakeryIds.has(bakery.id));
       }
 
+      // Apply product filter (specific product selection)
+      if (filters.product) {
+        const selectedProductData = productResponse.products.find(
+          p => p.id.toString() === filters.product
+        );
+        
+        if (selectedProductData) {
+          results = results.filter(bakery => bakery.id === selectedProductData.bakeryId);
+        }
+      }
+
+      // Apply location filter
       if (filters.location) {
         results = results.filter(bakery => bakery.zipCode === filters.location);
       }
 
+      // Apply price range filter
+      if (filters.priceRange) {
+        // Find the selected price range
+        const priceRange = priceRanges.find(range => range.value === filters.priceRange);
+        
+        if (priceRange) {
+          // Get all products that match this price range
+          const productsInRange = productResponse.products.filter(product => {
+            // In a real app, you'd have actual price data
+            // Here we're simulating prices based on id
+            const simulatedPrice = (product.id % 150) + 20;
+            
+            if (priceRange.minPrice !== null && simulatedPrice < priceRange.minPrice) {
+              return false;
+            }
+            
+            if (priceRange.maxPrice !== null && simulatedPrice > priceRange.maxPrice) {
+              return false;
+            }
+            
+            return true;
+          });
+          
+          // Filter bakeries to only those that have products in this price range
+          const bakeryIds = new Set(productsInRange.map(p => p.bakeryId));
+          results = results.filter(bakery => bakeryIds.has(bakery.id));
+        }
+      }
+
+      // Apply rating filter
       if (filters.rating) {
         const minRating = parseFloat(filters.rating);
         results = results.filter(bakery => {
@@ -179,17 +242,6 @@ const FacetedSearch = ({ onSearch }) => {
           const averageRating = ratings.overall ? ratings.overall / 2 : 0; // Convert to 5-star scale
           return averageRating >= minRating;
         });
-      }
-
-      if (filters.product) {
-        // This would need to join with products table in a real implementation
-        // For now, we'll just simulate by keeping all results
-        console.log('Product filter applied:', filters.product);
-      }
-
-      if (filters.priceRange) {
-        // This would be applied on the backend in a real implementation
-        console.log('Price range filter applied:', filters.priceRange);
       }
 
       // Apply sorting

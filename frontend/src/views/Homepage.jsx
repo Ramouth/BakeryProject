@@ -16,7 +16,8 @@ const HomePage = () => {
     handleSearch,
     formatBakeryNameForUrl,
     getBakeryDescription,
-    getBakeryRating
+    getBakeryRating,
+    resetFilters
   } = useFacetedSearchViewModel();
 
   // Determine what to display: search results or top bakeries
@@ -30,7 +31,7 @@ const HomePage = () => {
       <div className="hero-section">
         <h1>Denmark's first ever bakery guide</h1>
         
-        {/* Faceted Search Component */}
+        {/* Enhanced Faceted Search Component */}
         <FacetedSearch onSearch={handleSearch} />
       </div>
       
@@ -46,17 +47,28 @@ const HomePage = () => {
       )}
       
       {/* Results section (either search results or top bakeries) */}
-      <div className="top-bakeries">
-        <h2>
-          {isSearchActive 
-            ? "Search Results" 
-            : "Explore Copenhagens most cozy bakeries"}
-        </h2>
-        <p>
-          {isSearchActive 
-            ? `Found ${searchResults.length} bakeries matching your criteria` 
-            : "Top four ranked bakeries, currently:"}
-        </p>
+      <div className={`top-bakeries ${isSearchActive ? 'search-active' : ''}`}>
+        <div className="search-results-header">
+          <h2>
+            {isSearchActive 
+              ? "Search Results" 
+              : "Explore Copenhagen's most cozy bakeries"}
+          </h2>
+          <p className="search-results-count">
+            {isSearchActive 
+              ? `Found ${searchResults.length} bakeries matching your criteria` 
+              : "Top four ranked bakeries, currently:"}
+          </p>
+          
+          {isSearchActive && (
+            <button 
+              className="reset-filters-button"
+              onClick={() => resetFilters()}
+            >
+              Reset Filters
+            </button>
+          )}
+        </div>
         
         {isLoading ? (
           <div className="loading-container">
@@ -131,7 +143,7 @@ const HomePage = () => {
         ) : (
           <div className="no-bakeries-message">
             <p>No bakeries match your search criteria. Try adjusting your filters!</p>
-            <button className="btn" onClick={() => handleSearch([])}>
+            <button className="btn" onClick={() => resetFilters()}>
               Reset Filters
             </button>
           </div>
