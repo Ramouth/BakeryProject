@@ -18,9 +18,21 @@ export const useBakeryRankingsViewModel = () => {
     try {
       const response = await bakeryService.getAll(true);
       const bakeryModels = (response.bakeries || []).map(b => Bakery.fromApiResponse(b));
-      setBakeries(bakeryModels);
-      setFilteredBakeries(bakeryModels);
+      
+      // Sort bakeries by their average rating (in descending order)
+      const sortedBakeries = bakeryModels.sort((a, b) => {
+        // Get ratings or default to 0 if not present
+        const ratingA = a.average_rating || 0;
+        const ratingB = b.average_rating || 0;
+        
+        // Sort in descending order
+        return ratingB - ratingA;
+      });
+      
+      setBakeries(sortedBakeries);
+      setFilteredBakeries(sortedBakeries);
     } catch (error) {
+      console.error('Error loading bakeries:', error);
       setError('Failed to load bakeries. Please try again later.');
     } finally {
       setLoading(false);
@@ -38,10 +50,27 @@ export const useBakeryRankingsViewModel = () => {
         if (zipCode && !rating) {
           try {
             const response = await bakeryService.searchBakeries(zipCode);
-            const searchResults = (response.bakeries || []).map(b => Bakery.fromApiResponse(b));
+            let searchResults = (response.bakeries || []).map(b => Bakery.fromApiResponse(b));
+            
+            // Sort the search results by rating as well
+            searchResults = searchResults.sort((a, b) => {
+              const ratingA = a.average_rating || 0;
+              const ratingB = b.average_rating || 0;
+              return ratingB - ratingA;
+            });
+            
             setFilteredBakeries(searchResults);
           } catch (error) {
-            const filtered = bakeries.filter(bakery => bakery.zipCode === zipCode);
+            // Filter from already loaded bakeries
+            let filtered = bakeries.filter(bakery => bakery.zipCode === zipCode);
+            
+            // Sort the filtered results
+            filtered = filtered.sort((a, b) => {
+              const ratingA = a.average_rating || 0;
+              const ratingB = b.average_rating || 0;
+              return ratingB - ratingA;
+            });
+            
             setFilteredBakeries(filtered);
           }
         } else {
@@ -59,12 +88,20 @@ export const useBakeryRankingsViewModel = () => {
             });
           }
           
+          // Always sort by rating
+          filtered = filtered.sort((a, b) => {
+            const ratingA = a.average_rating || 0;
+            const ratingB = b.average_rating || 0;
+            return ratingB - ratingA;
+          });
+          
           setFilteredBakeries(filtered);
         }
       } else {
         await fetchBakeries();
       }
     } catch (error) {
+      console.error('Search error:', error);
       setError('Search failed. Please try again later.');
     } finally {
       setLoading(false);
