@@ -71,7 +71,7 @@ const HomePage = () => {
           </h2>
           <p className="search-results-count">
             {isSearchActive 
-              ? `Found ${searchResults.length} top bakeries matching your criteria` 
+              ? `Found ${searchResults.length} bakeries matching your criteria` 
               : "Top rated bakeries in Copenhagen:"}
           </p>
           
