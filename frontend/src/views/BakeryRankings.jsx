@@ -26,18 +26,19 @@ const BakeryRankings = () => {
         name: 'zipCode',
         options: [
           { value: '', label: 'All Postal Codes' },
-          { value: '1050', label: '1050 - Inner City' },
-          { value: '1400', label: '1400 - København K' },
-          { value: '1437', label: '1437 - København K' },
-          { value: '1453', label: '1453 - København K' },
-          { value: '1500', label: '1500 - Vesterbro' },
-          { value: '1572', label: '1572 - København V' },
-          { value: '1850', label: '1850 - Frederiksberg' },
-          { value: '1871', label: '1871 - Frederiksberg' },
-          { value: '2000', label: '2000 - Frederiksberg' },
-          { value: '2100', label: '2100 - Østerbro' },
-          { value: '2200', label: '2200 - Nørrebro' },
-          { value: '2300', label: '2300 - Amager' }
+          { value: '1000-1499', label: '1000-1499 - Copenhagen K (City Center)' },
+          { value: '1500-1799', label: '1500-1799 - Copenhagen V (Vesterbro)' },
+          { value: '1800-1999', label: '1800-1999 - Frederiksberg C' },
+          { value: '2000-2099', label: '2000-2099 - Frederiksberg' },
+          { value: '2100-2199', label: '2100-2199 - Copenhagen Ø (Østerbro)' },
+          { value: '2200-2299', label: '2200-2299 - Copenhagen N (Nørrebro)' },
+          { value: '2300-2399', label: '2300-2399 - Copenhagen S (Amager)' },
+          { value: '2400-2499', label: '2400-2499 - Copenhagen NV (Nordvest)' },
+          { value: '2500-2599', label: '2500-2599 - Valby' },
+          { value: '2600-2699', label: '2600-2699 - Glostrup' },
+          { value: '2700-2799', label: '2700-2799 - Brønshøj' },
+          { value: '2800-2899', label: '2800-2899 - Lyngby' },
+          { value: '2900-2999', label: '2900-2999 - Hellerup' }
         ]
       },
       {
