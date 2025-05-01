@@ -1,4 +1,3 @@
-// frontend/src/services/api.js
 import { API_BASE_URL } from '../config';
 
 /**
@@ -20,15 +19,26 @@ class ApiClient {
   async request(url, options = {}) {
     const fullUrl = `${this.baseUrl}${url}`;
     
+    // Get the JWT token from localStorage
+    const token = localStorage.getItem('authToken');
+    
     console.log(`API Request: ${options.method || 'GET'} ${url}`);
+    console.log('Token available:', !!token);
 
     try {
+      const headers = {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      };
+      
+      // Add Authorization header if token exists
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(fullUrl, {
         ...options,
-        headers: {
-          'Content-Type': 'application/json',
-          ...options.headers,
-        },
+        headers,
         credentials: 'include',
         mode: 'cors',
       });
