@@ -1,23 +1,23 @@
-/* Improved Croissant Display for Profile Pages */
-.croissant-display {
+/* Improved Cookie Display for Profile Pages */
+.cookie-display {
     display: flex;
     align-items: center;
     margin: 0 5px;
   }
   
-  .croissant-filled {
-    color: #bd8a42; /* Primary color for filled croissants */
+  .cookie-filled {
+    color: #bd8a42; /* Primary color for filled cookies */
     font-size: 1.2rem;
   }
   
-  .croissant-empty {
-    color: #ccc; /* Grey color for unfilled croissants */
+  .cookie-empty {
+    color: #ccc; /* Grey color for unfilled cookies */
     opacity: 0.3;
     filter: grayscale(85%);
     font-size: 1.2rem;
   }
   
-  .croissant-half-container {
+  .cookie-half-container {
     position: relative;
     width: 0.6rem; /* Half width */
     height: 1.2rem;
@@ -25,7 +25,7 @@
     margin-right: 7px;
   }
   
-  .croissant-half {
+  .cookie-half {
     position: absolute;
     left: 0;
     font-size: 1.2rem;
@@ -33,33 +33,33 @@
   }
   
   /* Sizes */
-  .croissant-display.croissant-large .croissant-filled,
-  .croissant-display.croissant-large .croissant-empty {
+  .cookie-display.cookie-large .cookie-filled,
+  .cookie-display.cookie-large .cookie-empty {
     font-size: 1.8rem;
   }
   
-  .croissant-display.croissant-large .croissant-half-container {
+  .cookie-display.cookie-large .cookie-half-container {
     width: 0.9rem;
     height: 1.8rem;
     margin-right: 10px;
   }
   
-  .croissant-display.croissant-large .croissant-half {
+  .cookie-display.cookie-large .cookie-half {
     font-size: 1.8rem;
   }
   
-  .croissant-display.croissant-small .croissant-filled,
-  .croissant-display.croissant-small .croissant-empty {
+  .cookie-display.cookie-small .cookie-filled,
+  .cookie-display.cookie-small .cookie-empty {
     font-size: 0.9rem;
   }
   
-  .croissant-display.croissant-small .croissant-half-container {
+  .cookie-display.cookie-small .cookie-half-container {
     width: 0.45rem;
     height: 0.9rem;
     margin-right: 5px;
   }
   
-  .croissant-display.croissant-small .croissant-half {
+  .cookie-display.cookie-small .cookie-half {
     font-size: 0.9rem;
   }
   
@@ -114,17 +114,17 @@
   
   /* Responsive adjustments */
   @media (max-width: 768px) {
-    .croissant-display.croissant-large .croissant-filled,
-    .croissant-display.croissant-large .croissant-empty {
+    .cookie-display.cookie-large .cookie-filled,
+    .cookie-display.cookie-large .cookie-empty {
       font-size: 1.5rem;
     }
     
-    .croissant-display.croissant-large .croissant-half-container {
+    .cookie-display.cookie-large .cookie-half-container {
       width: 0.75rem;
       height: 1.5rem;
     }
     
-    .croissant-display.croissant-large .croissant-half {
+    .cookie-display.cookie-large .cookie-half {
       font-size: 1.5rem;
     }
   }

@@ -1,5 +1,5 @@
-/* Croissant Rating Component with Left/Right Zones */
-.croissant-rating-container {
+/* Cookie Rating Component with Left/Right Zones */
+.cookie-rating-container {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -9,14 +9,14 @@
     flex-grow: 1;
   }
   
-  .croissant-rating {
+  .cookie-rating {
     display: flex;
     align-items: center;
     cursor: pointer;
   }
   
-  /* Croissant wrapper for containing the clickable zones */
-  .croissant-wrapper {
+  /* Cookie wrapper for containing the clickable zones */
+  .cookie-wrapper {
     position: relative;
     padding: 0;
     margin: 0 6px;
@@ -29,7 +29,7 @@
     transition: transform 0.15s ease;
   }
   
-  .croissant-wrapper:hover {
+  .cookie-wrapper:hover {
     transform: scale(1.15);
   }
   
@@ -57,8 +57,8 @@
     background-color: rgba(0, 0, 0, 0.05);
   }
   
-  /* The croissant itself */
-  .croissant {
+  /* The cookie itself */
+  .cookie {
     position: relative;
     font-size: 1.5rem;
     z-index: 1;
@@ -66,25 +66,25 @@
   }
   
   /* Empty state */
-  .croissant.empty {
+  .cookie.empty {
     opacity: 0.3;
     filter: grayscale(85%);
   }
   
   /* Full state */
-  .croissant.full {
+  .cookie.full {
     opacity: 1;
     filter: grayscale(0%);
-    color: #bd8a42; /* Primary color for filled croissants */
+    color: #bd8a42; /* Primary color for filled cookies */
   }
   
   /* Half state */
-  .croissant.half {
+  .cookie.half {
     position: relative;
     color: transparent;
   }
   
-  .croissant.half::before {
+  .cookie.half::before {
     content: '🍪';
     position: absolute;
     left: 0;
@@ -94,7 +94,7 @@
     color: #bd8a42; /* Primary color for filled half */
   }
   
-  .croissant.half::after {
+  .cookie.half::after {
     content: '🍪';
     position: absolute;
     left: 0;
@@ -116,28 +116,28 @@
   }
   
   /* Disabled state */
-  .croissant-rating-container.disabled {
+  .cookie-rating-container.disabled {
     opacity: 0.7;
     cursor: not-allowed;
   }
   
-  .croissant-rating-container.disabled .croissant-rating {
+  .cookie-rating-container.disabled .cookie-rating {
     cursor: not-allowed;
   }
   
-  .croissant-rating-container.disabled .croissant-wrapper {
+  .cookie-rating-container.disabled .cookie-wrapper {
     cursor: not-allowed;
   }
   
   /* Responsive adjustments */
   @media (max-width: 768px) {
-    .croissant-wrapper {
+    .cookie-wrapper {
       width: 32px;
       height: 32px;
       margin: 0 8px;
     }
     
-    .croissant {
+    .cookie {
       font-size: 1.8rem;
     }
     

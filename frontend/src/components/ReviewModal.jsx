@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import Modal from './Modal';
 import Button from './Button';
-import CroissantRating from './CroissantRatingComponent';
+import CookieRating from './CookieRatingComponent';
 import { useNotification } from '../store/NotificationContext';
 import { useUser } from '../store/UserContext';
 import apiClient from '../services/api';
@@ -161,7 +161,7 @@ const ReviewModal = ({
     }
   };
 
-  // Handle rating changes - value will already be 1-10 scale from CroissantRating
+  // Handle rating changes - value will already be 1-10 scale from CookieRating
   const handleRatingChange = (field, value) => {
     if (field === 'overall') {
       setOverallRating(value);
@@ -377,7 +377,7 @@ const ReviewModal = ({
             <div className="rating-container">
               <div className="rating-row">
                 <div className="rating-label">Overall:</div>
-                <CroissantRating 
+                <CookieRating 
                   rating={overallRating} 
                   onChange={(value) => handleRatingChange('overall', value)}
                   max={5}
@@ -389,7 +389,7 @@ const ReviewModal = ({
                 <>
                   <div className="rating-row">
                     <div className="rating-label">Service:</div>
-                    <CroissantRating 
+                    <CookieRating 
                       rating={ratings.service} 
                       onChange={(value) => handleRatingChange('service', value)} 
                       max={5}
@@ -398,7 +398,7 @@ const ReviewModal = ({
                   
                   <div className="rating-row">
                     <div className="rating-label">Price:</div>
-                    <CroissantRating 
+                    <CookieRating 
                       rating={ratings.price} 
                       onChange={(value) => handleRatingChange('price', value)} 
                       max={5}
@@ -407,7 +407,7 @@ const ReviewModal = ({
                   
                   <div className="rating-row">
                     <div className="rating-label">Atmosphere:</div>
-                    <CroissantRating 
+                    <CookieRating 
                       rating={ratings.atmosphere} 
                       onChange={(value) => handleRatingChange('atmosphere', value)} 
                       max={5}
@@ -416,7 +416,7 @@ const ReviewModal = ({
                   
                   <div className="rating-row">
                     <div className="rating-label">Location:</div>
-                    <CroissantRating 
+                    <CookieRating 
                       rating={ratings.location} 
                       onChange={(value) => handleRatingChange('location', value)} 
                       max={5}
@@ -428,7 +428,7 @@ const ReviewModal = ({
                 <>
                   <div className="rating-row">
                     <div className="rating-label">Taste:</div>
-                    <CroissantRating 
+                    <CookieRating 
                       rating={ratings.taste} 
                       onChange={(value) => handleRatingChange('taste', value)} 
                       max={5}
@@ -437,7 +437,7 @@ const ReviewModal = ({
                   
                   <div className="rating-row">
                     <div className="rating-label">Price:</div>
-                    <CroissantRating 
+                    <CookieRating 
                       rating={ratings.price} 
                       onChange={(value) => handleRatingChange('price', value)} 
                       max={5}
@@ -446,7 +446,7 @@ const ReviewModal = ({
                   
                   <div className="rating-row">
                     <div className="rating-label">Presentation:</div>
-                    <CroissantRating 
+                    <CookieRating 
                       rating={ratings.presentation} 
                       onChange={(value) => handleRatingChange('presentation', value)} 
                       max={5}
