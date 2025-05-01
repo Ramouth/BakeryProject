@@ -6,25 +6,56 @@ class UserService extends BaseService {
     super('/users');
   }
 
+  // Authentication endpoints
   async register(userData) {
-    // Registration might have a different endpoint structure
-    const response = await apiClient.post('/users/register', userData);
+    // Use the correct auth endpoint for registration
+    const response = await apiClient.post('/auth/register', userData);
     return response;
   }
 
   async login(credentials) {
-    const response = await apiClient.post('/users/login', credentials);
+    // Use the correct auth endpoint for login
+    const response = await apiClient.post('/auth/login', credentials);
     return response;
   }
 
   async getCurrentUser() {
-    const response = await apiClient.get('/users/me', true);
+    // Use the correct auth endpoint for getting profile
+    const response = await apiClient.get('/auth/profile');
     return response;
   }
 
   async updateProfile(userData) {
-    const response = await apiClient.patch('/users/profile', userData);
+    // Use the correct auth endpoint for updating profile
+    const response = await apiClient.patch('/auth/update-profile', userData);
     return response;
+  }
+
+  async changePassword(passwordData) {
+    // Add change password functionality
+    const response = await apiClient.post('/auth/change-password', passwordData);
+    return response;
+  }
+
+  // Regular user management endpoints (for admin use)
+  async getAllUsers() {
+    return this.getAll();
+  }
+
+  async getUserById(id) {
+    return this.getById(id);
+  }
+
+  async createUser(userData) {
+    return this.create(userData);
+  }
+
+  async updateUser(id, userData) {
+    return this.update(id, userData);
+  }
+
+  async deleteUser(id) {
+    return this.delete(id);
   }
 }
 
