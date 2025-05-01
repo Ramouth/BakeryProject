@@ -19,18 +19,22 @@
   
   .cookie-half-container {
     position: relative;
-    width: 0.6rem; /* Half width */
-    height: 1.2rem;
-    overflow: hidden;
-    margin-right: 7px;
-  }
-  
-  .cookie-half {
+    width: 0.6rem; /* Matches half the width of a filled cookie */
+    height: 1.2rem; /* Matches the height of a filled cookie */
+    overflow: hidden; /* Ensures only part of the cookie is visible */
+    margin-left: 3.5px;
+    margin-right: 5px;
+    display: flex; /* Ensures proper alignment */
+    align-items: center; /* Centers the half cookie vertically */
+}
+
+.cookie-half {
     position: absolute;
-    left: 0;
-    font-size: 1.2rem;
+    left: -0.15rem; /* Aligns the cookie to the left edge of the container */
+    font-size: 1.2rem; /* Matches .cookie-filled and .cookie-empty */
     color: #bd8a42; /* Primary color for filled half */
-  }
+    clip-path: inset(0 50% 0 0); /* Clips the right half of the cookie */
+}
   
   /* Sizes */
   .cookie-display.cookie-large .cookie-filled,
