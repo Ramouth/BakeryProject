@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import apiClient from '../services/api';
 import { Bakery } from '../models/Bakery';
 
@@ -8,7 +8,6 @@ export const useBakeryRankingsViewModel = () => {
   const [displayedBakeries, setDisplayedBakeries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchType, setSearchType] = useState('bakeries');
   const [selectedZipCode, setSelectedZipCode] = useState('');
   const [selectedRating, setSelectedRating] = useState('');
   
@@ -198,8 +197,6 @@ const handleSearch = async (searchParams) => {
     totalBakeries: filteredBakeries.length,
     loading,
     error,
-    searchType,
-    setSearchType,
     selectedZipCode,
     setSelectedZipCode,
     selectedRating,
