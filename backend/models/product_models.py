@@ -30,6 +30,7 @@ class Product(db.Model):
         self.name = name
         self.bakery_id = bakery_id
         self.category = category
+        self.subcategory = subcategory 
         self.image_url = image_url
     
     def __repr__(self):
@@ -42,6 +43,7 @@ class Product(db.Model):
             'name': self.name,
             'bakeryId': self.bakery_id,
             'category': self.category,
+            'subcategory': self.subcategory,
             'imageUrl': self.image_url,
             'bakery': {
                 'id': self.bakery.id,

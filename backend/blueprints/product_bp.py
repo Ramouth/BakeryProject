@@ -64,6 +64,13 @@ def get_products_by_category(category):
     products = product_service.get_products_by_category(category)
     return jsonify({"products": products_schema.dump(products)})
 
+@product_bp.route('/subcategory/<subcategory>', methods=['GET'])
+@cache.cached(timeout=60)
+def get_products_by_subcategory(subcategory):
+    """Get all products for a specific subcategory"""
+    products = Product.query.filter_by(subcategory=subcategory).order_by(Product.name).all()
+    return jsonify({"products": products_schema.dump(products)})
+
 @product_bp.route('/create', methods=['POST'])
 def create_product():
     """Create a new product"""
@@ -89,6 +96,7 @@ def create_product():
             name=data['name'],
             bakery_id=data['bakeryId'],
             category=data.get('category'),
+            subcategory=data.get('subcategory'),
             image_url=data.get('imageUrl')
         )
         
@@ -114,6 +122,7 @@ def update_product(product_id):
         name = data.get('name', product.name)
         bakery_id = data.get('bakeryId', product.bakery_id)
         category = data.get('category', product.category)
+        subcategory = data.get('subcategory', product.subcategory)
         image_url = data.get('imageUrl', product.image_url)
         
         # Validate bakery exists if it's being updated
@@ -132,6 +141,7 @@ def update_product(product_id):
             name=name,
             bakery_id=bakery_id,
             category=category,
+            subcategory=subcategory,
             image_url=image_url
         )
         
