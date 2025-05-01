@@ -1,218 +1,207 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import apiClient from '../services/api';
-import ProductCategories from '../models/ProductCategories';
 
 export const useProductRankingsViewModel = () => {
-  const { categoryId, productId } = useParams();
+  const { categoryId, subcategoryId } = useParams();
   const navigate = useNavigate();
   const [productTypes, setProductTypes] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [productRankings, setProductRankings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [allProducts, setAllProducts] = useState([]);
   const [bakeries, setBakeries] = useState({});
 
-  const fetchAllProducts = async () => {
+  // Fetch all data needed for the view
+  const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/products', true);
-      const products = response.products || [];
-      setAllProducts(products);
       
-      organizeProductsByCategory(products, categoryId);
-      await fetchBakeries();
+      // Fetch products and bakeries in parallel
+      const [productsResponse, bakeriesResponse] = await Promise.all([
+        apiClient.get('/products', true),
+        apiClient.get('/bakeries', true)
+      ]);
       
-      setLoading(false);
+      // Safely get products array
+      const products = productsResponse?.products || [];
+      console.log('Products response:', productsResponse);
+      
+      // Create bakery map for lookups
+      const bakeryMap = {};
+      if (bakeriesResponse && Array.isArray(bakeriesResponse.bakeries)) {
+        bakeriesResponse.bakeries.forEach(bakery => {
+          if (bakery && bakery.id) {
+            bakeryMap[bakery.id] = bakery;
+          }
+        });
+      }
+      setBakeries(bakeryMap);
+      
+      // Create product type groups based on names
+      organizeProducts(products);
+      
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error('Error fetching data:', error);
       setError('Failed to load products. Please try again later.');
       setLoading(false);
     }
   };
 
-  const fetchBakeries = async () => {
+  // Organize products into product types based on their names
+  const organizeProducts = (products) => {
     try {
-      const response = await apiClient.get('/bakeries', true);
-      const bakeryMap = {};
+      // Ensure products is an array
+      if (!Array.isArray(products)) {
+        console.error('Products is not an array:', products);
+        setProductTypes([]);
+        setLoading(false);
+        return;
+      }
       
-      (response.bakeries || []).forEach(bakery => {
-        bakeryMap[bakery.id] = bakery;
-      });
+      // Filter products by category if specified
+      let filteredProducts = products;
+      if (categoryId) {
+        filteredProducts = products.filter(product => 
+          product && product.category && 
+          product.category.toLowerCase().includes(categoryId.toLowerCase())
+        );
+      }
       
-      setBakeries(bakeryMap);
-    } catch (error) {
-      console.error('Error fetching bakeries:', error);
+      console.log('Filtered products:', filteredProducts);
+      
+      // Group products by name
+      const productGroups = {};
+      for (const product of filteredProducts) {
+        // Skip invalid products
+        if (!product || !product.name) continue;
+        
+        const name = product.name;
+        const nameSlug = name.toLowerCase().replace(/\s+/g, '-');
+        
+        if (!productGroups[nameSlug]) {
+          productGroups[nameSlug] = {
+            id: nameSlug,
+            name: name,
+            products: []
+          };
+        }
+        
+        productGroups[nameSlug].products.push(product);
+      }
+      
+      // Convert to array and sort alphabetically
+      const productTypeList = Object.values(productGroups).sort((a, b) => 
+        a.name.localeCompare(b.name)
+      );
+      
+      console.log('Product types created:', productTypeList);
+      setProductTypes(productTypeList);
+      
+      // Determine which product type to select
+      if (subcategoryId && productGroups[subcategoryId]) {
+        setSelectedProduct(subcategoryId);
+      } else if (productTypeList.length > 0) {
+        setSelectedProduct(productTypeList[0].id);
+      }
+      
+      setLoading(false);
+    } catch (err) {
+      console.error('Error organizing products:', err);
+      setProductTypes([]);
+      setError('Failed to organize products. Please try again later.');
+      setLoading(false);
     }
   };
 
+  // Fetch reviews for a specific product
   const fetchProductReviews = async (productId) => {
     try {
+      if (!productId) return [];
+      
       const response = await apiClient.get(`/productreviews/product/${productId}`, true);
-      return response.productReviews || [];
+      return Array.isArray(response?.productReviews) ? response.productReviews : [];
     } catch (error) {
       console.error(`Error fetching reviews for product ${productId}:`, error);
       return [];
     }
   };
 
-  const normalizeProductName = (name) => {
-    return name.toLowerCase().replace(/[^a-z0-9]/g, '-');
-  };
-
-  const organizeProductsByCategory = (products, categoryIdParam) => {
-    // Get category data from our ProductCategories class
-    const allCategories = ProductCategories.getAllCategories();
+  // Generate rankings for the selected product type
+  const generateProductRankings = async () => {
+    if (!selectedProduct) return;
     
-    if (categoryIdParam && ProductCategories.getCategoryById(categoryIdParam)) {
-      // If a valid category ID is provided, filter products by that category
-      const categoryData = ProductCategories.getCategoryById(categoryIdParam);
-      const categoryFilter = categoryData.id;
-      
-      // Filter API products that match this category
-      const categoryProducts = products.filter(
-        product => product.category && product.category.toLowerCase().includes(categoryFilter)
-      );
-      
-      const productTypeMap = {};
-      
-      // Use the products from our ProductCategories class to create the product types
-      categoryData.products.forEach(definedProduct => {
-        const normalizedName = normalizeProductName(definedProduct.name);
-        
-        // Find matching products from the API data
-        const matchingProducts = categoryProducts.filter(apiProduct => 
-          apiProduct.name.toLowerCase().includes(definedProduct.name.toLowerCase())
-        );
-        
-        if (!productTypeMap[normalizedName]) {
-          productTypeMap[normalizedName] = {
-            id: normalizedName,
-            name: definedProduct.name,
-            description: definedProduct.description,
-            products: matchingProducts.length > 0 ? matchingProducts : [{ 
-              id: normalizedName,
-              name: definedProduct.name,
-              category: categoryData.id,
-              // Add default bakery ID for demonstration
-              bakeryId: 1 
-            }]
-          };
-        }
-      });
-      
-      setProductTypes(Object.values(productTypeMap));
-      
-      if (productId) {
-        setSelectedProduct(productId);
-        generateProductRankings(productId, Object.values(productTypeMap));
-      } else if (Object.values(productTypeMap).length > 0) {
-        const firstProductType = Object.values(productTypeMap)[0];
-        setSelectedProduct(firstProductType.id);
-        generateProductRankings(firstProductType.id, Object.values(productTypeMap));
-      }
-    } else {
-      // If no category is selected, show featured products from each category
-      const featuredProducts = [];
-      
-      allCategories.forEach(category => {
-        if (category.products && category.products.length > 0) {
-          const featuredProduct = category.products[0]; // Take the first product
-          
-          // Find matching products from the API data
-          const matchingProducts = products.filter(apiProduct => 
-            apiProduct.name.toLowerCase().includes(featuredProduct.name.toLowerCase())
-          );
-          
-          featuredProducts.push({
-            id: normalizeProductName(featuredProduct.name),
-            name: featuredProduct.name,
-            description: featuredProduct.description,
-            products: matchingProducts.length > 0 ? matchingProducts : [{ 
-              id: normalizeProductName(featuredProduct.name),
-              name: featuredProduct.name,
-              category: category.id,
-              // Add default bakery ID for demonstration
-              bakeryId: 1 
-            }]
-          });
-        }
-      });
-      
-      setProductTypes(featuredProducts);
-      
-      if (featuredProducts.length > 0) {
-        const firstProductType = featuredProducts[0];
-        setSelectedProduct(firstProductType.id);
-        generateProductRankings(firstProductType.id, featuredProducts);
-      }
-    }
-  };
-
-  const generateProductRankings = async (productTypeId, productTypes) => {
     setLoading(true);
     
-    const productType = productTypes.find(pt => pt.id === productTypeId);
-    
-    if (!productType) {
+    const productType = productTypes.find(pt => pt.id === selectedProduct);
+    if (!productType || !Array.isArray(productType.products) || productType.products.length === 0) {
       setProductRankings([]);
       setLoading(false);
       return;
     }
     
-    const products = productType.products;
-    
-    const productsWithReviews = await Promise.all(
-      products.map(async product => {
-        const reviews = await fetchProductReviews(product.id);
-        
-        let avgRating = 0;
-        if (reviews.length > 0) {
-          const sum = reviews.reduce((acc, review) => acc + review.overallRating, 0);
-          avgRating = sum / reviews.length;
-        }
-        
-        let topReview = null;
-        if (reviews.length > 0) {
-          topReview = reviews.reduce((best, current) => {
-            return (current.overallRating > best.overallRating) ? current : best;
-          }, reviews[0]);
-        }
+    try {
+      // Fetch reviews for each product in this group
+      const productsWithReviews = await Promise.all(
+        productType.products.map(async product => {
+          if (!product || !product.id) return null;
+          
+          const reviews = await fetchProductReviews(product.id);
+          
+          let avgRating = 0;
+          if (reviews.length > 0) {
+            const sum = reviews.reduce((acc, review) => acc + (review?.overallRating || 0), 0);
+            avgRating = sum / reviews.length;
+          }
+          
+          let topReview = null;
+          if (reviews.length > 0) {
+            topReview = reviews.reduce((best, current) => {
+              if (!best || !current) return best || current;
+              return ((current?.overallRating || 0) > (best?.overallRating || 0)) ? current : best;
+            }, reviews[0]);
+          }
+          
+          return {
+            ...product,
+            avgRating: avgRating / 2, // Convert to 5-star scale
+            reviewCount: reviews.length,
+            topReview: topReview
+          };
+        })
+      );
+      
+      // Filter out null values and sort by rating
+      const validProducts = productsWithReviews.filter(p => p !== null);
+      const sortedProducts = validProducts.sort((a, b) => b.avgRating - a.avgRating);
+      
+      // Format for display
+      const rankings = sortedProducts.map((product, index) => {
+        const bakery = bakeries[product?.bakeryId] || {};
         
         return {
-          ...product,
-          avgRating: avgRating / 2,
-          reviewCount: reviews.length,
-          topReview: topReview
+          rank: index + 1,
+          productId: product?.id || '',
+          bakeryId: product?.bakeryId || '',
+          bakeryName: bakery?.name || 'Unknown Bakery',
+          address: formatBakeryAddress(bakery),
+          topReview: product?.topReview?.review || 'No reviews yet',
+          rating: (product?.avgRating || 0).toFixed(1),
+          reviewCount: product?.reviewCount || 0,
+          image: product?.imageUrl || ''
         };
-      })
-    );
-    
-    const sortedProducts = productsWithReviews
-      .filter(product => product.reviewCount > 0)
-      .sort((a, b) => b.avgRating - a.avgRating);
-    
-    const rankings = sortedProducts.map((product, index) => {
-      const bakery = bakeries[product.bakeryId] || {};
+      });
       
-      return {
-        rank: index + 1,
-        productId: product.id,
-        bakeryId: product.bakeryId,
-        bakeryName: bakery.name || 'Unknown Bakery',
-        address: formatBakeryAddress(bakery),
-        topReview: product.topReview ? product.topReview.review : 'No reviews yet',
-        rating: product.avgRating.toFixed(1),
-        reviewCount: product.reviewCount,
-        image: product.imageUrl
-      };
-    });
-    
-    setProductRankings(rankings);
-    setLoading(false);
+      setProductRankings(rankings);
+    } catch (error) {
+      console.error('Error generating rankings:', error);
+      setError('Failed to generate rankings. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // Format bakery address for display
   const formatBakeryAddress = (bakery) => {
     if (!bakery) return '';
     
@@ -228,7 +217,7 @@ export const useProductRankingsViewModel = () => {
     let line2 = line2Parts.join(' ');
     
     if (line1 && line2) {
-      return `${line1}\n${line2}`;
+      return `${line1}, ${line2}`;
     } else if (line1) {
       return line1;
     } else if (line2) {
@@ -238,9 +227,9 @@ export const useProductRankingsViewModel = () => {
     }
   };
 
+  // Handle product selection
   const handleProductSelect = (productId) => {
     setSelectedProduct(productId);
-    generateProductRankings(productId, productTypes);
     
     if (categoryId) {
       navigate(`/product-rankings/${categoryId}/${productId}`);
@@ -249,21 +238,38 @@ export const useProductRankingsViewModel = () => {
     }
   };
 
+  // Get the name of the selected product
   const getSelectedProductName = () => {
     if (!selectedProduct || !productTypes.length) return '';
     const found = productTypes.find(p => p.id === selectedProduct);
     return found ? found.name : '';
   };
 
+  // Get the name of the current category
   const getCategoryName = () => {
-    if (!categoryId) return 'All Categories';
-    const category = ProductCategories.getCategoryById(categoryId);
-    return category ? category.name : 'Products';
+    // Simple mapping for known category IDs
+    const categoryNames = {
+      'danish': 'Danish Products',
+      'bread': 'Breads',
+      'viennoiserie': 'Viennoiserie',
+      'cakes': 'Cakes & Tarts',
+      'specialty': 'Specialty Items'
+    };
+    
+    return categoryId ? (categoryNames[categoryId] || categoryId) : 'All Categories';
   };
 
+  // Fetch data when category or subcategory changes
   useEffect(() => {
-    fetchAllProducts();
-  }, [categoryId]);
+    fetchData();
+  }, [categoryId, subcategoryId]);
+
+  // Update rankings when selected product changes
+  useEffect(() => {
+    if (selectedProduct && productTypes.length > 0) {
+      generateProductRankings();
+    }
+  }, [selectedProduct, productTypes.length]);
 
   return {
     productTypes,
