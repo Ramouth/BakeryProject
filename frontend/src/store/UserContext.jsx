@@ -1,6 +1,5 @@
-// Updated UserContext.js (Conceptual)
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
-import apiClient from '../api/apiClient'; // Your axios/fetch wrapper
+import apiClient from '../services/api'; // Make sure this import path is correct
 
 const UserContext = createContext();
 
@@ -13,23 +12,25 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem('authToken');
     if (token) {
-      // Set Authorization header for future requests
-      // apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`; // Or handle this in apiClient wrapper
-
       // Try to fetch the user profile using the token
+      // The API client will automatically include the token from localStorage
+      console.log('Found token in storage, attempting to fetch user profile');
       apiClient.get('/auth/profile')
         .then(response => {
-          // Assuming /auth/profile returns the user object
-          setCurrentUser(response.data);
+          console.log('Profile fetch successful:', response);
+          // Set the user object
+          setCurrentUser(response);
           setIsLoading(false);
         })
-        .catch(() => {
+        .catch((err) => {
+          console.error('Profile fetch failed:', err);
           // Token invalid or profile fetch failed, clear token and user
           localStorage.removeItem('authToken');
           setCurrentUser(null);
           setIsLoading(false);
         });
     } else {
+      console.log('No auth token found in storage');
       setIsLoading(false);
     }
   }, []);
@@ -38,51 +39,59 @@ export const UserProvider = ({ children }) => {
     setIsLoading(true);
     setError(null);
     try {
+      console.log('Attempting login for user:', username);
       const response = await apiClient.post('/auth/login', { username, password });
-      const { access_token, user } = response.data;
+      
+      // Extract token and user from response
+      const { access_token, user } = response;
+      console.log('Login successful, received token:', !!access_token);
 
+      // Store token in localStorage for future requests
       localStorage.setItem('authToken', access_token);
-      // apiClient.defaults.headers.common['Authorization'] = `Bearer ${access_token}`; // Or handle in apiClient wrapper
+      
+      // Set the user object
       setCurrentUser(user);
-      return user; // Return the user object
+      return user;
     } catch (err) {
-      const msg = err.response?.data?.message || err.message || 'Login failed. Please try again.';
+      const msg = err.message || 'Login failed. Please try again.';
       setError(msg);
       console.error('Login error:', err);
-      throw new Error(msg); // Rethrow the error so calling component can handle it
+      throw new Error(msg);
     } finally {
       setIsLoading(false);
     }
-  }, []); // Dependencies might be needed if apiClient isn't static
+  }, []);
 
-  // Modify register to use API call too
   const register = useCallback(async (userData) => {
-       setIsLoading(true);
-       setError(null);
-       try {
-           // Make the actual API call to your backend's register endpoint
-           const response = await apiClient.post('/auth/register', userData);
-           const { access_token, user } = response.data; // Assuming register also returns token and user
+    setIsLoading(true);
+    setError(null);
+    try {
+      console.log('Attempting to register user:', userData.username);
+      const response = await apiClient.post('/auth/register', userData);
+      
+      // Extract token and user from response
+      const { access_token, user } = response;
+      console.log('Registration successful, received token:', !!access_token);
 
-           localStorage.setItem('authToken', access_token);
-           // apiClient.defaults.headers.common['Authorization'] = `Bearer ${access_token}`; // Or handle in apiClient wrapper
-           setCurrentUser(user);
-           return user;
-       } catch (err) {
-           const msg = err.response?.data?.message || err.message || 'Registration failed. Please try again.';
-           setError(msg);
-           console.error('Registration error:', err);
-           throw new Error(msg);
-       } finally {
-           setIsLoading(false);
-       }
-   }, []);
-
+      // Store token in localStorage for future requests
+      localStorage.setItem('authToken', access_token);
+      
+      // Set the user object
+      setCurrentUser(user);
+      return user;
+    } catch (err) {
+      const msg = err.message || 'Registration failed. Please try again.';
+      setError(msg);
+      console.error('Registration error:', err);
+      throw new Error(msg);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   const logout = useCallback(() => {
+    console.log('Logging out user, removing auth token');
     localStorage.removeItem('authToken');
-    // Remove Authorization header
-    // delete apiClient.defaults.headers.common['Authorization']; // Or handle in apiClient wrapper
     setCurrentUser(null);
   }, []);
 
@@ -90,10 +99,10 @@ export const UserProvider = ({ children }) => {
     currentUser,
     isLoading,
     error,
-    login, // <-- Now this is the real API login
-    register, // <-- Now this is the real API register
+    login,
+    register,
     logout,
-    setUser: setCurrentUser // Expose the raw setter if needed, though often discouraged
+    setUser: setCurrentUser
   }), [currentUser, isLoading, error, login, register, logout]);
 
   return (
