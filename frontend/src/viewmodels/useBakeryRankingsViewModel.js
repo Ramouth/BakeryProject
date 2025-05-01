@@ -108,65 +108,78 @@ export const useBakeryRankingsViewModel = () => {
     setCurrentPage(page);
   };
 
-  const handleSearch = async (searchParams) => {
-    const { zipCode, rating } = searchParams;
+  // In useBakeryRankingsViewModel.js, update the handleSearch function 
+// to properly convert the rating scale when filtering
+
+const handleSearch = async (searchParams) => {
+  const { zipCode, rating } = searchParams;
+  
+  setLoading(true);
+  setError(null);
+  
+  try {
+    let filteredResults = [...bakeries];
     
-    setLoading(true);
-    setError(null);
-    
-    try {
-      let filteredResults = [...bakeries];
-      
-      // If searching by zip code range
-      if (zipCode) {
-        if (zipCode.includes('-')) {
-          // Handle zip code range (e.g., "1000-1499")
-          const [minZip, maxZip] = zipCode.split('-').map(z => parseInt(z, 10));
-          filteredResults = filteredResults.filter(bakery => {
-            const bakeryZip = parseInt(bakery.zipCode, 10);
-            return bakeryZip >= minZip && bakeryZip <= maxZip;
-          });
-        } else {
-          // Handle exact zip code match for backward compatibility
-          filteredResults = filteredResults.filter(bakery => bakery.zipCode === zipCode);
-        }
-      }
-      
-      // If filtering by rating
-      if (rating) {
-        const ratingValue = parseFloat(rating);
+    // If searching by zip code range
+    if (zipCode) {
+      // Zip code filtering code remains unchanged
+      if (zipCode.includes('-')) {
+        const [minZip, maxZip] = zipCode.split('-').map(z => parseInt(z, 10));
         filteredResults = filteredResults.filter(bakery => {
-          const avgRating = bakery.average_rating || 0;
-          return avgRating >= ratingValue;
+          const bakeryZip = parseInt(bakery.zipCode, 10);
+          return bakeryZip >= minZip && bakeryZip <= maxZip;
         });
+      } else {
+        filteredResults = filteredResults.filter(bakery => bakery.zipCode === zipCode);
       }
-      
-      // Always sort by rating (highest first)
-      // If ratings are equal, sort by number of reviews (highest first)
-      filteredResults = filteredResults.sort((a, b) => {
-        const ratingA = a.average_rating || 0;
-        const ratingB = b.average_rating || 0;
+    }
+    
+    // If filtering by rating - FIX HERE
+    if (rating) {
+      const ratingValue = parseFloat(rating);
+      filteredResults = filteredResults.filter(bakery => {
+        // Convert the minimum rating from 0.5-5 scale to 1-10 scale
+        const minRatingInternalScale = ratingValue * 2;
         
-        if (ratingB === ratingA) {
-          // Secondary sort by number of reviews
-          const reviewsA = a.review_count || 0;
-          const reviewsB = b.review_count || 0;
-          return reviewsB - reviewsA;
+        // Get the bakery's average rating from different possible sources
+        let bakeryRating = 0;
+        if (typeof bakery.average_rating === 'number') {
+          bakeryRating = bakery.average_rating;
+        } else if (bakery.ratings && typeof bakery.ratings.overall === 'number') {
+          bakeryRating = bakery.ratings.overall;
         }
         
-        return ratingB - ratingA;
+        // Compare using the internal 1-10 scale
+        return bakeryRating >= minRatingInternalScale;
       });
-      
-      setFilteredBakeries(filteredResults);
-      // Reset to page 1 when searching
-      updateDisplayedBakeries(filteredResults, 1, pageSize);
-    } catch (error) {
-      console.error('Search error:', error);
-      setError('Search failed. Please try again later.');
-    } finally {
-      setLoading(false);
     }
-  };
+    
+    // Always sort by rating (highest first)
+    // If ratings are equal, sort by number of reviews (highest first)
+    filteredResults = filteredResults.sort((a, b) => {
+      const ratingA = a.average_rating || 0;
+      const ratingB = b.average_rating || 0;
+      
+      if (ratingB === ratingA) {
+        // Secondary sort by number of reviews
+        const reviewsA = a.review_count || 0;
+        const reviewsB = b.review_count || 0;
+        return reviewsB - reviewsA;
+      }
+      
+      return ratingB - ratingA;
+    });
+    
+    setFilteredBakeries(filteredResults);
+    // Reset to page 1 when searching
+    updateDisplayedBakeries(filteredResults, 1, pageSize);
+  } catch (error) {
+    console.error('Search error:', error);
+    setError('Search failed. Please try again later.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   // Load more bakeries
   const loadMore = () => {
