@@ -17,8 +17,14 @@ bakery_service = BakeryService()
 @bakery_bp.route('/', methods=['GET'])
 def get_bakeries():
     """Get all bakeries"""
-    bakeries = bakery_service.get_all_bakeries()
-    return jsonify({"bakeries": bakeries_schema.dump(bakeries)})
+    try:
+        bakeries = bakery_service.get_all_bakeries()
+        return jsonify({"bakeries": bakeries_schema.dump(bakeries)})
+    except Exception as e:
+        import traceback
+        app.logger.error(f"Error getting all bakeries: {str(e)}")
+        app.logger.error(traceback.format_exc())  # This will log the full stack trace
+        return jsonify({"message": str(e), "bakeries": []}), 500
 
 
 @bakery_bp.route('/top', methods=['GET'])
