@@ -55,15 +55,21 @@ const BakeryRankings = () => {
     products: []
   };
 
-  // Convert backend rating (1-10) to display rating (0.5-5)
-  const getBakeryRating = (bakery) => {
-    // Get the bakery's average rating or default to 0
-    const rating = bakery.average_rating || 0;
-    
-    // Divide by 2 to convert from 10-scale to 5-scale
-    // Backend consistently stores ratings on a 1-10 scale
-    return (rating / 2).toFixed(1);
-  };
+// Convert backend rating (1-10) to display rating (0.5-5)
+const getBakeryRating = (bakery) => {
+  // Get the bakery's average rating from different possible sources
+  let rating = 0;
+  
+  if (typeof bakery.average_rating === 'number') {
+    rating = bakery.average_rating;
+  } else if (bakery.ratings && typeof bakery.ratings.overall === 'number') {
+    rating = bakery.ratings.overall;
+  }
+  
+  // Always divide by 2 to convert from 10-scale to 5-scale
+  // Backend consistently stores ratings on a 1-10 scale
+  return (rating / 2).toFixed(1);
+};
 
   // Format bakery name for URL
   const formatBakeryNameForUrl = (name) => {

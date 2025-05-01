@@ -1,4 +1,6 @@
+/* ---------------------- */
 /* Hero section with search */
+/* ---------------------- */
 .hero-section {
   text-align: center;
   margin: 2rem auto;
@@ -12,13 +14,14 @@
   color: var(--text-950);
 }
 
-/* Search container */
+/* ---------------------- */
+/* Search container & form */
+/* ---------------------- */
 .search-container {
   margin: 1.5rem auto;
   max-width: 700px;
 }
 
-/* Updated search dropdown styling */
 .search-dropdown-form {
   display: flex;
   flex-wrap: wrap;
@@ -47,8 +50,6 @@
   background-color: var(--background-50);
   font-size: 16px;
   color: var(--text-950);
-  -webkit-appearance: none;
-  -moz-appearance: none;
   appearance: none;
   background-repeat: no-repeat;
   background-position: right 10px center;
@@ -76,7 +77,9 @@
   background-color: var(--primary-600);
 }
 
+/* ---------------------- */
 /* Promotional card */
+/* ---------------------- */
 .promo-card {
   background-color: var(--accent-600);
   background-size: cover;
@@ -117,7 +120,9 @@
   display: inline-block;
 }
 
+/* ---------------------- */
 /* Top bakeries section */
+/* ---------------------- */
 .top-bakeries {
   margin: 4rem auto;
   max-width: 900px;
@@ -135,7 +140,9 @@
   margin-bottom: 2rem;
 }
 
-/* New namespaced classes for homepage bakery cards */
+/* ---------------------- */
+/* Featured bakeries grid */
+/* ---------------------- */
 .homepage-bakery-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -150,7 +157,6 @@
   box-shadow: var(--shadow);
   transition: var(--transition);
   background-color: var(--background-100);
-  height: auto;
 }
 
 .homepage-bakery-card:hover {
@@ -198,7 +204,91 @@
   margin: 0 1rem 1rem;
 }
 
+/* ---------------------- */
+/* Search results section */
+/* ---------------------- */
+.search-results-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.search-results-header h2 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-800);
+}
+
+.search-results-count {
+  color: var(--text-600);
+  margin-bottom: 1rem;
+}
+
+.reset-filters-button {
+  background-color: var(--accent-300);
+  color: var(--text-800);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.reset-filters-button:hover {
+  background-color: var(--accent-400);
+  transform: translateY(-1px);
+}
+
+/* ---------------------- */
+/* No results state */
+/* ---------------------- */
+.no-bakeries-message {
+  text-align: center;
+  padding: 3rem 1rem;
+  background-color: var(--background-50);
+  border-radius: var(--border-radius);
+  margin: 2rem auto;
+  max-width: 600px;
+  border: 1px dashed var(--accent-300);
+}
+
+.no-bakeries-message p {
+  margin-bottom: 1.5rem;
+  color: var(--text-800);
+  font-size: 1.1rem;
+}
+
+/* ---------------------- */
+/* Loading state */
+/* ---------------------- */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+}
+
+.loading-spinner {
+  border: 4px solid rgba(var(--accent-300-rgb), 0.3);
+  border-radius: 50%;
+  border-top: 4px solid var(--primary-600);
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ---------------------- */
 /* Responsive styles */
+/* ---------------------- */
 @media (max-width: 900px) {
   .homepage-bakery-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -213,18 +303,22 @@
   .hero-section h1 {
     font-size: 2rem;
   }
-  
+
   .homepage-bakery-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .search-dropdown-form {
     flex-direction: column;
     gap: 10px;
     padding: 12px;
   }
-  
+
   .search-button {
     width: 100%;
+  }
+
+  .search-results-header {
+    text-align: center;
   }
 }
