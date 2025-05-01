@@ -113,7 +113,10 @@ const BakeryRankings = () => {
                   </div>
                   <div className="bakery-details">
                     <h3>{bakery.name}</h3>
-                    <p className="bakery-location">{bakery.address}</p>
+                    <p className="bakery-location">
+                      {bakery.streetName ? `${bakery.streetName} ${bakery.streetNumber || ''}` : ''} 
+                      {bakery.zipCode ? `${bakery.streetName ? ', ' : ''}${bakery.zipCode} Copenhagen` : ''}
+                    </p>
                     <p className="bakery-description">
                       {bakery.description || "A wonderful bakery in Copenhagen offering delicious products."}
                     </p>
