@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useProductProfileViewModel } from '../viewmodels/useProductProfileViewModel';
 import ReviewModal from '../components/ReviewModal';
 import '../styles/product-profile.css';
-import '../styles/croissant-display.css';
+import '../styles/cookie-display.css';
 
 const ProductProfile = () => {
   const { productId } = useParams();
@@ -31,28 +31,28 @@ const ProductProfile = () => {
     setIsReviewModalOpen(false);
   };
 
-  // Helper function to render croissant stars - same as in BakeryProfile
-  const renderCroissantStars = (rating, size = 'medium') => {
+  // Helper function to render cookie stars - same as in BakeryProfile
+  const renderCookieStars = (rating, size = 'medium') => {
     const displayRating = rating / 2;
-    const fullCroissants = Math.floor(displayRating);
-    const hasHalfCroissant = displayRating % 1 >= 0.5;
-    const emptyCroissants = 5 - fullCroissants - (hasHalfCroissant ? 1 : 0);
+    const fullCookies = Math.floor(displayRating);
+    const hasHalfCookie = displayRating % 1 >= 0.5;
+    const emptyCookies = 5 - fullCookies - (hasHalfCookie ? 1 : 0);
     
-    const sizeClass = size === 'large' ? 'croissant-large' : 
-                     size === 'small' ? 'croissant-small' : '';
+    const sizeClass = size === 'large' ? 'cookie-large' : 
+                     size === 'small' ? 'cookie-small' : '';
     
     return (
-      <div className={`croissant-display ${sizeClass}`}>
-        {Array(fullCroissants).fill().map((_, i) => (
-          <span key={`full-${i}`} className="croissant-filled">🍪</span>
+      <div className={`cookie-display ${sizeClass}`}>
+        {Array(fullCookies).fill().map((_, i) => (
+          <span key={`full-${i}`} className="cookie-filled">🍪</span>
         ))}
-        {hasHalfCroissant && (
-          <div className="croissant-half-container">
-            <span className="croissant-half">🍪</span>
+        {hasHalfCookie && (
+          <div className="cookie-half-container">
+            <span className="cookie-half">🍪</span>
           </div>
         )}
-        {Array(emptyCroissants).fill().map((_, i) => (
-          <span key={`empty-${i}`} className="croissant-empty">🍪</span>
+        {Array(emptyCookies).fill().map((_, i) => (
+          <span key={`empty-${i}`} className="cookie-empty">🍪</span>
         ))}
       </div>
     );
@@ -104,7 +104,7 @@ const ProductProfile = () => {
           <h1>{product.name}</h1>
           <div className="product-rating-summary">
             <span className="product-rating-value">{(ratings.overall / 2).toFixed(1)}</span>
-            {renderCroissantStars(ratings.overall)}
+            {renderCookieStars(ratings.overall)}
             <span className="product-review-count">({reviewCount} reviews)</span>
           </div>
         </div>
@@ -138,7 +138,7 @@ const ProductProfile = () => {
             <div className="reviews-summary">
               <div className="reviews-total">
                 <span className="large-rating">{(ratings.overall / 2).toFixed(1)}</span>
-                {renderCroissantStars(ratings.overall, 'large')}
+                {renderCookieStars(ratings.overall, 'large')}
                 <span className="total-reviews">{reviewCount} reviews</span>
               </div>
               
@@ -146,22 +146,22 @@ const ProductProfile = () => {
                 <div className="rating-item">
                   <span className="rating-label">Overall:</span>
                   <span className="rating-numeric-value">{(ratings.overall / 2).toFixed(1)}</span>
-                  {renderCroissantStars(ratings.overall)}
+                  {renderCookieStars(ratings.overall)}
                 </div>
                 <div className="rating-item">
                   <span className="rating-label">Taste:</span>
                   <span className="rating-numeric-value">{(ratings.taste / 2).toFixed(1)}</span>
-                  {renderCroissantStars(ratings.taste)}
+                  {renderCookieStars(ratings.taste)}
                 </div>
                 <div className="rating-item">
                   <span className="rating-label">Price:</span>
                   <span className="rating-numeric-value">{(ratings.price / 2).toFixed(1)}</span>
-                  {renderCroissantStars(ratings.price)}
+                  {renderCookieStars(ratings.price)}
                 </div>
                 <div className="rating-item">
                   <span className="rating-label">Presentation:</span>
                   <span className="rating-numeric-value">{(ratings.presentation / 2).toFixed(1)}</span>
-                  {renderCroissantStars(ratings.presentation)}
+                  {renderCookieStars(ratings.presentation)}
                 </div>
               </div>
               
@@ -180,7 +180,7 @@ const ProductProfile = () => {
                     </div>
                     
                     <div className="review-rating">
-                      {renderCroissantStars(review.overallRating)}
+                      {renderCookieStars(review.overallRating)}
                     </div>
                     
                     <p className="review-text">{review.review}</p>

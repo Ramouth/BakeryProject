@@ -1,9 +1,9 @@
 import { useState, useCallback, memo } from 'react';
 import PropTypes from 'prop-types';
-import '../styles/croissant-rating.css';
+import '../styles/cookie-rating.css';
 
-// Croissant rating component with left/right click zones for half/full ratings
-const CroissantRating = ({ 
+// Cookie rating component with left/right click zones for half/full ratings
+const CookieRating = ({ 
   rating = 0, 
   onChange, 
   max = 5,
@@ -16,18 +16,18 @@ const CroissantRating = ({
   const displayRating = (rating / 2);
   
   // Handle mouse enter for a specific position
-  const handleMouseMove = useCallback((event, croissantIndex) => {
+  const handleMouseMove = useCallback((event, cookieIndex) => {
     if (disabled) return;
     
-    // Get the relative x position within the croissant
+    // Get the relative x position within the cookie
     const rect = event.currentTarget.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const isLeftSide = x < rect.width / 2;
     
     // Calculate rating based on position (0.5 for left side, 1.0 for right side)
     const newRating = isLeftSide 
-      ? croissantIndex + 0.5 
-      : croissantIndex + 1.0;
+      ? cookieIndex + 0.5 
+      : cookieIndex + 1.0;
     
     setHoveredRating(newRating);
   }, [disabled]);
@@ -38,18 +38,18 @@ const CroissantRating = ({
   }, []);
   
   // Handle click to set rating
-  const handleClick = useCallback((event, croissantIndex) => {
+  const handleClick = useCallback((event, cookieIndex) => {
     if (disabled) return;
     
-    // Get the relative x position within the croissant
+    // Get the relative x position within the cookie
     const rect = event.currentTarget.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const isLeftSide = x < rect.width / 2;
     
     // Calculate rating based on position (0.5 for left side, 1.0 for right side)
     const newRating = isLeftSide 
-      ? croissantIndex + 0.5 
-      : croissantIndex + 1.0;
+      ? cookieIndex + 0.5 
+      : cookieIndex + 1.0;
     
     // Convert to backend scale (1-10) and pass to handler
     const backendRating = newRating * 2;
@@ -58,13 +58,13 @@ const CroissantRating = ({
 
   return (
     <div 
-      className={`croissant-rating-container ${disabled ? 'disabled' : ''}`}
+      className={`cookie-rating-container ${disabled ? 'disabled' : ''}`}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="croissant-rating">
-        {/* Render croissants for each whole number */}
+      <div className="cookie-rating">
+        {/* Render cookies for each whole number */}
         {Array.from({ length: max }).map((_, index) => {
-          // Calculate if this croissant should be filled fully, half, or empty
+          // Calculate if this cookie should be filled fully, half, or empty
           const currentRating = hoveredRating || displayRating;
           let fillClass = 'empty';
           
@@ -77,7 +77,7 @@ const CroissantRating = ({
           return (
             <div
               key={index}
-              className={`croissant-wrapper`}
+              className={`cookie-wrapper`}
               onClick={(e) => handleClick(e, index)}
               onMouseMove={(e) => handleMouseMove(e, index)}
               role="button"
@@ -90,8 +90,8 @@ const CroissantRating = ({
                 <div className="right-zone"></div>
               </div>
               
-              {/* The actual croissant with appropriate fill level */}
-              <div className={`croissant ${fillClass}`}>
+              {/* The actual cookie with appropriate fill level */}
+              <div className={`cookie ${fillClass}`}>
                 🍪
               </div>
             </div>
@@ -108,7 +108,7 @@ const CroissantRating = ({
   );
 };
 
-CroissantRating.propTypes = {
+CookieRating.propTypes = {
   rating: PropTypes.number,
   onChange: PropTypes.func.isRequired,
   max: PropTypes.number,
@@ -117,4 +117,4 @@ CroissantRating.propTypes = {
 };
 
 // Memoize to prevent unnecessary re-renders
-export default memo(CroissantRating);
+export default memo(CookieRating);
