@@ -21,6 +21,10 @@ class ProductService:
         """Get products by category"""
         return Product.query.filter_by(category=category).order_by(Product.name).all()
     
+    def get_products_by_subcategory(self, subcategory):
+        """Get products by subcategory"""
+        return Product.query.filter_by(subcategory=subcategory).order_by(Product.name).all()
+    
     def search_products(self, search_term):
         """Search products by name"""
         return Product.query.filter(Product.name.ilike(f'%{search_term}%')).order_by(Product.name).all()
@@ -32,6 +36,7 @@ class ProductService:
                 name=name, 
                 bakery_id=bakery_id, 
                 category=category,
+                subcategory=subcategory,
                 image_url=image_url
             )
             db.session.add(product)
@@ -51,6 +56,7 @@ class ProductService:
             product.name = name
             product.bakery_id = bakery_id
             product.category = category
+            product.subcategory = subcategory
             product.image_url = image_url
             
             db.session.commit()

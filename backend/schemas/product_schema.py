@@ -37,6 +37,7 @@ class ProductSchema(ma.SQLAlchemyAutoSchema):
             # Map model attributes to schema fields
             data['bakeryId'] = obj.bakery_id
             data['imageUrl'] = obj.image_url if obj.image_url else None
+            data['subcategory'] = obj.subcategory if obj.subcategory else None
         return data
     
     @post_load
@@ -46,4 +47,6 @@ class ProductSchema(ma.SQLAlchemyAutoSchema):
             data['bakery_id'] = data.pop('bakeryId')
         if 'imageUrl' in data:
             data['image_url'] = data.pop('imageUrl')
+        if 'subcategory' in data:
+            data['subcategory'] = data.pop('subcategory')
         return data

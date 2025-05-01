@@ -1,3 +1,5 @@
+// Update frontend/src/services/productService.js
+
 import { BaseService } from './baseService';
 import apiClient from './api';
 
@@ -13,6 +15,12 @@ class ProductService extends BaseService {
 
   async getProductsByCategory(category) {
     const response = await apiClient.get(`${this.endpoint}/category/${category}`, true);
+    return response;
+  }
+
+  // Add new method for subcategories
+  async getProductsBySubcategory(subcategory) {
+    const response = await apiClient.get(`${this.endpoint}/subcategory/${subcategory}`, true);
     return response;
   }
 
