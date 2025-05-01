@@ -20,6 +20,19 @@ const ProductRankings = () => {
     return name.toLowerCase().replace(/\s+/g, '-');
   };
 
+  // Helper function to render cookie stars (same approach as in bakery rankings)
+  const renderRatingStars = (rating) => {
+    // Convert to a number in case it's a string
+    const numRating = parseFloat(rating);
+    
+    return (
+      <span className="rating-with-star">
+        <span className="rating-value">{numRating}</span>
+        <span className="cookie">🍪</span>
+      </span>
+    );
+  };
+
   // Show error message
   if (error) {
     return (
@@ -102,10 +115,7 @@ const ProductRankings = () => {
                   </div>
                   <div className="col-rating">
                     <div className="rating-display">
-                      <div className="rating-with-star">
-                        <span className="rating-value">{item.rating}</span>
-                        <span className="star">★</span>
-                      </div>
+                      {renderRatingStars(item.rating)}
                       <span className="review-count">based on {item.reviewCount} reviews</span>
                     </div>
                   </div>
