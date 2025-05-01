@@ -10,27 +10,24 @@ export const UserProvider = ({ children }) => {
 
   // Attempt to load user from token on mount
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('accessToken');
     if (token) {
       // Try to fetch the user profile using the token
-      // The API client will automatically include the token from localStorage
       console.log('Found token in storage, attempting to fetch user profile');
       apiClient.get('/auth/profile')
         .then(response => {
           console.log('Profile fetch successful:', response);
-          // Set the user object
           setCurrentUser(response);
           setIsLoading(false);
         })
         .catch((err) => {
           console.error('Profile fetch failed:', err);
-          // Token invalid or profile fetch failed, clear token and user
-          localStorage.removeItem('authToken');
+          localStorage.removeItem('accessToken');
           setCurrentUser(null);
           setIsLoading(false);
         });
     } else {
-      console.log('No auth token found in storage');
+      console.log('No access token found in storage');
       setIsLoading(false);
     }
   }, []);
@@ -41,15 +38,9 @@ export const UserProvider = ({ children }) => {
     try {
       console.log('Attempting login for user:', username);
       const response = await apiClient.post('/auth/login', { username, password });
-      
-      // Extract token and user from response
       const { access_token, user } = response;
       console.log('Login successful, received token:', !!access_token);
-
-      // Store token in localStorage for future requests
-      localStorage.setItem('authToken', access_token);
-      
-      // Set the user object
+      localStorage.setItem('accessToken', access_token);
       setCurrentUser(user);
       return user;
     } catch (err) {
@@ -68,15 +59,9 @@ export const UserProvider = ({ children }) => {
     try {
       console.log('Attempting to register user:', userData.username);
       const response = await apiClient.post('/auth/register', userData);
-      
-      // Extract token and user from response
       const { access_token, user } = response;
       console.log('Registration successful, received token:', !!access_token);
-
-      // Store token in localStorage for future requests
-      localStorage.setItem('authToken', access_token);
-      
-      // Set the user object
+      localStorage.setItem('accessToken', access_token);
       setCurrentUser(user);
       return user;
     } catch (err) {
@@ -90,8 +75,8 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   const logout = useCallback(() => {
-    console.log('Logging out user, removing auth token');
-    localStorage.removeItem('authToken');
+    console.log('Logging out user, removing access token');
+    localStorage.removeItem('accessToken');
     setCurrentUser(null);
   }, []);
 
