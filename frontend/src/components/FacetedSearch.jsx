@@ -191,13 +191,15 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
           // Ensure it's consistently stored in average_rating
           return {
             ...bakery,
-            average_rating: rating
+            average_rating: rating,
+            review_count: statsResponse.review_count || 0
           };
         } catch (err) {
           // If stats endpoint fails, use any existing rating or default to 0
           return {
             ...bakery,
-            average_rating: bakery.average_rating || 0
+            average_rating: bakery.average_rating || 0,
+            review_count: bakery.review_count || 0
           };
         }
       }));
@@ -272,6 +274,8 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
 
   // Function to sort search results
   const sortResults = (results, sortBy) => {
+    console.log(`Sorting by: ${sortBy}`);
+    
     switch (sortBy) {
       case 'rating':
         return [...results].sort((a, b) => {
@@ -280,6 +284,10 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
           return bRating - aRating;
         });
       case 'popular':
+        console.log("Sorting by review count");
+        // Debug log the review counts
+        results.forEach(b => console.log(`Bakery ${b.id} (${b.name}): ${b.review_count || 0} reviews`));
+        
         return [...results].sort((a, b) => {
           const aReviews = a.review_count || 0;
           const bReviews = b.review_count || 0;

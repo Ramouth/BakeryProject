@@ -144,7 +144,7 @@ const HomePage = () => {
                         boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
                         zIndex: 2
                       }}>
-                        {getDisplayRating(bakery)} 🍪
+                        {getDisplayRating(bakery)} 🍪 ({bakery.review_count || 0})
                       </div>
                     </div>
                   </Link>
@@ -231,7 +231,7 @@ const HomePage = () => {
                         boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
                         zIndex: 2
                       }}>
-                        {getDisplayRating(bakery)} 🍪
+                        {getDisplayRating(bakery)} 🍪 ({bakery.review_count || 0})
                       </div>
                     </div>
                   </Link>
