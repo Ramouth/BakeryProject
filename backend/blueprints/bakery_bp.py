@@ -2,9 +2,6 @@ from flask import Blueprint, request, jsonify, current_app as app, make_response
 from models import db
 from schemas import BakerySchema
 from services.bakery_service import BakeryService
-from utils.caching import cache
-from utils.caching import cache_key_with_query
-# Removed: from utils.cors_helper import handle_preflight
 
 # Create blueprint
 bakery_bp = Blueprint('bakery', __name__)
@@ -18,7 +15,6 @@ bakery_service = BakeryService()
 
 
 @bakery_bp.route('/', methods=['GET'])
-@cache.cached(timeout=60)  # Cache for 60 seconds
 def get_bakeries():
     """Get all bakeries"""
     bakeries = bakery_service.get_all_bakeries()
@@ -26,7 +22,6 @@ def get_bakeries():
 
 
 @bakery_bp.route('/top', methods=['GET'])
-@cache.cached(timeout=120)  # Cache for 2 minutes
 def get_top_bakeries():
     """Get top rated bakeries"""
     try:
@@ -58,7 +53,6 @@ def get_top_bakeries():
 
 
 @bakery_bp.route('/<int:bakery_id>', methods=['GET'])
-@cache.cached(timeout=60, key_prefix='get_bakery')  # Cache with proper key
 def get_bakery(bakery_id):
     """Get a specific bakery by ID"""
     bakery = bakery_service.get_bakery_by_id(bakery_id)
@@ -110,8 +104,6 @@ def create_bakery():
             website_url=website_url
         )
 
-        cache.delete_memoized(get_bakeries)
-
         return jsonify({
             "message": "Bakery created successfully!",
             "bakery": bakery_schema.dump(new_bakery)
@@ -155,9 +147,6 @@ def update_bakery(bakery_id):
             website_url=website_url
         )
 
-        cache.delete_memoized(get_bakeries)
-        cache.delete_memoized(get_bakery, bakery_id)
-
         return jsonify({
             "message": "Bakery updated successfully",
             "bakery": bakery_schema.dump(updated_bakery)
@@ -178,9 +167,6 @@ def delete_bakery(bakery_id):
 
         bakery_service.delete_bakery(bakery_id)
 
-        cache.delete_memoized(get_bakeries)
-        cache.delete_memoized(get_bakery, bakery_id)
-
         return jsonify({"message": "Bakery deleted successfully"}), 200
 
     except Exception as e:
@@ -189,7 +175,6 @@ def delete_bakery(bakery_id):
 
 
 @bakery_bp.route('/search', methods=['GET'])
-@cache.cached(timeout=30, key_prefix=cache_key_with_query)
 def search_bakeries():
     """Search bakeries by name"""
     search_term = request.args.get('q', '')
@@ -205,11 +190,9 @@ def search_bakeries():
         return jsonify({"message": f"Error searching bakeries: {str(e)}", "bakeries": []}), 500
 
 
-@bakery_bp.route('/<int:bakery_id>/stats', methods=['GET', 'OPTIONS'])
-@cache.cached(timeout=60)
+@bakery_bp.route('/<int:bakery_id>/stats', methods=['GET'])
 def get_bakery_stats(bakery_id):
     """Get statistics for a bakery including review averages"""
-    # Removed preflight handling
     try:
         stats = bakery_service.get_bakery_stats(bakery_id)
         return jsonify(stats), 200
@@ -217,11 +200,9 @@ def get_bakery_stats(bakery_id):
         return jsonify({"message": str(e)}), 404
 
 
-@bakery_bp.route('/<int:bakery_id>/products', methods=['GET', 'OPTIONS'])
-@cache.cached(timeout=60)
+@bakery_bp.route('/<int:bakery_id>/products', methods=['GET'])
 def get_bakery_products(bakery_id):
     """Get all products for a specific bakery"""
-    # Removed preflight handling
     from services.product_service import ProductService
     from schemas import ProductSchema
 

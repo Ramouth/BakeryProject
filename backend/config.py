@@ -9,7 +9,10 @@ load_dotenv()
 class Config:
     """Base configuration"""
     # Database configuration
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:///new_bakery_reviews.db')
+    SQLALCHEMY_DATABASE_URI = os.environ.get(
+        'DATABASE_URL',
+        'sqlite:///new_bakery_reviews.db'
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Security configurations
@@ -18,18 +21,6 @@ class Config:
     # API configurations
     JSON_SORT_KEYS = False
     JSONIFY_PRETTYPRINT_REGULAR = False  # Disable pretty printing for performance
-    
-    # Performance optimizations
-    SQLALCHEMY_ENGINE_OPTIONS = {
-        'pool_recycle': 280,
-        'pool_pre_ping': True,
-        'pool_size': 10,
-        'max_overflow': 20,
-    }
-    
-    # Caching configuration (if needed)
-    CACHE_TYPE = 'simple'  # Use 'redis' in production
-    CACHE_DEFAULT_TIMEOUT = 300  # 5 minutes
 
 class DevelopmentConfig(Config):
     """Development configuration"""

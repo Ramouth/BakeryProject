@@ -1,6 +1,8 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from schemas import UserSchema
 from services.user_service import UserService
+from models import User
 
 # Create blueprint
 auth_bp = Blueprint('auth', __name__)
@@ -32,16 +34,24 @@ def register():
             is_admin=data.get('isAdmin', False)
         )
         
+        # Generate access token
+        access_token = create_access_token(identity={
+            "id": user.id,
+            "username": user.username,
+            "role": "admin" if user.is_admin else "user"
+        })
+        
         return jsonify({
             "message": "Registration successful",
-            "user": user_schema.dump(user)
+            "user": user_schema.dump(user),
+            "access_token": access_token
         }), 201
     except Exception as e:
         return jsonify({"message": str(e)}), 400
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
-    """Log in a user"""
+    """Log in a user and return a JWT token"""
     try:
         username = request.json.get('username')
         password = request.json.get('password')
@@ -54,26 +64,31 @@ def login():
         if not user:
             return jsonify({"message": "Invalid username or password"}), 401
         
-        # In a production app, you would create a session token or JWT here
-        # For now, we'll just return the user data
+        # Generate token
+        access_token = create_access_token(identity={
+            "id": user.id,
+            "username": user.username,
+            "role": "admin" if user.is_admin else "user"
+        })
+        
         return jsonify({
             "message": "Login successful",
-            "user": user_schema.dump(user)
+            "user": user_schema.dump(user),
+            "access_token": access_token
         }), 200
     except Exception as e:
         return jsonify({"message": str(e)}), 400
 
 @auth_bp.route('/profile', methods=['GET'])
+@jwt_required()
 def get_profile():
-    """Get user profile (would normally require authentication)"""
+    """Get user profile (requires authentication)"""
     try:
-        # In a real app, you would get the user ID from the session or token
-        # For now, we'll take it from a query parameter for testing
-        user_id = request.args.get('userId')
-        if not user_id:
-            return jsonify({"message": "User ID is required"}), 400
+        # Get user identity from JWT token
+        current_user_data = get_jwt_identity()
+        user_id = current_user_data.get("id")
         
-        user = user_service.get_user_by_id(int(user_id))
+        user = user_service.get_user_by_id(user_id)
         if not user:
             return jsonify({"message": "User not found"}), 404
         
@@ -82,13 +97,13 @@ def get_profile():
         return jsonify({"message": str(e)}), 400
 
 @auth_bp.route('/update-profile', methods=['PATCH'])
+@jwt_required()
 def update_profile():
-    """Update user profile (would normally require authentication)"""
+    """Update user profile (requires authentication)"""
     try:
-        # In a real app, you would get the user ID from the session or token
-        user_id = request.json.get('id')
-        if not user_id:
-            return jsonify({"message": "User ID is required"}), 400
+        # Get user identity from JWT token
+        current_user_data = get_jwt_identity()
+        user_id = current_user_data.get("id")
         
         data = request.json
         
@@ -108,20 +123,25 @@ def update_profile():
         return jsonify({"message": str(e)}), 400
 
 @auth_bp.route('/change-password', methods=['POST'])
+@jwt_required()
 def change_password():
-    """Change user password (would normally require authentication)"""
+    """Change user password (requires authentication)"""
     try:
+        # Get user identity from JWT token
+        current_user_data = get_jwt_identity()
+        user_id = current_user_data.get("id")
+        
         data = request.json
         
         # Validate required fields
-        required_fields = ['userId', 'currentPassword', 'newPassword']
+        required_fields = ['currentPassword', 'newPassword']
         for field in required_fields:
             if field not in data or not data.get(field):
                 return jsonify({"message": f"Missing required field: {field}"}), 400
         
         # Update password
         success = user_service.update_password(
-            user_id=data['userId'],
+            user_id=user_id,
             current_password=data['currentPassword'],
             new_password=data['newPassword']
         )
@@ -129,3 +149,13 @@ def change_password():
         return jsonify({"message": "Password updated successfully"}), 200
     except Exception as e:
         return jsonify({"message": str(e)}), 400
+
+# Additional route for admin check
+@auth_bp.route('/check-admin', methods=['GET'])
+@jwt_required()
+def check_admin():
+    """Check if the current user is an admin"""
+    current_user_data = get_jwt_identity()
+    if current_user_data.get('role') != 'admin':
+        return jsonify({"isAdmin": False}), 403
+    return jsonify({"isAdmin": True}), 200

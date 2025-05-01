@@ -1,7 +1,6 @@
 from flask import Blueprint, request, jsonify
 from schemas import UserSchema
 from services.user_service import UserService
-from utils.caching import cache
 
 # Create blueprint
 user_bp = Blueprint('user', __name__)
@@ -14,14 +13,12 @@ users_schema = UserSchema(many=True)
 user_service = UserService()
 
 @user_bp.route('/', methods=['GET'])
-@cache.cached(timeout=60)  # Cache for 60 seconds
 def get_users():
     """Get all users"""
     users = user_service.get_all_users()
     return jsonify({"users": users_schema.dump(users)})
 
 @user_bp.route('/<int:user_id>', methods=['GET'])
-@cache.cached(timeout=60)  # Cache for 60 seconds
 def get_user(user_id):
     """Get a specific user by ID"""
     user = user_service.get_user_by_id(user_id)
@@ -63,9 +60,6 @@ def create_user():
             is_admin=data.get('isAdmin', False)
         )
         
-        # Invalidate cache
-        cache.delete('view/get_users')
-        
         return jsonify({"message": "User created!", "user": user_schema.dump(user)}), 201
     except Exception as e:
         print(f"Error creating user: {str(e)}")  # Debug log
@@ -95,10 +89,6 @@ def update_user(user_id):
             password=password  # Pass password to service if provided
         )
         
-        # Invalidate cache
-        cache.delete('view/get_users')
-        cache.delete(f'view/get_user_{user_id}')
-        
         return jsonify({"message": "User updated.", "user": user_schema.dump(updated_user)}), 200
     except Exception as e:
         print(f"Error updating user: {str(e)}")  # Debug log
@@ -114,10 +104,6 @@ def delete_user(user_id):
         
         # Delete user
         user_service.delete_user(user_id)
-        
-        # Invalidate cache
-        cache.delete('view/get_users')
-        cache.delete(f'view/get_user_{user_id}')
         
         return jsonify({"message": "User deleted!"}), 200
     except Exception as e:

@@ -5,21 +5,13 @@ import CroissantRating from '../components/CroissantRatingComponent';
 import bakeryLogo from '../assets/bageri-logo.jpeg';
 import bakeryHeader from '../assets/bageri.jpeg';
 import '../styles/bakery-profile.css';
-import apiClient from '../services/api';
 
 const BakeryProfile = () => {
   const { bakeryName } = useParams();
   
-  // Clear relevant cache when component mounts or bakeryName changes
+  // Log component lifecycle for debugging
   useEffect(() => {
     console.log(`BakeryProfile mounted/updated for ${bakeryName}`);
-    
-    // Force clear all bakery-related caches
-    apiClient.clearCacheForUrl(`/bakeries`);
-    apiClient.invalidateCacheByTags(['bakery-reviews', 'api-request']);
-    
-    // Debug the cache state
-    apiClient.debugCache();
     
     // Cleanup on unmount
     return () => {

@@ -1,6 +1,6 @@
 // src/App.jsx
 import { lazy, Suspense, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate, useParams } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { UserProvider } from './store/UserContext';
 import { ReviewProvider } from './store/ReviewContext';
 import { NotificationProvider } from './store/NotificationContext';
@@ -8,7 +8,7 @@ import NavBar from './components/NavBar';
 import Footer from './components/Footer';
 import AuthGuard from './components/AuthGuard';
 import BakeryProfile from './views/BakeryProfile';
-import apiClient from './services/api';
+import ProductProfile from './views/ProductProfile';
 import Admin from './views/AdminDashboard';
 
 // Lazy load views for code splitting and performance
@@ -18,7 +18,7 @@ const BakeryRating = lazy(() => import('./views/BakeryRating'));
 const AdminDashboard = lazy(() => import('./views/AdminDashboard'));
 const Login = lazy(() => import('./views/Login'));
 const SignUp = lazy(() => import('./views/SignUp'));
-const BakeryRankings = lazy(() => import('./views/BakeryRankings')); 
+const BakeryRankings = lazy(() => import('./views/BakeryRankings'));
 const ProductRankings = lazy(() => import('./views/ProductRankings'));
 const ProductCategorySelection = lazy(() => import('./views/ProductCategorySelection'));
 const UserProfile = lazy(() => import('./views/UserProfile'));
@@ -30,7 +30,6 @@ import './styles/homepage.css';
 import './styles/header.css';
 import './styles/product-category.css';
 import './styles/profile.css';
-import ProductProfile from './views/ProductProfile';
 
 // Loading component for Suspense fallback
 const Loading = () => (
@@ -40,62 +39,14 @@ const Loading = () => (
   </div>
 );
 
-// Component to handle route changes and cache clearing
-const RouteChangeHandler = () => {
-  const navigate = useNavigate();
-  
-  // Custom navigation function that clears relevant cache
-  const navigateWithCacheClear = (path) => {
-    apiClient.clearCacheForCurrentRoute();
-    navigate(path);
-  };
-  
-  // Set up cache clearing on navigation
-  useEffect(() => {
-    apiClient.clearCacheOnNavigation();
-  }, []);
-  
-  return null;
-};
-
-// Wrapper component for BakeryProfile to ensure it re-renders with URL changes
-const BakeryProfileWithKey = () => {
-  const { bakeryName } = useParams();
-  
-  // Force clear cache for bakery routes
-  useEffect(() => {
-    apiClient.clearCacheForUrl('/bakeries');
-  }, [bakeryName]);
-  
-  // Use bakeryName as key to force re-mounting when URL changes
-  return <BakeryProfile key={bakeryName} />;
-};
-
-// Wrapper component for ProductProfile to ensure it re-renders with URL changes
-const ProductProfileWithKey = () => {
-  const { productId } = useParams();
-  
-  // Force clear cache for product routes
-  useEffect(() => {
-    apiClient.clearCacheForUrl('/products');
-  }, [productId]);
-  
-  // Use productId as key to force re-mounting when URL changes
-  return <ProductProfile key={productId} />;
-};
-
 function App() {
   // Initialize theme on app load
   useEffect(() => {
-    // Check for saved theme preference or default to light
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {
       document.documentElement.setAttribute('data-theme', savedTheme);
     } else {
-      // Set light theme as default
       document.documentElement.setAttribute('data-theme', 'light');
-      
-      // Save preference
       localStorage.setItem('theme', 'light');
     }
   }, []);
@@ -107,13 +58,12 @@ function App() {
           <NotificationProvider>
             <div className="app">
               <NavBar />
-              <RouteChangeHandler />
-              
+
               <div className="content-section">
                 <main className="app-content">
                   <Suspense fallback={<Loading />}>
                     <Routes>
-                      <Route path="/" element={<HomePage key="homepage-component" />} />
+                      <Route path="/" element={<HomePage />} />
                       <Route path="/product-rating" element={<ProductRating />} />
                       <Route path="/bakery-rating" element={<BakeryRating />} />
                       <Route path="/login" element={<Login />} />
@@ -124,14 +74,14 @@ function App() {
                       <Route path="/product-rankings" element={<ProductRankings />} />
                       <Route path="/product-rankings/:categoryId" element={<ProductRankings />} />
                       <Route path="/product-rankings/:categoryId/:productId" element={<ProductRankings />} />
-                      <Route path="/bakery/:bakeryName" element={<BakeryProfileWithKey />} />
-                      <Route path="/product/:productId" element={<ProductProfileWithKey />} />
-                      <Route path="/admin-dashboard/*" element={<AuthGuard><Admin /></AuthGuard>}/>
+                      <Route path="/bakery/:bakeryName" element={<BakeryProfile />} />
+                      <Route path="/product/:productId" element={<ProductProfile />} />
+                      <Route path="/admin-dashboard/*" element={<AuthGuard><Admin /></AuthGuard>} />
                     </Routes>
                   </Suspense>
                 </main>
               </div>
-              
+
               <Footer />
             </div>
           </NotificationProvider>

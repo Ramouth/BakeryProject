@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
-import apiClient from '../services/api';
 
 // Create context
 const UserContext = createContext();
@@ -131,8 +130,6 @@ export const UserProvider = ({ children }) => {
   // Log out user
   const logout = useCallback(() => {
     setUser(null);
-    // Clear any cached user data
-    apiClient.clearCacheForUrl('/users');
   }, [setUser]);
   
   // Memoized context value to prevent unnecessary re-renders
@@ -161,4 +158,3 @@ export const useUser = () => {
   }
   return context;
 };
-
