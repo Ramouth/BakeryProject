@@ -6,6 +6,7 @@ export const useFacetedSearchViewModel = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [hasSearched, setHasSearched] = useState(false); // Track if search has been performed
   const [appliedFilters, setAppliedFilters] = useState({
     category: '',
     product: '',
@@ -34,47 +35,6 @@ export const useFacetedSearchViewModel = () => {
           apiClient.get('/products', true)
         ]);
         
-        // Process bakeries to ensure they have proper rating values
-        let bakeries = bakeryResponse.bakeries || [];
-        
-        // Make sure each bakery has average_rating in the correct format
-        bakeries = await Promise.all(bakeries.map(async (bakery) => {
-          try {
-            // Try to fetch bakery stats to get the proper rating
-            const statsResponse = await apiClient.get(`/bakeries/${bakery.id}/stats`, true);
-            
-            // Extract the average rating from bakery stats if available
-            let rating = 0;
-            if (statsResponse && typeof statsResponse.average_rating === 'number') {
-              rating = statsResponse.average_rating;
-            } else if (statsResponse && statsResponse.ratings && typeof statsResponse.ratings.overall === 'number') {
-              rating = statsResponse.ratings.overall;
-            }
-            
-            // Ensure it's consistently stored in average_rating
-            return {
-              ...bakery,
-              average_rating: rating
-            };
-          } catch (err) {
-            // If stats endpoint fails, use any existing rating or default to 0
-            return {
-              ...bakery,
-              average_rating: bakery.average_rating || 0
-            };
-          }
-        }));
-        
-        // Sort bakeries by rating (highest first)
-        bakeries = bakeries.sort((a, b) => {
-          const aRating = a.average_rating || 0;
-          const bRating = b.average_rating || 0;
-          return bRating - aRating;
-        });
-        
-        // Show top bakeries for initial view (but we'll show all matching results for search)
-        setSearchResults(bakeries.slice(0, 3));
-        
         // Extract categories from products
         if (productResponse.products) {
           const uniqueCategories = [...new Set(productResponse.products
@@ -101,7 +61,6 @@ export const useFacetedSearchViewModel = () => {
       } catch (err) {
         console.error('Error loading initial data:', err);
         setError('Failed to load data. Please try again.');
-        setSearchResults([]);
       } finally {
         setIsLoading(false);
       }
@@ -112,11 +71,11 @@ export const useFacetedSearchViewModel = () => {
 
   // Handle search results from faceted search component
   const handleSearch = useCallback((results) => {
-    // Show all matching results, not limited to top 3
-    setSearchResults(results);
+    // Set flag indicating a search has been performed
+    setHasSearched(true);
     
-    // Update applied filters based on current search
-    // This would be more complex in a real app, extracting the filters from the search
+    // Show all matching results
+    setSearchResults(results);
   }, []);
 
   // Reset all filters
@@ -130,67 +89,14 @@ export const useFacetedSearchViewModel = () => {
       sort: 'rating'
     });
     
-    // Reload all top 3 results
-    loadAllResults();
-  }, []);
-
-  // Load all results without filters, limited to top 3 for initial view only
-  const loadAllResults = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      const response = await apiClient.get('/bakeries', true);
-      let bakeries = response.bakeries || [];
-      
-      // Process bakeries to ensure they have proper rating values
-      bakeries = await Promise.all(bakeries.map(async (bakery) => {
-        try {
-          // Try to fetch bakery stats to get the proper rating
-          const statsResponse = await apiClient.get(`/bakeries/${bakery.id}/stats`, true);
-          
-          // Extract the average rating from bakery stats if available
-          let rating = 0;
-          if (statsResponse && typeof statsResponse.average_rating === 'number') {
-            rating = statsResponse.average_rating;
-          } else if (statsResponse && statsResponse.ratings && typeof statsResponse.ratings.overall === 'number') {
-            rating = statsResponse.ratings.overall;
-          }
-          
-          // Ensure it's consistently stored in average_rating
-          return {
-            ...bakery,
-            average_rating: rating
-          };
-        } catch (err) {
-          // If stats endpoint fails, use any existing rating or default to 0
-          return {
-            ...bakery,
-            average_rating: bakery.average_rating || 0
-          };
-        }
-      }));
-      
-      // Sort bakeries by rating (highest first)
-      bakeries = bakeries.sort((a, b) => {
-        const aRating = a.average_rating || 0;
-        const bRating = b.average_rating || 0;
-        return bRating - aRating;
-      });
-      
-      // Initial view shows top 3, but search will show all matching results
-      setSearchResults(bakeries.slice(0, 3));
-    } catch (err) {
-      console.error('Error loading results:', err);
-      setError('Failed to load results. Please try again.');
-      setSearchResults([]);
-    } finally {
-      setIsLoading(false);
-    }
+    // Reset search state
+    setHasSearched(false);
+    setSearchResults([]);
   }, []);
 
   // Format bakery name for URL
   const formatBakeryNameForUrl = useCallback((name) => {
+    if (!name) return '';
     return name.toLowerCase().replace(/\s+/g, '-');
   }, []);
 
@@ -228,6 +134,7 @@ export const useFacetedSearchViewModel = () => {
     searchResults,
     isLoading,
     error,
+    hasSearched,
     appliedFilters,
     availableCategories,
     availableProducts,

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import apiClient from '../services/api';
 import '../styles/faceted-search.css';
 
-const FacetedSearch = ({ onSearch }) => {
+const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
   // State for storing filter options and selected values
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
@@ -27,6 +27,7 @@ const FacetedSearch = ({ onSearch }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [resultCount, setResultCount] = useState(0);
   const [isSearching, setIsSearching] = useState(false);
+  const [hasSearched, setHasSearched] = useState(initialHasSearched);
 
   // Fetch filter options on component mount
   useEffect(() => {
@@ -105,8 +106,10 @@ const FacetedSearch = ({ onSearch }) => {
         
         setRatingOptions(ratingFilterOptions);
 
-        // Set initial result count
-        setResultCount(bakeryResponse.bakeries?.length || 0);
+        // Update result count if we already have search results
+        if (hasSearched) {
+          setResultCount(bakeryResponse.bakeries?.length || 0);
+        }
       } catch (error) {
         console.error('Error fetching filter options:', error);
       } finally {
@@ -115,7 +118,7 @@ const FacetedSearch = ({ onSearch }) => {
     };
 
     fetchFilterOptions();
-  }, []);
+  }, [hasSearched]);
 
   // Fetch products based on selected category
   useEffect(() => {
@@ -268,8 +271,11 @@ const FacetedSearch = ({ onSearch }) => {
       // Update result count
       setResultCount(results.length);
       
+      // Set hasSearched to true once a search is performed
+      setHasSearched(true);
+      
       // Pass results to parent component (all matching results, not just top 3)
-      onSearch(results);
+      onSearch(results, true);
     } catch (error) {
       console.error('Error performing search:', error);
     } finally {
@@ -457,7 +463,8 @@ const FacetedSearch = ({ onSearch }) => {
 };
 
 FacetedSearch.propTypes = {
-  onSearch: PropTypes.func.isRequired
+  onSearch: PropTypes.func.isRequired,
+  initialHasSearched: PropTypes.bool
 };
 
 export default FacetedSearch;
