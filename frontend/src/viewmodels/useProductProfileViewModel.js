@@ -1,3 +1,6 @@
+// In useProductProfileViewModel.js, try this alternative approach
+// that directly logs and maps the review properties
+
 import { useState, useEffect } from 'react';
 import productService from '../services/productService';
 import bakeryService from '../services/bakeryService';
@@ -37,9 +40,34 @@ export const useProductProfileViewModel = (productId) => {
             .filter(p => p.id !== parseInt(productId))
             .slice(0, 3)
             .map(p => Product.fromApiResponse(p)));
-          setProductReviews((reviewsData.productReviews || []).map(r => ProductReview.fromApiResponse(r)));
+          
+          // Debug the raw reviews data from API
+          console.log("Raw product reviews from API:", reviewsData);
+          
+          if (reviewsData && reviewsData.productReviews) {
+            const reviews = reviewsData.productReviews.map(r => {
+              // Map directly from API response data
+              return {
+                id: r.id,
+                review: r.review,
+                username: r.username || "Anonymous",
+                created_at: r.created_at,
+                overallRating: Number(r.overallRating) || 0,
+                tasteRating: Number(r.tasteRating) || 0,
+                priceRating: Number(r.priceRating) || 0,
+                presentationRating: Number(r.presentationRating) || 0
+              };
+            });
+            
+            console.log("Processed reviews with direct mapping:", reviews);
+            setProductReviews(reviews);
+          } else {
+            console.warn("No product reviews found in API response");
+            setProductReviews([]);
+          }
         }
       } catch (error) {
+        console.error("Error fetching product data:", error);
         setError('Failed to load product information');
       } finally {
         setLoading(false);
@@ -52,24 +80,80 @@ export const useProductProfileViewModel = (productId) => {
   }, [productId]);
 
   const calculateRatings = () => {
-    if (!productReviews.length) {
-      return { overall: 0, taste: 0, price: 0, presentation: 0 };
+    if (!productReviews || productReviews.length === 0) {
+      return {
+        overall: 0,
+        taste: 0,
+        price: 0,
+        presentation: 0
+      };
     }
     
-    const sumRatings = productReviews.reduce((acc, review) => ({
-      overall: acc.overall + (review.overallRating || 0),
-      taste: acc.taste + (review.tasteRating || 0),
-      price: acc.price + (review.priceRating || 0),
-      presentation: acc.presentation + (review.presentationRating || 0)
-    }), { overall: 0, taste: 0, price: 0, presentation: 0 });
+    console.log("Reviews being used for rating calculation:", productReviews);
     
-    const count = productReviews.length;
-    return {
-      overall: sumRatings.overall / count,
-      taste: sumRatings.taste / count,
-      price: sumRatings.price / count,
-      presentation: sumRatings.presentation / count
+    // First check if these properties exist in our reviews
+    const firstReview = productReviews[0];
+    console.log("First review properties:", {
+      "overallRating": firstReview.overallRating,
+      "tasteRating": firstReview.tasteRating,
+      "priceRating": firstReview.priceRating,
+      "presentationRating": firstReview.presentationRating,
+    });
+    
+    // Calculate sum of all ratings
+    let totalOverall = 0;
+    let totalTaste = 0;
+    let totalPrice = 0;
+    let totalPresentation = 0;
+    let countOverall = 0;
+    let countTaste = 0;
+    let countPrice = 0;
+    let countPresentation = 0;
+    
+    productReviews.forEach(review => {
+      // Log each review's properties for debugging
+      console.log(`Review ${review.id} ratings:`, {
+        overall: review.overallRating,
+        taste: review.tasteRating,
+        price: review.priceRating,
+        presentation: review.presentationRating
+      });
+      
+      // Handle overall rating
+      if (review.overallRating && review.overallRating > 0) {
+        totalOverall += Number(review.overallRating);
+        countOverall++;
+      }
+      
+      // Handle taste rating
+      if (review.tasteRating && review.tasteRating > 0) {
+        totalTaste += Number(review.tasteRating);
+        countTaste++;
+      }
+      
+      // Handle price rating
+      if (review.priceRating && review.priceRating > 0) {
+        totalPrice += Number(review.priceRating);
+        countPrice++;
+      }
+      
+      // Handle presentation rating
+      if (review.presentationRating && review.presentationRating > 0) {
+        totalPresentation += Number(review.presentationRating);
+        countPresentation++;
+      }
+    });
+    
+    // Calculate averages
+    const result = {
+      overall: countOverall > 0 ? totalOverall / countOverall : 0,
+      taste: countTaste > 0 ? totalTaste / countTaste : 0,
+      price: countPrice > 0 ? totalPrice / countPrice : 0,
+      presentation: countPresentation > 0 ? totalPresentation / countPresentation : 0
     };
+    
+    console.log("Final calculated ratings:", result);
+    return result;
   };
 
   const formatDate = (dateString) => {

@@ -378,3 +378,24 @@
     grid-template-columns: 1fr;
   }
 }
+
+.rating-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.rating-label {
+  width: 100px;
+  font-weight: 500;
+  color: var(--text-800);
+  margin-right: 5px;
+}
+
+.rating-numeric-value {
+  font-weight: bold;
+  color: var(--primary-600);
+  margin-right: 8px;
+  min-width: 25px;
+  text-align: center;
+}

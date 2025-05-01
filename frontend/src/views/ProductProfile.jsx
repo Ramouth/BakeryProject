@@ -2,8 +2,8 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useProductProfileViewModel } from '../viewmodels/useProductProfileViewModel';
 import ReviewModal from '../components/ReviewModal';
-import RatingBar from '../components/RatingComponent';
 import '../styles/product-profile.css';
+import '../styles/croissant-display.css';
 
 const ProductProfile = () => {
   const { productId } = useParams();
@@ -29,6 +29,33 @@ const ProductProfile = () => {
 
   const closeReviewModal = () => {
     setIsReviewModalOpen(false);
+  };
+
+  // Helper function to render croissant stars - same as in BakeryProfile
+  const renderCroissantStars = (rating, size = 'medium') => {
+    const displayRating = rating / 2;
+    const fullCroissants = Math.floor(displayRating);
+    const hasHalfCroissant = displayRating % 1 >= 0.5;
+    const emptyCroissants = 5 - fullCroissants - (hasHalfCroissant ? 1 : 0);
+    
+    const sizeClass = size === 'large' ? 'croissant-large' : 
+                     size === 'small' ? 'croissant-small' : '';
+    
+    return (
+      <div className={`croissant-display ${sizeClass}`}>
+        {Array(fullCroissants).fill().map((_, i) => (
+          <span key={`full-${i}`} className="croissant-filled">🍪</span>
+        ))}
+        {hasHalfCroissant && (
+          <div className="croissant-half-container">
+            <span className="croissant-half">🍪</span>
+          </div>
+        )}
+        {Array(emptyCroissants).fill().map((_, i) => (
+          <span key={`empty-${i}`} className="croissant-empty">🍪</span>
+        ))}
+      </div>
+    );
   };
 
   if (loading) {
@@ -77,7 +104,7 @@ const ProductProfile = () => {
           <h1>{product.name}</h1>
           <div className="product-rating-summary">
             <span className="product-rating-value">{(ratings.overall / 2).toFixed(1)}</span>
-            <span className="product-rating-stars">★★★★★</span>
+            {renderCroissantStars(ratings.overall)}
             <span className="product-review-count">({reviewCount} reviews)</span>
           </div>
         </div>
@@ -111,16 +138,31 @@ const ProductProfile = () => {
             <div className="reviews-summary">
               <div className="reviews-total">
                 <span className="large-rating">{(ratings.overall / 2).toFixed(1)}</span>
+                {renderCroissantStars(ratings.overall, 'large')}
                 <span className="total-reviews">{reviewCount} reviews</span>
               </div>
               
               <div className="rating-details">
-                {Object.entries(ratings).map(([label, value]) => (
-                  <div key={label} className="rating-item">
-                    <span className="rating-label">{label.charAt(0).toUpperCase() + label.slice(1)}:</span>
-                    <RatingBar rating={value} max={10} disabled={true} />
-                  </div>
-                ))}
+                <div className="rating-item">
+                  <span className="rating-label">Overall:</span>
+                  <span className="rating-numeric-value">{(ratings.overall / 2).toFixed(1)}</span>
+                  {renderCroissantStars(ratings.overall)}
+                </div>
+                <div className="rating-item">
+                  <span className="rating-label">Taste:</span>
+                  <span className="rating-numeric-value">{(ratings.taste / 2).toFixed(1)}</span>
+                  {renderCroissantStars(ratings.taste)}
+                </div>
+                <div className="rating-item">
+                  <span className="rating-label">Price:</span>
+                  <span className="rating-numeric-value">{(ratings.price / 2).toFixed(1)}</span>
+                  {renderCroissantStars(ratings.price)}
+                </div>
+                <div className="rating-item">
+                  <span className="rating-label">Presentation:</span>
+                  <span className="rating-numeric-value">{(ratings.presentation / 2).toFixed(1)}</span>
+                  {renderCroissantStars(ratings.presentation)}
+                </div>
               </div>
               
               <button className="btn btn-primary" onClick={openReviewModal}>Write a Review</button>
@@ -138,14 +180,7 @@ const ProductProfile = () => {
                     </div>
                     
                     <div className="review-rating">
-                      {Array.from({length: 5}).map((_, index) => (
-                        <span 
-                          key={index} 
-                          className={index < (review.overallRating / 2) ? "star filled" : "star"}
-                        >
-                          ★
-                        </span>
-                      ))}
+                      {renderCroissantStars(review.overallRating)}
                     </div>
                     
                     <p className="review-text">{review.review}</p>
