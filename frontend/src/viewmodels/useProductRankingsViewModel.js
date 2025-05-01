@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import apiClient from '../services/api';
 
 export const useProductRankingsViewModel = () => {
   const { categoryId, subcategoryId } = useParams();
+  console.log('URL Parameters from useParams:', { categoryId, subcategoryId });
   const navigate = useNavigate();
   const [productTypes, setProductTypes] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -11,11 +12,21 @@ export const useProductRankingsViewModel = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [bakeries, setBakeries] = useState({});
+  const [rawProducts, setRawProducts] = useState([]);
+
+  // Direct override when URL has subcategory parameter
+  useEffect(() => {
+    if (subcategoryId) {
+      console.log(`Directly setting selectedProduct from URL param: ${subcategoryId}`);
+      setSelectedProduct(subcategoryId);
+    }
+  }, [subcategoryId]);
 
   // Fetch all data needed for the view
   const fetchData = async () => {
     try {
       setLoading(true);
+      console.log("Fetching data for category:", categoryId, "subcategory:", subcategoryId);
       
       // Fetch products and bakeries in parallel
       const [productsResponse, bakeriesResponse] = await Promise.all([
@@ -25,7 +36,8 @@ export const useProductRankingsViewModel = () => {
       
       // Safely get products array
       const products = productsResponse?.products || [];
-      console.log('Products response:', productsResponse);
+      console.log('Products response: Found', products.length, 'products');
+      setRawProducts(products);
       
       // Create bakery map for lookups
       const bakeryMap = {};
@@ -38,8 +50,8 @@ export const useProductRankingsViewModel = () => {
       }
       setBakeries(bakeryMap);
       
-      // Create product type groups based on names
-      organizeProducts(products);
+      // Build the product types (subcategory menu)
+      buildProductTypeMenu(products);
       
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -48,17 +60,9 @@ export const useProductRankingsViewModel = () => {
     }
   };
 
-  // Organize products into product types based on their names
-  const organizeProducts = (products) => {
+  // Build the product type menu from product names
+  const buildProductTypeMenu = useCallback((products) => {
     try {
-      // Ensure products is an array
-      if (!Array.isArray(products)) {
-        console.error('Products is not an array:', products);
-        setProductTypes([]);
-        setLoading(false);
-        return;
-      }
-      
       // Filter products by category if specified
       let filteredProducts = products;
       if (categoryId) {
@@ -68,51 +72,45 @@ export const useProductRankingsViewModel = () => {
         );
       }
       
-      console.log('Filtered products:', filteredProducts);
+      console.log(`Found ${filteredProducts.length} products for category ${categoryId}`);
       
-      // Group products by name
-      const productGroups = {};
-      for (const product of filteredProducts) {
-        // Skip invalid products
-        if (!product || !product.name) continue;
-        
-        const name = product.name;
-        const nameSlug = name.toLowerCase().replace(/\s+/g, '-');
-        
-        if (!productGroups[nameSlug]) {
-          productGroups[nameSlug] = {
-            id: nameSlug,
-            name: name,
-            products: []
-          };
+      // Get unique product names
+      const uniqueProductNames = [];
+      const productNameMap = new Map();
+      
+      filteredProducts.forEach(product => {
+        if (product && product.name && !productNameMap.has(product.name)) {
+          productNameMap.set(product.name, true);
+          uniqueProductNames.push(product.name);
         }
-        
-        productGroups[nameSlug].products.push(product);
-      }
+      });
       
-      // Convert to array and sort alphabetically
-      const productTypeList = Object.values(productGroups).sort((a, b) => 
-        a.name.localeCompare(b.name)
-      );
+      // Create the product type menu items
+      const menuItems = uniqueProductNames.map(name => ({
+        id: name.toLowerCase().replace(/\s+/g, '-'),
+        name: name
+      })).sort((a, b) => a.name.localeCompare(b.name));
       
-      console.log('Product types created:', productTypeList);
-      setProductTypes(productTypeList);
+      console.log('Created menu items:', menuItems);
+      setProductTypes(menuItems);
       
-      // Determine which product type to select
-      if (subcategoryId && productGroups[subcategoryId]) {
+      // Set the initial selected product
+      if (subcategoryId && menuItems.some(item => item.id === subcategoryId)) {
+        console.log('Setting selected product to:', subcategoryId);
         setSelectedProduct(subcategoryId);
-      } else if (productTypeList.length > 0) {
-        setSelectedProduct(productTypeList[0].id);
+      } else if (menuItems.length > 0) {
+        console.log('Setting selected product to first item:', menuItems[0].id);
+        setSelectedProduct(menuItems[0].id);
       }
       
       setLoading(false);
     } catch (err) {
-      console.error('Error organizing products:', err);
+      console.error('Error building product menu:', err);
       setProductTypes([]);
-      setError('Failed to organize products. Please try again later.');
+      setError('Failed to process products. Please try again later.');
       setLoading(false);
     }
-  };
+  }, [categoryId, subcategoryId]);
 
   // Fetch reviews for a specific product
   const fetchProductReviews = async (productId) => {
@@ -128,25 +126,48 @@ export const useProductRankingsViewModel = () => {
   };
 
   // Generate rankings for the selected product type
-  const generateProductRankings = async () => {
-    if (!selectedProduct) return;
-    
-    setLoading(true);
-    
-    const productType = productTypes.find(pt => pt.id === selectedProduct);
-    if (!productType || !Array.isArray(productType.products) || productType.products.length === 0) {
-      setProductRankings([]);
-      setLoading(false);
+  const generateProductRankings = useCallback(async () => {
+    if (!selectedProduct || !rawProducts.length) {
       return;
     }
     
+    setLoading(true);
+    console.log(`Generating rankings for subcategory '${selectedProduct}'`);
+    
     try {
-      // Fetch reviews for each product in this group
+      // Find the product type by ID to get the actual product name
+      const productType = productTypes.find(pt => pt.id === selectedProduct);
+      if (!productType) {
+        console.log('Product type not found:', selectedProduct);
+        setProductRankings([]);
+        setLoading(false);
+        return;
+      }
+      
+      const productName = productType.name;
+      console.log(`Looking for products with exact name: '${productName}'`);
+      
+      // Filter products by category and exact name match
+      const matchingProducts = rawProducts.filter(product => 
+        product && 
+        product.name === productName && // Exact name match is crucial
+        (!categoryId || product.category?.toLowerCase().includes(categoryId.toLowerCase()))
+      );
+      
+      console.log(`Found ${matchingProducts.length} products with name '${productName}'`);
+      console.log('Matching products:', matchingProducts);
+      
+      if (matchingProducts.length === 0) {
+        setProductRankings([]);
+        setLoading(false);
+        return;
+      }
+      
+      // Get reviews for each product
       const productsWithReviews = await Promise.all(
-        productType.products.map(async product => {
-          if (!product || !product.id) return null;
-          
+        matchingProducts.map(async product => {
           const reviews = await fetchProductReviews(product.id);
+          console.log(`Product ${product.id} has ${reviews.length} reviews`);
           
           let avgRating = 0;
           if (reviews.length > 0) {
@@ -192,6 +213,7 @@ export const useProductRankingsViewModel = () => {
         };
       });
       
+      console.log(`Created ${rankings.length} rankings for display`);
       setProductRankings(rankings);
     } catch (error) {
       console.error('Error generating rankings:', error);
@@ -199,7 +221,7 @@ export const useProductRankingsViewModel = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedProduct, rawProducts, productTypes, categoryId, bakeries]);
 
   // Format bakery address for display
   const formatBakeryAddress = (bakery) => {
@@ -229,10 +251,14 @@ export const useProductRankingsViewModel = () => {
 
   // Handle product selection
   const handleProductSelect = (productId) => {
+    console.log(`User selected product: ${productId}`);
     setSelectedProduct(productId);
     
+    // Force navigate to the correct URL
     if (categoryId) {
-      navigate(`/product-rankings/${categoryId}/${productId}`);
+      const url = `/product-rankings/${categoryId}/${productId}`;
+      console.log(`Navigating to: ${url}`);
+      navigate(url);
     } else {
       navigate(`/product-rankings/${productId}`);
     }
@@ -261,15 +287,23 @@ export const useProductRankingsViewModel = () => {
 
   // Fetch data when category or subcategory changes
   useEffect(() => {
+    console.log('URL params changed:', { categoryId, subcategoryId });
     fetchData();
+    
+    // Important: If subcategoryId is provided in URL, set it as selected
+    if (subcategoryId) {
+      console.log('Setting selected product from URL param:', subcategoryId);
+      setSelectedProduct(subcategoryId);
+    }
   }, [categoryId, subcategoryId]);
 
-  // Update rankings when selected product changes
+  // Update rankings when selectedProduct changes
   useEffect(() => {
-    if (selectedProduct && productTypes.length > 0) {
+    if (selectedProduct) {
+      console.log('Selected product changed, generating rankings...');
       generateProductRankings();
     }
-  }, [selectedProduct, productTypes.length]);
+  }, [selectedProduct, generateProductRankings]);
 
   return {
     productTypes,
@@ -283,3 +317,5 @@ export const useProductRankingsViewModel = () => {
     categoryId
   };
 };
+
+export default useProductRankingsViewModel;
