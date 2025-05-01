@@ -1,4 +1,5 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { useProductProfileViewModel } from '../viewmodels/useProductProfileViewModel';
 import RatingBar from '../components/RatingComponent';
 import '../styles/product-profile.css';
@@ -6,6 +7,17 @@ import '../styles/product-profile.css';
 const ProductProfile = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
+  
+  // Log component lifecycle for debugging
+  useEffect(() => {
+    console.log(`ProductProfile mounted/updated for product ${productId}`);
+    
+    // Cleanup on unmount
+    return () => {
+      console.log(`ProductProfile unmounting for product ${productId}`);
+    };
+  }, [productId]);
+  
   const {
     product,
     bakery,

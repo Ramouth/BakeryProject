@@ -2,10 +2,7 @@ from flask import Blueprint, request, jsonify, make_response
 from models import Product, Bakery
 from schemas import ProductSchema
 from services.product_service import ProductService
-from utils.caching import cache
 from flask import current_app as app
-from utils.caching import cache_key_with_query
-# Removed: from utils.cors_helper import handle_preflight
 
 # Create blueprint
 product_bp = Blueprint('product', __name__)
@@ -36,7 +33,6 @@ def get_products():
         }), 500
 
 @product_bp.route('/<int:product_id>', methods=['GET'])
-@cache.cached(timeout=60)
 def get_product(product_id):
     """Get a specific product by ID"""
     product = product_service.get_product_by_id(product_id)
@@ -44,12 +40,9 @@ def get_product(product_id):
         return jsonify({"message": "Product not found"}), 404
     return jsonify(product_schema.dump(product))
 
-@product_bp.route('/<int:product_id>/stats', methods=['GET', 'OPTIONS'])
-@cache.cached(timeout=60)
+@product_bp.route('/<int:product_id>/stats', methods=['GET'])
 def get_product_stats(product_id):
     """Get statistics for a product including review averages"""
-    # Removed preflight handling
-    
     try:
         stats = product_service.get_product_stats(product_id)
         return jsonify(stats), 200
@@ -57,14 +50,12 @@ def get_product_stats(product_id):
         return jsonify({"message": str(e)}), 404
 
 @product_bp.route('/bakery/<int:bakery_id>', methods=['GET'])
-@cache.cached(timeout=60)
 def get_products_by_bakery(bakery_id):
     """Get all products for a specific bakery"""
     products = product_service.get_products_by_bakery(bakery_id)
     return jsonify({"products": products_schema.dump(products)})
 
 @product_bp.route('/category/<category>', methods=['GET'])
-@cache.cached(timeout=60)
 def get_products_by_category(category):
     """Get all products for a specific category"""
     products = product_service.get_products_by_category(category)
@@ -92,11 +83,6 @@ def create_product():
             category=data.get('category'),
             image_url=data.get('imageUrl')
         )
-
-        cache.delete('view/get_products')
-        cache.delete(f'view/get_products_by_bakery_{data["bakeryId"]}')
-        if data.get('category'):
-            cache.delete(f'view/get_products_by_category_{data["category"]}')
 
         return jsonify({"message": "Product created!", "product": product_schema.dump(new_product)}), 201
     except Exception as e:
@@ -132,15 +118,6 @@ def update_product(product_id):
             image_url=image_url
         )
 
-        cache.delete('view/get_products')
-        cache.delete(f'view/get_product_{product_id}')
-        cache.delete(f'view/get_products_by_bakery_{product.bakery_id}')
-        if bakery_id != product.bakery_id:
-            cache.delete(f'view/get_products_by_bakery_{bakery_id}')
-        if category and category != product.category:
-            cache.delete(f'view/get_products_by_category_{product.category}')
-            cache.delete(f'view/get_products_by_category_{category}')
-
         return jsonify({"message": "Product updated.", "product": product_schema.dump(updated_product)}), 200
     except Exception as e:
         return jsonify({"message": str(e)}), 400
@@ -153,23 +130,13 @@ def delete_product(product_id):
         if not product:
             return jsonify({"message": "Product not found"}), 404
 
-        bakery_id = product.bakery_id
-        category = product.category
-
         product_service.delete_product(product_id)
-
-        cache.delete('view/get_products')
-        cache.delete(f'view/get_product_{product_id}')
-        cache.delete(f'view/get_products_by_bakery_{bakery_id}')
-        if category:
-            cache.delete(f'view/get_products_by_category_{category}')
 
         return jsonify({"message": "Product deleted!"}), 200
     except Exception as e:
         return jsonify({"message": str(e)}), 400
 
 @product_bp.route('/search', methods=['GET'])
-@cache.cached(timeout=30, key_prefix=cache_key_with_query)
 def search_products():
     """Search products by name"""
     search_term = request.args.get('q', '')
