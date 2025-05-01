@@ -17,13 +17,13 @@ const HomePage = () => {
     isLoading: searchResultsLoading,
     handleSearch,
     formatBakeryNameForUrl,
-    resetFilters
+    resetFilters,
+    hasSearched
   } = useFacetedSearchViewModel();
 
   // Determine what to display: search results or top bakeries
-  const displayItems = searchResults.length > 0 ? searchResults : topBakeries;
+  const displayItems = hasSearched ? searchResults : topBakeries;
   const isLoading = searchResultsLoading || topBakeriesLoading;
-  const isSearchActive = searchResults.length > 0;
 
   // Helper function to get proper bakery rating
   const getDisplayRating = (bakery) => {
@@ -50,8 +50,8 @@ const HomePage = () => {
         <FacetedSearch onSearch={handleSearch} />
       </div>
       
-      {/* Promotional card section */}
-      {!isSearchActive && (
+      {/* Promotional card section - only show when not in search mode */}
+      {!hasSearched && (
         <div className="promo-card">
           <div className="promo-content">
             <h2>Plan your bakery visit</h2>
@@ -61,107 +61,188 @@ const HomePage = () => {
         </div>
       )}
       
-      {/* Results section (either search results or top bakeries) */}
-      <div className={`top-bakeries ${isSearchActive ? 'search-active' : ''}`}>
-        <div className="search-results-header">
-          <h2>
-            {isSearchActive 
-              ? "Search Results" 
-              : "Explore Copenhagen's most cozy bakeries"}
-          </h2>
-          <p className="search-results-count">
-            {isSearchActive 
-              ? `Found ${searchResults.length} bakeries matching your criteria` 
-              : "Top rated bakeries in Copenhagen:"}
-          </p>
-          
-          {isSearchActive && (
-            <button 
-              className="reset-filters-button"
-              onClick={() => resetFilters()}
-            >
-              Reset Filters
-            </button>
-          )}
-        </div>
-        
-        {isLoading ? (
-          <div className="loading-container">
-            <div className="loading-spinner"></div>
-            <p>Loading bakeries...</p>
-          </div>
-        ) : displayItems.length > 0 ? (
-          <div className="homepage-bakery-grid">
-            {displayItems.map(bakery => (
-              <Link 
-                to={`/bakery/${encodeURIComponent(formatBakeryNameForUrl(bakery.name))}`} 
-                key={bakery.id} 
-                className="homepage-bakery-card"
+      {/* Results section */}
+      <div className={`top-bakeries ${hasSearched ? 'search-active' : ''}`}>
+        {hasSearched ? (
+          /* Search Results Display */
+          <>
+            <div className="search-results-header">
+              <h2>Search Results</h2>
+              <p className="search-results-count">
+                Found {searchResults.length} bakeries matching your criteria
+              </p>
+              
+              <button 
+                className="reset-filters-button"
+                onClick={() => resetFilters()}
               >
-                <div style={{ 
-                  position: 'relative', 
-                  height: '100%', 
-                  display: 'flex', 
-                  flexDirection: 'column',
-                  overflow: 'hidden'
-                }}>
-                  <div className="homepage-bakery-image">
-                    <div className="homepage-placeholder-image">
-                      {bakery.imageUrl ? (
-                        <img src={bakery.imageUrl} alt={bakery.name} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
-                      ) : bakery.name}
+                Reset Filters
+              </button>
+            </div>
+            
+            {isLoading ? (
+              <div className="loading-container">
+                <div className="loading-spinner"></div>
+                <p>Loading bakeries...</p>
+              </div>
+            ) : searchResults.length > 0 ? (
+              <div className="homepage-bakery-grid">
+                {searchResults.map(bakery => (
+                  <Link 
+                    to={`/bakery/${encodeURIComponent(formatBakeryNameForUrl(bakery.name))}`} 
+                    key={bakery.id} 
+                    className="homepage-bakery-card"
+                  >
+                    <div style={{ 
+                      position: 'relative', 
+                      height: '100%', 
+                      display: 'flex', 
+                      flexDirection: 'column',
+                      overflow: 'hidden'
+                    }}>
+                      <div className="homepage-bakery-image">
+                        <div className="homepage-placeholder-image">
+                          {bakery.imageUrl ? (
+                            <img src={bakery.imageUrl} alt={bakery.name} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                          ) : bakery.name}
+                        </div>
+                      </div>
+                      
+                      <h3 style={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        marginBottom: '8px',
+                        marginTop: '12px'
+                      }}>
+                        {bakery.name}
+                      </h3>
+                      
+                      <p style={{ 
+                        flex: '1', 
+                        marginBottom: '75px',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: 'vertical'
+                      }}>
+                        {getBakeryDescription(bakery)}
+                      </p>
+                      
+                      <div className="bakery-rating" style={{ 
+                        position: 'absolute', 
+                        bottom: '10px', 
+                        left: '10px',
+                        padding: '4px 8px',
+                        fontWeight: 'bold',
+                        backgroundColor: 'var(--primary-100)',
+                        filter: 'brightness(0.96)', // Makes the color slightly darker
+                        borderRadius: '4px',
+                        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                        zIndex: 2
+                      }}>
+                        {getDisplayRating(bakery)} 🍪
+                      </div>
                     </div>
-                  </div>
-                  
-                  <h3 style={{
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    display: '-webkit-box',
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: 'vertical',
-                    marginBottom: '8px',
-                    marginTop: '12px'
-                  }}>
-                    {bakery.name}
-                  </h3>
-                  
-                  <p style={{ 
-                    flex: '1', 
-                    marginBottom: '75px',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    display: '-webkit-box',
-                    WebkitLineClamp: 3,
-                    WebkitBoxOrient: 'vertical'
-                  }}>
-                    {getBakeryDescription(bakery)}
-                  </p>
-                  
-                  <div className="bakery-rating" style={{ 
-                    position: 'absolute', 
-                    bottom: '10px', 
-                    left: '10px',
-                    padding: '4px 8px',
-                    fontWeight: 'bold',
-                    backgroundColor: 'var(--primary-100)',
-                    filter: 'brightness(0.96)', // Makes the color slightly darker
-                    borderRadius: '4px',
-                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-                    zIndex: 2
-                  }}>
-                    {getDisplayRating(bakery)} 🍪
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="no-bakeries-message">
+                <p>No bakeries match your search criteria. Try adjusting your filters!</p>
+                <button className="btn" onClick={() => resetFilters()}>
+                  Reset Filters
+                </button>
+              </div>
+            )}
+          </>
         ) : (
-          <div className="no-bakeries-message">
-            <p>No bakeries match your search criteria. Try adjusting your filters!</p>
-            <button className="btn" onClick={() => resetFilters()}>
-              Reset Filters
-            </button>
-          </div>
+          /* Featured Bakeries Display (non-search) */
+          <>
+            <div className="featured-bakeries-header">
+              <h2>Explore Copenhagen's most cozy bakeries</h2>
+              <p>Top rated bakeries in Copenhagen:</p>
+            </div>
+            
+            {isLoading ? (
+              <div className="loading-container">
+                <div className="loading-spinner"></div>
+                <p>Loading bakeries...</p>
+              </div>
+            ) : topBakeries.length > 0 ? (
+              <div className="homepage-bakery-grid">
+                {topBakeries.map(bakery => (
+                  <Link 
+                    to={`/bakery/${encodeURIComponent(formatBakeryNameForUrl(bakery.name))}`} 
+                    key={bakery.id} 
+                    className="homepage-bakery-card"
+                  >
+                    <div style={{ 
+                      position: 'relative', 
+                      height: '100%', 
+                      display: 'flex', 
+                      flexDirection: 'column',
+                      overflow: 'hidden'
+                    }}>
+                      <div className="homepage-bakery-image">
+                        <div className="homepage-placeholder-image">
+                          {bakery.imageUrl ? (
+                            <img src={bakery.imageUrl} alt={bakery.name} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                          ) : bakery.name}
+                        </div>
+                      </div>
+                      
+                      <h3 style={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        marginBottom: '8px',
+                        marginTop: '12px'
+                      }}>
+                        {bakery.name}
+                      </h3>
+                      
+                      <p style={{ 
+                        flex: '1', 
+                        marginBottom: '75px',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: 'vertical'
+                      }}>
+                        {getBakeryDescription(bakery)}
+                      </p>
+                      
+                      <div className="bakery-rating" style={{ 
+                        position: 'absolute', 
+                        bottom: '10px', 
+                        left: '10px',
+                        padding: '4px 8px',
+                        fontWeight: 'bold',
+                        backgroundColor: 'var(--primary-100)',
+                        filter: 'brightness(0.96)', // Makes the color slightly darker
+                        borderRadius: '4px',
+                        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                        zIndex: 2
+                      }}>
+                        {getDisplayRating(bakery)} 🍪
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="no-bakeries-message">
+                <p>No featured bakeries available at the moment.</p>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
