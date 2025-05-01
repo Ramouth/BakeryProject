@@ -1,148 +1,101 @@
+// Updated UserContext.js (Conceptual)
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import apiClient from '../api/apiClient'; // Your axios/fetch wrapper
 
-// Create context
 const UserContext = createContext();
 
-// Provider component
 export const UserProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-  // Auto-login with mock admin user on mount
+
+  // Attempt to load user from token on mount
   useEffect(() => {
-    const autoLoginMockUser = () => {
-      try {
-        // Create mock admin user
-        const mockAdminUser = {
-          id: 'admin1',
-          username: 'admin',
-          email: 'admin@crumbcompass.com',
-          isAdmin: true,
-          profilePicture: 1
-        };
-        
-        // Set user in state and storage
-        setUser(mockAdminUser);
-        console.log('Auto-logged in with mock admin user');
-      } catch (error) {
-        console.error('Error setting up mock user:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    // Check if already logged in first
-    const getUserFromStorage = () => {
-      try {
-        const storedUser = localStorage.getItem('currentUser');
-        if (storedUser) {
-          const parsedUser = JSON.parse(storedUser);
-          // Ensure isAdmin is explicitly set when loading from storage
-          setCurrentUser({
-            ...parsedUser,
-            isAdmin: parsedUser.isAdmin || false
-          });
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      // Set Authorization header for future requests
+      // apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`; // Or handle this in apiClient wrapper
+
+      // Try to fetch the user profile using the token
+      apiClient.get('/auth/profile')
+        .then(response => {
+          // Assuming /auth/profile returns the user object
+          setCurrentUser(response.data);
           setIsLoading(false);
-        } else {
-          // No user in storage, create mock user
-          autoLoginMockUser();
-        }
-      } catch (error) {
-        console.error('Error retrieving user from storage:', error);
-        // If there's an error reading storage, create mock user
-        autoLoginMockUser();
-      }
-    };
-    
-    getUserFromStorage();
-  }, []);
-  
-  // Login function with improved admin status handling
-  const login = useCallback(async (email, password) => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      // Always return the mock admin user regardless of credentials
-      const mockAdminUser = {
-        id: 'admin1',
-        username: 'admin',
-        email: 'admin@crumbcompass.com',
-        isAdmin: true,
-        profilePicture: 1
-      };
-      
-      setUser(mockAdminUser);
-      console.log('Logged in with mock admin user');
-      return mockAdminUser;
-    } catch (err) {
-      const errorMessage = err.message || 'Login failed. Please try again.';
-      setError(errorMessage);
-      console.error('Login error:', errorMessage);
-      throw new Error(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-  
-  // Set user with explicit admin status handling
-  const setUser = useCallback((user) => {
-    // Ensure isAdmin is always a boolean
-    const userWithAdminStatus = user ? {
-      ...user,
-      isAdmin: user.isAdmin === true
-    } : null;
-    
-    setCurrentUser(userWithAdminStatus);
-    
-    if (userWithAdminStatus) {
-      localStorage.setItem('currentUser', JSON.stringify(userWithAdminStatus));
+        })
+        .catch(() => {
+          // Token invalid or profile fetch failed, clear token and user
+          localStorage.removeItem('authToken');
+          setCurrentUser(null);
+          setIsLoading(false);
+        });
     } else {
-      localStorage.removeItem('currentUser');
+      setIsLoading(false);
     }
   }, []);
-  
-  // Register function with API integration
-  const register = useCallback(async (userData) => {
+
+  const login = useCallback(async (username, password) => {
     setIsLoading(true);
     setError(null);
-    
     try {
-      // Always return a mock user for testing
-      const mockUser = {
-        ...userData,
-        id: 'user1',
-        isAdmin: false
-      };
-      
-      setUser(mockUser);
-      return mockUser;
+      const response = await apiClient.post('/auth/login', { username, password });
+      const { access_token, user } = response.data;
+
+      localStorage.setItem('authToken', access_token);
+      // apiClient.defaults.headers.common['Authorization'] = `Bearer ${access_token}`; // Or handle in apiClient wrapper
+      setCurrentUser(user);
+      return user; // Return the user object
     } catch (err) {
-      const errorMessage = err.message || 'Registration failed. Please try again.';
-      setError(errorMessage);
-      throw new Error(errorMessage);
+      const msg = err.response?.data?.message || err.message || 'Login failed. Please try again.';
+      setError(msg);
+      console.error('Login error:', err);
+      throw new Error(msg); // Rethrow the error so calling component can handle it
     } finally {
       setIsLoading(false);
     }
-  }, [setUser]);
-  
-  // Log out user
+  }, []); // Dependencies might be needed if apiClient isn't static
+
+  // Modify register to use API call too
+  const register = useCallback(async (userData) => {
+       setIsLoading(true);
+       setError(null);
+       try {
+           // Make the actual API call to your backend's register endpoint
+           const response = await apiClient.post('/auth/register', userData);
+           const { access_token, user } = response.data; // Assuming register also returns token and user
+
+           localStorage.setItem('authToken', access_token);
+           // apiClient.defaults.headers.common['Authorization'] = `Bearer ${access_token}`; // Or handle in apiClient wrapper
+           setCurrentUser(user);
+           return user;
+       } catch (err) {
+           const msg = err.response?.data?.message || err.message || 'Registration failed. Please try again.';
+           setError(msg);
+           console.error('Registration error:', err);
+           throw new Error(msg);
+       } finally {
+           setIsLoading(false);
+       }
+   }, []);
+
+
   const logout = useCallback(() => {
-    setUser(null);
-  }, [setUser]);
-  
-  // Memoized context value to prevent unnecessary re-renders
+    localStorage.removeItem('authToken');
+    // Remove Authorization header
+    // delete apiClient.defaults.headers.common['Authorization']; // Or handle in apiClient wrapper
+    setCurrentUser(null);
+  }, []);
+
   const value = useMemo(() => ({
     currentUser,
     isLoading,
     error,
-    login,
-    register,
+    login, // <-- Now this is the real API login
+    register, // <-- Now this is the real API register
     logout,
-    setUser
-  }), [currentUser, isLoading, error, login, register, logout, setUser]);
-  
+    setUser: setCurrentUser // Expose the raw setter if needed, though often discouraged
+  }), [currentUser, isLoading, error, login, register, logout]);
+
   return (
     <UserContext.Provider value={value}>
       {children}
@@ -150,7 +103,6 @@ export const UserProvider = ({ children }) => {
   );
 };
 
-// Custom hook for using the context
 export const useUser = () => {
   const context = useContext(UserContext);
   if (context === undefined) {
