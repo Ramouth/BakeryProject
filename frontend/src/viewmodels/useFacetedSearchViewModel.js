@@ -69,14 +69,73 @@ export const useFacetedSearchViewModel = () => {
     loadInitialData();
   }, []);
 
-  // Handle search results from faceted search component
-  const handleSearch = useCallback((results) => {
-    // Set flag indicating a search has been performed
-    setHasSearched(true);
+  // Helper function to fetch bakery stats for search results
+  const fetchBakeryStatsInBatches = useCallback(async (bakeries, batchSize = 2) => {
+    const result = [...bakeries];
     
-    // Show all matching results
-    setSearchResults(results);
+    for (let i = 0; i < result.length; i += batchSize) {
+      const batch = result.slice(i, i + batchSize);
+      
+      await Promise.all(
+        batch.map(async (bakery, index) => {
+          try {
+            const statsResponse = await apiClient.get(`/bakeries/${bakery.id}/stats`, true);
+            
+            // Explicitly store average_rating in a consistent place
+            let average_rating = 0;
+            if (statsResponse && typeof statsResponse.average_rating === 'number') {
+              average_rating = statsResponse.average_rating;
+            } else if (statsResponse && statsResponse.ratings && typeof statsResponse.ratings.overall === 'number') {
+              average_rating = statsResponse.ratings.overall;
+            }
+            
+            result[i + index] = {
+              ...bakery,
+              average_rating: average_rating,
+              review_count: statsResponse.review_count || 0,
+              ratings: statsResponse.ratings || {
+                overall: average_rating,
+                service: 0,
+                price: 0,
+                atmosphere: 0,
+                location: 0
+              }
+            };
+            
+            // Debug log
+            console.log(`Search bakery ${bakery.id} rating: ${result[i + index].average_rating}, reviews: ${result[i + index].review_count}`);
+          } catch (error) {
+            console.error(`Error fetching stats for bakery ${bakery.id}:`, error);
+          }
+        })
+      );
+    }
+    
+    return result;
   }, []);
+
+  // Handle search results from faceted search component
+  const handleSearch = useCallback(async (results) => {
+    setIsLoading(true);
+    
+    try {
+      // Fetch stats for each bakery in the results
+      const enhancedResults = await fetchBakeryStatsInBatches(results);
+      
+      // Set flag indicating a search has been performed
+      setHasSearched(true);
+      
+      // Show all matching results with stats
+      setSearchResults(enhancedResults);
+    } catch (error) {
+      console.error('Error enhancing search results:', error);
+      // Still set the original results if there's an error fetching stats
+      setSearchResults(results);
+      setHasSearched(true);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [fetchBakeryStatsInBatches]);
 
   // Reset all filters
   const resetFilters = useCallback(() => {
