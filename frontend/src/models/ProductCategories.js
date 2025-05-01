@@ -174,13 +174,19 @@ export class ProductCategories {
   }
   
   /**
-   * Get subcategories for a specific category
-   * @param {string} categoryId - ID of the category
-   * @returns {Array} List of subcategories in the category
+   * Get subcategories for a specific category with enhanced reliability
+   * @param {string} categoryId - ID of the category to get subcategories for
+   * @returns {Array} List of subcategories with proper categoryId field
    */
   getSubcategoriesByCategory(categoryId) {
     const category = this.getCategoryById(categoryId);
-    return category ? category.subcategories : [];
+    if (!category || !category.subcategories) return [];
+    
+    // Ensure each subcategory has the categoryId property
+    return category.subcategories.map(subcategory => ({
+      ...subcategory,
+      categoryId: categoryId  // Explicitly set categoryId for consistency
+    }));
   }
 
   /**
@@ -330,7 +336,7 @@ export class ProductCategories {
   }
   
   /**
-   * Add a new subcategory to a category
+   * Add a new subcategory to a category with proper structure
    * @param {string} categoryId - ID of the parent category
    * @param {Object} subcategory - Subcategory to add
    * @returns {boolean} Success status
@@ -341,20 +347,25 @@ export class ProductCategories {
       return false;
     }
     
-    // Ensure subcategory has required properties
+    // Ensure subcategory has required properties and categoryId
     const newSubcategory = {
       id: subcategory.id,
       name: subcategory.name || subcategory.id,
-      description: subcategory.description || ''
+      description: subcategory.description || '',
+      categoryId: categoryId,  // Explicitly set categoryId
+      products: subcategory.products || []
     };
     
     // Add to category
+    if (!category.subcategories) {
+      category.subcategories = [];
+    }
     category.subcategories.push(newSubcategory);
     
     // Add to subcategory map
     this.subcategoryMap[newSubcategory.id] = {
       ...newSubcategory,
-      categoryId: category.id,
+      categoryId: categoryId,
       categoryName: category.name
     };
     
