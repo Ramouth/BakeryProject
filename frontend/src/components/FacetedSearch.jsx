@@ -51,49 +51,26 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
           setCategories([{ value: "", label: "All Categories" }, ...uniqueCategories]);
         }
 
-        // Process locations (using zipCodes from bakeries)
-        if (bakeryResponse.bakeries) {
-          // Map Copenhagen postal codes to their districts
-          const postalCodeMapping = {
-            '1050': 'København K',
-            '1060': 'København K',
-            '1100': 'København K',
-            '1150': 'København K',
-            '1200': 'København K',
-            '1300': 'København K',
-            '1400': 'København K',
-            '1500': 'København V',
-            '1600': 'København V',
-            '1700': 'København V',
-            '1800': 'Frederiksberg C',
-            '1850': 'Frederiksberg C',
-            '1900': 'Frederiksberg C',
-            '2000': 'Frederiksberg',
-            '2100': 'København Ø',
-            '2200': 'København N',
-            '2300': 'København S',
-            '2400': 'København NV',
-            '2450': 'København SV',
-            '2500': 'Valby',
-            '2700': 'Brønshøj',
-            '2720': 'Vanløse',
-            '2740': 'Skovlunde',
-            '2750': 'Ballerup'
-          };
-          
-          const uniqueLocations = [...new Set(bakeryResponse.bakeries
-            .map(bakery => bakery.zipCode)
-            .filter(Boolean))]
-            .map(zipCode => {
-              const district = postalCodeMapping[zipCode] || 'Copenhagen';
-              return { 
-                value: zipCode, 
-                label: `${zipCode} - ${district}` 
-              };
-            });
-          
-          setLocations([{ value: "", label: "All Locations" }, ...uniqueLocations]);
-        }
+        // Setup location options with consistent postal code ranges from bakery rankings
+        const postalCodeOptions = [
+          { value: '', label: 'All Postal Codes' },
+          { value: '1000-1499', label: '1000-1499 - Copenhagen K (City Center)' },
+          { value: '1500-1799', label: '1500-1799 - Copenhagen V (Vesterbro)' },
+          { value: '1800-1999', label: '1800-1999 - Frederiksberg C' },
+          { value: '2000-2099', label: '2000-2099 - Frederiksberg' },
+          { value: '2100-2199', label: '2100-2199 - Copenhagen Ø (Østerbro)' },
+          { value: '2200-2299', label: '2200-2299 - Copenhagen N (Nørrebro)' },
+          { value: '2300-2399', label: '2300-2399 - Copenhagen S (Amager)' },
+          { value: '2400-2499', label: '2400-2499 - Copenhagen NV (Nordvest)' },
+          { value: '2450-2499', label: '2450-2499 - Copenhagen SV' },
+          { value: '2500-2599', label: '2500-2599 - Valby' },
+          { value: '2600-2699', label: '2600-2699 - Glostrup' },
+          { value: '2700-2799', label: '2700-2799 - Brønshøj' },
+          { value: '2800-2899', label: '2800-2899 - Lyngby' },
+          { value: '2900-2999', label: '2900-2999 - Hellerup' }
+        ];
+        
+        setLocations(postalCodeOptions);
 
         // Set up rating options - simplify to match display format
         const ratingFilterOptions = [
@@ -248,9 +225,19 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
         }
       }
 
-      // Apply location filter
+      // Apply location filter - Handle postal code ranges
       if (filters.location) {
-        results = results.filter(bakery => bakery.zipCode === filters.location);
+        // Check if it's a range (e.g., "1000-1499")
+        if (filters.location.includes('-')) {
+          const [minZip, maxZip] = filters.location.split('-').map(z => parseInt(z, 10));
+          results = results.filter(bakery => {
+            const bakeryZip = parseInt(bakery.zipCode, 10);
+            return bakeryZip >= minZip && bakeryZip <= maxZip;
+          });
+        } else {
+          // Exact match
+          results = results.filter(bakery => bakery.zipCode === filters.location);
+        }
       }
 
       // Apply rating filter
