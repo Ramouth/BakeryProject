@@ -117,9 +117,19 @@ export const useBakeryRankingsViewModel = () => {
     try {
       let filteredResults = [...bakeries];
       
-      // If searching by zip code
+      // If searching by zip code range
       if (zipCode) {
-        filteredResults = filteredResults.filter(bakery => bakery.zipCode === zipCode);
+        if (zipCode.includes('-')) {
+          // Handle zip code range (e.g., "1000-1499")
+          const [minZip, maxZip] = zipCode.split('-').map(z => parseInt(z, 10));
+          filteredResults = filteredResults.filter(bakery => {
+            const bakeryZip = parseInt(bakery.zipCode, 10);
+            return bakeryZip >= minZip && bakeryZip <= maxZip;
+          });
+        } else {
+          // Handle exact zip code match for backward compatibility
+          filteredResults = filteredResults.filter(bakery => bakery.zipCode === zipCode);
+        }
       }
       
       // If filtering by rating
