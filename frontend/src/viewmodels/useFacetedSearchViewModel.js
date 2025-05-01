@@ -72,7 +72,7 @@ export const useFacetedSearchViewModel = () => {
           return bRating - aRating;
         });
         
-        // Only show top 3 bakeries
+        // Show top bakeries for initial view (but we'll show all matching results for search)
         setSearchResults(bakeries.slice(0, 3));
         
         // Extract categories from products
@@ -112,8 +112,8 @@ export const useFacetedSearchViewModel = () => {
 
   // Handle search results from faceted search component
   const handleSearch = useCallback((results) => {
-    // Limit search results to top 3 bakeries
-    setSearchResults(results.slice(0, 3));
+    // Show all matching results, not limited to top 3
+    setSearchResults(results);
     
     // Update applied filters based on current search
     // This would be more complex in a real app, extracting the filters from the search
@@ -134,7 +134,7 @@ export const useFacetedSearchViewModel = () => {
     loadAllResults();
   }, []);
 
-  // Load all results without filters, limited to top 3
+  // Load all results without filters, limited to top 3 for initial view only
   const loadAllResults = useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -178,7 +178,7 @@ export const useFacetedSearchViewModel = () => {
         return bRating - aRating;
       });
       
-      // Only return top 3 bakeries
+      // Initial view shows top 3, but search will show all matching results
       setSearchResults(bakeries.slice(0, 3));
     } catch (err) {
       console.error('Error loading results:', err);

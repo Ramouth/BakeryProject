@@ -265,13 +265,10 @@ const FacetedSearch = ({ onSearch }) => {
         results = sortResults(results, filters.sort);
       }
 
-      // Only keep top 3 bakeries
-      results = results.slice(0, 3);
-
       // Update result count
       setResultCount(results.length);
       
-      // Pass results to parent component
+      // Pass results to parent component (all matching results, not just top 3)
       onSearch(results);
     } catch (error) {
       console.error('Error performing search:', error);
@@ -451,7 +448,7 @@ const FacetedSearch = ({ onSearch }) => {
             onClick={handleSearchClick}
             disabled={isLoading || isSearching}
           >
-            {isSearching ? 'Searching...' : `Show Top 3 Results`}
+            {isSearching ? 'Searching...' : `Show Results`}
           </button>
         </div>
       </div>
