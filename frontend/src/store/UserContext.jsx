@@ -10,7 +10,8 @@ export const UserProvider = ({ children }) => {
 
   // Attempt to load user from token on mount
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
+    // FIXED: Changed key from 'accessToken' to 'access_token' to match backend
+    const token = localStorage.getItem('access_token');
     if (token) {
       // Try to fetch the user profile using the token
       console.log('Found token in storage, attempting to fetch user profile');
@@ -22,7 +23,8 @@ export const UserProvider = ({ children }) => {
         })
         .catch((err) => {
           console.error('Profile fetch failed:', err);
-          localStorage.removeItem('accessToken');
+          // FIXED: Use consistent token key
+          localStorage.removeItem('access_token');
           setCurrentUser(null);
           setIsLoading(false);
         });
@@ -37,10 +39,17 @@ export const UserProvider = ({ children }) => {
     setError(null);
     try {
       console.log('Attempting login for user:', username);
+      // Using API client's post method
       const response = await apiClient.post('/auth/login', { username, password });
+      
+      // FIXED: Better response handling based on Flask backend format
+      // The Flask backend returns: { message, user, access_token }
       const { access_token, user } = response;
+      
       console.log('Login successful, received token:', !!access_token);
-      localStorage.setItem('accessToken', access_token);
+      
+      // FIXED: Store with consistent key name
+      localStorage.setItem('access_token', access_token);
       setCurrentUser(user);
       return user;
     } catch (err) {
@@ -59,9 +68,14 @@ export const UserProvider = ({ children }) => {
     try {
       console.log('Attempting to register user:', userData.username);
       const response = await apiClient.post('/auth/register', userData);
+      
+      // FIXED: Better response handling
       const { access_token, user } = response;
+      
       console.log('Registration successful, received token:', !!access_token);
-      localStorage.setItem('accessToken', access_token);
+      
+      // FIXED: Store with consistent key name
+      localStorage.setItem('access_token', access_token);
       setCurrentUser(user);
       return user;
     } catch (err) {
@@ -76,7 +90,8 @@ export const UserProvider = ({ children }) => {
 
   const logout = useCallback(() => {
     console.log('Logging out user, removing access token');
-    localStorage.removeItem('accessToken');
+    // FIXED: Use consistent token key
+    localStorage.removeItem('access_token');
     setCurrentUser(null);
   }, []);
 
