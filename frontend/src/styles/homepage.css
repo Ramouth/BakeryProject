@@ -322,3 +322,6 @@
     text-align: center;
   }
 }
+.top-bakeries.search-active {
+  margin-top: 0rem; /* Reduced from 4rem to 0rem */
+}
