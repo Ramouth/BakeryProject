@@ -1,104 +1,76 @@
 import { useState, useEffect } from 'react';
 import Button from '../Button';
-import productService from '../../services/productService';
+import apiClient from '../../services/api';
 
 const ProductForm = ({ product, bakeries, onSubmit, onCancel, isSubmitting }) => {
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
-  const [loadingCategories, setLoadingCategories] = useState(false);
   const [formData, setFormData] = useState({
     id: product?.id || '',
     name: product?.name || '',
-    bakeryId: product?.bakeryId || '',
-    category: product?.category || '',
+    bakeryId: product?.bakeryId || (bakeries.length > 0 ? bakeries[0].id : ''),
     categoryId: product?.categoryId || '',
-    subcategory: product?.subcategory || '',
     subcategoryId: product?.subcategoryId || '',
-    imageUrl: product?.imageUrl || '',
-    description: product?.description || ''
+    imageUrl: product?.imageUrl || ''
   });
-
-  // Fetch all categories
+  
+  // Fetch categories when component mounts
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        setLoadingCategories(true);
-        const response = await productService.getAllCategories();
+        const response = await apiClient.get('/categories', true);
         if (response && response.categories) {
           setCategories(response.categories);
           
-          // If we have a product with a categoryId, fetch its subcategories
+          // If product has a categoryId, fetch subcategories for that category
           if (formData.categoryId) {
-            handleCategoryChange({ target: { value: formData.categoryId } });
+            fetchSubcategories(formData.categoryId);
           }
         }
       } catch (error) {
-        console.error("Error fetching categories:", error);
-      } finally {
-        setLoadingCategories(false);
+        console.error('Error fetching categories:', error);
       }
     };
     
     fetchCategories();
   }, []);
-
+  
+  // Fetch subcategories when category changes
+  const fetchSubcategories = async (categoryId) => {
+    if (!categoryId) {
+      setSubcategories([]);
+      return;
+    }
+    
+    try {
+      const response = await apiClient.get(`/categories/${categoryId}/subcategories`, true);
+      if (response && response.subcategories) {
+        setSubcategories(response.subcategories);
+      }
+    } catch (error) {
+      console.error('Error fetching subcategories:', error);
+    }
+  };
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleCategoryChange = async (e) => {
-    const categoryId = e.target.value;
     
-    // Update the form with the new category ID
-    setFormData(prev => ({
-      ...prev,
-      categoryId: categoryId,
-      subcategoryId: '' // Reset subcategory when category changes
-    }));
-    
-    // Fetch subcategories for this category
-    if (categoryId) {
-      try {
-        const response = await productService.getSubcategoriesByCategory(categoryId);
-        if (response && response.subcategories) {
-          setSubcategories(response.subcategories);
-        } else {
-          setSubcategories([]);
-        }
-      } catch (error) {
-        console.error(`Error fetching subcategories for ${categoryId}:`, error);
-        setSubcategories([]);
-      }
+    // Handle category change - fetch subcategories and reset subcategoryId
+    if (name === 'categoryId' && value !== formData.categoryId) {
+      fetchSubcategories(value);
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+        subcategoryId: '' // Reset subcategory when category changes
+      }));
     } else {
-      setSubcategories([]);
+      setFormData(prev => ({ ...prev, [name]: value }));
     }
   };
-
+  
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    // Get the category and subcategory names if IDs are provided
-    let finalData = { ...formData };
-    
-    if (formData.categoryId) {
-      const category = categories.find(c => c.id === formData.categoryId);
-      if (category) {
-        finalData.category = category.name;
-      }
-    }
-    
-    if (formData.subcategoryId) {
-      const subcategory = subcategories.find(s => s.id === formData.subcategoryId);
-      if (subcategory) {
-        finalData.subcategory = subcategory.name;
-      }
-    }
-    
-    onSubmit(finalData);
+    onSubmit(formData);
   };
 
   return (
@@ -133,17 +105,16 @@ const ProductForm = ({ product, bakeries, onSubmit, onCancel, isSubmitting }) =>
         </select>
       </div>
       
-      <div className="form-group">
+     {/* Category dropdown */}
+     <div className="form-group">
         <label htmlFor="categoryId">Category:</label>
         <select
           id="categoryId"
           name="categoryId"
           value={formData.categoryId}
-          onChange={handleCategoryChange}
-          required
-          disabled={loadingCategories}
+          onChange={handleChange}
         >
-          <option value="">Select a Category</option>
+          <option value="">Select Category</option>
           {categories.map(category => (
             <option key={category.id} value={category.id}>
               {category.name}
@@ -152,6 +123,7 @@ const ProductForm = ({ product, bakeries, onSubmit, onCancel, isSubmitting }) =>
         </select>
       </div>
       
+      {/* Subcategory dropdown - only enabled if category is selected */}
       <div className="form-group">
         <label htmlFor="subcategoryId">Subcategory:</label>
         <select
@@ -159,9 +131,9 @@ const ProductForm = ({ product, bakeries, onSubmit, onCancel, isSubmitting }) =>
           name="subcategoryId"
           value={formData.subcategoryId}
           onChange={handleChange}
-          disabled={!formData.categoryId || subcategories.length === 0}
+          disabled={!formData.categoryId}
         >
-          <option value="">Select a Subcategory</option>
+          <option value="">Select Subcategory</option>
           {subcategories.map(subcategory => (
             <option key={subcategory.id} value={subcategory.id}>
               {subcategory.name}
@@ -197,7 +169,7 @@ const ProductForm = ({ product, bakeries, onSubmit, onCancel, isSubmitting }) =>
           Cancel
         </Button>
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Saving...' : 'Save Product'}
+          {isSubmitting ? 'Saving...' : (product ? 'Update Product' : 'Create Product')}
         </Button>
       </div>
     </form>
