@@ -17,21 +17,26 @@ class ProductService:
         """Get products for a specific bakery"""
         return Product.query.filter_by(bakery_id=bakery_id).order_by(Product.name).all()
     
-    def get_products_by_category(self, category):
+    def get_products_by_category(self, category_id):
         """Get products by category"""
-        return Product.query.filter_by(category=category).order_by(Product.name).all()
+        return Product.query.filter_by(category_id=category_id).order_by(Product.name).all()
+    
+    def get_products_by_subcategory(self, subcategory_id):
+        """Get products by subcategory"""
+        return Product.query.filter_by(subcategory_id=subcategory_id).order_by(Product.name).all()
     
     def search_products(self, search_term):
         """Search products by name"""
         return Product.query.filter(Product.name.ilike(f'%{search_term}%')).order_by(Product.name).all()
     
-    def create_product(self, name, bakery_id, category=None, image_url=None):
+    def create_product(self, name, bakery_id, category_id=None, subcategory_id=None, image_url=None):
         """Create a new product"""
         try:
             product = Product(
                 name=name, 
                 bakery_id=bakery_id, 
-                category=category,
+                category_id=category_id,
+                subcategory_id=subcategory_id,
                 image_url=image_url
             )
             db.session.add(product)
@@ -41,7 +46,7 @@ class ProductService:
             db.session.rollback()
             raise Exception(f"Database error: {str(e)}")
     
-    def update_product(self, product_id, name, bakery_id, category=None, image_url=None):
+    def update_product(self, product_id, name, bakery_id, category_id=None, subcategory_id=None, image_url=None):
         """Update an existing product"""
         try:
             product = self.get_product_by_id(product_id)
@@ -50,7 +55,8 @@ class ProductService:
                 
             product.name = name
             product.bakery_id = bakery_id
-            product.category = category
+            product.category_id = category_id
+            product.subcategory_id = subcategory_id
             product.image_url = image_url
             
             db.session.commit()

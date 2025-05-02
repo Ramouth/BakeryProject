@@ -259,6 +259,58 @@
   margin-top: 1.5rem;
 }
 
+/* Additional styles for AdminCategoriesManager */
+
+.subcategory-manager {
+  width: 100%;
+}
+
+.subcategory-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.confirmation-checkbox {
+  margin: 1.5rem 0;
+}
+
+.confirmation-checkbox label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+.warning {
+  color: var(--danger);
+  font-weight: 500;
+  margin-top: 0.5rem;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.table-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Responsive table adjustments */
+@media (max-width: 768px) {
+  .table-responsive {
+    overflow-x: auto;
+  }
+  
+  .admin-table th,
+  .admin-table td {
+    white-space: nowrap;
+  }
+}
+
 /* Responsive Styles */
 @media (max-width: 768px) {
   .admin-stats {

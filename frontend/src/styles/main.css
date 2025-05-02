@@ -30,14 +30,16 @@
 /* Import review modal styles */
 @import 'review-modal.css';
 
-/* Import croissant rating styles */
-@import 'croissant-rating.css';
+/* Import cookie rating styles */
+@import 'cookie-rating.css';
 
-/* Import croissant display styles */
-@import 'croissant-display.css';
+/* Import cookie display styles */
+@import 'cookie-display.css';
 
 /* Import responsive styles last to override other styles as needed */
 @import 'responsive.css';
 
 /* Import footer styles */
 @import 'footer.css';
+
+@import 'faceted-search.css';

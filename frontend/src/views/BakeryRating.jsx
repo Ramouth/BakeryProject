@@ -1,5 +1,5 @@
 import { useBakeryRatingViewModel } from '../viewmodels/useBakeryRatingViewModel';
-import CroissantRating from '../components/CroissantRatingComponent.jsx';
+import CookieRating from '../components/CookieRatingComponent.jsx';
 
 const BakeryRating = () => {
   const {
@@ -17,13 +17,13 @@ const BakeryRating = () => {
       <div className="card">
         <h2>Bakery Rating</h2>
         <p>
-          Rate {selectedBakery.name} with Croissants!
+          Rate {selectedBakery.name} with Cookies!
         </p>
         
         <div className="rating-container">
           <div className="rating-row">
             <div className="rating-label">Overall:</div>
-            <CroissantRating 
+            <CookieRating 
               rating={bakeryRatings.overall} 
               onChange={(value) => handleRatingChange('overall', value)} 
               max={5}
@@ -32,7 +32,7 @@ const BakeryRating = () => {
           
           <div className="rating-row">
             <div className="rating-label">Service:</div>
-            <CroissantRating 
+            <CookieRating 
               rating={bakeryRatings.service} 
               onChange={(value) => handleRatingChange('service', value)} 
               max={5}
@@ -41,7 +41,7 @@ const BakeryRating = () => {
           
           <div className="rating-row">
             <div className="rating-label">Price:</div>
-            <CroissantRating 
+            <CookieRating 
               rating={bakeryRatings.price} 
               onChange={(value) => handleRatingChange('price', value)} 
               max={5}
@@ -50,7 +50,7 @@ const BakeryRating = () => {
           
           <div className="rating-row">
             <div className="rating-label">Atmosphere:</div>
-            <CroissantRating 
+            <CookieRating 
               rating={bakeryRatings.atmosphere} 
               onChange={(value) => handleRatingChange('atmosphere', value)} 
               max={5}
@@ -59,7 +59,7 @@ const BakeryRating = () => {
           
           <div className="rating-row">
             <div className="rating-label">Location:</div>
-            <CroissantRating 
+            <CookieRating 
               rating={bakeryRatings.location} 
               onChange={(value) => handleRatingChange('location', value)} 
               max={5}

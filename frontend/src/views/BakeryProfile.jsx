@@ -1,13 +1,16 @@
+// Update the BakeryProfile.jsx file to add review functionality
 import { useParams, Link } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useBakeryProfileViewModel } from '../viewmodels/useBakeryProfileViewModel';
-import CroissantRating from '../components/CroissantRatingComponent';
+import CookieRating from '../components/CookieRatingComponent';
+import ReviewModal from '../components/ReviewModal';
 import bakeryLogo from '../assets/bageri-logo.jpeg';
 import bakeryHeader from '../assets/bageri.jpeg';
 import '../styles/bakery-profile.css';
 
 const BakeryProfile = () => {
   const { bakeryName } = useParams();
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   
   // Log component lifecycle for debugging
   useEffect(() => {
@@ -31,6 +34,14 @@ const BakeryProfile = () => {
     getTopRatedProducts,
     formatDate
   } = useBakeryProfileViewModel(bakeryName);
+
+  const openReviewModal = () => {
+    setIsReviewModalOpen(true);
+  };
+
+  const closeReviewModal = () => {
+    setIsReviewModalOpen(false);
+  };
 
   if (loading) {
     return (
@@ -59,28 +70,28 @@ const BakeryProfile = () => {
     );
   }
 
-  // Helper function to render croissant stars
-  const renderCroissantStars = (rating, size = 'medium') => {
+  // Helper function to render cookie stars
+  const renderCookieStars = (rating, size = 'medium') => {
     const displayRating = rating / 2;
-    const fullCroissants = Math.floor(displayRating);
-    const hasHalfCroissant = displayRating % 1 >= 0.5;
-    const emptyCroissants = 5 - fullCroissants - (hasHalfCroissant ? 1 : 0);
+    const fullCookies = Math.floor(displayRating);
+    const hasHalfCookie = displayRating % 1 >= 0.5;
+    const emptyCookies = 5 - fullCookies - (hasHalfCookie ? 1 : 0);
     
-    const sizeClass = size === 'large' ? 'croissant-large' : 
-                     size === 'small' ? 'croissant-small' : '';
+    const sizeClass = size === 'large' ? 'cookie-large' : 
+                     size === 'small' ? 'cookie-small' : '';
     
     return (
-      <div className={`croissant-display ${sizeClass}`}>
-        {Array(fullCroissants).fill().map((_, i) => (
-          <span key={`full-${i}`} className="croissant-filled">🍪</span>
+      <div className={`cookie-display ${sizeClass}`}>
+        {Array(fullCookies).fill().map((_, i) => (
+          <span key={`full-${i}`} className="cookie-filled">🍪</span>
         ))}
-        {hasHalfCroissant && (
-          <div className="croissant-half-container">
-            <span className="croissant-half">🍪</span>
+        {hasHalfCookie && (
+          <div className="cookie-half-container">
+            <span className="cookie-half">🍪</span>
           </div>
         )}
-        {Array(emptyCroissants).fill().map((_, i) => (
-          <span key={`empty-${i}`} className="croissant-empty">🍪</span>
+        {Array(emptyCookies).fill().map((_, i) => (
+          <span key={`empty-${i}`} className="cookie-empty">🍪</span>
         ))}
       </div>
     );
@@ -127,13 +138,13 @@ const BakeryProfile = () => {
             
             <div className="bakery-rating-summary">
               <span className="bakery-rating-value">{((ratings.overall || 0) / 2).toFixed(1)}</span>
-              {renderCroissantStars(ratings.overall || 0)}
+              {renderCookieStars(ratings.overall || 0)}
               <span className="bakery-review-count">({reviewCount} reviews)</span>
             </div>
           </div>
           
           <div className="bakery-actions">
-            <button className="btn btn-primary">Write a Review</button>
+            <button className="btn btn-primary" onClick={openReviewModal}>Write a Review</button>
             <button className="btn btn-secondary">Share</button>
           </div>
         </div>
@@ -187,7 +198,7 @@ const BakeryProfile = () => {
                       {Object.entries(ratings).map(([label, value]) => (
                         <div key={label} className="rating-item">
                           <span className="rating-label">{label.charAt(0).toUpperCase() + label.slice(1)}:</span>
-                          <CroissantRating rating={value} max={5} disabled={true} />
+                          <CookieRating rating={value} max={5} disabled={true} />
                         </div>
                       ))}
                     </div>
@@ -206,7 +217,7 @@ const BakeryProfile = () => {
                           <h4>{product.name}</h4>
                           <div className="popular-item-rating">
                             <span>{((product.rating || product.average_rating || 0) / 2).toFixed(1)}</span>
-                            {renderCroissantStars(product.rating || product.average_rating || 0, 'small')}
+                            {renderCookieStars(product.rating || product.average_rating || 0, 'small')}
                           </div>
                         </div>
                       </Link>
@@ -234,11 +245,11 @@ const BakeryProfile = () => {
                         {(product.rating || product.average_rating) && (
                           <div className="product-rating">
                             <span>{((product.rating || product.average_rating) / 2).toFixed(1)}</span>
-                            {renderCroissantStars(product.rating || product.average_rating, 'small')}
+                            {renderCookieStars(product.rating || product.average_rating, 'small')}
                           </div>
                         )}
                         {product.category && (
-                          <div className="product-category">{product.category}</div>
+                          <div className="product-category">{typeof product.category === 'object' ? product.category.name : product.category}</div>
                         )}
                       </div>
                     </Link>
@@ -257,11 +268,11 @@ const BakeryProfile = () => {
               <div className="reviews-summary">
                 <div className="reviews-total">
                   <span className="large-rating">{((ratings.overall || 0) / 2).toFixed(1)}</span>
-                  {renderCroissantStars(ratings.overall || 0, 'large')}
+                  {renderCookieStars(ratings.overall || 0, 'large')}
                   <span className="total-reviews">{reviewCount} reviews</span>
                 </div>
                 
-                <button className="btn btn-primary">Write a Review</button>
+                <button className="btn btn-primary" onClick={openReviewModal}>Write a Review</button>
               </div>
               
               <div className="reviews-list">
@@ -274,7 +285,7 @@ const BakeryProfile = () => {
                       </div>
                       
                       <div className="review-rating">
-                        {renderCroissantStars(review.overallRating || 0)}
+                        {renderCookieStars(review.overallRating || 0)}
                       </div>
                       
                       <p className="review-text">{review.review}</p>
@@ -292,6 +303,14 @@ const BakeryProfile = () => {
           )}
         </div>
       </div>
+
+      {/* Review Modal */}
+      <ReviewModal 
+        isOpen={isReviewModalOpen} 
+        onClose={closeReviewModal}
+        initialReviewType="bakery"
+        initialSelectedItem={bakery}
+      />
     </div>
   );
 };
