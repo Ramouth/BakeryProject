@@ -8,11 +8,14 @@ load_dotenv()
 
 class Config:
     """Base configuration"""
-    # Database configuration
-    SQLALCHEMY_DATABASE_URI = os.environ.get(
-        'DATABASE_URL',
-        'sqlite:///new_bakery_reviews.db'
-    )
+    # Determine the absolute path of the backend directory
+    basedir = os.path.abspath(os.path.dirname(__file__))
+
+    # Default database file in backend/instance
+    default_db = os.path.join(basedir, 'instance', 'new_bakery_reviews.db')
+
+    # Database configuration: use DATABASE_URL env var or default to the instance file
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or f"sqlite:///{default_db}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Security configurations
