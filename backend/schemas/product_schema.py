@@ -1,4 +1,3 @@
-# schemas/product_schema.py
 from . import ma
 from models.product_models import Product
 from marshmallow import fields, validate, post_dump, post_load
@@ -12,15 +11,16 @@ class ProductSchema(ma.SQLAlchemyAutoSchema):
         include_fk = True
         include_relationships = True
         # Exclude fields that will be renamed
-        exclude = ("bakery_id", "image_url")
+        exclude = ("bakery_id", "category_id", "subcategory_id", "image_url")
     
     # Field customizations
-    id = fields.Integer(dump_only=True)  # Read-only field
+    id = fields.Integer(dump_only=True)
     name = fields.String(required=True, validate=validate.Length(min=1, max=80))
     
     # Define camelCase fields
     bakeryId = fields.Integer(required=True, attribute='bakery_id')
-    category = fields.String(required=True)
+    categoryId = fields.Integer(required=False, attribute='category_id', allow_none=True)
+    subcategoryId = fields.Integer(required=False, attribute='subcategory_id', allow_none=True)
     imageUrl = fields.String(attribute='image_url')
     
     created_at = fields.DateTime(dump_only=True)
@@ -28,6 +28,8 @@ class ProductSchema(ma.SQLAlchemyAutoSchema):
     
     # Nested fields
     bakery = fields.Nested('BakerySchema', only=('id', 'name'), dump_only=True)
+    category = fields.Nested('CategorySchema', only=('id', 'name'), dump_only=True)
+    subcategory = fields.Nested('SubcategorySchema', only=('id', 'name', 'categoryId'), dump_only=True)
     
     @post_dump
     def add_camel_case_fields(self, data, **kwargs):
@@ -36,8 +38,9 @@ class ProductSchema(ma.SQLAlchemyAutoSchema):
         if obj:
             # Map model attributes to schema fields
             data['bakeryId'] = obj.bakery_id
+            data['categoryId'] = obj.category_id
+            data['subcategoryId'] = obj.subcategory_id
             data['imageUrl'] = obj.image_url if obj.image_url else None
-            data['subcategory'] = obj.subcategory if obj.subcategory else None
         return data
     
     @post_load
@@ -45,8 +48,10 @@ class ProductSchema(ma.SQLAlchemyAutoSchema):
         """Map camelCase fields to snake_case model attributes"""
         if 'bakeryId' in data:
             data['bakery_id'] = data.pop('bakeryId')
+        if 'categoryId' in data:
+            data['category_id'] = data.pop('categoryId')
+        if 'subcategoryId' in data:
+            data['subcategory_id'] = data.pop('subcategoryId')
         if 'imageUrl' in data:
             data['image_url'] = data.pop('imageUrl')
-        if 'subcategory' in data:
-            data['subcategory'] = data.pop('subcategory')
         return data

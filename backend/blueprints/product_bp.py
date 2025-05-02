@@ -64,11 +64,20 @@ def get_products_by_category(category):
     products = product_service.get_products_by_category(category)
     return jsonify({"products": products_schema.dump(products)})
 
-@product_bp.route('/subcategory/<subcategory>', methods=['GET'])
+@product_bp.route('/subcategory/<int:subcategory_id>', methods=['GET'])
 @cache.cached(timeout=60)
-def get_products_by_subcategory(subcategory):
-    """Get all products for a specific subcategory"""
-    products = Product.query.filter_by(subcategory=subcategory).order_by(Product.name).all()
+def get_products_by_subcategory_id(subcategory_id):
+    """Get all products for a specific subcategory by ID"""
+    from services.category_service import SubcategoryService
+    subcategory_service = SubcategoryService()
+    
+    # Check if subcategory exists
+    subcategory = subcategory_service.get_subcategory_by_id(subcategory_id)
+    if not subcategory:
+        return jsonify({"message": "Subcategory not found"}), 404
+    
+    # Get products
+    products = Product.query.filter_by(subcategory_id=subcategory_id).order_by(Product.name).all()
     return jsonify({"products": products_schema.dump(products)})
 
 @product_bp.route('/create', methods=['POST'])
