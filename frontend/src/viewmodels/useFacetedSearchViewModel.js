@@ -52,10 +52,10 @@ export const useFacetedSearchViewModel = () => {
         
         // Setup rating options
         setAvailableRatings([
-          { value: "4", label: "4+ Stars", minRating: 4 },
-          { value: "3", label: "3+ Stars", minRating: 3 },
-          { value: "2", label: "2+ Stars", minRating: 2 },
-          { value: "1", label: "1+ Stars", minRating: 1 }
+          { value: "4", label: "4+", minRating: 4 },
+          { value: "3", label: "3+", minRating: 3 },
+          { value: "2", label: "2+", minRating: 2 },
+          { value: "1", label: "1+", minRating: 1 }
         ]);
         
       } catch (err) {
