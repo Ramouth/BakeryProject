@@ -158,7 +158,7 @@ const UserProfile = () => {
                           
                           <div className="review-rating">
                             <span className="rating-value">{review.rating.toFixed(1)}</span>
-                            <span className="stars">★★★★★</span>
+                            <span className="cookies">🍪</span>
                             <span className="review-date">{formatDate(review.date)}</span>
                           </div>
                           
