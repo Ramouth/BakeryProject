@@ -7,6 +7,7 @@ from logging.handlers import RotatingFileHandler
 from config import DevelopmentConfig, ProductionConfig
 from models import db
 from schemas import ma
+from utils.caching import cache, configure_cache
 
 # Blueprints
 from blueprints.bakery_bp import bakery_bp
@@ -14,11 +15,12 @@ from blueprints.product_bp import product_bp
 from blueprints.review_bp import bakery_review_bp, product_review_bp
 from blueprints.user_bp import user_bp
 from blueprints.auth_bp import auth_bp
+from blueprints.category_bp import category_bp  # <-- From dev
 
 def create_app(config_class=None):
     # Pick config
     if not config_class:
-        config_class = ProductionConfig if os.getenv('FLASK_ENV')=='production' else DevelopmentConfig
+        config_class = ProductionConfig if os.getenv('FLASK_ENV') == 'production' else DevelopmentConfig
 
     app = Flask(__name__, static_folder='static')
     app.config.from_object(config_class)
@@ -26,14 +28,10 @@ def create_app(config_class=None):
 
     # —————— JWT CONFIGURATION ——————
     app.config.update({
-        # Where to look for the token
         'JWT_TOKEN_LOCATION': ['headers'],
-        # Header name & type
         'JWT_HEADER_NAME': 'Authorization',
         'JWT_HEADER_TYPE': 'Bearer',
-        # Use “message” key instead of “msg” in errors
         'JWT_ERROR_MESSAGE_KEY': 'message',
-        # Token expiry
         'JWT_ACCESS_TOKEN_EXPIRES': datetime.timedelta(hours=1),
         'JWT_REFRESH_TOKEN_EXPIRES': datetime.timedelta(days=30),
     })
@@ -59,13 +57,14 @@ def create_app(config_class=None):
     # —————— EXTENSIONS ——————
     db.init_app(app)
     ma.init_app(app)
+    configure_cache(app)  # <-- Added from dev
 
     # —————— CORS ——————
     allowed = app.config.get('ALLOWED_ORIGINS', ['http://localhost:5173'])
     CORS(app, resources={r"/*": {
         "origins": allowed,
-        "methods": ["GET","POST","PATCH","PUT","DELETE","OPTIONS"],
-        "allow_headers": ["Content-Type","Authorization"],
+        "methods": ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"],
         "supports_credentials": True,
         "max_age": 86400
     }})
@@ -77,6 +76,7 @@ def create_app(config_class=None):
     app.register_blueprint(product_review_bp, url_prefix='/productreviews')
     app.register_blueprint(user_bp, url_prefix='/users')
     app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(category_bp, url_prefix='/categories')  # <-- From dev
 
     # —————— ERROR HANDLING ——————
     @app.errorhandler(Exception)
@@ -95,6 +95,6 @@ def create_app(config_class=None):
 
 if __name__ == '__main__':
     app = create_app()
-    app.run(host=os.getenv('HOST','0.0.0.0'),
-            port=int(os.getenv('PORT',5000)),
+    app.run(host=os.getenv('HOST', '0.0.0.0'),
+            port=int(os.getenv('PORT', 5000)),
             debug=app.debug)

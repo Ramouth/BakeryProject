@@ -1,143 +1,145 @@
-// src/components/admin/AdminProductModal.jsx
-import { useState, useEffect, useCallback } from "react";
-import PropTypes from "prop-types";
-import Button from "../Button";
+import { useState, useEffect } from 'react';
+import Button from '../Button';
+import apiClient from '../../services/api';
 
-const ProductForm = ({ product = {}, bakeries = [], onSubmit, onCancel, isSubmitting = false }) => {
+const ProductForm = ({ product, bakeries, onSubmit, onCancel, isSubmitting }) => {
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
   const [formData, setFormData] = useState({
-    name: "",
-    bakeryId: "",
-    category: "",
-    imageUrl: ""
+    id: product?.id || '',
+    name: product?.name || '',
+    bakeryId: product?.bakeryId || (bakeries.length > 0 ? bakeries[0].id : ''),
+    categoryId: product?.categoryId || '',
+    subcategoryId: product?.subcategoryId || '',
+    imageUrl: product?.imageUrl || ''
   });
-  const [errors, setErrors] = useState({});
-  const [touched, setTouched] = useState({});
-
-  // Initialize form with product data when provided
+  
+  // Fetch categories when component mounts
   useEffect(() => {
-    if (product && product.id) {
-      setFormData({
-        name: product.name || "",
-        bakeryId: product.bakeryId || "",
-        category: product.category || "",
-        imageUrl: product.imageUrl || ""
-      });
+    const fetchCategories = async () => {
+      try {
+        const response = await apiClient.get('/categories', true);
+        if (response && response.categories) {
+          setCategories(response.categories);
+          
+          // If product has a categoryId, fetch subcategories for that category
+          if (formData.categoryId) {
+            fetchSubcategories(formData.categoryId);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+    
+    fetchCategories();
+  }, []);
+  
+  // Fetch subcategories when category changes
+  const fetchSubcategories = async (categoryId) => {
+    if (!categoryId) {
+      setSubcategories([]);
+      return;
     }
-  }, [product]);
-
-  // Form validation
-  const validateForm = () => {
-    const newErrors = {};
     
-    if (!formData.name.trim()) {
-      newErrors.name = "Product name is required";
+    try {
+      const response = await apiClient.get(`/categories/${categoryId}/subcategories`, true);
+      if (response && response.subcategories) {
+        setSubcategories(response.subcategories);
+      }
+    } catch (error) {
+      console.error('Error fetching subcategories:', error);
     }
-    
-    if (!formData.bakeryId) {
-      newErrors.bakeryId = "Please select a bakery";
-    }
-    
-    // Log validation state
-    console.log("Validating product form data:", formData);
-    console.log("Validation errors:", newErrors);
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
   };
-
-  // Handle field change
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    
-    setTouched(prev => ({
-      ...prev,
-      [name]: true
-    }));
-    
-    // Clear error when field is changed
-    if (errors[name]) {
-      setErrors(prev => ({
+    // Handle category change - fetch subcategories and reset subcategoryId
+    if (name === 'categoryId' && value !== formData.categoryId) {
+      fetchSubcategories(value);
+      setFormData(prev => ({
         ...prev,
-        [name]: null
+        [name]: value,
+        subcategoryId: '' // Reset subcategory when category changes
       }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
     }
   };
-
-  // Handle form submission
+  
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    if (validateForm()) {
-      // Create data object for submission - using empty strings instead of null
-      const productData = {
-        name: formData.name.trim(),
-        bakeryId: formData.bakeryId,
-        category: formData.category.trim() || "",
-        imageUrl: formData.imageUrl.trim() || ""
-      };
-      
-      console.log("Submitting product data:", productData);
-      onSubmit(productData);
-    }
+    onSubmit(formData);
   };
 
-  // Helper to check if product exists and has an id
-  const isEditing = product && product.id;
-
   return (
-    <form onSubmit={handleSubmit} className="form product-form">
+    <form onSubmit={handleSubmit}>
       <div className="form-group">
-        <label htmlFor="name">Product Name: *</label>
+        <label htmlFor="name">Product Name:</label>
         <input
           type="text"
           id="name"
           name="name"
           value={formData.name}
           onChange={handleChange}
-          className={errors.name ? "error" : ""}
-          disabled={isSubmitting}
           required
         />
-        {errors.name && <div className="error-text">{errors.name}</div>}
       </div>
       
       <div className="form-group">
-        <label htmlFor="bakeryId">Select Bakery: *</label>
+        <label htmlFor="bakeryId">Bakery:</label>
         <select
           id="bakeryId"
           name="bakeryId"
           value={formData.bakeryId}
           onChange={handleChange}
-          className={errors.bakeryId ? "error" : ""}
-          disabled={isSubmitting}
           required
         >
-          <option value="">--Select a Bakery--</option>
-          {bakeries.map((bakery) => (
+          <option value="">Select a Bakery</option>
+          {bakeries.map(bakery => (
             <option key={bakery.id} value={bakery.id}>
               {bakery.name}
             </option>
           ))}
         </select>
-        {errors.bakeryId && <div className="error-text">{errors.bakeryId}</div>}
       </div>
       
-      <div className="form-group">
-        <label htmlFor="category">Category:</label>
-        <input
-          type="text"
-          id="category"
-          name="category"
-          value={formData.category}
+     {/* Category dropdown */}
+     <div className="form-group">
+        <label htmlFor="categoryId">Category:</label>
+        <select
+          id="categoryId"
+          name="categoryId"
+          value={formData.categoryId}
           onChange={handleChange}
-          placeholder="e.g., Danish, Bread, Cake"
-          disabled={isSubmitting}
-        />
+        >
+          <option value="">Select Category</option>
+          {categories.map(category => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+      </div>
+      
+      {/* Subcategory dropdown - only enabled if category is selected */}
+      <div className="form-group">
+        <label htmlFor="subcategoryId">Subcategory:</label>
+        <select
+          id="subcategoryId"
+          name="subcategoryId"
+          value={formData.subcategoryId}
+          onChange={handleChange}
+          disabled={!formData.categoryId}
+        >
+          <option value="">Select Subcategory</option>
+          {subcategories.map(subcategory => (
+            <option key={subcategory.id} value={subcategory.id}>
+              {subcategory.name}
+            </option>
+          ))}
+        </select>
       </div>
       
       <div className="form-group">
@@ -148,40 +150,30 @@ const ProductForm = ({ product = {}, bakeries = [], onSubmit, onCancel, isSubmit
           name="imageUrl"
           value={formData.imageUrl}
           onChange={handleChange}
-          placeholder="https://example.com/image.jpg"
-          disabled={isSubmitting}
+        />
+      </div>
+      
+      <div className="form-group">
+        <label htmlFor="description">Description:</label>
+        <textarea
+          id="description"
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+          rows="3"
         />
       </div>
       
       <div className="form-actions">
-        <Button type="button" variant="secondary" onClick={onCancel} disabled={isSubmitting}>
+        <Button type="button" variant="secondary" onClick={onCancel}>
           Cancel
         </Button>
-        <Button type="submit" variant="primary" disabled={isSubmitting}>
-          {isSubmitting ? "Saving..." : isEditing ? "Update" : "Create"}
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Saving...' : (product ? 'Update Product' : 'Create Product')}
         </Button>
       </div>
     </form>
   );
-};
-
-ProductForm.propTypes = {
-  product: PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    name: PropTypes.string,
-    bakeryId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    category: PropTypes.string,
-    imageUrl: PropTypes.string
-  }),
-  bakeries: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-      name: PropTypes.string.isRequired
-    })
-  ),
-  onSubmit: PropTypes.func.isRequired,
-  onCancel: PropTypes.func.isRequired,
-  isSubmitting: PropTypes.bool
 };
 
 export default ProductForm;

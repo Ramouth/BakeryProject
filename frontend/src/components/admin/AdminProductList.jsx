@@ -1,72 +1,54 @@
-import { memo } from "react";
-import PropTypes from "prop-types";
-import Button from "../Button";
-
-const ProductList = ({ products, onEdit, onDelete }) => {
-  if (!products.length) {
-    return <p className="no-data">No products found. Create one to get started.</p>;
-  }
-
+export default function ProductList({ products, onEdit, onDelete }) {
   return (
-    <div className="table-responsive">
-      <table className="table product-table">
+    <div className="admin-table-container">
+      <table className="admin-table">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Product Name</th>
+            <th>Name</th>
             <th>Bakery</th>
             <th>Category</th>
+            <th>Subcategory</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {products.map((product) => (
-            <tr key={product.id}>
-              <td>{product.id}</td>
-              <td>{product.name}</td>
-              <td>
-                {product.bakery ? product.bakery.name : "No Bakery"}
-              </td>
-              <td>{product.category || "No Category"}</td>
-              <td className="actions">
-                <Button 
-                  variant="secondary" 
-                  size="small" 
-                  onClick={() => onEdit(product)}
-                  aria-label={`Edit ${product.name}`}
-                >
-                  Edit
-                </Button>
-                <Button 
-                  variant="danger" 
-                  size="small" 
-                  onClick={() => onDelete(product.id)}
-                  aria-label={`Delete ${product.name}`}
-                >
-                  Delete
-                </Button>
-              </td>
+          {products.length === 0 ? (
+            <tr>
+              <td colSpan="5" className="empty-table">No products found</td>
             </tr>
-          ))}
+          ) : (
+            products.map(product => (
+              <tr key={product.id}>
+                <td>
+                  {product.name}
+                  {product.imageUrl && (
+                    <span className="has-image-indicator">📷</span>
+                  )}
+                </td>
+                <td>{product.bakery?.name || '-'}</td>
+                <td>{product.category?.name || '-'}</td>
+                <td>{product.subcategory?.name || '-'}</td>
+                <td>
+                  <div className="table-actions">
+                    <button 
+                      className="action-button edit"
+                      onClick={() => onEdit(product)}
+                    >
+                      Edit
+                    </button>
+                    <button 
+                      className="action-button delete"
+                      onClick={() => onDelete(product.id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>
   );
 };
-
-ProductList.propTypes = {
-  products: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-      name: PropTypes.string.isRequired,
-      bakery: PropTypes.shape({
-        name: PropTypes.string.isRequired
-      })
-    })
-  ).isRequired,
-  onEdit: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired
-};
-
-// Use memo to prevent unnecessary re-renders
-export default memo(ProductList);

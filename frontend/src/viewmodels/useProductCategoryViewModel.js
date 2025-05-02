@@ -1,79 +1,56 @@
+// frontend/src/viewmodels/useProductCategoryViewModel.js
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import apiClient from '../services/api';
+import productService from '../services/productService';
 
 export const useProductCategoryViewModel = () => {
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState({});
   const [loading, setLoading] = useState(true);
-  
-  // Predefined categories structure
-  const categories = [
-    {
-      id: 'danish',
-      name: 'Danish Products',
-      products: [
-        { id: 'kanelsnegl', name: 'Kanelsnegle' },
-        { id: 'spandauer', name: 'Spandauer' },
-        { id: 'tebirkes', name: 'Tebirkes' },
-        { id: 'romsnegl', name: 'Romsnegl' }
-      ]
-    },
-    {
-      id: 'bread',
-      name: 'Breads',
-      products: [
-        { id: 'rugbrod', name: 'Rugbrød' },
-        { id: 'sourdough', name: 'Sourdough' },
-        { id: 'franskbrod', name: 'Franskbrød' },
-        { id: 'flutes', name: 'Flutes' }
-      ]
-    },
-    {
-      id: 'viennoiserie',
-      name: 'Viennoiserie',
-      products: [
-        { id: 'classic-croissant', name: 'Classic Croissant' },
-        { id: 'chocolate-croissant', name: 'Chocolate Croissant' },
-        { id: 'almond-croissant', name: 'Almond Croissant' },
-        { id: 'ham-cheese-croissant', name: 'Ham & Cheese Croissant' }
-      ]
-    },
-    {
-      id: 'cakes',
-      name: 'Cakes & Tarts',
-      products: [
-        { id: 'hindbaersnitter', name: 'Hindbærsnitter' },
-        { id: 'drommekage', name: 'Drømmekage' },
-        { id: 'napoleon-hat', name: 'Napoleon\'s Hat' },
-        { id: 'othellolagkage', name: 'Othellolagkage' }
-      ]
-    },
-    {
-      id: 'specialty',
-      name: 'Specialty Items',
-      products: [
-        { id: 'cardamom-bun', name: 'Cardamom Bun' },
-        { id: 'chokoladebolle', name: 'Chokoladebolle' },
-        { id: 'wienerbrod', name: 'Wienerbrød' },
-        { id: 'brunsviger', name: 'Brunsviger' }
-      ]
-    }
-  ];
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       try {
-        const response = await apiClient.get('/products', true);
-        console.log(`Found ${response.products?.length || 0} products in the database`);
+        setLoading(true);
+        
+        // Fetch categories from API
+        const categoriesResponse = await productService.getAllCategories();
+        if (categoriesResponse && categoriesResponse.categories) {
+          setCategories(categoriesResponse.categories);
+          
+          // For each category, fetch its subcategories
+          const subcategoryMap = {};
+          await Promise.all(
+            categoriesResponse.categories.map(async (category) => {
+              try {
+                const subcategoriesResponse = await productService.getSubcategoriesByCategory(category.id);
+                if (subcategoriesResponse && subcategoriesResponse.subcategories) {
+                  subcategoryMap[category.id] = subcategoriesResponse.subcategories;
+                }
+              } catch (error) {
+                console.error(`Error fetching subcategories for ${category.id}:`, error);
+              }
+            })
+          );
+          
+          setSubcategories(subcategoryMap);
+        } else {
+          setCategories([]);
+        }
       } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error('Error fetching categories:', error);
+        setError('Failed to load product categories');
+        setCategories([]);
       } finally {
         setLoading(false);
       }
     };
     
-    fetchProducts();
+    fetchData();
   }, []);
 
   const handleMouseEnter = (categoryId) => {
@@ -84,20 +61,22 @@ export const useProductCategoryViewModel = () => {
     setActiveCategory(null);
   };
 
-  const navigateToProduct = (categoryId, productId) => {
-    if (productId) {
-      navigate(`/product-rankings/${categoryId}/${productId}`);
-    } else {
-      navigate(`/product-rankings/${categoryId}`);
-    }
+  const navigateToSubcategory = (categoryId, subcategoryId) => {
+    navigate(`/product-rankings/${categoryId}/${subcategoryId}`);
+  };
+
+  const getCategorySubcategories = (categoryId) => {
+    return subcategories[categoryId] || [];
   };
 
   return {
     categories,
     activeCategory,
     loading,
+    error,
     handleMouseEnter,
     handleMouseLeave,
-    navigateToProduct
+    navigateToSubcategory,
+    getCategorySubcategories
   };
 };

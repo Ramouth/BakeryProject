@@ -1,20 +1,22 @@
 import { Link } from 'react-router-dom';
 import { useBakeryRankingsViewModel } from '../viewmodels/useBakeryRankingsViewModel';
 import SearchDropdown from '../components/SearchDropdown';
+import Button from '../components/Button';
 import '../styles/bakery-rankings.css';
 
 const BakeryRankings = () => {
   const {
     bakeries,
+    totalBakeries,
     loading,
     error,
-    handleSearch
+    handleSearch,
+    hasMore,
+    loadMore
   } = useBakeryRankingsViewModel();
 
-  const searchTypes = [
-    { value: 'bakeries', label: 'Find Bakeries' },
-    { value: 'products', label: 'Find Products' }
-  ];
+  // Remove the searchTypes array that had both 'bakeries' and 'products' options
+  // We'll only use bakery-specific filter options
 
   const filterOptions = {
     bakeries: [
@@ -22,18 +24,19 @@ const BakeryRankings = () => {
         name: 'zipCode',
         options: [
           { value: '', label: 'All Postal Codes' },
-          { value: '1050', label: '1050 - Inner City' },
-          { value: '1400', label: '1400 - København K' },
-          { value: '1437', label: '1437 - København K' },
-          { value: '1453', label: '1453 - København K' },
-          { value: '1500', label: '1500 - Vesterbro' },
-          { value: '1572', label: '1572 - København V' },
-          { value: '1850', label: '1850 - Frederiksberg' },
-          { value: '1871', label: '1871 - Frederiksberg' },
-          { value: '2000', label: '2000 - Frederiksberg' },
-          { value: '2100', label: '2100 - Østerbro' },
-          { value: '2200', label: '2200 - Nørrebro' },
-          { value: '2300', label: '2300 - Amager' }
+          { value: '1000-1499', label: '1000-1499 - Copenhagen K (City Center)' },
+          { value: '1500-1799', label: '1500-1799 - Copenhagen V (Vesterbro)' },
+          { value: '1800-1999', label: '1800-1999 - Frederiksberg C' },
+          { value: '2000-2099', label: '2000-2099 - Frederiksberg' },
+          { value: '2100-2199', label: '2100-2199 - Copenhagen Ø (Østerbro)' },
+          { value: '2200-2299', label: '2200-2299 - Copenhagen N (Nørrebro)' },
+          { value: '2300-2399', label: '2300-2399 - Copenhagen S (Amager)' },
+          { value: '2400-2499', label: '2400-2499 - Copenhagen NV (Nordvest)' },
+          { value: '2500-2599', label: '2500-2599 - Valby' },
+          { value: '2600-2699', label: '2600-2699 - Glostrup' },
+          { value: '2700-2799', label: '2700-2799 - Brønshøj' },
+          { value: '2800-2899', label: '2800-2899 - Lyngby' },
+          { value: '2900-2999', label: '2900-2999 - Hellerup' }
         ]
       },
       {
@@ -46,16 +49,21 @@ const BakeryRankings = () => {
           { value: '3', label: '3+ Stars' }
         ]
       }
-    ],
-    products: []
+    ]
   };
 
   // Convert backend rating (1-10) to display rating (0.5-5)
   const getBakeryRating = (bakery) => {
-    // Get the bakery's average rating or default to 0
-    const rating = bakery.average_rating || 0;
+    // Get the bakery's average rating from different possible sources
+    let rating = 0;
     
-    // Divide by 2 to convert from 10-scale to 5-scale
+    if (typeof bakery.average_rating === 'number') {
+      rating = bakery.average_rating;
+    } else if (bakery.ratings && typeof bakery.ratings.overall === 'number') {
+      rating = bakery.ratings.overall;
+    }
+    
+    // Always divide by 2 to convert from 10-scale to 5-scale
     // Backend consistently stores ratings on a 1-10 scale
     return (rating / 2).toFixed(1);
   };
@@ -72,53 +80,77 @@ const BakeryRankings = () => {
         <p>Discover the best bakeries based on user reviews and ratings</p>
       </div>
       
+      {/* Modified SearchDropdown to hide product search option */}
       <SearchDropdown 
         onSearch={handleSearch}
-        searchTypes={searchTypes}
         filterOptions={filterOptions}
+        hideSwitcher={true} // Add a prop to hide the search type switcher
+        defaultType="bakeries" // Always set to bakeries
       />
 
       <div className="bakery-rankings">
-        {loading ? (
+        {loading && bakeries.length === 0 ? (
           <div className="loading">Loading bakeries...</div>
         ) : error ? (
           <div className="error-message">{error}</div>
         ) : bakeries.length === 0 ? (
           <div className="no-results">No bakeries found matching your criteria.</div>
         ) : (
-          <div className="bakery-list">
-            {bakeries.map((bakery, index) => (
-              <Link 
-                to={`/bakery/${encodeURIComponent(formatBakeryNameForUrl(bakery.name))}`} 
-                className="bakery-card" 
-                key={bakery.id}
-              >
-                <div className="bakery-rank">{index + 1}</div>
-                <div className="bakery-image">
-                  <div className="placeholder-image">
-                    {bakery.name}
-                    {bakery.average_rating >= 9.4 && (
-                      <div className="top-review-badge">TOP REVIEW</div>
-                    )}
-                  </div>
-                </div>
-                <div className="bakery-details">
-                  <h3>{bakery.name}</h3>
-                  <p className="bakery-location">{bakery.address}</p>
-                  <p className="bakery-description">
-                    {bakery.description || "A wonderful bakery in Copenhagen offering delicious products."}
-                  </p>
-                  <div className="bakery-meta">
-                    <div className="bakery-rating">
-                      <span className="rating-value">{getBakeryRating(bakery)}</span>
-                      <span className="cookie">🍪</span>
-                      <span className="review-count">({bakery.review_count || 0} reviews)</span>
+          <>
+            <div className="bakery-count-info">
+              Showing {bakeries.length} of {totalBakeries} bakeries
+            </div>
+            
+            <div className="bakery-list">
+              {bakeries.map((bakery, index) => (
+                <Link 
+                  to={`/bakery/${encodeURIComponent(formatBakeryNameForUrl(bakery.name))}`} 
+                  className="bakery-card" 
+                  key={bakery.id}
+                >
+                  <div className="bakery-rank">{index + 1}</div>
+                  <div className="bakery-image">
+                    <div className="placeholder-image">
+                      {bakery.name}
+                      {bakery.average_rating >= 9.4 && (
+                        <div className="top-review-badge">TOP REVIEW</div>
+                      )}
                     </div>
                   </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+                  <div className="bakery-details">
+                    <h3>{bakery.name}</h3>
+                    <p className="bakery-location">
+                      {bakery.streetName ? `${bakery.streetName} ${bakery.streetNumber || ''}` : ''} 
+                      {bakery.zipCode ? `${bakery.streetName ? ', ' : ''}${bakery.zipCode} Copenhagen` : ''}
+                    </p>
+                    <p className="bakery-description">
+                      {bakery.description || "A wonderful bakery in Copenhagen offering delicious products."}
+                    </p>
+                    <div className="bakery-meta">
+                      <div className="bakery-rating">
+                        <span className="rating-value">{getBakeryRating(bakery)}</span>
+                        <span className="cookie">🍪</span>
+                        <span className="review-count">({bakery.review_count || 0} reviews)</span>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            
+            {hasMore && (
+              <div className="load-more-container">
+                <Button 
+                  onClick={loadMore} 
+                  disabled={loading}
+                  variant="secondary"
+                  className="load-more-button"
+                >
+                  {loading ? 'Loading...' : 'Load More Bakeries'}
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

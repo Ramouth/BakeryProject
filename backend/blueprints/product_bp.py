@@ -3,6 +3,7 @@ from models import Product, Bakery
 from schemas import ProductSchema
 from services.product_service import ProductService
 from flask import current_app as app
+from utils.caching import cache  # Ensure this import is present
 
 # Create blueprint
 product_bp = Blueprint('product', __name__)
@@ -61,6 +62,20 @@ def get_products_by_category(category):
     products = product_service.get_products_by_category(category)
     return jsonify({"products": products_schema.dump(products)})
 
+@product_bp.route('/subcategory/<int:subcategory_id>', methods=['GET'])
+@cache.cached(timeout=60)
+def get_products_by_subcategory_id(subcategory_id):
+    """Get all products for a specific subcategory by ID"""
+    from services.category_service import SubcategoryService
+    subcategory_service = SubcategoryService()
+    
+    subcategory = subcategory_service.get_subcategory_by_id(subcategory_id)
+    if not subcategory:
+        return jsonify({"message": "Subcategory not found"}), 404
+
+    products = Product.query.filter_by(subcategory_id=subcategory_id).order_by(Product.name).all()
+    return jsonify({"products": products_schema.dump(products)})
+
 @product_bp.route('/create', methods=['POST'])
 def create_product():
     """Create a new product"""
@@ -80,9 +95,16 @@ def create_product():
         new_product = product_service.create_product(
             name=data['name'],
             bakery_id=data['bakeryId'],
-            category=data.get('category'),
+            category_id=data.get('categoryId'),
+            subcategory_id=data.get('subcategoryId'),
             image_url=data.get('imageUrl')
         )
+
+        # Invalidate cache
+        cache.delete('view/get_products')
+        cache.delete(f'view/get_products_by_bakery_{data["bakeryId"]}')
+        if data.get('categoryId'):
+            cache.delete(f'view/get_products_by_category_{data["categoryId"]}')
 
         return jsonify({"message": "Product created!", "product": product_schema.dump(new_product)}), 201
     except Exception as e:
@@ -99,7 +121,8 @@ def update_product(product_id):
         data = request.json
         name = data.get('name', product.name)
         bakery_id = data.get('bakeryId', product.bakery_id)
-        category = data.get('category', product.category)
+        category_id = data.get('categoryId', product.category_id)
+        subcategory_id = data.get('subcategoryId', product.subcategory_id)
         image_url = data.get('imageUrl', product.image_url)
 
         if bakery_id != product.bakery_id:
@@ -114,9 +137,20 @@ def update_product(product_id):
             product_id=product_id,
             name=name,
             bakery_id=bakery_id,
-            category=category,
+            category_id=category_id,
+            subcategory_id=subcategory_id,
             image_url=image_url
         )
+
+        # Invalidate cache
+        cache.delete('view/get_products')
+        cache.delete(f'view/get_product_{product_id}')
+        cache.delete(f'view/get_products_by_bakery_{product.bakery_id}')
+        if bakery_id != product.bakery_id:
+            cache.delete(f'view/get_products_by_bakery_{bakery_id}')
+        if category_id and category_id != product.category_id:
+            cache.delete(f'view/get_products_by_category_{product.category_id}')
+            cache.delete(f'view/get_products_by_category_{category_id}')
 
         return jsonify({"message": "Product updated.", "product": product_schema.dump(updated_product)}), 200
     except Exception as e:
@@ -131,6 +165,13 @@ def delete_product(product_id):
             return jsonify({"message": "Product not found"}), 404
 
         product_service.delete_product(product_id)
+
+        # Invalidate cache
+        cache.delete('view/get_products')
+        cache.delete(f'view/get_product_{product_id}')
+        cache.delete(f'view/get_products_by_bakery_{product.bakery_id}')
+        if product.category_id:
+            cache.delete(f'view/get_products_by_category_{product.category_id}')
 
         return jsonify({"message": "Product deleted!"}), 200
     except Exception as e:

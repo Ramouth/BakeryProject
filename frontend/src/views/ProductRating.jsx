@@ -1,5 +1,5 @@
 import { useProductRatingViewModel } from '../viewmodels/useProductRatingViewModel';
-import CroissantRating from '../components/CroissantRatingComponent.jsx';
+import CookieRating from '../components/CookieRatingComponent.jsx';
 
 const ProductRating = () => {
   const {
@@ -24,7 +24,7 @@ const ProductRating = () => {
         <div className="rating-container">
           <div className="rating-row">
             <div className="rating-label">Overall:</div>
-            <CroissantRating 
+            <CookieRating 
               rating={productRatings.overall} 
               onChange={(value) => handleRatingChange('overall', value)} 
               max={5}
@@ -33,7 +33,7 @@ const ProductRating = () => {
           
           <div className="rating-row">
             <div className="rating-label">Taste:</div>
-            <CroissantRating 
+            <CookieRating 
               rating={productRatings.taste} 
               onChange={(value) => handleRatingChange('taste', value)} 
               max={5}
@@ -42,7 +42,7 @@ const ProductRating = () => {
           
           <div className="rating-row">
             <div className="rating-label">Value:</div>
-            <CroissantRating 
+            <CookieRating 
               rating={productRatings.price} 
               onChange={(value) => handleRatingChange('price', value)} 
               max={5}
@@ -51,7 +51,7 @@ const ProductRating = () => {
           
           <div className="rating-row">
             <div className="rating-label">Presentation:</div>
-            <CroissantRating 
+            <CookieRating 
               rating={productRatings.presentation} 
               onChange={(value) => handleRatingChange('presentation', value)} 
               max={5}

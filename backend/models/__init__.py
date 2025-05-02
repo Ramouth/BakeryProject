@@ -9,3 +9,4 @@ from .bakery_models import Bakery
 from .product_models import Product
 from .review_models import BakeryReview, ProductReview
 from .user_models import User
+from .category_models import Category, Subcategory
