@@ -1,27 +1,22 @@
+// frontend/src/views/ProductCategorySelection.jsx
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ProductCategories from '../models/ProductCategories';
+import { useProductCategoryViewModel } from '../viewmodels/useProductCategoryViewModel';
 
 const ProductCategorySelection = () => {
-  const navigate = useNavigate();
-  const [activeCategory, setActiveCategory] = useState(null);
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    categories,
+    activeCategory,
+    loading,
+    error,
+    handleMouseEnter,
+    handleMouseLeave,
+    navigateToSubcategory,
+    getCategorySubcategories
+  } = useProductCategoryViewModel();
+  
   const [isMobile, setIsMobile] = useState(false);
-
-  // Load categories directly from ProductCategories class
-  useEffect(() => {
-    try {
-      const allCategories = ProductCategories.getAllCategories() || [];
-      console.log("Categories loaded:", allCategories);
-      setCategories(allCategories);
-    } catch (error) {
-      console.error("Error loading categories:", error);
-      setCategories([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
 
   // Check for mobile screen size
   useEffect(() => {
@@ -37,24 +32,16 @@ const ProductCategorySelection = () => {
     };
   }, []);
 
-  const handleMouseEnter = (categoryId) => {
-    setActiveCategory(categoryId);
-  };
-
-  const handleMouseLeave = () => {
-    setActiveCategory(null);
-  };
-
   const handleCategoryClick = (categoryId, e) => {
     if (isMobile) {
       e.preventDefault();
-      setActiveCategory(activeCategory === categoryId ? null : categoryId);
+      handleMouseEnter(categoryId === activeCategory ? null : categoryId);
     }
   };
 
-  const navigateToSubcategory = (categoryId, subcategoryId, e) => {
+  const handleSubcategoryClick = (categoryId, subcategoryId, e) => {
     e.preventDefault();
-    navigate(`/product-rankings/${categoryId}/${subcategoryId}`);
+    navigateToSubcategory(categoryId, subcategoryId);
   };
 
   return (
@@ -69,9 +56,11 @@ const ProductCategorySelection = () => {
           <div className="loading-spinner"></div>
           <p>Loading categories...</p>
         </div>
+      ) : error ? (
+        <div className="error-message">{error}</div>
       ) : (
         <div className="category-grid">
-          {Array.isArray(categories) && categories.map((category) => (
+          {categories.map((category) => (
             <div 
               key={category.id}
               className={`category-card ${activeCategory === category.id ? 'active' : ''}`}
@@ -79,27 +68,21 @@ const ProductCategorySelection = () => {
               onMouseLeave={!isMobile ? handleMouseLeave : undefined}
               onClick={(e) => handleCategoryClick(category.id, e)}
             >
-              <div 
-                className="category-content" 
-                style={{ 
-                  backgroundImage: "url('/src/assets/bread.jpeg')", 
-                  backgroundSize: 'cover', 
-                  backgroundPosition: 'center' 
-                }}
-              >
+              <div className="category-content">
                 <h2>{category.name}</h2>
+                <p>{category.description}</p>
               </div>
 
-              {/* Subcategory overlay (first level) */}
+              {/* Subcategory overlay */}
               <div className="subcategory-overlay" style={{ display: activeCategory === category.id ? undefined : 'none' }}>
                 <h3>Select a type</h3>
                 <ul className="subcategory-list">
-                  {Array.isArray(category.subcategories) && category.subcategories.map((subcategory) => (
+                  {getCategorySubcategories(category.id).map((subcategory) => (
                     <li key={subcategory.id}>
                       <a 
                         href="#" 
                         className="subcategory-link"
-                        onClick={(e) => navigateToSubcategory(category.id, subcategory.id, e)}
+                        onClick={(e) => handleSubcategoryClick(category.id, subcategory.id, e)}
                       >
                         {subcategory.name}
                       </a>

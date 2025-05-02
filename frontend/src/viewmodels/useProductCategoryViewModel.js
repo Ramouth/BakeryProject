@@ -1,41 +1,49 @@
+// frontend/src/viewmodels/useProductCategoryViewModel.js
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import apiClient from '../services/api';
-import ProductCategories from '../models/ProductCategories';
+import productService from '../services/productService';
 
 export const useProductCategoryViewModel = () => {
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState({});
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         
-        // First check if products exist in the API
-        const response = await apiClient.get('/products', true).catch(err => {
-          console.warn('Failed to fetch products from API, using local data instead', err);
-          return { products: [] };
-        });
-        console.log(`Found ${response.products?.length || 0} products in the database`);
-        
-        // Get categories from our ProductCategories class
-        const allCategories = ProductCategories.getAllCategories();
-        console.log('Categories loaded:', allCategories);
-        
-        // Ensure each category has a subcategories array
-        const safeCategories = allCategories.map(category => ({
-          ...category,
-          subcategories: category.subcategories || []
-        }));
-        
-        setCategories(safeCategories);
+        // Fetch categories from API
+        const categoriesResponse = await productService.getAllCategories();
+        if (categoriesResponse && categoriesResponse.categories) {
+          setCategories(categoriesResponse.categories);
+          
+          // For each category, fetch its subcategories
+          const subcategoryMap = {};
+          await Promise.all(
+            categoriesResponse.categories.map(async (category) => {
+              try {
+                const subcategoriesResponse = await productService.getSubcategoriesByCategory(category.id);
+                if (subcategoriesResponse && subcategoriesResponse.subcategories) {
+                  subcategoryMap[category.id] = subcategoriesResponse.subcategories;
+                }
+              } catch (error) {
+                console.error(`Error fetching subcategories for ${category.id}:`, error);
+              }
+            })
+          );
+          
+          setSubcategories(subcategoryMap);
+        } else {
+          setCategories([]);
+        }
       } catch (error) {
         console.error('Error fetching categories:', error);
-        
-        // Even if there's an error, set an empty array as fallback
+        setError('Failed to load product categories');
         setCategories([]);
       } finally {
         setLoading(false);
@@ -53,22 +61,22 @@ export const useProductCategoryViewModel = () => {
     setActiveCategory(null);
   };
 
-  const navigateToProduct = (categoryId, subcategoryId, productId) => {
-    if (productId) {
-      navigate(`/product/${productId}`);
-    } else if (subcategoryId) {
-      navigate(`/product-rankings/${categoryId}/${subcategoryId}`);
-    } else {
-      navigate(`/product-rankings/${categoryId}`);
-    }
+  const navigateToSubcategory = (categoryId, subcategoryId) => {
+    navigate(`/product-rankings/${categoryId}/${subcategoryId}`);
+  };
+
+  const getCategorySubcategories = (categoryId) => {
+    return subcategories[categoryId] || [];
   };
 
   return {
     categories,
     activeCategory,
     loading,
+    error,
     handleMouseEnter,
     handleMouseLeave,
-    navigateToProduct
+    navigateToSubcategory,
+    getCategorySubcategories
   };
 };
