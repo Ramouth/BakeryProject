@@ -107,9 +107,6 @@ export const useBakeryRankingsViewModel = () => {
     setCurrentPage(page);
   };
 
-  // In useBakeryRankingsViewModel.js, update the handleSearch function 
-// to properly convert the rating scale when filtering
-
 const handleSearch = async (searchParams) => {
   const { zipCode, rating } = searchParams;
   
@@ -187,6 +184,8 @@ const handleSearch = async (searchParams) => {
       updateDisplayedBakeries(filteredBakeries, nextPage, pageSize);
     }
   };
+
+  
 
   useEffect(() => {
     fetchBakeries();

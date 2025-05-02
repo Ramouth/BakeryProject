@@ -1,17 +1,19 @@
+// frontend/src/views/ProductRankings.jsx
+
 import { Link } from 'react-router-dom';
 import { useProductRankingsViewModel } from '../viewmodels/useProductRankingsViewModel';
 import '../styles/product-rankings.css';
 
 const ProductRankings = () => {
   const {
-    productTypes,
-    selectedProduct,
+    category,
+    subcategory,
+    subcategories,
+    selectedSubcategoryId,
     productRankings,
     loading,
     error,
-    handleProductSelect,
-    getSelectedProductName,
-    getCategoryName,
+    handleSubcategorySelect,
     categoryId
   } = useProductRankingsViewModel();
 
@@ -31,6 +33,28 @@ const ProductRankings = () => {
         <span className="cookie">🍪</span>
       </span>
     );
+  };
+
+  // Get category name for display
+  const getCategoryName = () => {
+    if (category) {
+      return category.name;
+    }
+    
+    if (categoryId) {
+      // Simple mapping for known category IDs if the category object isn't loaded yet
+      const categoryNames = {
+        'danish': 'Danish Products',
+        'bread': 'Breads',
+        'viennoiserie': 'Viennoiserie',
+        'cakes': 'Cakes & Tarts',
+        'specialty': 'Specialty Items'
+      };
+      
+      return categoryNames[categoryId] || categoryId;
+    }
+    
+    return 'All Categories';
   };
 
   // Show error message
@@ -60,32 +84,32 @@ const ProductRankings = () => {
         )}
       </div>
       
-      {/* Product Navigation */}
+      {/* Subcategory Navigation */}
       <div className="product-navigation">
-        {loading && productTypes.length === 0 ? (
+        {loading && subcategories.length === 0 ? (
           <div className="loading-indicator">Loading products...</div>
-        ) : productTypes.length === 0 ? (
+        ) : subcategories.length === 0 ? (
           <div className="no-products-message">
             <p>No products found in this category.</p>
           </div>
         ) : (
-          productTypes.map(product => (
+          subcategories.map(item => (
             <button
-              key={product.id}
-              className={`product-nav-item ${selectedProduct === product.id ? 'active' : ''}`}
-              onClick={() => handleProductSelect(product.id)}
+              key={item.id}
+              className={`product-nav-item ${selectedSubcategoryId === item.id ? 'active' : ''}`}
+              onClick={() => handleSubcategorySelect(item.id)}
             >
-              {product.name}
+              {item.name}
             </button>
           ))
         )}
       </div>
 
       {/* Product Rankings List */}
-      {selectedProduct && (
+      {selectedSubcategoryId && (
         <div className="ranking-section">
           <div className="ranking-title">
-            <h2>{getSelectedProductName()}</h2>
+            <h2>{subcategory ? subcategory.name : 'Loading...'}</h2>
           </div>
           
           {loading ? (

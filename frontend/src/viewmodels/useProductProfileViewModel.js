@@ -28,6 +28,24 @@ export const useProductProfileViewModel = (productId) => {
         const productModel = Product.fromApiResponse(productData);
         setProduct(productModel);
         
+        if (productModel.categoryId) {
+          try {
+            const categoryRes = await apiClient.get(`/categories/${productModel.categoryId}`, true);
+            if (categoryRes) {
+              productModel.category = categoryRes;
+            }
+            
+            if (productModel.subcategoryId) {
+              const subcategoryRes = await apiClient.get(`/categories/subcategories/${productModel.subcategoryId}`, true);
+              if (subcategoryRes) {
+                productModel.subcategory = subcategoryRes;
+              }
+            }
+          } catch (err) {
+            console.error('Error fetching category data:', err);
+          }
+        }
+        
         if (productModel.bakeryId) {
           const [bakeryData, similarData, reviewsData] = await Promise.all([
             bakeryService.getById(productModel.bakeryId),
