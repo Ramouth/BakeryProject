@@ -60,7 +60,16 @@ class ApiClient {
         throw error;
       }
 
-      return await response.json();
+      // Check content type before parsing as JSON
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        return await response.json();
+      } else {
+        // Handle non-JSON responses
+        const text = await response.text();
+        console.warn('Received non-JSON response:', text.substring(0, 100) + '...');
+        return { message: 'Received non-JSON response from server' };
+      }
     } catch (error) {
       console.error('[API Error]', error);
 
@@ -72,8 +81,11 @@ class ApiClient {
     }
   }
 
-  get(url) {
-    return this.request(url);
+  // Modified to handle the second parameter
+  get(url, requireAuth = false) {
+    return this.request(url, {
+      headers: requireAuth ? { 'X-Require-Auth': 'true' } : {}
+    });
   }
 
   post(url, data) {
