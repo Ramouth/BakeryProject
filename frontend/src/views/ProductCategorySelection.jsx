@@ -1,43 +1,47 @@
 // frontend/src/views/ProductCategorySelection.jsx
-import { useEffect, useState } from 'react';
+
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useProductCategories from '../hooks/useProductCategories';
+import { useProductCategoryViewModel } from '../viewmodels/useProductCategoryViewModel';
 
 const ProductCategorySelection = () => {
-  const navigate = useNavigate();
-  const [activeCategory, setActiveCategory] = useState(null);
-  const [activeSubcategory, setActiveSubcategory] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const {
+    categories,
+    activeCategory,
+    loading,
+    error,
+    handleMouseEnter,
+    handleMouseLeave,
+    navigateToSubcategory,
+    getCategorySubcategories
+  } = useProductCategoryViewModel();
   
-  // Use our custom hook to access categories
-  const { categories } = useProductCategories();
+  const [isMobile, setIsMobile] = useState(false);
 
+  // Check for mobile screen size
   useEffect(() => {
-    if (categories.length > 0) {
-      setLoading(false);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
+
+  const handleCategoryClick = (categoryId, e) => {
+    if (isMobile) {
+      e.preventDefault();
+      handleMouseEnter(categoryId === activeCategory ? null : categoryId);
     }
-  }, [categories]);
-
-  const handleCategoryMouseEnter = (categoryId) => {
-    setActiveCategory(categoryId);
-    setActiveSubcategory(null);
   };
 
-  const handleSubcategoryMouseEnter = (subcategoryId) => {
-    setActiveSubcategory(subcategoryId);
-  };
-
-  const handleMouseLeave = () => {
-    setActiveCategory(null);
-    setActiveSubcategory(null);
-  };
-
-  const navigateToSubcategory = (categoryId, subcategoryId) => {
-    navigate(`/product-rankings/${categoryId}/${subcategoryId}`);
-  };
-
-  const navigateToProduct = (categoryId, subcategoryId, productId) => {
-    navigate(`/product/${productId}`);
+  const handleSubcategoryClick = (categoryId, subcategoryId, e) => {
+    e.preventDefault();
+    navigateToSubcategory(categoryId, subcategoryId);
   };
 
   return (
@@ -52,69 +56,40 @@ const ProductCategorySelection = () => {
           <div className="loading-spinner"></div>
           <p>Loading categories...</p>
         </div>
+      ) : error ? (
+        <div className="error-message">{error}</div>
       ) : (
         <div className="category-grid">
           {categories.map((category) => (
             <div 
               key={category.id}
               className={`category-card ${activeCategory === category.id ? 'active' : ''}`}
-              onMouseEnter={() => handleCategoryMouseEnter(category.id)}
-              onMouseLeave={handleMouseLeave}
+              onMouseEnter={!isMobile ? () => handleMouseEnter(category.id) : undefined}
+              onMouseLeave={!isMobile ? handleMouseLeave : undefined}
+              onClick={(e) => handleCategoryClick(category.id, e)}
             >
-              <div className="category-content" style={{ backgroundImage: "url('/src/assets/bread.jpeg')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
+              <div className="category-content">
                 <h2>{category.name}</h2>
-                {category.description && <p className="category-description">{category.description}</p>}
+                <p>{category.description}</p>
               </div>
 
-              {/* First-level overlay that shows subcategories */}
-              {activeCategory === category.id && !activeSubcategory && (
-                <div className="subcategory-overlay">
-                  <h3>Select a type</h3>
-                  <ul className="subcategory-list">
-                    {category.subcategories.map((subcategory) => (
-                      <li key={subcategory.id}>
-                        <a 
-                          href="#" 
-                          className="subcategory-link"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            navigateToSubcategory(category.id, subcategory.id);
-                          }}
-                          onMouseEnter={() => handleSubcategoryMouseEnter(subcategory.id)}
-                        >
-                          {subcategory.name}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Second-level overlay that shows products when a subcategory is hovered */}
-              {activeCategory === category.id && activeSubcategory && (
-                <div className="product-overlay">
-                  <h3>
-                    {category.subcategories.find(s => s.id === activeSubcategory)?.name}
-                  </h3>
-                  <ul className="product-list">
-                    {category.subcategories
-                      .find(s => s.id === activeSubcategory)
-                      ?.products.map((product) => (
-                        <li key={product.id}>
-                          <a 
-                            href="#" 
-                            onClick={(e) => {
-                              e.preventDefault();
-                              navigateToProduct(category.id, activeSubcategory, product.id);
-                            }}
-                          >
-                            {product.name}
-                          </a>
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-              )}
+              {/* Subcategory overlay */}
+              <div className="subcategory-overlay" style={{ display: activeCategory === category.id ? undefined : 'none' }}>
+                <h3>Select a type</h3>
+                <ul className="subcategory-list">
+                  {getCategorySubcategories(category.id).map((subcategory) => (
+                    <li key={subcategory.id}>
+                      <a 
+                        href="#" 
+                        className="subcategory-link"
+                        onClick={(e) => handleSubcategoryClick(category.id, subcategory.id, e)}
+                      >
+                        {subcategory.name}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           ))}
         </div>

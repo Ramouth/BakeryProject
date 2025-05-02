@@ -1,4 +1,3 @@
-// frontend/src/hooks/useProductCategories.js
 import { useState, useEffect } from 'react';
 import ProductCategories from '../models/ProductCategories';
 
