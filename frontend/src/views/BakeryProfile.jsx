@@ -257,7 +257,7 @@ const BakeryProfile = () => {
                           </div>
                         )}
                         {product.category && (
-                          <div className="product-category">{product.category}</div>
+                          <div className="product-category">{typeof product.category === 'object' ? product.category.name : product.category}</div>
                         )}
                       </div>
                     </Link>
