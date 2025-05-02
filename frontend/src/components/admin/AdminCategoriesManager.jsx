@@ -1,17 +1,16 @@
-// frontend/src/components/admin/AdminCategoriesManager.jsx
-
+import { useState } from 'react';
 import { useAdminCategoryManager } from '../../viewmodels/admin/useAdminCategoryManager';
 import Modal from '../Modal';
 import Button from '../Button';
 
+// Category Form Component
 const CategoryForm = ({ category, onSubmit, onCancel, isSubmitting }) => {
   const initialState = {
     id: category?.id || '',
     name: category?.name || '',
-    description: category?.description || ''
   };
   
-  const [formData, setFormData] = React.useState(initialState);
+  const [formData, setFormData] = useState(initialState);
   
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,17 +50,6 @@ const CategoryForm = ({ category, onSubmit, onCancel, isSubmitting }) => {
         />
       </div>
       
-      <div className="form-group">
-        <label htmlFor="description">Description:</label>
-        <textarea
-          id="description"
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          rows="3"
-        />
-      </div>
-      
       <div className="form-actions">
         <Button type="button" variant="secondary" onClick={onCancel}>
           Cancel
@@ -74,15 +62,15 @@ const CategoryForm = ({ category, onSubmit, onCancel, isSubmitting }) => {
   );
 };
 
-const SubcategoryForm = ({ subcategory, categories, onSubmit, onCancel, isSubmitting }) => {
+// Subcategory Form Component
+const SubcategoryForm = ({ subcategory, category, onSubmit, onCancel, isSubmitting }) => {
   const initialState = {
     id: subcategory?.id || '',
     name: subcategory?.name || '',
-    description: subcategory?.description || '',
-    categoryId: subcategory?.categoryId || categories[0]?.id || ''
+    categoryId: category?.id || subcategory?.categoryId || ''
   };
   
-  const [formData, setFormData] = React.useState(initialState);
+  const [formData, setFormData] = useState(initialState);
   
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -97,20 +85,14 @@ const SubcategoryForm = ({ subcategory, categories, onSubmit, onCancel, isSubmit
   return (
     <form onSubmit={handleSubmit}>
       <div className="form-group">
-        <label htmlFor="categoryId">Parent Category:</label>
-        <select
-          id="categoryId"
-          name="categoryId"
-          value={formData.categoryId}
-          onChange={handleChange}
-          required
-        >
-          {categories.map(category => (
-            <option key={category.id} value={category.id}>
-              {category.name}
-            </option>
-          ))}
-        </select>
+        <label htmlFor="categoryName">Parent Category:</label>
+        <input
+          type="text"
+          id="categoryName"
+          value={category?.name || 'Unknown Category'}
+          disabled
+        />
+        <input type="hidden" name="categoryId" value={formData.categoryId} />
       </div>
       
       <div className="form-group">
@@ -139,17 +121,6 @@ const SubcategoryForm = ({ subcategory, categories, onSubmit, onCancel, isSubmit
         />
       </div>
       
-      <div className="form-group">
-        <label htmlFor="description">Description:</label>
-        <textarea
-          id="description"
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          rows="3"
-        />
-      </div>
-      
       <div className="form-actions">
         <Button type="button" variant="secondary" onClick={onCancel}>
           Cancel
@@ -162,17 +133,121 @@ const SubcategoryForm = ({ subcategory, categories, onSubmit, onCancel, isSubmit
   );
 };
 
+// Subcategory Manager Modal Component
+const SubcategoryManager = ({ category, subcategories, onEdit, onDelete, onAdd, onClose }) => {
+  if (!category) return null;
+
+  return (
+    <div className="subcategory-manager">
+      <h3>Subcategories for {category.name}</h3>
+      
+      <div className="subcategory-header">
+        <Button onClick={() => onAdd(null, category.id)}>Add Subcategory</Button>
+      </div>
+      
+      <div className="table-responsive">
+        <table className="table admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {subcategories.length === 0 ? (
+              <tr>
+                <td colSpan="3" style={{ textAlign: 'center' }}>No subcategories found</td>
+              </tr>
+            ) : (
+              subcategories.map(subcategory => (
+                <tr key={subcategory.id}>
+                  <td>{subcategory.id}</td>
+                  <td>{subcategory.name}</td>
+                  <td>
+                    <div className="table-actions">
+                      <Button 
+                        size="small" 
+                        variant="secondary"
+                        onClick={() => onEdit(subcategory)}
+                      >
+                        Edit
+                      </Button>
+                      <Button 
+                        size="small" 
+                        variant="danger"
+                        onClick={() => onDelete(subcategory.id)}
+                      >
+                        Delete
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+      
+      <div className="modal-footer">
+        <Button variant="primary" onClick={onClose}>Close</Button>
+      </div>
+    </div>
+  );
+};
+
+// Delete Confirmation Modal Component
+const DeleteConfirmationModal = ({ item, itemType, onDelete, onCancel }) => {
+  const [isConfirmed, setIsConfirmed] = useState(false);
+  
+  const handleDelete = () => {
+    if (isConfirmed) {
+      onDelete(item.id);
+    }
+  };
+  
+  return (
+    <div className="delete-confirmation">
+      <h3>Delete {itemType}</h3>
+      <p>Are you sure you want to delete "{item.name}"?</p>
+      {itemType === 'Category' && (
+        <p className="warning">Warning: This will also delete all subcategories associated with this category!</p>
+      )}
+      
+      <div className="confirmation-checkbox">
+        <label>
+          <input 
+            type="checkbox" 
+            checked={isConfirmed} 
+            onChange={() => setIsConfirmed(!isConfirmed)} 
+          />
+          Yes, I want to delete this {itemType.toLowerCase()}
+        </label>
+      </div>
+      
+      <div className="form-actions">
+        <Button variant="secondary" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button 
+          variant="danger" 
+          onClick={handleDelete}
+          disabled={!isConfirmed}
+        >
+          Delete
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+// Main Component
 const AdminCategoriesManager = () => {
   const {
     categories,
     loading,
     error,
-    selectedCategory,
-    isModalOpen,
-    modalType,
-    currentItem,
     getCategorySubcategories,
-    handleCategorySelect,
     handleOpenCategoryModal,
     handleOpenSubcategoryModal,
     handleCloseModal,
@@ -182,11 +257,168 @@ const AdminCategoriesManager = () => {
     handleDeleteSubcategory
   } = useAdminCategoryManager();
 
+  // Local component state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState('category'); // 'category', 'subcategory', 'subcategoryManager', 'deleteCategory', 'deleteSubcategory'
+  const [currentItem, setCurrentItem] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  // Modal handlers
+  const openCategoryModal = (category = null) => {
+    setCurrentItem(category);
+    setModalType('category');
+    setIsModalOpen(true);
+  };
+
+  const openSubcategoryModal = (subcategory = null, categoryId = null) => {
+    const category = categories.find(c => c.id === (categoryId || subcategory?.categoryId));
+    setSelectedCategory(category);
+    setCurrentItem(subcategory);
+    setModalType('subcategory');
+    setIsModalOpen(true);
+  };
+
+  const openSubcategoryManager = (category) => {
+    setSelectedCategory(category);
+    setModalType('subcategoryManager');
+    setIsModalOpen(true);
+  };
+
+  const openDeleteCategoryModal = (category) => {
+    setCurrentItem(category);
+    setModalType('deleteCategory');
+    setIsModalOpen(true);
+  };
+
+  const openDeleteSubcategoryModal = (subcategory) => {
+    setCurrentItem(subcategory);
+    setModalType('deleteSubcategory');
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setCurrentItem(null);
+    setSelectedCategory(null);
+  };
+
+  // Save handlers
+  const saveCategory = async (categoryData) => {
+    try {
+      await handleSaveCategory(categoryData);
+      closeModal();
+    } catch (error) {
+      console.error('Error saving category:', error);
+    }
+  };
+
+  const saveSubcategory = async (subcategoryData) => {
+    try {
+      await handleSaveSubcategory(subcategoryData);
+      closeModal();
+    } catch (error) {
+      console.error('Error saving subcategory:', error);
+    }
+  };
+
+  // Delete handlers
+  const deleteCategory = async (categoryId) => {
+    try {
+      await handleDeleteCategory(categoryId);
+      closeModal();
+    } catch (error) {
+      console.error('Error deleting category:', error);
+    }
+  };
+
+  const deleteSubcategory = async (subcategoryId) => {
+    try {
+      await handleDeleteSubcategory(subcategoryId);
+      closeModal();
+    } catch (error) {
+      console.error('Error deleting subcategory:', error);
+    }
+  };
+
+  // Determine modal content based on type
+  const getModalContent = () => {
+    switch (modalType) {
+      case 'category':
+        return (
+          <CategoryForm 
+            category={currentItem} 
+            onSubmit={saveCategory}
+            onCancel={closeModal}
+            isSubmitting={loading}
+          />
+        );
+      case 'subcategory':
+        return (
+          <SubcategoryForm 
+            subcategory={currentItem}
+            category={selectedCategory}
+            onSubmit={saveSubcategory}
+            onCancel={closeModal}
+            isSubmitting={loading}
+          />
+        );
+      case 'subcategoryManager':
+        return (
+          <SubcategoryManager 
+            category={selectedCategory}
+            subcategories={getCategorySubcategories(selectedCategory?.id || '')}
+            onEdit={openSubcategoryModal}
+            onDelete={openDeleteSubcategoryModal}
+            onAdd={openSubcategoryModal}
+            onClose={closeModal}
+          />
+        );
+      case 'deleteCategory':
+        return (
+          <DeleteConfirmationModal 
+            item={currentItem}
+            itemType="Category"
+            onDelete={deleteCategory}
+            onCancel={closeModal}
+          />
+        );
+      case 'deleteSubcategory':
+        return (
+          <DeleteConfirmationModal 
+            item={currentItem}
+            itemType="Subcategory"
+            onDelete={deleteSubcategory}
+            onCancel={closeModal}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  // Get modal title based on type
+  const getModalTitle = () => {
+    switch (modalType) {
+      case 'category':
+        return currentItem ? "Edit Category" : "Create Category";
+      case 'subcategory':
+        return currentItem ? "Edit Subcategory" : "Create Subcategory";
+      case 'subcategoryManager':
+        return `Manage Subcategories - ${selectedCategory?.name}`;
+      case 'deleteCategory':
+        return "Delete Category";
+      case 'deleteSubcategory':
+        return "Delete Subcategory";
+      default:
+        return "";
+    }
+  };
+
   return (
     <div className="section category-section">
       <div className="section-header">
         <h2>Manage Product Categories</h2>
-        <Button onClick={() => handleOpenCategoryModal()} disabled={loading}>
+        <Button onClick={() => openCategoryModal()} disabled={loading}>
           Create New Category
         </Button>
       </div>
@@ -196,143 +428,70 @@ const AdminCategoriesManager = () => {
       {loading && categories.length === 0 ? (
         <div className="loading">Loading categories...</div>
       ) : (
-        <div className="category-manager">
-          <div className="category-sidebar">
-            <h3>Categories</h3>
-            <ul className="category-list">
-              {categories.map(category => (
-                <li key={category.id} className={selectedCategory === category.id ? 'selected' : ''}>
-                  <button 
-                    className="category-item" 
-                    onClick={() => handleCategorySelect(category.id)}
-                  >
-                    {category.name}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-          
-          <div className="category-content">
-            {selectedCategory ? (
-              <>
-                {/* Display selected category details */}
-                {categories.filter(c => c.id === selectedCategory).map(category => (
-                  <div key={category.id} className="category-details">
-                    <div className="category-header">
-                      <h3>{category.name}</h3>
-                      <div className="category-actions">
+        <div className="table-responsive">
+          <table className="table admin-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Subcategories</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {categories.length === 0 ? (
+                <tr>
+                  <td colSpan="4" style={{ textAlign: 'center' }}>No categories found</td>
+                </tr>
+              ) : (
+                categories.map(category => (
+                  <tr key={category.id}>
+                    <td>{category.id}</td>
+                    <td>{category.name}</td>
+                    <td>
+                      {getCategorySubcategories(category.id).length}
+                      {' '}
+                      <Button 
+                        size="small"
+                        variant="primary"
+                        onClick={() => openSubcategoryManager(category)}
+                      >
+                        Manage
+                      </Button>
+                    </td>
+                    <td>
+                      <div className="table-actions">
                         <Button 
                           size="small" 
-                          variant="secondary" 
-                          onClick={() => handleOpenCategoryModal(category)}
+                          variant="secondary"
+                          onClick={() => openCategoryModal(category)}
                         >
                           Edit
                         </Button>
                         <Button 
                           size="small" 
-                          variant="danger" 
-                          onClick={() => handleDeleteCategory(category.id)}
+                          variant="danger"
+                          onClick={() => openDeleteCategoryModal(category)}
                         >
                           Delete
                         </Button>
                       </div>
-                    </div>
-                    
-                    <p className="category-description">{category.description}</p>
-                    
-                    {/* Subcategories section */}
-                    <div className="subcategories-section">
-                      <div className="subcategories-header">
-                        <h4>Subcategories</h4>
-                        <Button 
-                          size="small" 
-                          onClick={() => handleOpenSubcategoryModal(null, category.id)}
-                        >
-                          Add Subcategory
-                        </Button>
-                      </div>
-                      
-                      <div className="subcategories-list">
-                        {getCategorySubcategories(category.id).length > 0 ? (
-                          <table className="admin-table">
-                            <thead>
-                              <tr>
-                                <th>Name</th>
-                                <th>Description</th>
-                                <th>Actions</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {getCategorySubcategories(category.id).map(subcategory => (
-                                <tr key={subcategory.id}>
-                                  <td>{subcategory.name}</td>
-                                  <td>{subcategory.description}</td>
-                                  <td>
-                                    <div className="table-actions">
-                                      <Button 
-                                        size="small" 
-                                        variant="secondary"
-                                        onClick={() => handleOpenSubcategoryModal(subcategory)}
-                                      >
-                                        Edit
-                                      </Button>
-                                      <Button 
-                                        size="small" 
-                                        variant="danger"
-                                        onClick={() => handleDeleteSubcategory(subcategory.id)}
-                                      >
-                                        Delete
-                                      </Button>
-                                    </div>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        ) : (
-                          <p>No subcategories found for this category.</p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </>
-            ) : (
-              <div className="no-selection">
-                <p>Select a category from the sidebar or create a new one.</p>
-              </div>
-            )}
-          </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       )}
 
-      {/* Modal for Category/Subcategory editing */}
+      {/* Modal for Category/Subcategory editing/managing */}
       <Modal 
         isOpen={isModalOpen} 
-        onClose={handleCloseModal}
-        title={
-          modalType === 'category' 
-            ? (currentItem ? "Edit Category" : "Create Category")
-            : (currentItem ? "Edit Subcategory" : "Create Subcategory")
-        }
+        onClose={closeModal}
+        title={getModalTitle()}
       >
-        {modalType === 'category' ? (
-          <CategoryForm 
-            category={currentItem} 
-            onSubmit={handleSaveCategory}
-            onCancel={handleCloseModal}
-            isSubmitting={loading}
-          />
-        ) : (
-          <SubcategoryForm 
-            subcategory={currentItem}
-            categories={categories}
-            onSubmit={handleSaveSubcategory}
-            onCancel={handleCloseModal}
-            isSubmitting={loading}
-          />
-        )}
+        {getModalContent()}
       </Modal>
     </div>
   );
