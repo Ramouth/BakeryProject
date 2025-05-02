@@ -23,17 +23,17 @@ class ProductService extends BaseService {
 
   // New methods to get categories and subcategories directly from API
   async getAllCategories() {
-    const response = await apiClient.get(`${this.endpoint}/categories`, true);
+    const response = await apiClient.get(`/categories`, true);
     return response;
   }
-
+  
   async getAllSubcategories() {
-    const response = await apiClient.get(`${this.endpoint}/subcategories`, true);
+    const response = await apiClient.get(`/categories/subcategories`, true);
     return response;
   }
-
+  
   async getSubcategoriesByCategory(categoryId) {
-    const response = await apiClient.get(`${this.endpoint}/categories/${categoryId}/subcategories`, true);
+    const response = await apiClient.get(`/categories/${categoryId}/subcategories`, true);
     return response;
   }
 

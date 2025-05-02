@@ -104,16 +104,16 @@ def create_product():
         new_product = product_service.create_product(
             name=data['name'],
             bakery_id=data['bakeryId'],
-            category=data.get('category'),
-            subcategory=data.get('subcategory'),
+            category_id=data.get('categoryId'),
+            subcategory_id=data.get('subcategoryId'),
             image_url=data.get('imageUrl')
         )
         
         # Invalidate cache
         cache.delete('view/get_products')
         cache.delete(f'view/get_products_by_bakery_{data["bakeryId"]}')
-        if data.get('category'):
-            cache.delete(f'view/get_products_by_category_{data["category"]}')
+        if data.get('categoryId'):
+            cache.delete(f'view/get_products_by_category_{data["categoryId"]}')
         
         return jsonify({"message": "Product created!", "product": product_schema.dump(new_product)}), 201
     except Exception as e:
@@ -130,8 +130,8 @@ def update_product(product_id):
         data = request.json
         name = data.get('name', product.name)
         bakery_id = data.get('bakeryId', product.bakery_id)
-        category = data.get('category', product.category)
-        subcategory = data.get('subcategory', product.subcategory)
+        category_id = data.get('categoryId', product.category_id)
+        subcategory_id = data.get('subcategoryId', product.subcategory_id)
         image_url = data.get('imageUrl', product.image_url)
         
         # Validate bakery exists if it's being updated
@@ -149,8 +149,8 @@ def update_product(product_id):
             product_id=product_id,
             name=name,
             bakery_id=bakery_id,
-            category=category,
-            subcategory=subcategory,
+            category_id=category_id,
+            subcategory_id=subcategory_id,
             image_url=image_url
         )
         
@@ -160,52 +160,10 @@ def update_product(product_id):
         cache.delete(f'view/get_products_by_bakery_{product.bakery_id}')
         if bakery_id != product.bakery_id:
             cache.delete(f'view/get_products_by_bakery_{bakery_id}')
-        if category and category != product.category:
-            cache.delete(f'view/get_products_by_category_{product.category}')
-            cache.delete(f'view/get_products_by_category_{category}')
+        if category_id and category_id != product.category_id:
+            cache.delete(f'view/get_products_by_category_{product.category_id}')
+            cache.delete(f'view/get_products_by_category_{category_id}')
         
         return jsonify({"message": "Product updated.", "product": product_schema.dump(updated_product)}), 200
     except Exception as e:
         return jsonify({"message": str(e)}), 400
-
-@product_bp.route('/delete/<int:product_id>', methods=['DELETE'])
-def delete_product(product_id):
-    """Delete a product"""
-    try:
-        product = product_service.get_product_by_id(product_id)
-        if not product:
-            return jsonify({"message": "Product not found"}), 404
-        
-        bakery_id = product.bakery_id
-        category = product.category
-        
-        # Delete product
-        product_service.delete_product(product_id)
-        
-        # Invalidate cache
-        cache.delete('view/get_products')
-        cache.delete(f'view/get_product_{product_id}')
-        cache.delete(f'view/get_products_by_bakery_{bakery_id}')
-        if category:
-            cache.delete(f'view/get_products_by_category_{category}')
-        
-        return jsonify({"message": "Product deleted!"}), 200
-    except Exception as e:
-        return jsonify({"message": str(e)}), 400
-    
-@product_bp.route('/search', methods=['GET'])
-@cache.cached(timeout=30, key_prefix=cache_key_with_query)  # Use query parameters in cache key
-def search_products():
-    """Search products by name"""
-    search_term = request.args.get('q', '')
-    
-    if not search_term or len(search_term) < 2:
-        return jsonify({"message": "Search term must be at least 2 characters long", "products": []}), 400
-        
-    try:
-        # Use the product service to search by name
-        products = product_service.search_products(search_term)
-        return jsonify({"products": products_schema.dump(products)}), 200
-    except Exception as e:
-        app.logger.error(f"Error searching products: {str(e)}")
-        return jsonify({"message": f"Error searching products: {str(e)}", "products": []}), 500
