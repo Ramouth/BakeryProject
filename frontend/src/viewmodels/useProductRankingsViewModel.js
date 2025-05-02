@@ -148,7 +148,7 @@ export const useProductRankingsViewModel = () => {
                 bakeryName: bakery.name || 'Unknown Bakery',
                 address: formatBakeryAddress(bakery),
                 topReview: topReview?.review || 'No reviews yet',
-                rating: (avgRating / 2).toFixed(1), // Convert to 5-star scale
+                rating: (avgRating / 2).toFixed(1),
                 reviewCount: reviews.length,
                 image: product.imageUrl || ''
               };
