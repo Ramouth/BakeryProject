@@ -8,6 +8,7 @@ import bakeryLogo from '../assets/bageri-logo.jpeg';
 import bakeryHeader from '../assets/bageri.jpeg';
 import '../styles/bakery-profile.css';
 import apiClient from '../services/api';
+import BakeryMenuTab from '../components/BakeryMenuTab';
 
 const BakeryProfile = () => {
   const { bakeryName } = useParams();
@@ -239,34 +240,10 @@ const BakeryProfile = () => {
           )}
 
           {activeTab === 'menu' && (
-            <div className="menu-section">
-              <h2>Menu</h2>
-              {bakeryProducts.length > 0 ? (
-                <div className="product-grid">
-                  {bakeryProducts.map(product => (
-                    <Link to={`/product/${product.id}`} key={product.id} className="product-card">
-                      <div className="product-image">
-                        <div className="placeholder-image"></div>
-                      </div>
-                      <div className="product-details">
-                        <h3>{product.name}</h3>
-                        {(product.rating || product.average_rating) && (
-                          <div className="product-rating">
-                            <span>{((product.rating || product.average_rating) / 2).toFixed(1)}</span>
-                            {renderCookieStars(product.rating || product.average_rating, 'small')}
-                          </div>
-                        )}
-                        {product.category && (
-                          <div className="product-category">{typeof product.category === 'object' ? product.category.name : product.category}</div>
-                        )}
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                <p>No menu items available for this bakery yet.</p>
-              )}
-            </div>
+            <BakeryMenuTab 
+              bakeryProducts={bakeryProducts} 
+              bakeryName={bakery.name} 
+            />
           )}
 
           {activeTab === 'reviews' && (
