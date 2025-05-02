@@ -190,6 +190,18 @@ const BakeryProfile = () => {
                 </p>
                 
                 <div className="bakery-details">
+                  <div className="ratings-section">
+                  <h3>Detailed Ratings</h3>
+                  <div className="rating-details">
+                    {/* Define your own order of rating keys */}
+                    {['overall', 'service', 'price', 'atmosphere', 'location'].map(key => (
+                      <div key={key} className="rating-item">
+                        <span className="rating-label">{key.charAt(0).toUpperCase() + key.slice(1)}:</span>
+                        <CookieRating rating={ratings[key]} max={5} disabled={true} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
                   <div className="hours-section">
                     <h3>Opening Hours</h3>
                     <ul className="hours-list">
@@ -199,18 +211,6 @@ const BakeryProfile = () => {
                         </li>
                       ))}
                     </ul>
-                  </div>
-                  
-                  <div className="ratings-section">
-                    <h3>Detailed Ratings</h3>
-                    <div className="rating-details">
-                      {Object.entries(ratings).map(([label, value]) => (
-                        <div key={label} className="rating-item">
-                          <span className="rating-label">{label.charAt(0).toUpperCase() + label.slice(1)}:</span>
-                          <CookieRating rating={value} max={5} disabled={true} />
-                        </div>
-                      ))}
-                    </div>
                   </div>
                 </div>
               </div>
