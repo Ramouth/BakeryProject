@@ -44,3 +44,4 @@ backend/utils/__pycache__/
 .vscode/
 backend/my_env/
 backend/.env
+backend/seed.py
