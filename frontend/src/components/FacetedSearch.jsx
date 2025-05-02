@@ -1,5 +1,4 @@
-// src/components/FacetedSearch.jsx
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import apiClient from '../services/api';
 import '../styles/faceted-search.css';
@@ -40,14 +39,38 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
           apiClient.get('/products', true)
         ]);
 
-        // Process categories from products
+        // Process categories from products - FIX HERE
         if (productResponse.products) {
-          // Extract unique categories from products
-          const uniqueCategories = [...new Set(productResponse.products
-            .map(product => product.category)
-            .filter(Boolean))]
-            .map(category => ({ value: category, label: category }));
+          // First, create a map to deduplicate categories
+          const categoryMap = new Map();
           
+          productResponse.products.forEach(product => {
+            if (product.category) {
+              // Handle both string and object categories
+              if (typeof product.category === 'string') {
+                categoryMap.set(product.category, { 
+                  value: product.category, 
+                  label: product.category 
+                });
+              } else if (typeof product.category === 'object' && product.category.name) {
+                // Use category ID if available, otherwise use name as both value and label
+                const value = product.category.id || product.categoryId || product.category.name;
+                categoryMap.set(value, { 
+                  value: value.toString(), 
+                  label: product.category.name 
+                });
+              }
+            } else if (product.categoryId && typeof product.categoryId !== 'undefined') {
+              // Handle products with only categoryId
+              categoryMap.set(product.categoryId, { 
+                value: product.categoryId.toString(), 
+                label: `Category ${product.categoryId}` 
+              });
+            }
+          });
+          
+          // Convert map to array and add "All Categories" option
+          const uniqueCategories = Array.from(categoryMap.values());
           setCategories([{ value: "", label: "All Categories" }, ...uniqueCategories]);
         }
 
@@ -112,7 +135,16 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
         if (response.products) {
           // Filter products by the selected category
           const filteredProducts = response.products
-            .filter(product => product.category === selectedCategory);
+            .filter(product => {
+              if (typeof product.category === 'string') {
+                return product.category === selectedCategory;
+              } else if (typeof product.category === 'object' && product.category?.id) {
+                return product.category.id.toString() === selectedCategory;
+              } else if (product.categoryId) {
+                return product.categoryId.toString() === selectedCategory;
+              }
+              return false;
+            });
 
           // Create product options for dropdown and ensure uniqueness by name
           const productMap = new Map();
@@ -207,9 +239,16 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
       // Apply category filter
       if (filters.category) {
         // First, get all products in this category
-        const categoryProducts = productResponse.products.filter(
-          p => p.category === filters.category
-        );
+        const categoryProducts = productResponse.products.filter(p => {
+          if (typeof p.category === 'string') {
+            return p.category === filters.category;
+          } else if (typeof p.category === 'object' && p.category?.id) {
+            return p.category.id.toString() === filters.category;
+          } else if (p.categoryId) {
+            return p.categoryId.toString() === filters.category;
+          }
+          return false;
+        });
         
         // Then, filter bakeries to only include those that have these products
         const bakeryIds = new Set(categoryProducts.map(p => p.bakeryId));
