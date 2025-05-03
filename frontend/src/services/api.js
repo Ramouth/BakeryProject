@@ -41,6 +41,7 @@ class ApiClient {
     }, options.timeout || this.defaultTimeout);
     
     this._log(`API Request: ${options.method || 'GET'} ${url}`);
+    console.log('Making request to:', fullUrl); // Added debugging log
 
     const headers = {
       ...options.headers,
@@ -220,6 +221,17 @@ class ApiClient {
   }
 
   post(url, data, options = {}) {
+    // Special case handling for auth endpoints
+    if (url === '/auth/login') {
+      console.log('Login payload:', data);
+      // Use direct URL for auth endpoints
+      return this.request('http://localhost:5000/auth/login', {
+        ...options,
+        method: 'POST',
+        body: data instanceof FormData ? data : JSON.stringify(data),
+      });
+    }
+    
     return this.request(url, {
       ...options,
       method: 'POST',
@@ -254,8 +266,12 @@ class ApiClient {
    * Authentication methods
    */
   login(credentials) {
+    console.log('Login credentials:', credentials);
+    console.log('Sending to:', '/auth/login');
+    
     return this.post('/auth/login', credentials)
       .then(data => {
+        console.log('Login response:', data);
         if (data.access_token) {
           localStorage.setItem(this.tokenKey, data.access_token);
           if (data.refresh_token) {
