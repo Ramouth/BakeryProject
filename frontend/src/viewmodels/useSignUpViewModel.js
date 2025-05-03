@@ -24,31 +24,36 @@ export const useSignUpViewModel = () => {
     }));
   };
   
+
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (formData.password !== formData.confirmPassword) {
-      showError("Passwords don't match");
-      return;
-    }
-    
-    setIsSubmitting(true);
-    
-    try {
-      await register({
-        username: formData.username,
-        email: formData.email,
-        password: formData.password
-      });
-      
-      showSuccess("Account created successfully!");
-      navigate('/login');
-    } catch (err) {
-      showError(err.message || "Failed to create account");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  e.preventDefault();
+
+  if (formData.password !== formData.confirmPassword) {
+    showError("Passwords don't match");
+    return;
+  }
+
+  setIsSubmitting(true);
+
+  try {
+    // Create User instance (additional fields like profilePicture can be added as needed)
+    const user = new User({
+      username: formData.username,
+      email: formData.email,
+      password: formData.password
+    });
+
+    await register(user);
+
+    showSuccess("Account created successfully!");
+    navigate('/login');
+  } catch (err) {
+    showError(err.message || "Failed to create account");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
   
   return {
     formData,
