@@ -1,0 +1,158 @@
+/* Header Styles */
+.app-header {
+  background-color: var(--background);
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid var(--accent);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+}
+
+.logo h1 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-link {
+  color: var(--text);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 5px 0;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.login-button {
+  background-color: transparent;
+  color: var(--text);
+  border: none;
+  padding: 5px 10px;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.login-button:hover {
+  color: var(--primary);
+}
+
+.sign-up-button {
+  background-color: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 14px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.sign-up-button:hover {
+  background-color: var(--primary-dark);
+  color: #fff;
+}
+
+.review-button {
+  display: flex;
+  align-items: center;
+  background-color: var(--background);
+  color: var(--text);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.review-button:hover {
+  background-color: var(--accent-light);
+  border-color: var(--accent-dark);
+}
+
+.review-button .plus-icon {
+  font-size: 16px;
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.review-button .separator {
+  height: 16px;
+  width: 1px;
+  background-color: var(--accent);
+  margin-right: 8px;
+}
+
+.profile-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.profile-icon:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+  }
+  
+  .header-actions {
+    gap: 10px;
+  }
+  
+  .login-button {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-content {
+    padding: 10px;
+  }
+  
+  .logo h1 {
+    font-size: 16px;
+  }
+}

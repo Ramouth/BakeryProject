@@ -1,0 +1,52 @@
+/* Bakery Rating Page Styles */
+.rating-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    width: 100%;
+    max-width: 320px;
+  }
+  
+  .rating-label {
+    text-align: left;
+    margin-right: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    width: 80px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: top;
+    height: 45px;
+  }
+  
+  .textarea-container {
+    position: relative;
+    width: 100%;
+  }
+  
+  .character-count {
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+    font-size: 0.8rem;
+    color: #888;
+  }
+  
+  .count-notice {
+    color: #f0ad4e;
+  }
+  
+  .count-warning {
+    color: #d9534f;
+  }
+  
+  textarea {
+    padding-bottom: 25px;
+  }
+  
+  .nav-buttons {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 25px;
+  }
