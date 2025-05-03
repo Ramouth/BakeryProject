@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import apiClient from '../services/api';
-import { User } from '../models/User'; // adjust path if needed
+import { User } from '../models/User';
 
 const UserContext = createContext();
 
@@ -36,7 +36,11 @@ export const UserProvider = ({ children }) => {
     setError(null);
     try {
       console.log('Attempting login for user:', username);
-      const response = await apiClient.post('/auth/login', { username, password });
+
+      // Use User model to construct payload
+      const loginUser = new User({ username, password });
+      const response = await apiClient.post('/auth/login', loginUser.toApiPayload());
+
       const { access_token, user } = response;
 
       console.log('Login successful, received token:', !!access_token);
@@ -59,8 +63,8 @@ export const UserProvider = ({ children }) => {
     try {
       console.log('Attempting to register user:', userData.username);
 
-      const user = new User(userData); // allows calling toApiPayload
-      const response = await apiClient.post('/auth/register', user.toApiPayload());
+      const newUser = new User(userData);
+      const response = await apiClient.post('/auth/register', newUser.toApiPayload());
 
       const { access_token, user: registeredUser } = response;
 
