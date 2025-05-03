@@ -320,6 +320,13 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
         return [...results].sort((a, b) => {
           const aRating = a.average_rating || 0;
           const bRating = b.average_rating || 0;
+    
+          if (bRating === aRating) {
+            // Secondary sort by number of reviews when ratings are equal
+            const aReviews = a.review_count || 0;
+            const bReviews = b.review_count || 0;
+            return bReviews - aReviews;
+          }
           return bRating - aRating;
         });
       case 'popular':
