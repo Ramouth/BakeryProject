@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
-import apiClient from '../services/api'; 
+import apiClient from '../services/api';
+import { User } from '../models/User'; // adjust path if needed
 
 const UserContext = createContext();
 
@@ -8,22 +9,18 @@ export const UserProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Attempt to load user from token on mount
   useEffect(() => {
-    // FIXED: Changed key from 'accessToken' to 'access_token' to match backend
     const token = localStorage.getItem('access_token');
     if (token) {
-      // Try to fetch the user profile using the token
       console.log('Found token in storage, attempting to fetch user profile');
       apiClient.get('/auth/profile')
         .then(response => {
           console.log('Profile fetch successful:', response);
-          setCurrentUser(response);
+          setCurrentUser(User.fromApiResponse(response));
           setIsLoading(false);
         })
         .catch((err) => {
           console.error('Profile fetch failed:', err);
-          // FIXED: Use consistent token key
           localStorage.removeItem('access_token');
           setCurrentUser(null);
           setIsLoading(false);
@@ -39,19 +36,13 @@ export const UserProvider = ({ children }) => {
     setError(null);
     try {
       console.log('Attempting login for user:', username);
-      // Using API client's post method
       const response = await apiClient.post('/auth/login', { username, password });
-      
-      // FIXED: Better response handling based on Flask backend format
-      // The Flask backend returns: { message, user, access_token }
       const { access_token, user } = response;
-      
+
       console.log('Login successful, received token:', !!access_token);
-      
-      // FIXED: Store with consistent key name
       localStorage.setItem('access_token', access_token);
-      setCurrentUser(user);
-      return user;
+      setCurrentUser(User.fromApiResponse(user));
+      return User.fromApiResponse(user);
     } catch (err) {
       const msg = err.message || 'Login failed. Please try again.';
       setError(msg);
@@ -67,17 +58,16 @@ export const UserProvider = ({ children }) => {
     setError(null);
     try {
       console.log('Attempting to register user:', userData.username);
-      const response = await apiClient.post('/auth/register', userData);
-      
-      // FIXED: Better response handling
-      const { access_token, user } = response;
-      
+
+      const user = new User(userData); // allows calling toApiPayload
+      const response = await apiClient.post('/auth/register', user.toApiPayload());
+
+      const { access_token, user: registeredUser } = response;
+
       console.log('Registration successful, received token:', !!access_token);
-      
-      // FIXED: Store with consistent key name
       localStorage.setItem('access_token', access_token);
-      setCurrentUser(user);
-      return user;
+      setCurrentUser(User.fromApiResponse(registeredUser));
+      return User.fromApiResponse(registeredUser);
     } catch (err) {
       const msg = err.message || 'Registration failed. Please try again.';
       setError(msg);
@@ -90,7 +80,6 @@ export const UserProvider = ({ children }) => {
 
   const logout = useCallback(() => {
     console.log('Logging out user, removing access token');
-    // FIXED: Use consistent token key
     localStorage.removeItem('access_token');
     setCurrentUser(null);
   }, []);

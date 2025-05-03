@@ -7,7 +7,6 @@ export class User {
     this.isAdmin = data.isAdmin || false;
     this.created_at = data.created_at;
 
-    // Remove these unless your backend actually sends them
     this.firstName = data.firstName || null;
     this.lastName = data.lastName || null;
   }
@@ -28,5 +27,14 @@ export class User {
       return `${this.firstName.charAt(0)}${this.lastName.charAt(0)}`.toUpperCase();
     }
     return this.username.charAt(0).toUpperCase();
+  }
+
+  toApiPayload() {
+    return {
+      username: this.username,
+      email: this.email,
+      profile_picture: this.profilePicture, // backend expects snake_case
+      is_admin: this.isAdmin
+    };
   }
 }
