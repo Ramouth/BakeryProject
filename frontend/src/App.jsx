@@ -25,11 +25,6 @@ const UserProfile = lazy(() => import('./views/UserProfile'));
 
 // Import CSS
 import './styles/main.css';
-import './styles/footer.css';
-import './styles/homepage.css';
-import './styles/header.css';
-import './styles/product-category.css';
-import './styles/profile.css';
 
 // Loading component for Suspense fallback
 const Loading = () => (

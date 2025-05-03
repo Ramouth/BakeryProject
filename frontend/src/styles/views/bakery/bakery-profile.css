@@ -1,0 +1,366 @@
+.bakery-profile-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: var(--background);
+  width: 85%; 
+}
+
+/* Header styling */
+.bakery-header {
+  height: 300px;
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.bakery-header-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: flex-end;
+  padding: 20px;
+}
+
+/* Rest of the CSS remains unchanged */
+  
+  .bakery-logo-container {
+    background-color: white;
+    border-radius: 10px;
+    padding: 15px;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: translateY(50%);
+  }
+  
+  .bakery-logo {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+  
+  /* Main content styling */
+  .bakery-content {
+    padding: 20px;
+    margin-top: 60px;
+  }
+  
+  .bakery-info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+  }
+  
+  .bakery-title-section h1 {
+    margin: 0 0 10px 0;
+    font-size: 2.2rem;
+    color: var(--text-dark);
+  }
+  
+  .bakery-address {
+    margin: 0 0 10px 0;
+    color: var(--text-dark);
+    font-size: 1rem;
+  }
+  
+  .bakery-rating-summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .bakery-rating-value {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: var(--primary);
+  }
+  
+  .bakery-rating-stars {
+    color: var(--secondary);
+    font-size: 1.2rem;
+  }
+  
+  .bakery-review-count {
+    color: var(--text-dark);
+    font-size: 0.9rem;
+  }
+  
+  .bakery-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  /* Tab styling */
+  .bakery-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--accent-light);
+    margin-bottom: 30px;
+  }
+  
+  .tab-button {
+    padding: 15px 25px;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-dark);
+    cursor: pointer;
+    position: relative;
+  }
+  
+  .tab-button.active {
+    color: var(--primary);
+  }
+  
+  .tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background-color: var(--primary);
+  }
+  
+  .tab-content {
+    min-height: 400px;
+  }
+  
+  /* About section styling */
+  .about-section {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 30px;
+  }
+  
+  .bakery-description {
+    line-height: 1.6;
+    margin-bottom: 30px;
+    color: var(--text-dark);
+  }
+  
+  .bakery-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+  
+  .hours-section, .ratings-section {
+    margin-bottom: 30px;
+  }
+  
+  .hours-section h3, .ratings-section h3 {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    color: var(--text-dark);
+  }
+  
+  .hours-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .hours-list li {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    color: var(--text-dark);
+  }
+  
+  .hours-list li span {
+    font-weight: 500;
+  }
+  
+  .rating-details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .rating-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .rating-label {
+    width: 100px;
+    font-weight: 500;
+    color: var(--text-dark);
+  }
+  
+  /* Popular items styling */
+  .most-popular-section {
+    background-color: var(--primary-light);
+    padding: 20px;
+    border-radius: 10px;
+  }
+  
+  .most-popular-section h3 {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    color: var(--text-dark);
+  }
+  
+  .popular-items {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .popular-item {
+    display: flex;
+    background-color: var(--background);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .popular-item-img-placeholder {
+    width: 80px;
+    height: 80px;
+    background-color: var(--accent);
+  }
+  
+  .popular-item-info {
+    padding: 10px 15px;
+    flex: 1;
+  }
+  
+  .popular-item-info h4 {
+    margin: 0 0 5px 0;
+    font-size: 1rem;
+  }
+  
+  .popular-item-rating {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9rem;
+  }
+  
+  .popular-item-rating .stars {
+    color: var(--secondary);
+  }
+  
+  /* Reviews section styling */
+  .reviews-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  
+  .reviews-total {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .large-rating {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--primary);
+  }
+  
+  .total-reviews {
+    color: var(--accent-dark);
+  }
+  
+  .reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .review-card {
+    background-color: var(--background);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+  
+  .review-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  .reviewer-name {
+    font-weight: 500;
+  }
+  
+  .review-date {
+    color: var(--accent-dark);
+    font-size: 0.9rem;
+  }
+  
+  .review-rating {
+    margin-bottom: 10px;
+  }
+  
+  .star {
+    color: var(--accent);
+  }
+  
+  .star.filled {
+    color: var(--secondary);
+  }
+  
+  .review-text {
+    line-height: 1.6;
+    color: var(--text-dark);
+  }
+  
+  .load-more {
+    align-self: center;
+    margin-top: 20px;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 900px) {
+    .bakery-info-header {
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .about-section {
+      grid-template-columns: 1fr;
+    }
+    
+    .bakery-details {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .bakery-header {
+      height: 200px;
+    }
+    
+    .bakery-logo-container {
+      width: 90px;
+      height: 90px;
+    }
+    
+    .bakery-title-section h1 {
+      font-size: 1.8rem;
+    }
+    
+    .bakery-tabs {
+      overflow-x: auto;
+    }
+    
+    .tab-button {
+      padding: 15px 15px;
+      white-space: nowrap;
+    }
+  }

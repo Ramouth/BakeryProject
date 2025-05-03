@@ -1,0 +1,116 @@
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  /* Card adjustments */
+  .card {
+    width: 95%;
+    max-width: none;
+    padding: 20px 15px;
+    min-height: auto;
+    border-radius: 8px;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+  
+  /* Container adjustments */
+  .container {
+    width: 100%;
+    max-width: none;
+    padding: 0 8px;
+    margin: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Button adjustments */
+  .nav-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 15px;
+    gap: 10px;
+  }
+  
+  .nav-buttons .btn {
+    flex: 1;
+    margin: 0 5px;
+    min-width: 0;
+  }
+  
+  /* Progress bar label */
+  .progress-container::before {
+    content: "Progress:";
+    display: block;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+  
+  /* Form adjustments */
+  .form-group input,
+  .form-group textarea,
+  .form-group select,
+  .dropdown-list {
+    max-width: 100%;
+  }
+  
+  /* Admin layout adjustments */
+  .admin-layout {
+    flex-direction: column;
+  }
+  
+  .admin-sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    top: 0;
+    left: 0;
+    display: none;
+  }
+  
+  .admin-sidebar.open {
+    display: block;
+  }
+  
+  .mobile-toggle {
+    display: block;
+  }
+  
+  .header-actions {
+    display: none;
+  }
+  
+  .admin-header {
+    justify-content: space-between;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+  }
+  
+  .dashboard-row {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Sidebar adjustments for mobile */
+  .admin-sidebar ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .admin-sidebar li {
+    margin-bottom: 0;
+  }
+  
+  /* Typography adjustments */
+  h1 { font-size: 2.5rem; }
+  h2 { font-size: 2rem; }
+  h3 { font-size: 1.75rem; }
+  h4 { font-size: 1.5rem; }
+  h5 { font-size: 1.25rem; }
+  
+  /* Hide admin login button on mobile */
+  .main-nav a[href="/login"] {
+    display: none;
+  }
+}
