@@ -31,16 +31,40 @@ const UserProfile = () => {
     );
   }
 
+  // Helper function to get user initials from username
+  const getUserInitials = (username) => {
+    if (!username) return '';
+    // Handle different username formats: "John Doe", "john.doe", "john_doe", etc.
+    const parts = username.split(/[\s._-]/);
+    if (parts.length > 1) {
+      // If username has multiple parts, use first letters of first and last parts
+      return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+    } else {
+      // If username is a single word, use first letter or first two letters
+      return username.substring(0, Math.min(2, username.length)).toUpperCase();
+    }
+  };
+
+  // Helper function to get a display name from username
+  const getDisplayName = (username) => {
+    if (!username) return '';
+    // Convert username to display name: "john_doe" -> "John Doe"
+    return username
+      .split(/[\s._-]/)
+      .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(' ');
+  };
+
   return (
     <div className="container">
       <div className="profile-container">
         <div className="profile-header">
           <div className="profile-avatar">
-            {currentUser?.firstName?.charAt(0)}{currentUser?.lastName?.charAt(0)}
+            {getUserInitials(currentUser?.username)}
           </div>
           
           <div className="profile-header-info">
-            <h1>{currentUser?.firstName} {currentUser?.lastName}</h1>
+            <h1>{getDisplayName(currentUser?.username)}</h1>
             <p className="profile-email">{currentUser?.email}</p>
             <p className="profile-member-since">Member since April 2024</p>
           </div>
@@ -69,23 +93,12 @@ const UserProfile = () => {
             <h2>Edit Profile</h2>
             
             <div className="form-group">
-              <label htmlFor="firstName">First Name</label>
+              <label htmlFor="username">Username</label>
               <input
                 type="text"
-                id="firstName"
-                name="firstName"
-                value={userInfo.firstName}
-                onChange={handleInputChange}
-              />
-            </div>
-            
-            <div className="form-group">
-              <label htmlFor="lastName">Last Name</label>
-              <input
-                type="text"
-                id="lastName"
-                name="lastName"
-                value={userInfo.lastName}
+                id="username"
+                name="username"
+                value={userInfo.username}
                 onChange={handleInputChange}
               />
             </div>
