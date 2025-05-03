@@ -1,5 +1,3 @@
-// frontend/src/viewmodels/useProductCategoryViewModel.js
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import productService from '../services/productService';

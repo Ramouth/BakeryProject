@@ -1,5 +1,3 @@
-# backend/services/user_service.py
-
 from flask_bcrypt import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
 from sqlalchemy.exc import SQLAlchemyError

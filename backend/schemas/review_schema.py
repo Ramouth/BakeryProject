@@ -1,4 +1,3 @@
-# schemas/review_schema.py
 from . import ma
 from models.review_models import BakeryReview, ProductReview
 from marshmallow import fields, validate, post_dump, post_load

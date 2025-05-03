@@ -1,8 +1,7 @@
-// Updated useLoginViewModel.js
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../store/UserContext';
-// apiClient is not needed directly here anymore, as the Context handles API calls
+
 
 export const useLoginViewModel = () => {
   // Get the login function from the context, along with state/setters

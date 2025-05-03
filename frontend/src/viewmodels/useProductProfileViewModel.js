@@ -1,6 +1,3 @@
-// In useProductProfileViewModel.js, try this alternative approach
-// that directly logs and maps the review properties
-
 import { useState, useEffect } from 'react';
 import productService from '../services/productService';
 import bakeryService from '../services/bakeryService';

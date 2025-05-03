@@ -1,4 +1,3 @@
-// src/viewmodels/useFacetedSearchViewModel.js
 import { useState, useCallback, useEffect } from 'react';
 import apiClient from '../services/api';
 

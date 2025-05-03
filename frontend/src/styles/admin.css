@@ -1,7 +1,7 @@
 /* Admin Section Styles */
 .admin-container {
   display: flex;
-  width: 85%; /* Standardizing width to match homepage content */
+  width: 85%; 
   flex-direction: column;
   min-height: 100vh;
   background-color: var(--background-100);

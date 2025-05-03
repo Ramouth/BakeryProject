@@ -15,7 +15,7 @@ from blueprints.product_bp import product_bp
 from blueprints.review_bp import bakery_review_bp, product_review_bp
 from blueprints.user_bp import user_bp
 from blueprints.auth_bp import auth_bp
-from blueprints.category_bp import category_bp  # <-- From dev
+from blueprints.category_bp import category_bp
 
 def create_app(config_class=None):
     # Pick config
@@ -76,7 +76,7 @@ def create_app(config_class=None):
     app.register_blueprint(product_review_bp, url_prefix='/productreviews')
     app.register_blueprint(user_bp, url_prefix='/users')
     app.register_blueprint(auth_bp, url_prefix='/auth')
-    app.register_blueprint(category_bp, url_prefix='/categories')  # <-- From dev
+    app.register_blueprint(category_bp, url_prefix='/categories')
 
     # —————— ERROR HANDLING ——————
     @app.errorhandler(Exception)

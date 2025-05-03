@@ -1,4 +1,3 @@
-// src/views/Homepage.jsx
 import { Link } from 'react-router-dom';
 import { useHomeViewModel } from '../viewmodels/useHomeViewModel';
 import { useFacetedSearchViewModel } from '../viewmodels/useFacetedSearchViewModel';

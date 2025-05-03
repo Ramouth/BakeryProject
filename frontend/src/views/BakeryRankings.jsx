@@ -15,9 +15,6 @@ const BakeryRankings = () => {
     loadMore
   } = useBakeryRankingsViewModel();
 
-  // Remove the searchTypes array that had both 'bakeries' and 'products' options
-  // We'll only use bakery-specific filter options
-
   const filterOptions = {
     bakeries: [
       {

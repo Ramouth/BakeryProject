@@ -1,5 +1,3 @@
-// frontend/src/viewmodels/admin/useAdminCategoryManager.js
-
 import { useState, useEffect, useCallback } from 'react';
 import productService from '../../services/productService';
 import apiClient from '../../services/api';

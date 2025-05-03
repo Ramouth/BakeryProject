@@ -1,4 +1,3 @@
-// src/components/admin/BakeryList.jsx
 import { memo } from "react";
 import PropTypes from "prop-types";
 import Button from "../Button";

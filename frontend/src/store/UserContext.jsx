@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
-import apiClient from '../services/api'; // Make sure this import path is correct
+import apiClient from '../services/api'; 
 
 const UserContext = createContext();
 

@@ -1,4 +1,3 @@
-// frontend/src/store/NotificationContext.jsx
 import { createContext, useContext, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import Notification from '../components/SuccessNotification';
