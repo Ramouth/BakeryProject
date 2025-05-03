@@ -1,0 +1,23 @@
+/* Auth Layout & Forms */
+.auth-error {
+    margin: 1rem 0;
+    padding: 0.5rem;
+    background-color: rgba(211, 47, 47, 0.1);
+    border-radius: var(--border-radius);
+    text-align: center;
+  }
+  
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto;
+  }
+  
+  .help-text {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 4px;
+  }
