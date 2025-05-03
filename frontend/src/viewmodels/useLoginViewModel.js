@@ -19,14 +19,14 @@ export const useLoginViewModel = () => {
   // If already logged in, redirect immediately
   useEffect(() => {
     if (currentUser) {
-      if (currentUser.isAdmin) navigate('/admin', { replace: true });
+      if (currentUser.isAdmin) navigate('/admin-dashboard', { replace: true });
       else navigate('/', { replace: true });
     }
   }, [currentUser, navigate]);
 
   const redirectAfterLogin = useCallback(user => {
     if (!mounted.current || !user) return;
-    if (user.isAdmin) navigate('/admin', { replace: true });
+    if (user.isAdmin) navigate('/admin-dashboard', { replace: true });
     else navigate('/', { replace: true });
   }, [navigate]);
 
