@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { useProductRankingsViewModel } from '../viewmodels/useProductRankingsViewModel';
-import '../styles/product-rankings.css';
 
 const ProductRankings = () => {
   const {

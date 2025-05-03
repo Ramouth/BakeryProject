@@ -2,8 +2,6 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useProductProfileViewModel } from '../viewmodels/useProductProfileViewModel';
 import ReviewModal from '../components/ReviewModal';
-import '../styles/product-profile.css';
-import '../styles/cookie-display.css';
 
 const ProductProfile = () => {
   const { productId } = useParams();

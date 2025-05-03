@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { useBakeryRankingsViewModel } from '../viewmodels/useBakeryRankingsViewModel';
 import SearchDropdown from '../components/SearchDropdown';
 import Button from '../components/Button';
-import '../styles/bakery-rankings.css';
 
 const BakeryRankings = () => {
   const {

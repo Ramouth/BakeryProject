@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import apiClient from '../services/api';
-import '../styles/faceted-search.css';
 
 const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
   // State for storing filter options and selected values

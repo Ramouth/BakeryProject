@@ -4,9 +4,6 @@ import { useUser } from '../store/UserContext';
 import { User } from 'lucide-react';
 import ReviewModal from './ReviewModal';
 
-// Import the review modal CSS
-import '../styles/review-modal.css';
-
 const NavBar = () => {
   const { currentUser, logout } = useUser();
   const location = useLocation();

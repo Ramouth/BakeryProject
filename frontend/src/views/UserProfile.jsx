@@ -1,6 +1,5 @@
 import { useUserProfileViewModel } from '../viewmodels/useUserProfileViewModel';
 import Button from '../components/Button';
-import '../styles/profile.css';
 
 const UserProfile = () => {
   const {

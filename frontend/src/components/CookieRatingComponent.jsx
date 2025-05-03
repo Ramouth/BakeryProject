@@ -1,6 +1,5 @@
 import { useState, useCallback, memo } from 'react';
 import PropTypes from 'prop-types';
-import '../styles/cookie-rating.css';
 
 // Cookie rating component with left/right click zones for half/full ratings
 const CookieRating = ({ 

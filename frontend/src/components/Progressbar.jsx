@@ -1,6 +1,5 @@
 import { memo } from 'react';
 import PropTypes from 'prop-types';
-import "../styles/progress-bar.css";
 
 
 const ProgressBar = ({ currentStep, totalSteps, steps }) => {
