@@ -70,6 +70,14 @@ export const useHomeViewModel = () => {
         bakeriesWithStats = bakeriesWithStats.sort((a, b) => {
           const ratingA = a.average_rating || 0;
           const ratingB = b.average_rating || 0;
+          
+          if (ratingB === ratingA) {
+            // Secondary sort by number of reviews when ratings are equal
+            const reviewsA = a.review_count || 0;
+            const reviewsB = b.review_count || 0;
+            return reviewsB - reviewsA;
+          }
+          
           return ratingB - ratingA;
         });
         
