@@ -194,16 +194,6 @@ const BakeryProfile = () => {
                     ))}
                   </div>
                 </div>
-                  <div className="hours-section">
-                    <h3>Opening Hours</h3>
-                    <ul className="hours-list">
-                      {Object.entries(openingHours).map(([day, hours]) => (
-                        <li key={day}>
-                          <span>{day.charAt(0).toUpperCase() + day.slice(1)}:</span> {hours}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
               
