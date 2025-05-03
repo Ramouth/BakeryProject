@@ -1,0 +1,228 @@
+/* bakery-menu-tab.css */
+.menu-container {
+  width: 100%;
+  margin-bottom: 40px;
+}
+
+.menu-title {
+  font-size: 1.8rem;
+  color: var(--text-950);
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.no-products-message {
+  color: var(--text-600);
+  font-style: italic;
+  padding: 1rem 0;
+}
+
+.menu-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Category sidebar */
+.category-sidebar {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.category-list {
+  display: flex;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  background-color: var(--background-100);
+  border-radius: var(--border-radius);
+  padding: 0.5rem;
+}
+
+.category-button {
+  background: none;
+  border: none;
+  padding: 0.8rem 1.2rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-900);
+  white-space: nowrap;
+  cursor: pointer;
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+}
+
+.category-button:hover {
+  background-color: var(--primary-100);
+}
+
+.category-button.active {
+  background-color: var(--primary-600);
+  color: var(--text-50);
+}
+
+/* Products grid */
+.products-container {
+  width: 100%;
+}
+
+.category-heading {
+  font-size: 1.4rem;
+  color: var(--text-900);
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--accent-200);
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1rem;
+}
+
+/* Product card styling */
+.product-card {
+  background-color: var(--background-50);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: var(--transition);
+  border: 1px solid var(--accent-100);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  cursor: pointer;
+}
+
+.product-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.product-image {
+  height: 180px;
+  position: relative;
+  overflow: hidden;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary-100);
+  color: var(--primary-700);
+  font-weight: 500;
+}
+
+.product-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: var(--primary-600);
+  color: var(--text-50);
+  font-size: 0.7rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 3px;
+}
+
+.product-details {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.product-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-950);
+  margin: 0 0 0.5rem 0;
+}
+
+.product-rating {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.rating-value {
+  font-weight: 700;
+  color: var(--primary-600);
+  margin-right: 0.4rem;
+}
+
+.product-description {
+  color: var(--text-600);
+  font-size: 0.9rem;
+  margin: 0.5rem 0 1rem;
+  flex-grow: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.product-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.product-price {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--text-800);
+}
+
+.view-details-button {
+  font-size: 0.8rem;
+  padding: 0.3rem 0.7rem;
+  background-color: var(--primary-100);
+  color: var(--primary-700);
+  border-radius: 12px;
+}
+
+/* Responsive design */
+@media (min-width: 768px) {
+  .menu-layout {
+    flex-direction: row;
+  }
+  
+  .category-sidebar {
+    width: 250px;
+    flex-shrink: 0;
+  }
+  
+  .category-list {
+    display: block;
+    overflow-x: visible;
+    padding: 0.8rem;
+  }
+  
+  .category-button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    margin-bottom: 0.4rem;
+  }
+  
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 992px) {
+  .products-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

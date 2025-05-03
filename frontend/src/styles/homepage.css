@@ -3,7 +3,7 @@
 /* ---------------------- */
 .hero-section {
   text-align: center;
-  margin: 2rem auto;
+  margin: -3.0rem auto 2rem;
   padding: 2rem;
   max-width: 900px;
 }
@@ -216,7 +216,7 @@
 
 .search-results-header h2 {
   font-size: 1.8rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: -1.5rem;
   color: var(--text-800);
 }
 
@@ -321,4 +321,7 @@
   .search-results-header {
     text-align: center;
   }
+}
+.top-bakeries.search-active {
+  margin-top: -4rem; /* Reduced from 4rem to 0rem */
 }

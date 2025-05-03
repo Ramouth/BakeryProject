@@ -43,10 +43,10 @@ const BakeryRankings = () => {
         name: 'rating',
         options: [
           { value: '', label: 'All Ratings' },
-          { value: '4.5', label: '4.5+ Stars' },
-          { value: '4', label: '4+ Stars' },
-          { value: '3.5', label: '3.5+ Stars' },
-          { value: '3', label: '3+ Stars' }
+          { value: '4.5', label: '4.5+' },
+          { value: '4', label: '4+' },
+          { value: '3.5', label: '3.5+' },
+          { value: '3', label: '3+' }
         ]
       }
     ]

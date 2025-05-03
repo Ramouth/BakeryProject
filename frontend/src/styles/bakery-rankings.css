@@ -1,7 +1,7 @@
 /* Bakery Rankings Styles */
 .rankings-header {
   text-align: center;
-  margin: 2rem auto;
+  margin: -1rem auto;
   max-width: 800px;
   width: 85%; /* Standardizing width to match homepage content */
 }
