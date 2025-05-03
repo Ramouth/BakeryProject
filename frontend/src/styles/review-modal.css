@@ -435,3 +435,27 @@
   }
 
 }
+.textarea-container {
+  position: relative;
+  width: 100%;
+}
+
+.character-count {
+  position: absolute;
+  bottom: 5px;
+  right: 10px;
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.count-notice {
+  color: #f0ad4e; /* Yellow warning */
+}
+
+.count-warning {
+  color: #d9534f; /* Red warning */
+}
+
+textarea {
+  padding-bottom: 25px; /* Make space for the character count */
+}
