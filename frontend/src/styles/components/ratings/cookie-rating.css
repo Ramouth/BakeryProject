@@ -1,0 +1,149 @@
+/* Cookie Rating Component with Left/Right Zones */
+.cookie-rating-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 5px 0;
+  width: 100%;
+  max-width: 220px;
+  flex-grow: 1;
+}
+
+.cookie-rating {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* Cookie wrapper for containing the clickable zones */
+.cookie-wrapper {
+  position: relative;
+  padding: 0;
+  margin: 0 6px;
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease;
+}
+
+.cookie-wrapper:hover {
+  transform: scale(1.15);
+}
+
+/* Click zones for left/right detection */
+.click-zones {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.left-zone, .right-zone {
+  width: 50%;
+  height: 100%;
+}
+
+/* Optional: Show a subtle indicator on hover */
+.left-zone:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.right-zone:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* The cookie itself */
+.cookie {
+  position: relative;
+  font-size: 1.5rem;
+  z-index: 1;
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+/* Empty state */
+.cookie.empty {
+  opacity: 0.3;
+  filter: grayscale(85%);
+}
+
+/* Full state */
+.cookie.full {
+  opacity: 1;
+  filter: grayscale(0%);
+  color: var(--primary);
+}
+
+/* Half state */
+.cookie.half {
+  position: relative;
+  color: transparent;
+}
+
+.cookie.half::before {
+  content: '🍪';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 50%;
+  overflow: hidden;
+  color: var(--primary);
+}
+
+.cookie.half::after {
+  content: '🍪';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  overflow: hidden;
+  color: transparent;
+  text-shadow: 0 0 0 #ccc;
+  opacity: 0;
+  filter: grayscale(0%);
+}
+
+/* Rating value text */
+.rating-value {
+  margin-top: 5px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--primary);
+}
+
+/* Disabled state */
+.cookie-rating-container.disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.cookie-rating-container.disabled .cookie-rating {
+  cursor: not-allowed;
+}
+
+.cookie-rating-container.disabled .cookie-wrapper {
+  cursor: not-allowed;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .cookie-wrapper {
+    width: 32px;
+    height: 32px;
+    margin: 0 8px;
+  }
+  
+  .cookie {
+    font-size: 1.8rem;
+  }
+  
+  /* Make zones larger and more distinct on touch devices */
+  .left-zone, .right-zone {
+    min-width: 16px;
+    min-height: 32px;
+  }
+}

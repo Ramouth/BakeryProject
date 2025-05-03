@@ -8,6 +8,7 @@ import AdminProductReviewView from './admin/AdminProductReviewView';
 import AdminCategoriesManager from '../components/admin/AdminCategoriesManager';
 import Button from '../components/Button';
 
+
 const AdminHome = ({ stats, recentActivity, loading, formatDate }) => {
   if (loading) {
     return <div className="loading">Loading dashboard data...</div>;

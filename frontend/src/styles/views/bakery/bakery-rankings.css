@@ -1,0 +1,306 @@
+/* Bakery Rankings Styles */
+.rankings-header {
+  text-align: center;
+  margin: -1rem auto;
+  max-width: 800px;
+  width: 85%; 
+}
+
+.rankings-header h1 {
+  color: var(--text-dark);
+  font-size: 2.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.rankings-header p {
+  color: var(--accent-dark);
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}
+
+/* Bakery List Styles */
+.bakery-rankings {
+  max-width: 900px;
+  margin: 3rem auto;
+  width: 85%; 
+}
+
+.bakery-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.bakery-card {
+  display: flex;
+  background-color: var(--background);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  position: relative;
+  transition: var(--transition);
+  height: 180px;
+  align-items: stretch;
+}
+
+/* Top ranked styles */
+.bakery-card:nth-child(1) {
+  background-color: rgba(255, 215, 0, 0.15); /* Gold */
+}
+
+.bakery-card:nth-child(2) {
+  background-color: rgba(192, 192, 192, 0.15); /* Silver */
+}
+
+.bakery-card:nth-child(3) {
+  background-color: rgba(205, 127, 50, 0.15); /* Bronze */
+}
+
+.bakery-card:nth-child(1):hover {
+  background-color: rgba(255, 215, 0, 0.25);
+}
+
+.bakery-card:nth-child(2):hover {
+  background-color: rgba(192, 192, 192, 0.25);
+}
+
+.bakery-card:nth-child(3):hover {
+  background-color: rgba(205, 127, 50, 0.25);
+}
+
+.bakery-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.bakery-rank {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 30px;
+  height: 30px;
+  background-color: var(--primary);
+  color: var(--text-light);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  z-index: 1;
+}
+
+/* Top rank colors */
+.bakery-card:nth-child(1) .bakery-rank {
+  background-color: var(--gold);
+  color: black;
+}
+
+.bakery-card:nth-child(2) .bakery-rank {
+  background-color: var(--silver);
+  color: black;
+}
+
+.bakery-card:nth-child(3) .bakery-rank {
+  background-color: var(--bronze);
+  color: white;
+}
+
+.bakery-image {
+  width: 180px;
+  height: 180px;
+  background-color: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0px; /* Hide text */
+  position: relative;
+  overflow: hidden;
+}
+
+.placeholder-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url('/src/assets/bageri.jpeg');
+  background-size: cover;
+  background-position: center;
+  color: transparent;
+}
+
+.top-review-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: var(--primary);
+  color: var(--text-light);
+  padding: 5px 10px;
+  font-size: 10px;
+  font-weight: bold;
+  border-radius: 4px;
+  transform: rotate(0deg);
+}
+
+.bakery-details {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 0.8rem 1rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  position: relative;
+}
+
+.bakery-details h3 {
+  margin: 0;
+  padding: 0;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--text-dark);
+}
+
+.bakery-location {
+  margin: 0;
+  padding: 0;
+  font-size: 0.9rem;
+  line-height: 1;
+  color: var(--accent-dark);
+}
+
+.bakery-description {
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  flex-grow: 1;
+  text-overflow: ellipsis;
+  white-space: normal;
+  padding-right: 180px;
+}
+
+.bakery-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.bakery-rating {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: var(--primary-light);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  z-index: 2;
+}
+
+.rating-value {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: var(--primary-dark);
+}
+
+.stars {
+  color: var(--secondary);
+  font-size: 1rem;
+}
+
+.review-count {
+  color: var(--accent-dark);
+  font-size: 0.85rem;
+}
+
+.top-item {
+  font-size: 0.9rem;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .bakery-card {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .bakery-image {
+    width: 100%;
+    height: 140px;
+  }
+
+  .bakery-rank {
+    top: 10px;
+    left: 10px;
+  }
+
+  .bakery-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .rankings-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .search-dropdown-form {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .search-button {
+    width: 100%;
+  }
+  /* Load More Button Styles */
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  margin: 30px 0;
+}
+
+.load-more-button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  min-width: 200px;
+  transition: all 0.3s ease;
+}
+
+.load-more-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.load-more-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Bakery Count Info */
+.bakery-count-info {
+  text-align: center;
+  margin-bottom: 20px;
+  color: var(--accent-dark);
+  font-size: 0.9rem;
+}
+
+/* Loading Indicator for Load More */
+.loading-indicator {
+  text-align: center;
+  margin: 20px 0;
+  color: var(--accent-dark);
+}
+
+/* Make sure cards stack properly on mobile */
+@media (max-width: 768px) {
+  .load-more-button {
+    width: 100%;
+    max-width: 300px;
+  }
+}
+}

@@ -1,46 +1,59 @@
-/* Main CSS file that imports all other CSS files */
+/* Core styles */
+@import 'core/variables.css';
+@import 'core/base.css';
+@import 'core/layout.css';
+@import 'core/animations.css';
 
-/* Import variables first to make them available to all other files */
-@import 'variables.css';
+/* Component styles - common */
+@import 'components/common/button.css';
+@import 'components/common/card.css';
+@import 'components/common/dropdown.css';
+@import 'components/common/form.css';
+@import 'components/common/navigation-buttons.css';
+@import 'components/common/theme-toggle.css';
 
-/* Import base styles */
-@import 'base.css';
+/* Component styles - admin */
+@import 'components/admin/admin.css';
 
-/* Import layout styles */
-@import 'layout.css';
+/* Component styles - ratings */
+@import 'components/ratings/cookie-rating.css';
+@import 'components/ratings/cookie-display.css';
+@import 'components/ratings/rating-bar.css';
 
-/* Import component styles */
-@import 'components.css';
+/* Component styles - other */
+@import 'components/other/book-tab.css';
+@import 'components/other/progress-bar.css';
 
-/* Import notification styles */
-@import 'notification.css';
+/* View styles - auth */
+@import 'views/auth/login.css';
+@import 'views/auth/signup.css';
+@import 'views/auth/profile.css';
 
-/* Import admin styles */
-@import 'admin.css';
+/* View styles - home */
+@import 'views/home/homepage.css';
+@import 'views/home/search-dropdown.css';
+@import 'views/home/faceted-search.css';
 
-/* Import homepage styles */
-@import 'homepage.css';
+/* View styles - bakery */
+@import 'views/bakery/bakery-profile.css';
+@import 'views/bakery/bakery-rankings.css';
+@import 'views/bakery/bakery-rating.css';
+@import 'views/bakery/bakery-menu-tab.css';
 
-/* Import animations */
-@import 'animations.css';
+/* View styles - product */
+@import 'views/product/product-profile.css';
+@import 'views/product/product-rankings.css';
+@import 'views/product/product-category.css';
+@import 'views/product/product-rating.css';
 
-/* Import review modal styles */
-@import 'review-modal.css';
+/* View styles - admin */
+@import 'views/admin/admin-dashboard.css';
 
-/* Import cookie rating styles */
-@import 'cookie-rating.css';
+/* Shared styles */
+@import 'shared/review-modal.css';
+@import 'shared/notification.css';
+@import 'shared/footer.css';
+@import 'shared/header.css';
 
-/* Import cookie display styles */
-@import 'cookie-display.css';
-
-/* Import responsive styles last to override other styles as needed */
-@import 'responsive.css';
-
-/* Import footer styles */
-@import 'footer.css';
-
-/* Import header styles */
-@import 'faceted-search.css';
-
-/* Import book tab styles */
-@import 'book-tab.css';
+/* Responsive styles */
+@import 'responsive/responsive.css';

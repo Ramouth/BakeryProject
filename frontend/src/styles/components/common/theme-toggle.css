@@ -1,0 +1,23 @@
+.theme-toggle {
+    display: flex;
+    align-items: center;
+  }
+  
+  .theme-button {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(--primary-light);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.3s ease;
+  }
+  
+  .theme-button:hover {
+    transform: translateY(-2px);
+    background-color: var(--accent-dark);
+  }

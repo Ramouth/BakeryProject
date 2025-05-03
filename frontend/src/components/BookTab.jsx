@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Bug, Sun, Moon } from 'lucide-react';
-import '../styles/book-tab.css';
 
 const BookTab = () => {
   const [theme, setTheme] = useState(() => {
