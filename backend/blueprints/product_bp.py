@@ -3,7 +3,7 @@ from models import Product, Bakery
 from schemas import ProductSchema
 from services.product_service import ProductService
 from flask import current_app as app
-from utils.caching import cache  # Ensure this import is present
+from utils.caching import cache  
 
 # Create blueprint
 product_bp = Blueprint('product', __name__)
@@ -15,7 +15,7 @@ products_schema = ProductSchema(many=True)
 # Initialize service
 product_service = ProductService()
 
-@product_bp.route('/', methods=['GET'])  # Changed from '/products'
+@product_bp.route('/', methods=['GET'])
 def get_products():
     """Get all products with detailed information"""
     try:
@@ -33,7 +33,7 @@ def get_products():
             "products": []
         }), 500
 
-@product_bp.route('/<int:product_id>', methods=['GET'])  # Changed from '/products/<int:product_id>'
+@product_bp.route('/<int:product_id>', methods=['GET'])
 def get_product(product_id):
     """Get a specific product by ID"""
     product = product_service.get_product_by_id(product_id)
@@ -41,7 +41,7 @@ def get_product(product_id):
         return jsonify({"message": "Product not found"}), 404
     return jsonify(product_schema.dump(product))
 
-@product_bp.route('/<int:product_id>/stats', methods=['GET'])  # Changed from '/products/<int:product_id>/stats'
+@product_bp.route('/<int:product_id>/stats', methods=['GET'])
 def get_product_stats(product_id):
     """Get statistics for a product including review averages"""
     try:
@@ -50,19 +50,19 @@ def get_product_stats(product_id):
     except Exception as e:
         return jsonify({"message": str(e)}), 404
 
-@product_bp.route('/bakery/<int:bakery_id>', methods=['GET'])  # Changed from '/products/bakery/<int:bakery_id>'
+@product_bp.route('/bakery/<int:bakery_id>', methods=['GET'])
 def get_products_by_bakery(bakery_id):
     """Get all products for a specific bakery"""
     products = product_service.get_products_by_bakery(bakery_id)
     return jsonify({"products": products_schema.dump(products)})
 
-@product_bp.route('/category/<category>', methods=['GET'])  # Changed from '/products/category/<category>'
+@product_bp.route('/category/<category>', methods=['GET'])
 def get_products_by_category(category):
     """Get all products for a specific category"""
     products = product_service.get_products_by_category(category)
     return jsonify({"products": products_schema.dump(products)})
 
-@product_bp.route('/subcategory/<int:subcategory_id>', methods=['GET'])  # Changed from '/products/subcategory/<int:subcategory_id>'
+@product_bp.route('/subcategory/<int:subcategory_id>', methods=['GET'])
 @cache.cached(timeout=60)
 def get_products_by_subcategory_id(subcategory_id):
     """Get all products for a specific subcategory by ID"""
@@ -76,7 +76,7 @@ def get_products_by_subcategory_id(subcategory_id):
     products = Product.query.filter_by(subcategory_id=subcategory_id).order_by(Product.name).all()
     return jsonify({"products": products_schema.dump(products)})
 
-@product_bp.route('/create', methods=['POST'])  # Changed from '/products/create'
+@product_bp.route('/create', methods=['POST'])
 def create_product():
     """Create a new product"""
     try:
@@ -110,7 +110,7 @@ def create_product():
     except Exception as e:
         return jsonify({"message": str(e)}), 400
 
-@product_bp.route('/update/<int:product_id>', methods=['PATCH'])  # Changed from '/products/update/<int:product_id>'
+@product_bp.route('/update/<int:product_id>', methods=['PATCH'])
 def update_product(product_id):
     """Update a product"""
     try:
@@ -156,7 +156,7 @@ def update_product(product_id):
     except Exception as e:
         return jsonify({"message": str(e)}), 400
 
-@product_bp.route('/delete/<int:product_id>', methods=['DELETE'])  # Changed from '/products/delete/<int:product_id>'
+@product_bp.route('/delete/<int:product_id>', methods=['DELETE'])
 def delete_product(product_id):
     """Delete a product"""
     try:
@@ -177,7 +177,7 @@ def delete_product(product_id):
     except Exception as e:
         return jsonify({"message": str(e)}), 400
 
-@product_bp.route('/search', methods=['GET'])  # Changed from '/products/search'
+@product_bp.route('/search', methods=['GET'])
 def search_products():
     """Search products by name"""
     search_term = request.args.get('q', '')

@@ -1,5 +1,3 @@
-// frontend/src/viewmodels/useProductRankingsViewModel.js
-
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import productService from '../services/productService';

@@ -2,7 +2,7 @@
   max-width: 1200px;
   margin: 0 auto;
   background-color: var(--background-50);
-  width: 85%; /* Standardizing width to match homepage content */
+  width: 85%; 
 }
 
 /* Header styling */

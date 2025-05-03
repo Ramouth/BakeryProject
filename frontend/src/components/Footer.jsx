@@ -1,6 +1,5 @@
 import React from 'react';
-import emailIcon from '../assets/email.png';
-import instagramIcon from '../assets/instagram.svg';
+import { Mail, Instagram } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -15,19 +14,19 @@ const Footer = () => {
           <ul className="social-links">
             <li>
               <a href="mailto:crumbcompass@gmail.com" aria-label="Email">
-                <img src={emailIcon} alt="Email" className="footer-icon" /> crumbcompass@gmail.com
+                <Mail className="footer-icon" /> crumbcompass@gmail.com
               </a>
             </li>
             <li>
               <a href="https://instagram.com/crumbcompass" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-                <img src={instagramIcon} alt="Instagram" className="footer-icon" /> @crumbcompass
+                <Instagram className="footer-icon" /> @crumbcompass
               </a>
             </li>
           </ul>
         </div>
       </div>
     </footer>
-    );
-  };
-  
-  export default Footer;
+  );
+};
+
+export default Footer;

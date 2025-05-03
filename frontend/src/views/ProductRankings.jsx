@@ -1,5 +1,3 @@
-// frontend/src/views/ProductRankings.jsx
-
 import { Link } from 'react-router-dom';
 import { useProductRankingsViewModel } from '../viewmodels/useProductRankingsViewModel';
 import '../styles/product-rankings.css';

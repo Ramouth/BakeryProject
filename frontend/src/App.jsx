@@ -1,4 +1,3 @@
-// src/App.jsx
 import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { UserProvider } from './store/UserContext';

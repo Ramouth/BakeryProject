@@ -1,5 +1,3 @@
-// frontend/src/config.js
-
 // Load environment variables (Vite)
 const {
   VITE_API_BASE_URL,

@@ -1,4 +1,3 @@
-// src/components/ReviewModal.jsx
 import { useState, useEffect } from 'react';
 import Modal from './Modal';
 import Button from './Button';

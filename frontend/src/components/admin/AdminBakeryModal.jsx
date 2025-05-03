@@ -1,4 +1,3 @@
-// src/components/admin/AdminBakeryModal.jsx
 import { useState, useEffect, useCallback, useMemo } from "react";
 import PropTypes from "prop-types";
 import Button from "../Button";

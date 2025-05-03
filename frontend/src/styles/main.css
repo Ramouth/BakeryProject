@@ -12,9 +12,6 @@
 /* Import component styles */
 @import 'components.css';
 
-/* Import theme toggle styles */
-@import 'theme-toggle.css';
-
 /* Import notification styles */
 @import 'notification.css';
 

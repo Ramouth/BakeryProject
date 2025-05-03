@@ -1,4 +1,3 @@
-// src/components/admin/ProductReviewList.jsx
 import React from "react";
 import Button from "../Button";
 

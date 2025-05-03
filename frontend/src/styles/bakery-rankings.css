@@ -3,7 +3,7 @@
   text-align: center;
   margin: -1rem auto;
   max-width: 800px;
-  width: 85%; /* Standardizing width to match homepage content */
+  width: 85%; 
 }
 
 .rankings-header h1 {
@@ -22,7 +22,7 @@
 .bakery-rankings {
   max-width: 900px;
   margin: 3rem auto;
-  width: 85%; /* Standardizing width to match homepage content */
+  width: 85%; 
 }
 
 .bakery-list {

@@ -1,4 +1,3 @@
-// Update the BakeryProfile.jsx file to add review functionality
 import { useParams, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useBakeryProfileViewModel } from '../viewmodels/useBakeryProfileViewModel';

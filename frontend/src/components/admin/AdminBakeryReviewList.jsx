@@ -1,4 +1,3 @@
-// src/components/admin/BakeryReviewList.jsx
 import React from "react";
 import Button from "../Button";
 

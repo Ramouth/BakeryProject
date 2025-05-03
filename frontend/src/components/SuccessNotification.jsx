@@ -1,4 +1,3 @@
-// frontend/src/components/Notification.jsx
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import '../styles/notification.css';

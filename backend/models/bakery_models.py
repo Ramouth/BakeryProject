@@ -19,7 +19,7 @@ class Bakery(db.Model):
     website_url = Column(String(255), nullable=True)
     
     # Relationships with cascade deletes
-    products = relationship('Product', back_populates='bakery', cascade='all, delete-orphan')  # Change 'product' to 'Product'
+    products = relationship('Product', back_populates='bakery', cascade='all, delete-orphan')
     bakery_reviews = relationship('BakeryReview', back_populates='bakery', cascade='all, delete-orphan')
     
     # Indexes for faster queries
