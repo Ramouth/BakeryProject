@@ -98,10 +98,10 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
         // Set up rating options - simplify to match display format
         const ratingFilterOptions = [
           { value: "", label: "Any Rating" },
-          { value: "4.5", label: "4.5+ Stars" },
-          { value: "4", label: "4+ Stars" },
-          { value: "3.5", label: "3.5+ Stars" },
-          { value: "3", label: "3+ Stars" }
+          { value: "4.5", label: "4.5+" },
+          { value: "4", label: "4+" },
+          { value: "3.5", label: "3.5+" },
+          { value: "3", label: "3+" }
         ];
         
         setRatingOptions(ratingFilterOptions);
