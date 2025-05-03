@@ -7,6 +7,7 @@ export const useLoginViewModel = () => {
   const navigate = useNavigate();
   const mounted = useRef(true);
 
+  // Keep email naming for UI compatibility
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [localError, setLocalError] = useState(null);
@@ -34,6 +35,7 @@ export const useLoginViewModel = () => {
     setLocalError(null);
     setIsSubmitting(true);
     try {
+      // Using email as username - this is the crucial change
       const user = await login(email, password);
       redirectAfterLogin(user);
     } catch (err) {
@@ -48,6 +50,7 @@ export const useLoginViewModel = () => {
     setLocalError(null);
     setIsSubmitting(true);
     try {
+      // Keep the same mock login credentials
       const user = await login('admin@crumbcompass.com', 'admin123');
       redirectAfterLogin(user);
     } catch (err) {

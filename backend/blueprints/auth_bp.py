@@ -5,6 +5,7 @@ from flask_jwt_extended import (
     get_jwt_identity
 )
 from marshmallow import ValidationError
+from werkzeug.security import check_password_hash
 
 from schemas import UserSchema
 from services.user_service import UserService
@@ -74,25 +75,53 @@ def login():
     """Authenticate a user and return a JWT access token."""
     try:
         payload = request.get_json()
-        username = payload.get('username')
-        password = payload.get('password')
+        # Get identifier (username or email) from payload
+        identifier = payload.get('username', '')
+        password = payload.get('password', '')
 
-        if not username or not password:
-            return jsonify({"message": "Username and password are required"}), 400
+        if not identifier or not password:
+            return jsonify({"message": "Username/email and password are required"}), 400
 
-        user = user_service.authenticate_user(username, password)
+        # Check if the identifier contains '@' to determine if it's an email
+        is_email = '@' in identifier
         
-        # Create token with string identity
-        token = create_access_token(identity=str(user.id))
+        try:
+            if is_email:
+                # Log that we're trying email authentication
+                current_app.logger.debug(f"[LOGIN] Attempting email authentication with: {identifier}")
+                
+                # Get user by email
+                user = user_service.get_user_by_email(identifier)
+                
+                # Verify password manually since we're bypassing authenticate_user
+                if not check_password_hash(user.password_hash, password):
+                    current_app.logger.debug(f"[LOGIN] Password verification failed for email: {identifier}")
+                    raise AuthenticationError("Invalid email or password")
+                
+                current_app.logger.debug(f"[LOGIN] Email authentication successful for: {identifier}")
+            else:
+                # Log that we're trying username authentication
+                current_app.logger.debug(f"[LOGIN] Attempting username authentication with: {identifier}")
+                
+                # Use the existing authenticate_user method for username
+                user = user_service.authenticate_user(identifier, password)
+            
+            # Create token with string identity
+            token = create_access_token(identity=str(user.id))
 
-        return jsonify({
-            "message": "Login successful",
-            "user":    user_schema.dump(user),
-            "access_token": token
-        }), 200
+            return jsonify({
+                "message": "Login successful",
+                "user": user_schema.dump(user),
+                "access_token": token
+            }), 200
+            
+        except (UserNotFound, AuthenticationError):
+            # Consolidate error handling for user not found or auth failure
+            current_app.logger.warning(f"[LOGIN] Authentication failed for identifier: {identifier}")
+            raise AuthenticationError("Invalid credentials")
 
     except AuthenticationError:
-        return jsonify({"message": "Invalid username or password"}), 401
+        return jsonify({"message": "Invalid credentials"}), 401
 
     except Exception as e:
         current_app.logger.error(f"[LOGIN] unexpected error: {e}")

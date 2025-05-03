@@ -31,15 +31,21 @@ export const UserProvider = ({ children }) => {
     }
   }, []);
 
-  const login = useCallback(async (username, password) => {
+  const login = useCallback(async (email, password) => {
     setIsLoading(true);
     setError(null);
     try {
-      console.log('Attempting login for user:', username);
+      console.log('Attempting login for user:', email);
 
-      // Use User model to construct payload
-      const loginUser = new User({ username, password });
-      const response = await apiClient.post('/auth/login', loginUser.toApiPayload());
+      // Create a payload that matches the backend's expected format
+      // The backend expects 'username' not 'email'
+      const payload = {
+        username: email, // Use email as username since Login.jsx collects email
+        password: password
+      };
+      
+      console.log('Sending login payload:', payload);
+      const response = await apiClient.post('/auth/login', payload);
 
       const { access_token, user } = response;
 
