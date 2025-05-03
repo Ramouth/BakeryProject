@@ -36,35 +36,6 @@ def search_users():
     users = user_service.search_users(search_term)
     return jsonify({"users": users_schema.dump(users)})
 
-@user_bp.route('/create', methods=['POST'])
-def create_user():
-    """Create a new user"""
-    try:
-        data = request.json
-        print("Received user creation data:", data)  # Debug log
-        
-        # Check required fields
-        if not data.get('username') or not data.get('email') or not data.get('password'):
-            missing_fields = []
-            if not data.get('username'): missing_fields.append("username")
-            if not data.get('email'): missing_fields.append("email")
-            if not data.get('password'): missing_fields.append("password")
-            return jsonify({"message": f"Missing required fields: {', '.join(missing_fields)}"}), 400
-        
-        # Create user through service
-        user = user_service.create_user(
-            username=data['username'],
-            email=data['email'],
-            password=data['password'],
-            profile_picture=data.get('profilePicture', 1),
-            is_admin=data.get('isAdmin', False)
-        )
-        
-        return jsonify({"message": "User created!", "user": user_schema.dump(user)}), 201
-    except Exception as e:
-        print(f"Error creating user: {str(e)}")  # Debug log
-        return jsonify({"message": str(e)}), 400
-
 @user_bp.route('/update/<int:user_id>', methods=['PATCH'])
 def update_user(user_id):
     """Update a user"""
