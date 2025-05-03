@@ -1,37 +1,71 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { resolve } from 'path'
 
 export default defineConfig({
   plugins: [react()],
   server: {
+    port: 5173,
+    strictPort: true,
+    // This adds proper SPA history fallback
+    historyApiFallback: true,
     proxy: {
-      // Proxy API calls to the Flask backend on port 5000
-      '/bakeries': {
-        target: 'http://localhost:5000/',
+      // Proxy all API calls to the Flask backend
+      '/api': {
+        target: 'http://localhost:5000',
         changeOrigin: true,
-        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, '')
       },
-      '/login': {
-        target: 'http://localhost:5000/',
-        changeOrigin: true,
-        secure: false,
-      },
-      '/protected': {
-        target: 'http://localhost:5000/',
-        changeOrigin: true,
-        secure: false,
-      },
-      '/admin': {
-        target: 'http://localhost:5000/',
-        changeOrigin: true,
-        secure: false,
-      },
-      // Add the /auth routes to match your UserContext code
+      // API endpoints
       '/auth': {
         target: 'http://localhost:5000/',
         changeOrigin: true,
         secure: false,
       },
+      '/bakeries': {
+        target: 'http://localhost:5000/',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/products': {
+        target: 'http://localhost:5000/',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/users': {
+        target: 'http://localhost:5000/',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/categories': {
+        target: 'http://localhost:5000/',
+        changeOrigin: true, 
+        secure: false,
+      },
+      '/bakeryreviews': {
+        target: 'http://localhost:5000/',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/productreviews': {
+        target: 'http://localhost:5000/',
+        changeOrigin: true,
+        secure: false,
+      }
     },
+  },
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src'),
+    },
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+      },
+    },
+    // Add proper sourcemaps for debugging
+    sourcemap: true,
   },
 })
