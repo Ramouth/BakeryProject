@@ -56,8 +56,7 @@ class UserService:
             .all()
         )
 
-    def create_user(self, username, email, password,
-                    profile_picture=1, is_admin=False):
+    def create_user(self, username, email, password, profile_picture=1, is_admin=False):
         """Create and persist a new user."""
         # Duplicate checks
         if self.get_user_by_email(email):
@@ -66,11 +65,11 @@ class UserService:
             raise UserAlreadyExists("Username already in use")
 
         try:
-            pw_hash = generate_password_hash(password).decode('utf-8')
+            # Let the User model handle password hashing
             user = User(
                 username=username,
                 email=email,
-                password_hash=pw_hash,
+                password=password,  # Pass the raw password to User.__init__
                 profile_picture=profile_picture,
                 is_admin=is_admin
             )

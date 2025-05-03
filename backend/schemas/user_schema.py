@@ -7,7 +7,7 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
     
     class Meta:
         model = User
-        load_instance = True
+        load_instance = False
         include_fk = True
         exclude = ("password_hash", "profile_picture", "is_admin")  # Exclude these fields from default mapping
     
