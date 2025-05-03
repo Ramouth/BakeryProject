@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import '../styles/bakery-menu-tab.css';
 
 
 const BakeryMenuTab = ({ bakeryProducts = [], bakeryName = "" }) => {

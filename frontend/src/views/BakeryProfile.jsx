@@ -5,7 +5,6 @@ import CookieRating from '../components/CookieRatingComponent';
 import ReviewModal from '../components/ReviewModal';
 import bakeryLogo from '../assets/bageri-logo.jpeg';
 import bakeryHeader from '../assets/bageri.jpeg';
-import '../styles/bakery-profile.css';
 import apiClient from '../services/api';
 import BakeryMenuTab from '../components/BakeryMenuTab';
 

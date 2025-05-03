@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import './shared/notification.css';
 
 /**
  * Reusable notification component for success and error messages

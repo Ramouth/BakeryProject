@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import '../styles/search-dropdown.css';
 
 /**
  * Reusable search dropdown component
