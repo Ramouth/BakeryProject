@@ -457,13 +457,26 @@ const ReviewModal = ({
             
             <div className="comments-section">
               <label htmlFor="comments">Comments (Optional):</label>
-              <textarea
-                id="comments"
-                rows="3"
-                value={comments}
-                onChange={(e) => setComments(e.target.value)}
-                placeholder={`Share your thoughts about this ${reviewType}...`}
-              />
+              <div className="textarea-container">
+                 <textarea
+                   id="comments"
+                   rows="3"
+                   value={comments}
+                   onChange={(e) => {
+                     // Limit input to 1000 characters
+                     if (e.target.value.length <= 280) {
+                       setComments(e.target.value);
+                     }
+                   }}
+                   maxLength={280}
+                   placeholder={`Share your thoughts about this ${reviewType}...`}
+                 />
+                 <div className="character-count">
+                   <span className={comments.length > 200 ? (comments.length > 250 ? "count-warning" : "count-notice") : ""}>
+                     {comments.length}/280
+                   </span>
+                 </div>
+               </div>
             </div>
           </div>
         )}
