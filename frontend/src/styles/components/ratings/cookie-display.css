@@ -1,0 +1,134 @@
+/* Improved Cookie Display for Profile Pages */
+.cookie-display {
+  display: flex;
+  align-items: center;
+  margin: 0 5px;
+}
+
+.cookie-filled {
+  color: var(--primary);
+  font-size: 1.2rem;
+}
+
+.cookie-empty {
+  color: #ccc; /* Grey color for unfilled cookies */
+  opacity: 0.3;
+  filter: grayscale(85%);
+  font-size: 1.2rem;
+}
+
+.cookie-half-container {
+  position: relative;
+  width: 0.6rem; /* Matches half the width of a filled cookie */
+  height: 1.2rem; /* Matches the height of a filled cookie */
+  overflow: hidden; /* Ensures only part of the cookie is visible */
+  margin-left: 3.5px;
+  margin-right: 5px;
+  display: flex; /* Ensures proper alignment */
+  align-items: center; /* Centers the half cookie vertically */
+}
+
+.cookie-half {
+  position: absolute;
+  left: -0.15rem; /* Aligns the cookie to the left edge of the container */
+  font-size: 1.2rem; /* Matches .cookie-filled and .cookie-empty */
+  color: var(--primary);
+  clip-path: inset(0 50% 0 0); /* Clips the right half of the cookie */
+}
+
+/* Sizes */
+.cookie-display.cookie-large .cookie-filled,
+.cookie-display.cookie-large .cookie-empty {
+  font-size: 1.8rem;
+}
+
+.cookie-display.cookie-large .cookie-half-container {
+  width: 0.9rem;
+  height: 1.8rem;
+  margin-right: 10px;
+}
+
+.cookie-display.cookie-large .cookie-half {
+  font-size: 1.8rem;
+}
+
+.cookie-display.cookie-small .cookie-filled,
+.cookie-display.cookie-small .cookie-empty {
+  font-size: 0.9rem;
+}
+
+.cookie-display.cookie-small .cookie-half-container {
+  width: 0.45rem;
+  height: 0.9rem;
+  margin-right: 5px;
+}
+
+.cookie-display.cookie-small .cookie-half {
+  font-size: 0.9rem;
+}
+
+/* Bakery Rating Summary Styles */
+.bakery-rating-summary,
+.product-rating-summary {
+  display: flex;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.bakery-rating-value,
+.product-rating-value {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: var(--primary);
+  margin-right: 5px;
+}
+
+.bakery-review-count,
+.product-review-count {
+  margin-left: 5px;
+  color: var(--text);
+  font-size: 0.85rem;
+}
+
+/* Reviews section styling */
+.reviews-total {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.large-rating {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--primary);
+  margin-bottom: 5px;
+}
+
+.review-rating {
+  margin-bottom: 10px;
+}
+
+/* Popular items styling */
+.popular-item-rating {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 3px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .cookie-display.cookie-large .cookie-filled,
+  .cookie-display.cookie-large .cookie-empty {
+    font-size: 1.5rem;
+  }
+  
+  .cookie-display.cookie-large .cookie-half-container {
+    width: 0.75rem;
+    height: 1.5rem;
+  }
+  
+  .cookie-display.cookie-large .cookie-half {
+    font-size: 1.5rem;
+  }
+}
