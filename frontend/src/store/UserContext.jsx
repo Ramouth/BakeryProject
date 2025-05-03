@@ -68,20 +68,33 @@ export const UserProvider = ({ children }) => {
     setError(null);
     try {
       console.log('Attempting to register user:', userData.username);
-
-      const newUser = new User(userData);
-      const response = await apiClient.post('/auth/register', newUser.toApiPayload());
-
+  
+      // Use apiClient directly without creating a new User instance
+      const response = await apiClient.post('/auth/register', userData);
+  
       const { access_token, user: registeredUser } = response;
-
+  
       console.log('Registration successful, received token:', !!access_token);
       localStorage.setItem('access_token', access_token);
       setCurrentUser(User.fromApiResponse(registeredUser));
       return User.fromApiResponse(registeredUser);
     } catch (err) {
-      const msg = err.message || 'Registration failed. Please try again.';
+      // Enhanced error handling
+      const msg = err.data?.message || err.message || 'Registration failed. Please try again.';
       setError(msg);
       console.error('Registration error:', err);
+      
+      if (err.status === 422) {
+        console.error('Validation errors:', err.data);
+        // If the backend returns specific validation errors
+        if (err.data?.errors) {
+          const errorMessages = Object.entries(err.data.errors)
+            .map(([field, errors]) => `${field}: ${errors.join(', ')}`)
+            .join('; ');
+          throw new Error(errorMessages || msg);
+        }
+      }
+      
       throw new Error(msg);
     } finally {
       setIsLoading(false);

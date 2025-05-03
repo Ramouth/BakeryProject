@@ -232,6 +232,16 @@ class ApiClient {
       });
     }
     
+    if (url === '/auth/register') {
+      console.log('Register payload:', data);
+      // Use direct URL for auth endpoints
+      return this.request('http://localhost:5000/auth/register', {
+        ...options,
+        method: 'POST',
+        body: data instanceof FormData ? data : JSON.stringify(data),
+      });
+    }
+    
     return this.request(url, {
       ...options,
       method: 'POST',
