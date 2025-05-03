@@ -131,6 +131,3 @@ def get_profile():
     except Exception as e:
         current_app.logger.error(f"[PROFILE] error: {e}")
         return jsonify({"message": "Failed to fetch profile"}), 500
-
-
-# Rest of your blueprint code remains the same...
