@@ -10,6 +10,7 @@ import AuthGuard from './components/AuthGuard';
 import BakeryProfile from './views/BakeryProfile';
 import ProductProfile from './views/ProductProfile';
 import Admin from './views/AdminDashboard';
+import BookTab from './components/BookTab';
 
 // Lazy load views for code splitting and performance
 const HomePage = lazy(() => import('./views/Homepage'));
@@ -58,6 +59,7 @@ function App() {
           <NotificationProvider>
             <div className="app">
               <NavBar />
+              <BookTab />
 
               <div className="content-section">
                 <main className="app-content">

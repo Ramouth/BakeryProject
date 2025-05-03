@@ -42,4 +42,8 @@
 /* Import footer styles */
 @import 'footer.css';
 
+/* Import header styles */
 @import 'faceted-search.css';
+
+/* Import book tab styles */
+@import 'book-tab.css';
