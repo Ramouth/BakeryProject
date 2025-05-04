@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import apiClient from '../services/api';
 
@@ -171,25 +171,6 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
     fetchProducts();
   }, [selectedCategory]);
 
-  // Debounced search function to handle filter changes
-  const debouncedSearch = useCallback(
-    // Using setTimeout for debounce
-    (() => {
-      let timeoutId;
-      return (filters) => {
-        if (timeoutId) {
-          clearTimeout(timeoutId);
-        }
-        
-        timeoutId = setTimeout(() => {
-          // Perform the actual search/filter action
-          performSearch(filters);
-        }, 300); // 300ms debounce time
-      };
-    })(),
-    []
-  );
-
   // Function to perform search with current filters
   const performSearch = async (filters) => {
     setIsSearching(true);
@@ -349,7 +330,7 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
     }
   };
 
-  // Handle filter changes
+  // Handle filter changes - now just updates the state without searching
   const handleFilterChange = (filterName, value) => {
     // Update the corresponding state
     switch (filterName) {
@@ -373,18 +354,6 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
       default:
         break;
     }
-
-    // Prepare filter object for search
-    const filters = {
-      category: filterName === 'category' ? value : selectedCategory,
-      product: filterName === 'product' ? value : selectedProduct,
-      location: filterName === 'location' ? value : selectedLocation,
-      rating: filterName === 'rating' ? value : selectedRating,
-      sort: filterName === 'sort' ? value : selectedSort
-    };
-
-    // Call debounced search function
-    debouncedSearch(filters);
   };
 
   // Handle search button click
@@ -397,7 +366,7 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
       sort: selectedSort
     };
 
-    // Call search function directly (not debounced)
+    // Call search function directly
     performSearch(filters);
   };
 
@@ -494,7 +463,7 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
             onClick={handleSearchClick}
             disabled={isLoading || isSearching}
           >
-            {isSearching ? 'Searching...' : `Show Results`}
+            {isSearching ? 'Searching...' : `Search`}
           </button>
         </div>
       </div>
