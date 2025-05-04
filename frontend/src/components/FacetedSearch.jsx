@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import apiClient from '../services/api';
 
@@ -27,6 +27,9 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(initialHasSearched);
 
+  // Cache for bakery stats to avoid repeated API calls
+  const [bakeryStatsCache, setBakeryStatsCache] = useState({});
+  
   // Fetch filter options on component mount
   useEffect(() => {
     const fetchFilterOptions = async () => {
@@ -38,7 +41,7 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
           apiClient.get('/products', true)
         ]);
 
-        // Process categories from products - FIX HERE
+        // Process categories from products
         if (productResponse.products) {
           // First, create a map to deduplicate categories
           const categoryMap = new Map();
@@ -73,7 +76,7 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
           setCategories([{ value: "", label: "All Categories" }, ...uniqueCategories]);
         }
 
-        // Setup location options with consistent postal code ranges from bakery rankings
+        // Setup location options with consistent postal code ranges
         const postalCodeOptions = [
           { value: '', label: 'All Postal Codes' },
           { value: '1000-1499', label: '1000-1499 - Copenhagen K (City Center)' },
@@ -109,6 +112,12 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
         if (hasSearched) {
           setResultCount(bakeryResponse.bakeries?.length || 0);
         }
+        
+        // Pre-fetch and cache bakery stats for top bakeries to improve first search performance
+        if (bakeryResponse.bakeries?.length > 0) {
+          const topBakeries = bakeryResponse.bakeries.slice(0, 10);
+          prefetchBakeryStats(topBakeries);
+        }
       } catch (error) {
         console.error('Error fetching filter options:', error);
       } finally {
@@ -118,6 +127,38 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
 
     fetchFilterOptions();
   }, [hasSearched]);
+
+  // Prefetch bakery stats for a set of bakeries and store in cache
+  const prefetchBakeryStats = async (bakeries) => {
+    const newCache = { ...bakeryStatsCache };
+    const batchSize = 5;
+    
+    for (let i = 0; i < bakeries.length; i += batchSize) {
+      const batch = bakeries.slice(i, i + batchSize);
+      await Promise.all(batch.map(async (bakery) => {
+        if (!newCache[bakery.id]) {
+          try {
+            const statsResponse = await apiClient.get(`/bakeries/${bakery.id}/stats`, true);
+            newCache[bakery.id] = {
+              average_rating: statsResponse.average_rating || 0,
+              review_count: statsResponse.review_count || 0,
+              ratings: statsResponse.ratings || {
+                overall: 0,
+                service: 0,
+                price: 0,
+                atmosphere: 0,
+                location: 0
+              }
+            };
+          } catch (error) {
+            console.error(`Error prefetching stats for bakery ${bakery.id}:`, error);
+          }
+        }
+      }));
+    }
+    
+    setBakeryStatsCache(newCache);
+  };
 
   // Fetch products based on selected category
   useEffect(() => {
@@ -171,51 +212,23 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
     fetchProducts();
   }, [selectedCategory]);
 
-  // Function to perform search with current filters
+  // Function to perform search with current filters - optimized version
   const performSearch = async (filters) => {
     setIsSearching(true);
+    const startTime = performance.now();
+    console.log("Starting search with filters:", filters);
+    
     try {
-      // In a real implementation, you would call the backend with all filters
-      // For now, we'll simulate by filtering the bakeries list
-
-      // We'll use the bakeries endpoint as a data source
+      // Get bakeries and products data
       const [bakeryResponse, productResponse] = await Promise.all([
         apiClient.get('/bakeries', true),
         apiClient.get('/products', true)
       ]);
       
       let results = bakeryResponse.bakeries || [];
-
-      // Make sure each bakery has average_rating in the correct format
-      results = await Promise.all(results.map(async (bakery) => {
-        // Try to fetch bakery stats to get the proper rating
-        try {
-          const statsResponse = await apiClient.get(`/bakeries/${bakery.id}/stats`, true);
-          
-          // Extract the average rating from bakery stats if available
-          let rating = 0;
-          if (statsResponse && typeof statsResponse.average_rating === 'number') {
-            rating = statsResponse.average_rating;
-          } else if (statsResponse && statsResponse.ratings && typeof statsResponse.ratings.overall === 'number') {
-            rating = statsResponse.ratings.overall;
-          }
-          
-          // Ensure it's consistently stored in average_rating
-          return {
-            ...bakery,
-            average_rating: rating,
-            review_count: statsResponse.review_count || 0
-          };
-        } catch (err) {
-          // If stats endpoint fails, use any existing rating or default to 0
-          return {
-            ...bakery,
-            average_rating: bakery.average_rating || 0,
-            review_count: bakery.review_count || 0
-          };
-        }
-      }));
-
+      
+      // First apply all non-rating filters to reduce the dataset before stats fetching
+      
       // Apply category filter
       if (filters.category) {
         // First, get all products in this category
@@ -260,8 +273,82 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
           results = results.filter(bakery => bakery.zipCode === filters.location);
         }
       }
-
-      // Apply rating filter
+      
+      console.log(`After initial filtering: ${results.length} bakeries. Time: ${(performance.now() - startTime).toFixed(0)}ms`);
+      
+      // Now fetch stats for the filtered bakeries (which should be fewer)
+      // Use a more efficient approach with batching and caching
+      const statsCache = { ...bakeryStatsCache };
+      const bakeriesToFetch = results.filter(bakery => !statsCache[bakery.id]);
+      
+      console.log(`Need to fetch stats for ${bakeriesToFetch.length} bakeries`);
+      
+      if (bakeriesToFetch.length > 0) {
+        // Fetch stats in batches
+        const batchSize = 5;
+        for (let i = 0; i < bakeriesToFetch.length; i += batchSize) {
+          const batch = bakeriesToFetch.slice(i, i + batchSize);
+          await Promise.all(batch.map(async (bakery) => {
+            try {
+              const statsResponse = await apiClient.get(`/bakeries/${bakery.id}/stats`, true);
+              statsCache[bakery.id] = {
+                average_rating: statsResponse.average_rating || 0,
+                review_count: statsResponse.review_count || 0,
+                ratings: statsResponse.ratings || {
+                  overall: 0,
+                  service: 0,
+                  price: 0,
+                  atmosphere: 0,
+                  location: 0
+                }
+              };
+            } catch (error) {
+              console.error(`Error fetching stats for bakery ${bakery.id}:`, error);
+              // Create a default entry in the cache to avoid retrying
+              statsCache[bakery.id] = {
+                average_rating: 0,
+                review_count: 0,
+                ratings: {
+                  overall: 0,
+                  service: 0,
+                  price: 0,
+                  atmosphere: 0,
+                  location: 0
+                }
+              };
+            }
+          }));
+        }
+        
+        // Update the cache
+        setBakeryStatsCache(statsCache);
+      }
+      
+      console.log(`Stats fetching complete. Time: ${(performance.now() - startTime).toFixed(0)}ms`);
+      
+      // Enhance bakery data with the stats from cache
+      results = results.map(bakery => {
+        const stats = statsCache[bakery.id] || {
+          average_rating: 0,
+          review_count: 0,
+          ratings: {
+            overall: 0,
+            service: 0,
+            price: 0,
+            atmosphere: 0,
+            location: 0
+          }
+        };
+        
+        return {
+          ...bakery,
+          average_rating: stats.average_rating,
+          review_count: stats.review_count,
+          ratings: stats.ratings
+        };
+      });
+      
+      // Apply rating filter after we have stats
       if (filters.rating) {
         const minRating = parseFloat(filters.rating);
         results = results.filter(bakery => {
@@ -284,6 +371,8 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
       
       // Pass results to parent component (all matching results, not just top 3)
       onSearch(results, true);
+      
+      console.log(`Search complete with ${results.length} results. Total time: ${(performance.now() - startTime).toFixed(0)}ms`);
     } catch (error) {
       console.error('Error performing search:', error);
     } finally {
@@ -293,8 +382,6 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
 
   // Function to sort search results
   const sortResults = (results, sortBy) => {
-    console.log(`Sorting by: ${sortBy}`);
-    
     switch (sortBy) {
       case 'rating':
         return [...results].sort((a, b) => {
@@ -310,10 +397,6 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
           return bRating - aRating;
         });
       case 'popular':
-        console.log("Sorting by review count");
-        // Debug log the review counts
-        results.forEach(b => console.log(`Bakery ${b.id} (${b.name}): ${b.review_count || 0} reviews`));
-        
         return [...results].sort((a, b) => {
           const aReviews = a.review_count || 0;
           const bReviews = b.review_count || 0;
@@ -330,7 +413,7 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
     }
   };
 
-  // Handle filter changes - now just updates the state without searching
+  // Handle filter changes - just updates state without performing search
   const handleFilterChange = (filterName, value) => {
     // Update the corresponding state
     switch (filterName) {
@@ -463,7 +546,7 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
             onClick={handleSearchClick}
             disabled={isLoading || isSearching}
           >
-            {isSearching ? 'Searching...' : `Search`}
+            {isSearching ? 'Searching...' : `Show Results`}
           </button>
         </div>
       </div>
