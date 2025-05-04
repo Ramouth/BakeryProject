@@ -31,7 +31,7 @@
 /* Button Types */
 .btn-primary {
   background-color: var(--primary);
-  color: var(--text-light);
+  color: var(--text-dark);
 }
 
 .btn-primary:hover {
@@ -63,7 +63,7 @@
 
 .btn-danger {
   background-color: var(--error);
-  color: var(--text-light);
+  color: var(--text-dark);
 }
 
 .btn-danger:hover {
@@ -74,7 +74,7 @@
 
 .btn-success {
   background-color: var(--success);
-  color: var(--text-light);
+  color: var(--text-dark);
 }
 
 .btn-success:hover {

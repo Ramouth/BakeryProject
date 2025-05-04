@@ -55,10 +55,6 @@
     height: auto; 
 }
 
-.theme-button:hover {
-    background-color: var(--secondary-dark);
-}
-
 .theme-label,
 .bug-label {
     font-size: 0.75rem;
