@@ -30,7 +30,7 @@
   align-items: stretch;
   max-width: 800px;
   margin: 0 auto;
-  background-color: var(--primary-light);
+  background-color: var(--primary);
   padding: 15px;
   border-radius: var(--border-radius);
   box-shadow: var(--shadow);
@@ -47,7 +47,7 @@
   padding: 12px 15px;
   border-radius: var(--border-radius);
   border: 1px solid var(--accent);
-  background-color: var(--background);
+  background-color: var(--primary);
   font-size: 16px;
   color: var(--text);
   appearance: none;
