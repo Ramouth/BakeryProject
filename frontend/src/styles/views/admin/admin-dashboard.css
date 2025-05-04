@@ -84,16 +84,3 @@
   .activity-text {
     font-size: 0.95rem;
   }
-  
-  /* Responsive Styles */
-  @media (max-width: 768px) {
-    .admin-stats {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .admin-stats {
-      grid-template-columns: 1fr;
-    }
-  }

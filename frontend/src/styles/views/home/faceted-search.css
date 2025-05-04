@@ -1,6 +1,6 @@
 .faceted-search {
   width: 100%;
-  background-color: var(--background);
+  background-color: var(--secondary-dark);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow);
   margin: 1.5rem 0;
@@ -218,48 +218,4 @@
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
-}
-
-/* Desktop-specific styling */
-@media (min-width: 769px) {
-  .faceted-search-container {
-    padding: 2rem;
-  }
-  
-  .filter-row {
-    flex-wrap: nowrap;
-  }
-  
-  .search-results-button {
-    min-width: 300px;
-    padding: 1rem 2.5rem;
-    font-size: 1.2rem;
-  }
-  
-  /* Enhance the visual appeal of the filter sections */
-  .filter-group {
-    position: relative;
-    padding: 0.5rem;
-    transition: all 0.2s ease;
-  }
-  
-  .filter-group::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background-color: var(--primary);
-    transition: width 0.3s ease;
-  }
-  
-  .filter-group:hover::after {
-    width: 100%;
-  }
-  
-  /* Add scale effect to select elements on hover */
-  .filter-group select:hover {
-    transform: scale(1.02);
-  }
 }

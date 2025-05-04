@@ -84,14 +84,3 @@
 .notification-close:hover {
   opacity: 1;
 }
-
-/* Media query for mobile devices */
-@media (max-width: 480px) {
-  .notification {
-    top: auto;
-    bottom: 20px;
-    left: 20px;
-    right: 20px;
-    max-width: none;
-  }
-}

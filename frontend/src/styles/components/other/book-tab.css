@@ -3,7 +3,7 @@
     top: 30%;
     left: 0;
     transform: translateY(-50%);
-    background-color: var(--background);
+    background-color: var(--secondary-dark);
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
     box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
@@ -56,12 +56,7 @@
 }
 
 .theme-button:hover {
-    background-color: var(--accent-light);
-}
-
-.bug-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+    background-color: var(--secondary-dark);
 }
 
 .theme-label,
@@ -77,21 +72,4 @@
     height: 1px;
     background-color: var(--text-dark);
     margin: 5px 0;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .book-tab {
-        width: 50px;
-        height: 100px;
-    }
-    
-    .book-tab:hover {
-        width: 55px;
-    }
-    
-    .theme-label,
-    .bug-label {
-        font-size: 0.7rem;
-    }
 }
