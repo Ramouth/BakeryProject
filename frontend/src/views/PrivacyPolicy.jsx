@@ -1,108 +1,101 @@
-import { useBakeryRatingViewModel } from '../viewmodels/useBakeryRatingViewModel.js';
-import CookieRating from '../components/CookieRatingComponent.jsx';
+import React from 'react';
+import '../styles/components/other/privacypolicy.css';
 
-const BakeryRating = () => {
-  const {
-    selectedBakery,
-    bakeryRatings,
-    isSubmitting,
-    handleRatingChange,
-    handleCommentsChange,
-    handleSubmit,
-    goToNextStep
-  } = useBakeryRatingViewModel();
-  
+const PrivacyPolicy = () => {
   return (
     <div className="container">
-      <div className="card">
-        <h2>Bakery Rating</h2>
+      <div className="privacy-policy">
+        <h1>Data Usage and Privacy Policy</h1>
         <p>
-          Rate {selectedBakery.name} with Cookies!
+          At <strong>CrumbCompass</strong>, we are committed to protecting your personal data and ensuring your privacy. 
+          We strictly adhere to the guidelines set forth by the General Data Protection Regulation (GDPR) to safeguard your information and respect your rights.
         </p>
-        
-        <div className="rating-container">
-          <div className="rating-row">
-            <div className="rating-label">Overall:</div>
-            <CookieRating 
-              rating={bakeryRatings.overall} 
-              onChange={(value) => handleRatingChange('overall', value)} 
-              max={5}
-            />
-          </div>
-          
-          <div className="rating-row">
-            <div className="rating-label">Service:</div>
-            <CookieRating 
-              rating={bakeryRatings.service} 
-              onChange={(value) => handleRatingChange('service', value)} 
-              max={5}
-            />
-          </div>
-          
-          <div className="rating-row">
-            <div className="rating-label">Price:</div>
-            <CookieRating 
-              rating={bakeryRatings.price} 
-              onChange={(value) => handleRatingChange('price', value)} 
-              max={5}
-            />
-          </div>
-          
-          <div className="rating-row">
-            <div className="rating-label">Atmosphere:</div>
-            <CookieRating 
-              rating={bakeryRatings.atmosphere} 
-              onChange={(value) => handleRatingChange('atmosphere', value)} 
-              max={5}
-            />
-          </div>
-          
-          <div className="rating-row">
-            <div className="rating-label">Location:</div>
-            <CookieRating 
-              rating={bakeryRatings.location} 
-              onChange={(value) => handleRatingChange('location', value)} 
-              max={5}
-            />
-          </div>
-        </div>
-        
-        <div className="form-group">
-          <label htmlFor="comments">Comments (Optional):</label>
-          <div className="textarea-container">
-             <textarea
-               id="comments"
-               rows="4"
-               value={bakeryRatings.comments}
-               onChange={(e) => {
-                 // Only update if under the character limit
-                 if (e.target.value.length <= 280) {
-                   handleCommentsChange(e);
-                 }
-               }}
-               maxLength={280}
-               placeholder="Share your thoughts about this bakery..."
-             />
-             <div className="character-count">
-               <span className={bakeryRatings.comments.length > 200 ? (bakeryRatings.comments.length > 250 ? "count-warning" : "count-notice") : ""}>
-                 {bakeryRatings.comments.length}/280
-               </span>
-             </div>
-           </div>
-        </div>
-        
-        <div className="nav-buttons">
-          <button 
-            className="btn"
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? 'Submitting...' : 'Submit'}
-          </button>
-        </div>
+
+        <h2>Why We Collect Your Data</h2>
+        <p>
+          We collect and store certain personal data for security and operational purposes. This includes:
+        </p>
+        <ul>
+          <li>
+            <strong>IP Addresses:</strong> To prevent and mitigate potential Denial of Service (DoS) attacks and ensure the security of our platform.
+          </li>
+          <li>
+            <strong>Email Addresses, Usernames, and Passwords:</strong> To manage user accounts, authenticate users, and provide a secure experience.
+          </li>
+        </ul>
+        <p>
+          This information is essential for maintaining the integrity and security of our services, preventing unauthorized access, and ensuring a safe user experience.
+        </p>
+
+        <h2>Our Commitment to GDPR</h2>
+        <p>
+          We adhere to the principles of GDPR, which include:
+        </p>
+        <ul>
+          <li>
+            <strong>Lawfulness, Fairness, and Transparency:</strong> We process your data lawfully and transparently, ensuring you are informed about how your data is used.
+          </li>
+          <li>
+            <strong>Purpose Limitation:</strong> Your data is collected and used only for the specific purposes mentioned above.
+          </li>
+          <li>
+            <strong>Data Minimization:</strong> We only collect the data that is necessary for the intended purposes.
+          </li>
+          <li>
+            <strong>Accuracy:</strong> We ensure that your data is accurate and up-to-date.
+          </li>
+          <li>
+            <strong>Storage Limitation:</strong> Your data is stored only for as long as necessary to fulfill the purposes for which it was collected.
+          </li>
+          <li>
+            <strong>Integrity and Confidentiality:</strong> We implement robust security measures to protect your data from unauthorized access, breaches, and leaks.
+          </li>
+          <li>
+            <strong>Accountability:</strong> We are accountable for ensuring that your data is processed in compliance with GDPR requirements.
+          </li>
+        </ul>
+
+        <h2>Your Rights Under GDPR</h2>
+        <p>
+          As a data subject, you have the following rights:
+        </p>
+        <ul>
+          <li>
+            <strong>Access:</strong> You can request access to the personal data we hold about you.
+          </li>
+          <li>
+            <strong>Rectification:</strong> You can request that we correct any inaccurate personal data.
+          </li>
+          <li>
+            <strong>Erasure:</strong> You can request that we delete your personal data under certain conditions.
+          </li>
+          <li>
+            <strong>Restriction:</strong> You can request that we restrict the processing of your personal data.
+          </li>
+          <li>
+            <strong>Portability:</strong> You can request a copy of your personal data in a format that allows you to transfer it to another service.
+          </li>
+          <li>
+            <strong>Objection:</strong> You can object to the processing of your personal data under certain conditions.
+          </li>
+          <li>
+            <strong>Withdrawal of Consent:</strong> You can withdraw your consent to the processing of your personal data at any time.
+          </li>
+        </ul>
+
+        <h2>Contact Us</h2>
+        <p>
+          If you have any questions or concerns about our data usage policies or wish to exercise your rights under GDPR, please contact us at:
+        </p>
+        <p>
+          <strong>Email:</strong> <a href="mailto:support@crumbcompass.com">support@crumbcompass.com</a>
+        </p>
+        <p>
+          We are committed to addressing your concerns promptly and ensuring your data is handled responsibly.
+        </p>
       </div>
     </div>
   );
 };
 
-export default BakeryRating;
+export default PrivacyPolicy;
