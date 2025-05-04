@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import apiClient from '../services/api';
+// Import Lucide React icons
+import { Search, Filter, SortAsc, CheckCircle, AlertCircle, X } from 'lucide-react';
 
 const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
   // State for storing filter options and selected values
@@ -26,6 +28,7 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
   const [resultCount, setResultCount] = useState(0);
   const [isSearching, setIsSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(initialHasSearched);
+  const [validationErrors, setValidationErrors] = useState({});
 
   // Cache for bakery stats to avoid repeated API calls
   const [bakeryStatsCache, setBakeryStatsCache] = useState({});
@@ -120,6 +123,7 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
         }
       } catch (error) {
         console.error('Error fetching filter options:', error);
+        setValidationErrors({ general: 'Failed to load filter options. Please try again.' });
       } finally {
         setIsLoading(false);
       }
@@ -206,15 +210,17 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
         }
       } catch (error) {
         console.error('Error fetching products:', error);
+        setValidationErrors(prev => ({...prev, product: 'Failed to load products.'}));
       }
     };
 
     fetchProducts();
   }, [selectedCategory]);
 
-  // Function to perform search with current filters - optimized version
+  // Function to perform search with current filters
   const performSearch = async (filters) => {
     setIsSearching(true);
+    setValidationErrors({});
     const startTime = performance.now();
     console.log("Starting search with filters:", filters);
     
@@ -375,6 +381,7 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
       console.log(`Search complete with ${results.length} results. Total time: ${(performance.now() - startTime).toFixed(0)}ms`);
     } catch (error) {
       console.error('Error performing search:', error);
+      setValidationErrors({ general: 'An error occurred while searching. Please try again.' });
     } finally {
       setIsSearching(false);
     }
@@ -415,6 +422,9 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
 
   // Handle filter changes - just updates state without performing search
   const handleFilterChange = (filterName, value) => {
+    // Clear any errors when user changes filters
+    setValidationErrors(prev => ({...prev, [filterName]: null}));
+    
     // Update the corresponding state
     switch (filterName) {
       case 'category':
@@ -453,90 +463,177 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
     performSearch(filters);
   };
 
+  // Clear form validation errors
+  const clearError = (field) => {
+    setValidationErrors(prev => {
+      const newErrors = {...prev};
+      delete newErrors[field];
+      return newErrors;
+    });
+  };
+
   return (
     <div className="faceted-search">
       <div className="faceted-search-container">
+        {/* General error message */}
+        {validationErrors.general && (
+          <div className="error-message" style={{ marginBottom: '1rem', color: 'var(--error)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <AlertCircle size={16} />
+            <span>{validationErrors.general}</span>
+            <button 
+              onClick={() => clearError('general')} 
+              style={{ background: 'none', border: 'none', cursor: 'pointer', marginLeft: 'auto' }}
+              aria-label="Dismiss error"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        )}
+
         <div className="filter-row">
           <div className="filter-group">
-            <label htmlFor="category-filter">Category</label>
-            <select
-              id="category-filter"
-              value={selectedCategory}
-              onChange={(e) => handleFilterChange('category', e.target.value)}
-              disabled={isLoading}
-            >
-              {categories.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            <label htmlFor="category-filter" className="filter-label">
+              <Filter size={16} className="filter-icon" />
+              Category
+            </label>
+            <div className="select-wrapper">
+              <select
+                id="category-filter"
+                value={selectedCategory}
+                onChange={(e) => handleFilterChange('category', e.target.value)}
+                disabled={isLoading}
+                className={validationErrors.category ? "error" : ""}
+              >
+                {categories.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              {validationErrors.category ? 
+                <AlertCircle size={16} className="validation-icon error" /> : 
+                selectedCategory ? 
+                <CheckCircle size={16} className="validation-icon success" /> : null}
+            </div>
+            {validationErrors.category && (
+              <div className="error-text">{validationErrors.category}</div>
+            )}
           </div>
 
           <div className="filter-group">
-            <label htmlFor="product-filter">Product</label>
-            <select
-              id="product-filter"
-              value={selectedProduct}
-              onChange={(e) => handleFilterChange('product', e.target.value)}
-              disabled={isLoading || products.length <= 1}
-            >
-              {products.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            <label htmlFor="product-filter" className="filter-label">
+              <Filter size={16} className="filter-icon" />
+              Product
+            </label>
+            <div className="select-wrapper">
+              <select
+                id="product-filter"
+                value={selectedProduct}
+                onChange={(e) => handleFilterChange('product', e.target.value)}
+                disabled={isLoading || products.length <= 1}
+                className={validationErrors.product ? "error" : ""}
+              >
+                {products.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              {validationErrors.product ? 
+                <AlertCircle size={16} className="validation-icon error" /> : 
+                selectedProduct ? 
+                <CheckCircle size={16} className="validation-icon success" /> : null}
+            </div>
+            {validationErrors.product && (
+              <div className="error-text">{validationErrors.product}</div>
+            )}
           </div>
 
           <div className="filter-group">
-            <label htmlFor="location-filter">Location</label>
-            <select
-              id="location-filter"
-              value={selectedLocation}
-              onChange={(e) => handleFilterChange('location', e.target.value)}
-              disabled={isLoading}
-            >
-              {locations.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            <label htmlFor="location-filter" className="filter-label">
+              <Filter size={16} className="filter-icon" />
+              Location
+            </label>
+            <div className="select-wrapper">
+              <select
+                id="location-filter"
+                value={selectedLocation}
+                onChange={(e) => handleFilterChange('location', e.target.value)}
+                disabled={isLoading}
+                className={validationErrors.location ? "error" : ""}
+              >
+                {locations.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              {validationErrors.location ? 
+                <AlertCircle size={16} className="validation-icon error" /> : 
+                selectedLocation ? 
+                <CheckCircle size={16} className="validation-icon success" /> : null}
+            </div>
+            {validationErrors.location && (
+              <div className="error-text">{validationErrors.location}</div>
+            )}
           </div>
         </div>
 
         <div className="filter-row">
           <div className="filter-group">
-            <label htmlFor="rating-filter">Rating</label>
-            <select
-              id="rating-filter"
-              value={selectedRating}
-              onChange={(e) => handleFilterChange('rating', e.target.value)}
-              disabled={isLoading}
-            >
-              {ratingOptions.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            <label htmlFor="rating-filter" className="filter-label">
+              <Filter size={16} className="filter-icon" />
+              Rating
+            </label>
+            <div className="select-wrapper">
+              <select
+                id="rating-filter"
+                value={selectedRating}
+                onChange={(e) => handleFilterChange('rating', e.target.value)}
+                disabled={isLoading}
+                className={validationErrors.rating ? "error" : ""}
+              >
+                {ratingOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              {validationErrors.rating ? 
+                <AlertCircle size={16} className="validation-icon error" /> : 
+                selectedRating ? 
+                <CheckCircle size={16} className="validation-icon success" /> : null}
+            </div>
+            {validationErrors.rating && (
+              <div className="error-text">{validationErrors.rating}</div>
+            )}
           </div>
 
           <div className="filter-group">
-            <label htmlFor="sort-filter">Sort By</label>
-            <select
-              id="sort-filter"
-              value={selectedSort}
-              onChange={(e) => handleFilterChange('sort', e.target.value)}
-              disabled={isLoading}
-            >
-              {sortOptions.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            <label htmlFor="sort-filter" className="filter-label">
+              <SortAsc size={16} className="filter-icon" />
+              Sort By
+            </label>
+            <div className="select-wrapper">
+              <select
+                id="sort-filter"
+                value={selectedSort}
+                onChange={(e) => handleFilterChange('sort', e.target.value)}
+                disabled={isLoading}
+                className={validationErrors.sort ? "error" : ""}
+              >
+                {sortOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              {validationErrors.sort ? 
+                <AlertCircle size={16} className="validation-icon error" /> : null}
+            </div>
+            {validationErrors.sort && (
+              <div className="error-text">{validationErrors.sort}</div>
+            )}
           </div>
         </div>
 
@@ -546,7 +643,13 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
             onClick={handleSearchClick}
             disabled={isLoading || isSearching}
           >
-            {isSearching ? 'Searching...' : `Show Results`}
+            {isSearching ? 
+              <>Searching...</> : 
+              <>
+                <Search size={18} style={{ marginRight: '0.5rem' }} />
+                Show Results
+              </>
+            }
           </button>
         </div>
       </div>
