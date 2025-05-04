@@ -177,10 +177,3 @@
     opacity: 0;
   }
 }
-
-/* Mobile Styles */
-@media (max-width: 768px) {
-  .btn-mobile-full {
-    width: 100%;
-  }
-}

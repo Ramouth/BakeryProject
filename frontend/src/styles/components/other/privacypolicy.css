@@ -48,19 +48,3 @@
     color: var(--primary-dark);
     text-decoration: underline;
   }
-  
-  /* Add responsive styles */
-  @media (max-width: 768px) {
-    .privacy-policy {
-      padding: 1.5rem;
-      margin: 1rem;
-    }
-    
-    .privacy-policy h1 {
-      font-size: 1.8rem;
-    }
-    
-    .privacy-policy h2 {
-      font-size: 1.3rem;
-    }
-  }

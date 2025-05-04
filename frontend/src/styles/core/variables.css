@@ -3,21 +3,21 @@
 /* Light Theme */
 :root[data-theme="light"] {
   /* Background */
-  --background: #fbf5ea;
+  --background: #f7ebd4;
 
   /* Text Colors */
   --text-light: #eae9fc;
   --text-dark: #050316;
 
   /* Primary Colors (brown/gold theme) */
-  --primary-light: #f2e8d9;
-  --primary: #bd8a42;
-  --primary-dark: #715328;
+  --primary-light: #CEA873;
+  --primary: #BD8A42;
+  --primary-dark: #9C8059;
 
-  /* Secondary Colors (warm yellow theme) */
-  --secondary-light: #ecd9ac;
-  --secondary: #d0a02f;
-  --secondary-dark: #7d601c;
+  /* Secondary Colors (Box Colors) */
+  --secondary-light: #EFE0C8;
+  --secondary: #F3E4C4;
+  --secondary-dark: #E8D4AA;
 
   /* Accent Colors (blue-grey theme) */
   --accent-light: #a7b3be;
@@ -35,10 +35,6 @@
   --silver: #C0C0C0;
   --bronze: #CD7F32;
 
-  /* Common Aliases - Mapped to current usage */
-  --text: var(--text-dark);
-  --primary-color: var(--primary);
-  --secondary-color: var(--secondary);
 }
 
 /* Dark Theme */
@@ -76,10 +72,6 @@
   --silver: #C0C0C0;
   --bronze: #CD7F32;
 
-  /* Common Aliases - Mapped to current usage */
-  --text: var(--text-dark);
-  --primary-color: var(--primary);
-  --secondary-color: var(--secondary);
 }
 
 /* Default theme if no data-theme attribute is set */

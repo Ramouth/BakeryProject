@@ -9,16 +9,3 @@
     display: flex;
     gap: 0.5rem;
   }
-  
-  /* Mobile Navigation */
-  @media (max-width: 768px) {
-    .nav-buttons {
-      width: 100%;
-      display: flex;
-      gap: 10px;
-    }
-  
-    .nav-buttons .btn {
-      flex: 1;
-    }
-  }

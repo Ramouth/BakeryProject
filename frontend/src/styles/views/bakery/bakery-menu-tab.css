@@ -191,38 +191,3 @@
   color: var(--primary-dark);
   border-radius: 12px;
 }
-
-/* Responsive design */
-@media (min-width: 768px) {
-  .menu-layout {
-    flex-direction: row;
-  }
-  
-  .category-sidebar {
-    width: 250px;
-    flex-shrink: 0;
-  }
-  
-  .category-list {
-    display: block;
-    overflow-x: visible;
-    padding: 0.8rem;
-  }
-  
-  .category-button {
-    display: block;
-    width: 100%;
-    text-align: left;
-    margin-bottom: 0.4rem;
-  }
-  
-  .products-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 992px) {
-  .products-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
