@@ -10,7 +10,6 @@
 @import 'components/common/dropdown.css';
 @import 'components/common/form.css';
 @import 'components/common/navigation-buttons.css';
-@import 'components/common/theme-toggle.css';
 
 /* Component styles - admin */
 @import 'components/admin/admin.css';

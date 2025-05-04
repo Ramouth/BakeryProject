@@ -39,11 +39,14 @@
 
 /* Dark Theme */
 :root[data-theme="dark"] {
+
+  /* IMPORTANT INFORMATION: ALL DARK THEME COLORS ARE REVERTED, MEANING "LIGHT" IS ACTUALLY "DARK" */
+
   /* Background */
   --background: #0d2c45;
 
   /* Text Colors */
-  --text-light: #b5d4f1;
+  --text-light: #050316;
   --text-dark: #e9d6b4;
 
   /* Primary Colors (warm beige theme) */
@@ -51,10 +54,10 @@
   --primary: #cea873;
   --primary-dark: #9c8059;
 
-  /* Secondary Colors (blue theme) */
-  --secondary-light: #5a8fc9;
-  --secondary: #2f6eb1;
-  --secondary-dark: #1d4d7e;
+  /* Secondary Colors (Box Colors) */
+  --secondary-light: #163247;
+  --secondary: #113350;
+  --secondary-dark: #13395A;
 
   /* Accent Colors (blue-grey theme) */
   --accent-light: #c4d0dc;

@@ -11,70 +11,7 @@
 .hero-section h1 {
   font-size: 2.5rem;
   margin-bottom: 1.5rem;
-  color: var(--text);
-}
-
-/* ---------------------- */
-/* Search container & form */
-/* ---------------------- */
-.search-container {
-  margin: 1.5rem auto;
-  max-width: 700px;
-}
-
-.search-dropdown-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-  align-items: stretch;
-  max-width: 800px;
-  margin: 0 auto;
-  background-color: var(--primary);
-  padding: 15px;
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
-}
-
-.search-type-selector,
-.search-filters {
-  flex: 1;
-  min-width: 200px;
-}
-
-.search-dropdown {
-  width: 100%;
-  padding: 12px 15px;
-  border-radius: var(--border-radius);
-  border: 1px solid var(--accent);
-  background-color: var(--primary);
-  font-size: 16px;
-  color: var(--text);
-  appearance: none;
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  cursor: pointer;
-}
-
-.search-dropdown:focus {
-  outline: none;
-  border-color: var(--primary-color);
-}
-
-.search-button {
-  padding: 12px 25px;
-  background-color: var(--primary-color);
-  color: var(--text-light);
-  border: none;
-  border-radius: var(--border-radius);
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
-  min-width: 120px;
-}
-
-.search-button:hover {
-  background-color: var(--primary);
+  color: var(--text-dark);
 }
 
 /* ---------------------- */
