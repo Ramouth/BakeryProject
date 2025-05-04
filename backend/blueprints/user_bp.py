@@ -32,7 +32,7 @@ def search_users():
     search_term = request.args.get('q')
     if not search_term:
         return jsonify({"message": "Search term is required"}), 400
-        
+         
     users = user_service.search_users(search_term)
     return jsonify({"users": users_schema.dump(users)})
 
