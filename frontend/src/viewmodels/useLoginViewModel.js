@@ -34,15 +34,20 @@ export const useLoginViewModel = () => {
     e.preventDefault();
     setLocalError(null);
     setIsSubmitting(true);
+    
     try {
-      // Using email as username - this is the crucial change
+      // Using email as username
       const user = await login(email, password);
       redirectAfterLogin(user);
     } catch (err) {
-      if (!mounted.current) return;
+      // Always set the error even if the component might be unmounting
       setLocalError(err?.message || 'Login failed');
+      // Important: Reset the submitting state here to unblock the UI
+      setIsSubmitting(false);
     } finally {
-      if (mounted.current) setIsSubmitting(false);
+      // Belt and suspenders approach - ensure isSubmitting is set to false
+      // Remove the mounted check to make sure this always runs
+      setIsSubmitting(false);
     }
   }, [email, password, login, redirectAfterLogin]);
 
