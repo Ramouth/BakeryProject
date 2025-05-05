@@ -7,6 +7,7 @@ const UserProfile = () => {
     userStats,
     reviewHistory,
     loading,
+    error,
     activeTab,
     setActiveTab,
     editMode,
@@ -15,6 +16,7 @@ const UserProfile = () => {
     handleInputChange,
     handleProfileUpdate,
     handleLogout,
+    handleDeleteReview,
     formatDate,
     navigate
   } = useUserProfileViewModel();
@@ -25,6 +27,19 @@ const UserProfile = () => {
         <div className="loading-container">
           <div className="loading-spinner"></div>
           <p>Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container">
+        <div className="error-container">
+          <p className="error-message">{error}</p>
+          <Button onClick={() => navigate('/')}>
+            Back to Home
+          </Button>
         </div>
       </div>
     );
@@ -54,6 +69,51 @@ const UserProfile = () => {
       .join(' ');
   };
 
+  // Helper function to determine how long user has been a member
+  const getMemberSince = (user) => {
+    if (!user || !user.createdAt) return 'New member';
+    
+    const createdDate = new Date(user.createdAt);
+    const now = new Date();
+    
+    // If created less than a month ago
+    const monthsDiff = (now.getFullYear() - createdDate.getFullYear()) * 12 + 
+                        now.getMonth() - createdDate.getMonth();
+    
+    if (monthsDiff < 1) return 'Member since this month';
+    if (monthsDiff === 1) return 'Member since last month';
+    
+    // Format the date
+    return `Member since ${createdDate.toLocaleDateString('en-US', { 
+      month: 'long', 
+      year: 'numeric' 
+    })}`;
+  };
+
+  // Helper to render cookie rating display (similar to other components)
+  const renderCookieRating = (rating) => {
+    const displayRating = rating; // Already in 0-5 scale
+    const fullCookies = Math.floor(displayRating);
+    const hasHalfCookie = displayRating % 1 >= 0.5;
+    const emptyCookies = 5 - fullCookies - (hasHalfCookie ? 1 : 0);
+    
+    return (
+      <div className="cookie-display cookie-small">
+        {Array(fullCookies).fill().map((_, i) => (
+          <span key={`full-${i}`} className="cookie-filled">🍪</span>
+        ))}
+        {hasHalfCookie && (
+          <div className="cookie-half-container">
+            <span className="cookie-half">🍪</span>
+          </div>
+        )}
+        {Array(emptyCookies).fill().map((_, i) => (
+          <span key={`empty-${i}`} className="cookie-empty">🍪</span>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="container">
       <div className="profile-container">
@@ -65,7 +125,7 @@ const UserProfile = () => {
           <div className="profile-header-info">
             <h1>{getDisplayName(currentUser?.username)}</h1>
             <p className="profile-email">{currentUser?.email}</p>
-            <p className="profile-member-since">Member since April 2024</p>
+            <p className="profile-member-since">{getMemberSince(currentUser)}</p>
           </div>
           
           <div className="profile-actions">
@@ -148,13 +208,13 @@ const UserProfile = () => {
             <div className="profile-content">
               {activeTab === 'reviews' && (
                 <div className="review-history">
-                  <h2>Review History</h2>
+                  <h2>Your Recent Reviews</h2>
                   
                   {reviewHistory.length === 0 ? (
                     <div className="no-reviews">
                       <p>You haven't written any reviews yet.</p>
-                      <Button onClick={() => navigate('/bakery-selection')}>
-                        Start Reviewing
+                      <Button onClick={() => navigate('/bakery-rankings')}>
+                        Explore Bakeries to Review
                       </Button>
                     </div>
                   ) : (
@@ -170,18 +230,40 @@ const UserProfile = () => {
                           
                           <div className="review-rating">
                             <span className="rating-value">{review.rating.toFixed(1)}</span>
-                            <span className="cookies">🍪</span>
+                            {renderCookieRating(review.rating)}
                             <span className="review-date">{formatDate(review.date)}</span>
                           </div>
                           
                           <p className="review-comment">{review.comment}</p>
                           
                           <div className="review-actions">
-                            <button className="review-action-btn">Edit</button>
-                            <button className="review-action-btn">Delete</button>
+                            <button 
+                              className="review-action-btn" 
+                              onClick={() => {
+                                // Navigate to the review page with this review's ID
+                                navigate(`/${review.type}-review/${review.id}/edit`);
+                              }}
+                            >
+                              Edit
+                            </button>
+                            <button 
+                              className="review-action-btn"
+                              onClick={() => handleDeleteReview(review.id, review.type)}
+                              disabled={loading}
+                            >
+                              Delete
+                            </button>
                           </div>
                         </div>
                       ))}
+                      
+                      {reviewHistory.length > 0 && userStats.totalReviews > reviewHistory.length && (
+                        <div className="see-more-reviews">
+                          <Button variant="secondary" onClick={() => navigate('/user/reviews')}>
+                            See All {userStats.totalReviews} Reviews
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -216,8 +298,18 @@ const UserProfile = () => {
                   <div className="additional-stats">                 
                     <div className="stat-row">
                       <span className="stat-label">Last Review:</span>
-                      <span className="stat-detail">{formatDate(userStats.mostRecentReview)}</span>
+                      <span className="stat-detail">{formatDate(userStats.mostRecentReview) || 'No reviews yet'}</span>
                     </div>
+
+                    {userStats.totalReviews > 0 && (
+                      <div className="review-distribution">
+                        <h3>Your Reviewing Activity</h3>
+                        <div className="rating-distribution-chart">
+                          {/* Here you could add a chart showing review distribution */}
+                          <p>You've reviewed {userStats.bakeryReviews} bakeries and {userStats.productReviews} products.</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

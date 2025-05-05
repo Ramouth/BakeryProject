@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { Info, AlertCircle, CheckCircle, AlertTriangle } from 'lucide-react';
 
 /**
- * Reusable notification component for success and error messages
+ * Reusable notification component for success, error, warning and info messages
  */
 const Notification = ({ 
   message, 
@@ -34,11 +35,27 @@ const Notification = ({
   // Early return if not visible
   if (!visible || !message) return null;
   
+  // Map type to icon component
+  const getIcon = () => {
+    switch(type) {
+      case 'success':
+        return <CheckCircle size={18} />;
+      case 'error':
+        return <AlertCircle size={18} />;
+      case 'warning':
+        return <AlertTriangle size={18} />;
+      case 'info':
+        return <Info size={18} />;
+      default:
+        return <CheckCircle size={18} />;
+    }
+  };
+  
   return (
     <div className={`notification notification-${type}`}>
       <div className="notification-content">
         <span className="notification-icon">
-          {type === 'success' ? '✓' : '⚠'}
+          {getIcon()}
         </span>
         <p className="notification-message">{message}</p>
         <button 

@@ -1,4 +1,3 @@
-/* frontend/src/styles/notification.css */
 .notification {
   position: fixed;
   top: 20px;
@@ -57,7 +56,7 @@
 }
 
 .notification-info {
-  background-color: var(--primary);
+  background-color: var(--info);
   color: var(--text-light);
 }
 

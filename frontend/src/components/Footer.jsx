@@ -11,6 +11,9 @@ const Footer = () => {
           <p className="copyright">&copy; {currentYear} CrumbCompass. All rights reserved.</p>
         </div>
         <div className="footer-section">
+          <a href="/privacy-policy">Privacy Policy</a>
+        </div>
+        <div className="footer-section">
           <ul className="social-links">
             <li>
               <a href="mailto:crumbcompass@gmail.com" aria-label="Email">
