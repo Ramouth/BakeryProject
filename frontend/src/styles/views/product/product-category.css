@@ -50,6 +50,7 @@
 .category-content {
   padding: 1.5rem;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   flex-grow: 1;
@@ -57,6 +58,9 @@
   position: relative;
   transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
   z-index: 2;
+  background-image: url('../../../assets/bread.jpeg');
+  background-size: cover;
+  background-position: center;
 }
 
 .category-card:hover .category-content {
@@ -82,6 +86,14 @@
   position: relative;
   z-index: 2;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+.category-card p {
+  color: var(--text-light);
+  margin-top: 0.5rem;
+  position: relative;
+  z-index: 2;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
 }
 
 /* Product Overlay */
