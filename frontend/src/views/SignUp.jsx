@@ -47,11 +47,11 @@ const SignUp = () => {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      maxLength={36}
+                      maxLength={50}
                       disabled={isSubmitting}
                     />
                     <span className="char-counter">
-                      {formData.email.length}/36
+                      {formData.email.length}/50
                     </span>
                   </div>
 </div>
