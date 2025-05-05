@@ -1,7 +1,17 @@
-from datetime import datetime
 from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime, Index, CheckConstraint
 from sqlalchemy.orm import relationship, declared_attr
 from . import db
+from datetime import datetime, timedelta
+
+def utc_plus_2():
+    """Return current time in UTC+2 timezone"""
+    return datetime.utcnow() + timedelta(hours=2)
+
+from datetime import datetime, timedelta
+
+def utc_plus_2():
+    """Return current time in UTC+2 timezone"""
+    return datetime.utcnow() + timedelta(hours=2)
 
 class BaseReview:
     """Base class for review models with common attributes"""
@@ -14,8 +24,8 @@ class BaseReview:
     def user_id(cls):
         return Column(Integer, ForeignKey('user.id', ondelete='SET NULL'), nullable=True)
     
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_plus_2)
+    updated_at = Column(DateTime, default=utc_plus_2, onupdate=utc_plus_2)
     
     # Define a constraint to ensure ratings are between 1 and 10
     __abstract__ = True
