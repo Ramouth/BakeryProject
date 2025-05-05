@@ -33,7 +33,7 @@ export const useBakeryProfileViewModel = (bakeryName) => {
           'andersen-bakery': 15,
           'hart-bageri': 16,
           'lille-bakery': 17,
-          'juno-the-bakery': 18,
+          'juno-the-bakery': 6,
           'skt-peders-bageri': 19,
           'brød': 20,
           'bageriet-benji': 21
