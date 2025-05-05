@@ -80,7 +80,8 @@ def update_category(category_id):
         
         # Invalidate cache
         cache.delete_memoized(get_categories)
-        cache.delete_memoized(get_category, category_id)
+        
+        
         
         return jsonify({
             "message": "Category updated successfully",
@@ -102,7 +103,7 @@ def delete_category(category_id):
         
         # Invalidate cache
         cache.delete_memoized(get_categories)
-        cache.delete_memoized(get_category, category_id)
+        
         
         return jsonify({"message": "Category deleted successfully"}), 200
     except Exception as e:
@@ -160,7 +161,7 @@ def create_subcategory():
         
         # Invalidate cache
         cache.delete_memoized(get_subcategories)
-        cache.delete_memoized(get_subcategories_by_category, data['categoryId'])
+        
         
         return jsonify({
             "message": "Subcategory created successfully!",
@@ -198,12 +199,22 @@ def update_subcategory(subcategory_id):
         )
         
         # Invalidate cache
-        cache.delete_memoized(get_subcategories)
-        cache.delete_memoized(get_subcategory, subcategory_id)
-        cache.delete_memoized(get_subcategories_by_category, subcategory.category_id)
+        try:
+            cache.delete_memoized(get_subcategories)
+        except Exception as e:
+            print(f"Cache invalidation error (non-critical): {str(e)}")
+
+        try:
+            cache.delete_memoized(get_subcategories_by_category, subcategory.category_id)
+        except Exception as e:
+            print(f"Cache invalidation error (non-critical): {str(e)}")
+
         if category_id and category_id != subcategory.category_id:
-            cache.delete_memoized(get_subcategories_by_category, category_id)
-        
+            try:
+                cache.delete_memoized(get_subcategories_by_category, category_id)
+            except Exception as e:
+                print(f"Cache invalidation error (non-critical): {str(e)}")
+
         return jsonify({
             "message": "Subcategory updated successfully",
             "subcategory": subcategory_schema.dump(updated_subcategory)
@@ -226,8 +237,6 @@ def delete_subcategory(subcategory_id):
         
         # Invalidate cache
         cache.delete_memoized(get_subcategories)
-        cache.delete_memoized(get_subcategory, subcategory_id)
-        cache.delete_memoized(get_subcategories_by_category, category_id)
         
         return jsonify({"message": "Subcategory deleted successfully"}), 200
     except Exception as e:

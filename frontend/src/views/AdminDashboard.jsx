@@ -90,13 +90,6 @@ const Admin = () => {
             <span>{currentUser?.username || 'Admin User'}</span>
           </div>
           <Button 
-            variant="secondary" 
-            size="small"
-            onClick={() => navigate('/')}
-          >
-            Visit Site
-          </Button>
-          <Button 
             variant="link" 
             size="small"
             onClick={logout}
@@ -126,9 +119,10 @@ const Admin = () => {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/admin-dashboard/users" className={({ isActive }) => isActive ? 'active' : ''}>
-                  Users
+                <NavLink to="/admin-dashboard/product-categories" className={({ isActive }) => isActive ? 'active' : ''}>
+                  Product Categories
                 </NavLink>
+                
               </li>
               <li>
                 <NavLink to="/admin-dashboard/bakery-reviews" className={({ isActive }) => isActive ? 'active' : ''}>
@@ -140,10 +134,11 @@ const Admin = () => {
                   Product Reviews
                 </NavLink>
               </li>
-              <li>
-                <NavLink to="/admin-dashboard/product-categories" className={({ isActive }) => isActive ? 'active' : ''}>
-                  Product Categories
+                <NavLink to="/admin-dashboard/users" className={({ isActive }) => isActive ? 'active' : ''}>
+                  Users
                 </NavLink>
+              <li>
+                
               </li>
             </ul>
           </nav>
