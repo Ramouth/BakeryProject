@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAdminCategoryManager } from '../../viewmodels/admin/useAdminCategoryManager';
 import Modal from '../Modal';
 import Button from '../Button';
@@ -12,6 +12,16 @@ const CategoryForm = ({ category, onSubmit, onCancel, isSubmitting }) => {
   
   const [formData, setFormData] = useState(initialState);
   
+  useEffect(() => {
+    // Update form data when category changes
+    if (category) {
+      setFormData({
+        id: category.id || '',
+        name: category.name || ''
+      });
+    }
+  }, [category]);
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -23,21 +33,7 @@ const CategoryForm = ({ category, onSubmit, onCancel, isSubmitting }) => {
   };
   
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="form-group">
-        <label htmlFor="id">ID (slug for URL):</label>
-        <input
-          type="text"
-          id="id"
-          name="id"
-          value={formData.id}
-          onChange={handleChange}
-          disabled={!!category}
-          required
-        />
-        <small>Used in URLs, should be lowercase with no spaces (e.g. "danish-pastries")</small>
-      </div>
-      
+    <form onSubmit={handleSubmit}>      
       <div className="form-group">
         <label htmlFor="name">Name:</label>
         <input
@@ -72,6 +68,17 @@ const SubcategoryForm = ({ subcategory, category, onSubmit, onCancel, isSubmitti
   
   const [formData, setFormData] = useState(initialState);
   
+  useEffect(() => {
+    // Update form data when subcategory or category changes
+    if (subcategory || category) {
+      setFormData({
+        id: subcategory?.id || '',
+        name: subcategory?.name || '',
+        categoryId: category?.id || subcategory?.categoryId || ''
+      });
+    }
+  }, [subcategory, category]);
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -93,20 +100,6 @@ const SubcategoryForm = ({ subcategory, category, onSubmit, onCancel, isSubmitti
           disabled
         />
         <input type="hidden" name="categoryId" value={formData.categoryId} />
-      </div>
-      
-      <div className="form-group">
-        <label htmlFor="id">ID (slug for URL):</label>
-        <input
-          type="text"
-          id="id"
-          name="id"
-          value={formData.id}
-          onChange={handleChange}
-          disabled={!!subcategory}
-          required
-        />
-        <small>Used in URLs, should be lowercase with no spaces (e.g. "cinnamon-roll")</small>
       </div>
       
       <div className="form-group">
@@ -176,7 +169,7 @@ const SubcategoryManager = ({ category, subcategories, onEdit, onDelete, onAdd, 
                       <Button 
                         size="small" 
                         variant="danger"
-                        onClick={() => onDelete(subcategory.id)}
+                        onClick={() => onDelete(subcategory)}
                       >
                         Delete
                       </Button>
@@ -202,7 +195,7 @@ const DeleteConfirmationModal = ({ item, itemType, onDelete, onCancel }) => {
   
   const handleDelete = () => {
     if (isConfirmed) {
-      onDelete(item.id);
+      onDelete(item);
     }
   };
   
@@ -248,9 +241,6 @@ const AdminCategoriesManager = () => {
     loading,
     error,
     getCategorySubcategories,
-    handleOpenCategoryModal,
-    handleOpenSubcategoryModal,
-    handleCloseModal,
     handleSaveCategory,
     handleSaveSubcategory,
     handleDeleteCategory,
@@ -259,7 +249,7 @@ const AdminCategoriesManager = () => {
 
   // Local component state
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalType, setModalType] = useState('category'); // 'category', 'subcategory', 'subcategoryManager', 'deleteCategory', 'deleteSubcategory'
+  const [modalType, setModalType] = useState('category'); 
   const [currentItem, setCurrentItem] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
@@ -322,18 +312,18 @@ const AdminCategoriesManager = () => {
   };
 
   // Delete handlers
-  const deleteCategory = async (categoryId) => {
+  const deleteCategory = async (category) => {
     try {
-      await handleDeleteCategory(categoryId);
+      await handleDeleteCategory(category.id);
       closeModal();
     } catch (error) {
       console.error('Error deleting category:', error);
     }
   };
 
-  const deleteSubcategory = async (subcategoryId) => {
+  const deleteSubcategory = async (subcategory) => {
     try {
-      await handleDeleteSubcategory(subcategoryId);
+      await handleDeleteSubcategory(subcategory);
       closeModal();
     } catch (error) {
       console.error('Error deleting subcategory:', error);
