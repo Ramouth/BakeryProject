@@ -3,7 +3,7 @@
 /* ---------------------- */
 .hero-section {
   text-align: center;
-  margin: -3.0rem auto 2rem;
+
   padding: 2rem;
   max-width: 900px;
 }
@@ -26,24 +26,25 @@
   overflow: hidden;
   margin: 3rem auto;
   max-width: 900px;
-  height: 250px;
+  height: auto;
   display: flex;
   align-items: center;
 }
 
 .promo-content {
   padding: 2rem;
-  max-width: 60%;
 }
 
 .promo-content h2 {
   font-size: 2rem;
   margin-bottom: 1rem;
+  max-width: 70%;
   color: var(--text-light);
 }
 
 .promo-content p {
   margin-bottom: 1.5rem;
+  max-width: 60%;
   font-size: 1.1rem;
 }
 
@@ -61,7 +62,6 @@
 /* Top bakeries section */
 /* ---------------------- */
 .top-bakeries {
-  margin: 4rem auto;
   max-width: 900px;
   text-align: center;
 }
@@ -176,25 +176,6 @@
 .reset-filters-button:hover {
   background-color: var(--accent-dark);
   transform: translateY(-1px);
-}
-
-/* ---------------------- */
-/* No results state */
-/* ---------------------- */
-.no-bakeries-message {
-  text-align: center;
-  padding: 3rem 1rem;
-  background-color: var(--secondary-light);
-  border-radius: var(--border-radius);
-  margin: 2rem auto;
-  max-width: 600px;
-  border: 1px dashed var(--accent);
-}
-
-.no-bakeries-message p {
-  margin-bottom: 1.5rem;
-  color: var(--text-theme);
-  font-size: 1.1rem;
 }
 
 /* ---------------------- */
