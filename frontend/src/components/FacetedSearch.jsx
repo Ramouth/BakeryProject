@@ -647,7 +647,7 @@ const FacetedSearch = ({ onSearch, initialHasSearched = false }) => {
               <>Searching...</> : 
               <>
                 <Search size={18} style={{ marginRight: '0.5rem' }} />
-                Show Results
+                Show Bakeries
               </>
             }
           </button>
