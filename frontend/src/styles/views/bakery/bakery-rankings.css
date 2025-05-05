@@ -7,13 +7,13 @@
 }
 
 .rankings-header h1 {
-  color: var(--text-dark);
+  color: var(--text-theme);
   font-size: 2.2rem;
   margin-bottom: 0.5rem;
 }
 
 .rankings-header p {
-  color: var(--accent-dark);
+  color: var(--text-theme);
   font-size: 1.1rem;
   margin-bottom: 2rem;
 }
@@ -33,7 +33,7 @@
 
 .bakery-card {
   display: flex;
-  background-color: var(--background);
+  background-color: var(--secondary);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow);
   overflow: hidden;
@@ -202,11 +202,11 @@
 .rating-value {
   font-weight: bold;
   font-size: 1.2rem;
-  color: var(--primary-dark);
+  color: var(--accent-dark);
 }
 
 .stars {
-  color: var(--secondary);
+  color: var(--accent-dark);
   font-size: 1rem;
 }
 

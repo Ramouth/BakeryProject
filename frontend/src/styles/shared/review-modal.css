@@ -1,4 +1,3 @@
-/* src/styles/review-modal.css */
 .review-modal-content {
   display: flex;
   flex-direction: column;
@@ -20,7 +19,7 @@
 .review-type-button {
   flex: 1;
   padding: 10px 15px;
-  background: var(--background);
+  background: var(--accent);
   border: none;
   cursor: pointer;
   font-weight: 500;
@@ -361,7 +360,7 @@
 .review-type-button {
   flex: 1;
   padding: 10px 15px;
-  background: var(--background);
+  background: var(--background-like);
   border: none;
   cursor: pointer;
   font-weight: 500;

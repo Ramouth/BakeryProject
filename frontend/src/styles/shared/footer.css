@@ -3,7 +3,7 @@
   margin-top: auto;
   padding: 1.5rem 0;
   background: transparent;
-  color: var(--text);
+  color: var(--text-theme);
   width: 100%;
 }
 

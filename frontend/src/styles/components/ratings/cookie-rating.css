@@ -112,7 +112,7 @@
   margin-top: 5px;
   font-weight: 600;
   font-size: 0.9rem;
-  color: var(--primary);
+  color: var(--accent-dark);
 }
 
 /* Disabled state */

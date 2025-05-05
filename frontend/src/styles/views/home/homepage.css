@@ -11,7 +11,7 @@
 .hero-section h1 {
   font-size: 2.5rem;
   margin-bottom: 1.5rem;
-  color: var(--text-dark);
+  color: var(--text-theme);
 }
 
 /* ---------------------- */
@@ -69,11 +69,11 @@
 .top-bakeries h2 {
   font-size: 1.8rem;
   margin-bottom: 0.5rem;
-  color: var(--text);
+  color: var(--text-theme);
 }
 
 .top-bakeries > p {
-  color: var(--text);
+  color: var(--text-theme);
   margin-bottom: 2rem;
 }
 
@@ -125,13 +125,13 @@
 .homepage-bakery-card h3 {
   font-size: 1.1rem;
   margin: 1rem 1rem 0.5rem;
-  color: var(--text);
+  color: var(--text-dark);
 }
 
 .homepage-bakery-card p {
   font-size: 0.85rem;
   margin: 0 1rem 0.5rem;
-  color: var(--text);
+  color: var(--text-dark);
 }
 
 .homepage-bakery-card .bakery-rating {
@@ -154,17 +154,17 @@
 .search-results-header h2 {
   font-size: 1.8rem;
   margin-bottom: -1.5rem;
-  color: var(--text);
+  color: var(--text-theme);
 }
 
 .search-results-count {
-  color: var(--text);
+  color: var(--text-theme);
   margin-bottom: 1rem;
 }
 
 .reset-filters-button {
   background-color: var(--secondary-light);
-  color: var(--text);
+  color: var(--text-light);
   border: none;
   padding: 0.5rem 1rem;
   border-radius: var(--border-radius);
@@ -193,7 +193,7 @@
 
 .no-bakeries-message p {
   margin-bottom: 1.5rem;
-  color: var(--text);
+  color: var(--text-theme);
   font-size: 1.1rem;
 }
 

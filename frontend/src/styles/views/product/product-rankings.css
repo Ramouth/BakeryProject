@@ -3,17 +3,17 @@
   text-align: center;
   margin: -1rem auto;
   max-width: 800px;
-  width: 100%; /* Standardizing width to match homepage content */
+  width: 100%; 
 }
 
 .product-rankings-header h1 {
-  color: var(--text);
+  color: var(--text-theme);
   font-size: 2.2rem;
   margin-bottom: 0.5rem;
 }
 
 .product-rankings-header p {
-  color: var(--text);
+  color: var(--text-theme);
   font-size: 1.1rem;
   margin-bottom: 2rem;
 }
@@ -26,11 +26,11 @@
   gap: 10px;
   margin: 2rem auto;
   max-width: 900px;
-  width: 100%; /* Standardizing width to match homepage content */
+  width: 100%; 
 }
 
 .product-nav-item {
-  background-color: var(--background);
+  background-color: var(--background-like);
   border: none;
   padding: 10px 20px;
   border-radius: var(--border-radius);
@@ -46,14 +46,13 @@
 .product-nav-item.active {
   background-color: var(--primary);
   color: var(--text-light);
-  font-weight: 500;
 }
 
 /* Ranking Section */
 .ranking-section {
   max-width: 1100px;
   margin: 0 auto 3rem;
-  width: 100%; /* Standardizing width to match homepage content */
+  width: 100%; 
 }
 
 .ranking-title {
@@ -63,7 +62,7 @@
 
 .ranking-title h2 {
   font-size: 1.8rem;
-  color: var(--text);
+  color: var(--text-theme);
   font-weight: 600;
 }
 
@@ -71,7 +70,7 @@
 .rankings-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: var(--background);
+  background-color: var(--background-like);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow);
   overflow: hidden;
@@ -218,7 +217,7 @@
 .rating-value {
   font-size: 1.3rem;
   font-weight: 700;
-  color: var(--primary);
+  color: var(--text-dark);
 }
 
 .star {

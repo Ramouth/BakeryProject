@@ -135,7 +135,7 @@ textarea.success {
   gap: 6px;
   background-color: var(--primary);
   color: white;
-  font-weight: 600;
+  font-weight: 500;
   padding: 0.875rem 2rem;
   border: none;
   border-radius: var(--border-radius);
