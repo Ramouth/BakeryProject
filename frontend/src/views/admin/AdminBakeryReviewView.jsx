@@ -3,6 +3,7 @@ import BakeryReviewList from '../../components/admin/AdminBakeryReviewList';
 import BakeryReviewForm from '../../components/admin/AdminBakeryReviewModal';
 import Modal from '../../components/Modal';
 import Button from '../../components/Button';
+import { MessageCircle, Plus } from 'lucide-react';
 
 const AdminBakeryReviewView = () => {
   const {
@@ -25,9 +26,16 @@ const AdminBakeryReviewView = () => {
 
   return (
     <div className="section">
-      <div className="section-header" style={{ marginBottom: '20px' }}>
-        <h2>Manage Bakery Reviews</h2>
+      <div className="section-header">
+        <div className="section-title">
+          <h2>
+            <MessageCircle size={22} className="section-icon" />
+            Manage Bakery Reviews
+          </h2>
+          <p className="section-description">Add, edit, and manage bakery reviews in the system</p>
+        </div>
         <Button onClick={handleOpenCreateModal} disabled={isLoading}>
+          <Plus size={18} style={{ marginRight: '8px' }} />
           Add New Review
         </Button>
       </div>

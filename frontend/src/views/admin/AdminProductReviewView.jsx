@@ -3,6 +3,7 @@ import ProductReviewList from '../../components/admin/AdminProductReviewList';
 import ProductReviewForm from '../../components/admin/AdminProductReviewModal';
 import Modal from '../../components/Modal';
 import Button from '../../components/Button';
+import { Star, Plus } from 'lucide-react';
 
 const AdminProductReviewView = () => {
   const {
@@ -25,9 +26,16 @@ const AdminProductReviewView = () => {
 
   return (
     <div className="section">
-      <div className="section-header" style={{ marginBottom: '20px' }}>
-        <h2>Manage Product Reviews</h2>
+      <div className="section-header">
+        <div className="section-title">
+          <h2>
+            <Star size={22} className="section-icon" />
+            Manage Product Reviews
+          </h2>
+          <p className="section-description">Add, edit, and manage product reviews in the system</p>
+        </div>
         <Button onClick={handleOpenCreateModal} disabled={isLoading}>
+          <Plus size={18} style={{ marginRight: '8px' }} />
           Add New Review
         </Button>
       </div>
