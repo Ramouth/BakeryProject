@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Modal from './Modal';
 import Button from './Button';
 import CookieRating from './CookieRatingComponent';
@@ -14,9 +15,10 @@ const ReviewModal = ({
 }) => {
   const { showSuccess, showError } = useNotification();
   const { currentUser } = useUser();
+  const navigate = useNavigate();
   
   // State for form inputs and UI control
-  const [reviewType, setReviewType] = useState(initialReviewType); // 'bakery' or 'product'
+  const [reviewType, setReviewType] = useState(initialReviewType);
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
@@ -39,9 +41,26 @@ const ReviewModal = ({
   });
   const [comments, setComments] = useState('');
   
+  // Check authentication when modal is requested to open
+  useEffect(() => {
+    if (isOpen && !currentUser) {
+      // Close the modal
+      onClose();
+      // Redirect to login page
+      navigate('/login', { 
+        state: { 
+          from: window.location.pathname,
+          reviewIntent: true,
+          reviewType: initialReviewType,
+          itemId: initialSelectedItem?.id
+        } 
+      });
+    }
+  }, [isOpen, currentUser, navigate, onClose, initialReviewType, initialSelectedItem]);
+  
   // Reset state when modal is opened or when initialSelectedItem changes
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && currentUser) {
       // Keep the initial review type if provided
       setReviewType(initialReviewType);
       
@@ -62,7 +81,7 @@ const ReviewModal = ({
         resetForm();
       }
     }
-  }, [isOpen, initialReviewType, initialSelectedItem]);
+  }, [isOpen, initialReviewType, initialSelectedItem, currentUser]);
   
   const resetForm = () => {
     setReviewType(initialReviewType || 'bakery');
