@@ -116,8 +116,10 @@ const ProductProfile = () => {
           </div>
         </div>
         <div className="product-image-container">
-          {product.imageUrl && (
+          {product.imageUrl ? (
             <img src={product.imageUrl} alt={product.name} className="product-image" />
+          ) : (
+            <div className="product-image-placeholder"></div>
           )}
         </div>
       </div>
@@ -220,17 +222,21 @@ const ProductProfile = () => {
                   <div className="similar-products">
                     {similarProducts.map((item) => (
                       <div key={item.id} className="similar-product-card">
-                        {item.imageUrl && (
+                        {item.imageUrl ? (
                           <img
                             src={item.imageUrl}
                             alt={item.name}
                             className="similar-product-image"
                           />
+                        ) : (
+                          <div className="similar-product-img-placeholder"></div>
                         )}
-                        <h4>{item.name}</h4>
-                        <Link to={`/product/${item.id}`} className="btn btn-small">
-                          View
-                        </Link>
+                        <div className="similar-product-info">
+                          <h4>{item.name}</h4>
+                          <Link to={`/product/${item.id}`} className="btn btn-small">
+                            View
+                          </Link>
+                        </div>
                       </div>
                     ))}
                   </div>

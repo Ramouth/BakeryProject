@@ -107,38 +107,3 @@
 .card {
   margin-top: 20px;
 }
-
-/* Media query for smaller screens */
-@media (max-width: 500px) {
-  .progress-bar-container {
-    padding: 10px;
-  }
-  
-  .progress-container {
-    padding: 0 10px;
-  }
-  
-  .step-dot {
-    width: 20px;
-    height: 20px;
-  }
-  
-  .step-label {
-    font-size: 0.7rem;
-    width: 70px;
-    display: none; 
-  }
-  
-  .progress-bar-wrapper {
-    margin: 20px 0 30px;
-  }
-}
-
-/* Extra small screens */
-@media (max-width: 350px) {
-  .step-dot {
-    width: 16px;
-    height: 16px;
-    border-width: 2px;
-  }
-}

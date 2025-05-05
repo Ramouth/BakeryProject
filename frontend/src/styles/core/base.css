@@ -112,16 +112,3 @@ a:hover {
 .btn-link:hover {
   background-color: var(--primary-light);
 }
-
-/* Login button styling */
-.main-nav a[href="/login"] {
-  background-color: var(--primary-color);
-  color: var(--text-light);
-  padding: 8px 16px;
-  border-radius: var(--border-radius);
-  transition: background-color 0.3s ease;
-}
-
-.main-nav a[href="/login"]:hover {
-  background-color: var(--primary-dark);
-}

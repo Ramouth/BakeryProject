@@ -31,17 +31,6 @@
   margin: 0 auto;
 }
 
-/* Responsive Layout */
-@media (max-width: 768px) {
-  .container {
-    padding: 15px;
-  }
-  
-  .app-content {
-    padding: 15px;
-  }
-}
-
 /* Auth Layout */
 .login-form {
   display: flex;

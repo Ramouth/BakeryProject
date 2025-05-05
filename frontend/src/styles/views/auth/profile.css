@@ -160,7 +160,7 @@
 .rating-value {
   font-weight: bold;
   font-size: 1.1rem;
-  color: var(--primary);
+  color: var(--accent-dark);
 }
 
 .stars {
@@ -323,55 +323,4 @@
 .no-reviews p {
   margin-bottom: 1.5rem;
   color: var(--accent-dark);
-}
-
-/* Responsive Styles */
-@media (max-width: 768px) {
-  .profile-header {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-  
-  .profile-avatar {
-    margin-right: 0;
-    margin-bottom: 1rem;
-  }
-  
-  .profile-actions {
-    margin-top: 1rem;
-    justify-content: center;
-  }
-  
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 480px) {
-  .profile-tabs {
-    flex-direction: column;
-  }
-  
-  .tab-button {
-    text-align: center;
-    padding: 0.75rem;
-  }
-  
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .profile-content {
-    padding: 1rem;
-  }
-  
-  .stat-row {
-    flex-direction: column;
-  }
-  
-  .stat-row .stat-label {
-    width: 100%;
-    margin-bottom: 0.25rem;
-  }
 }

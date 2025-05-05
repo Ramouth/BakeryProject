@@ -112,7 +112,7 @@
   margin-top: 5px;
   font-weight: 600;
   font-size: 0.9rem;
-  color: var(--primary);
+  color: var(--accent-dark);
 }
 
 /* Disabled state */
@@ -127,23 +127,4 @@
 
 .cookie-rating-container.disabled .cookie-wrapper {
   cursor: not-allowed;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .cookie-wrapper {
-    width: 32px;
-    height: 32px;
-    margin: 0 8px;
-  }
-  
-  .cookie {
-    font-size: 1.8rem;
-  }
-  
-  /* Make zones larger and more distinct on touch devices */
-  .left-zone, .right-zone {
-    min-width: 16px;
-    min-height: 32px;
-  }
 }

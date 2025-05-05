@@ -11,70 +11,7 @@
 .hero-section h1 {
   font-size: 2.5rem;
   margin-bottom: 1.5rem;
-  color: var(--text);
-}
-
-/* ---------------------- */
-/* Search container & form */
-/* ---------------------- */
-.search-container {
-  margin: 1.5rem auto;
-  max-width: 700px;
-}
-
-.search-dropdown-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-  align-items: stretch;
-  max-width: 800px;
-  margin: 0 auto;
-  background-color: var(--primary-light);
-  padding: 15px;
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
-}
-
-.search-type-selector,
-.search-filters {
-  flex: 1;
-  min-width: 200px;
-}
-
-.search-dropdown {
-  width: 100%;
-  padding: 12px 15px;
-  border-radius: var(--border-radius);
-  border: 1px solid var(--accent);
-  background-color: var(--background);
-  font-size: 16px;
-  color: var(--text);
-  appearance: none;
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  cursor: pointer;
-}
-
-.search-dropdown:focus {
-  outline: none;
-  border-color: var(--primary-color);
-}
-
-.search-button {
-  padding: 12px 25px;
-  background-color: var(--primary-color);
-  color: var(--text-light);
-  border: none;
-  border-radius: var(--border-radius);
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
-  min-width: 120px;
-}
-
-.search-button:hover {
-  background-color: var(--primary);
+  color: var(--text-theme);
 }
 
 /* ---------------------- */
@@ -111,8 +48,8 @@
 }
 
 .promo-content .btn {
-  background-color: var(--background);
-  color: var(--primary-dark);
+  background-color: var(--text-light);
+  color: var(--text-dark);
   border: none;
   padding: 10px 20px;
   border-radius: 20px;
@@ -132,11 +69,11 @@
 .top-bakeries h2 {
   font-size: 1.8rem;
   margin-bottom: 0.5rem;
-  color: var(--text);
+  color: var(--text-theme);
 }
 
 .top-bakeries > p {
-  color: var(--text);
+  color: var(--text-theme);
   margin-bottom: 2rem;
 }
 
@@ -156,7 +93,7 @@
   overflow: hidden;
   box-shadow: var(--shadow);
   transition: var(--transition);
-  background-color: var(--background);
+  background-color: var(--secondary-light);
 }
 
 .homepage-bakery-card:hover {
@@ -188,13 +125,13 @@
 .homepage-bakery-card h3 {
   font-size: 1.1rem;
   margin: 1rem 1rem 0.5rem;
-  color: var(--text);
+  color: var(--text-dark);
 }
 
 .homepage-bakery-card p {
   font-size: 0.85rem;
   margin: 0 1rem 0.5rem;
-  color: var(--text);
+  color: var(--text-dark);
 }
 
 .homepage-bakery-card .bakery-rating {
@@ -217,17 +154,17 @@
 .search-results-header h2 {
   font-size: 1.8rem;
   margin-bottom: -1.5rem;
-  color: var(--text);
+  color: var(--text-theme);
 }
 
 .search-results-count {
-  color: var(--text);
+  color: var(--text-theme);
   margin-bottom: 1rem;
 }
 
 .reset-filters-button {
-  background-color: var(--accent);
-  color: var(--text);
+  background-color: var(--secondary-light);
+  color: var(--text-light);
   border: none;
   padding: 0.5rem 1rem;
   border-radius: var(--border-radius);
@@ -247,7 +184,7 @@
 .no-bakeries-message {
   text-align: center;
   padding: 3rem 1rem;
-  background-color: var(--background);
+  background-color: var(--secondary-light);
   border-radius: var(--border-radius);
   margin: 2rem auto;
   max-width: 600px;
@@ -256,7 +193,7 @@
 
 .no-bakeries-message p {
   margin-bottom: 1.5rem;
-  color: var(--text);
+  color: var(--text-theme);
   font-size: 1.1rem;
 }
 
@@ -284,44 +221,4 @@
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
-}
-
-/* ---------------------- */
-/* Responsive styles */
-/* ---------------------- */
-@media (max-width: 900px) {
-  .homepage-bakery-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .promo-content {
-    max-width: 100%;
-  }
-}
-
-@media (max-width: 600px) {
-  .hero-section h1 {
-    font-size: 2rem;
-  }
-
-  .homepage-bakery-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .search-dropdown-form {
-    flex-direction: column;
-    gap: 10px;
-    padding: 12px;
-  }
-
-  .search-button {
-    width: 100%;
-  }
-
-  .search-results-header {
-    text-align: center;
-  }
-}
-.top-bakeries.search-active {
-  margin-top: -4rem; /* Reduced from 4rem to 0rem */
 }

@@ -10,6 +10,7 @@ import BakeryProfile from './views/BakeryProfile';
 import ProductProfile from './views/ProductProfile';
 import Admin from './views/AdminDashboard';
 import BookTab from './components/BookTab';
+import CookieBanner from './components/CookieBanner'; // Import CookieBanner
 
 // Lazy load views for code splitting and performance
 const HomePage = lazy(() => import('./views/Homepage'));
@@ -22,6 +23,7 @@ const BakeryRankings = lazy(() => import('./views/BakeryRankings'));
 const ProductRankings = lazy(() => import('./views/ProductRankings'));
 const ProductCategorySelection = lazy(() => import('./views/ProductCategorySelection'));
 const UserProfile = lazy(() => import('./views/UserProfile'));
+const PrivacyPolicy = lazy(() => import('./views/PrivacyPolicy')); // Import PrivacyPolicy
 
 // Import CSS
 import './styles/main.css';
@@ -54,6 +56,7 @@ function App() {
             <div className="app">
               <NavBar />
               <BookTab />
+              <CookieBanner /> {/* Add CookieBanner component */}
 
               <div className="content-section">
                 <main className="app-content">
@@ -72,6 +75,7 @@ function App() {
                       <Route path="/product-rankings/:categoryId/:productId" element={<ProductRankings />} />
                       <Route path="/bakery/:bakeryName" element={<BakeryProfile />} />
                       <Route path="/product/:productId" element={<ProductProfile />} />
+                      <Route path="/privacy-policy" element={<PrivacyPolicy />} /> {/* Add PrivacyPolicy route */}
                       <Route path="/admin-dashboard/*" element={<AuthGuard><Admin /></AuthGuard>} />
                     </Routes>
                   </Suspense>

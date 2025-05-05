@@ -61,7 +61,6 @@ const ProductRating = () => {
         
         <div className="form-group">
           <div className="textarea-container">
-<<<<<<< HEAD
              <textarea
                rows="3"
                value={productRatings.comments}
@@ -80,26 +79,6 @@ const ProductRating = () => {
                </span>
              </div>
            </div>
-=======
-            <textarea
-              rows="3"
-              value={productRatings.comments}
-              onChange={(e) => {
-                // Only update if under the character limit
-                if (e.target.value.length <= 280) {
-                  handleCommentsChange(e);
-                }
-              }}
-              maxLength={280}
-              placeholder="Add additional comments..."
-            />
-            <div className="character-count">
-              <span className={productRatings.comments.length > 200 ? (productRatings.comments.length > 250 ? "count-warning" : "count-notice") : ""}>
-                {productRatings.comments.length}/280
-              </span>
-            </div>
-          </div>
->>>>>>> css
         </div>
         
         <div className="nav-buttons">

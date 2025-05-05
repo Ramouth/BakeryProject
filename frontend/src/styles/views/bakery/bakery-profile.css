@@ -26,8 +26,6 @@
   padding: 20px;
 }
 
-/* Rest of the CSS remains unchanged */
-  
   .bakery-logo-container {
     background-color: white;
     border-radius: 10px;
@@ -63,12 +61,12 @@
   .bakery-title-section h1 {
     margin: 0 0 10px 0;
     font-size: 2.2rem;
-    color: var(--text-dark);
+    color: var(--text-theme);
   }
   
   .bakery-address {
     margin: 0 0 10px 0;
-    color: var(--text-dark);
+    color: var(--text-theme);
     font-size: 1rem;
   }
   
@@ -81,7 +79,7 @@
   .bakery-rating-value {
     font-weight: bold;
     font-size: 1.2rem;
-    color: var(--primary);
+    color: var(--text-theme);
   }
   
   .bakery-rating-stars {
@@ -90,7 +88,7 @@
   }
   
   .bakery-review-count {
-    color: var(--text-dark);
+    color: var(--text-theme);
     font-size: 0.9rem;
   }
   
@@ -102,7 +100,7 @@
   /* Tab styling */
   .bakery-tabs {
     display: flex;
-    border-bottom: 1px solid var(--accent-light);
+    border-bottom: 1px solid var(--text-theme);
     margin-bottom: 30px;
   }
   
@@ -112,13 +110,13 @@
     border: none;
     font-size: 1rem;
     font-weight: 500;
-    color: var(--text-dark);
+    color: var(--text-theme);
     cursor: pointer;
     position: relative;
   }
   
   .tab-button.active {
-    color: var(--primary);
+    color: var(--text-theme);
   }
   
   .tab-button.active::after {
@@ -140,12 +138,13 @@
     display: grid;
     grid-template-columns: 1fr 300px;
     gap: 30px;
+    color: var(--text-theme);
   }
   
   .bakery-description {
     line-height: 1.6;
     margin-bottom: 30px;
-    color: var(--text-dark);
+    color: var(--text-theme);
   }
   
   .bakery-details {
@@ -161,7 +160,7 @@
   .hours-section h3, .ratings-section h3 {
     font-size: 1.3rem;
     margin-bottom: 15px;
-    color: var(--text-dark);
+    color: var(--text-theme);
   }
   
   .hours-list {
@@ -173,7 +172,7 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 8px;
-    color: var(--text-dark);
+    color: var(--text-theme);
   }
   
   .hours-list li span {
@@ -195,12 +194,12 @@
   .rating-label {
     width: 100px;
     font-weight: 500;
-    color: var(--text-dark);
+    color: var(--text-theme);
   }
   
   /* Popular items styling */
   .most-popular-section {
-    background-color: var(--primary-light);
+    background-color: var(--secondary-dark);
     padding: 20px;
     border-radius: 10px;
   }
@@ -219,7 +218,7 @@
   
   .popular-item {
     display: flex;
-    background-color: var(--background);
+    background-color: var(--background-like);
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -258,9 +257,11 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 30px;
+    color: var(--text-theme);
   }
   
   .reviews-total {
+    color: var(--text-theme);
     display: flex;
     flex-direction: column;
   }
@@ -268,11 +269,11 @@
   .large-rating {
     font-size: 2.5rem;
     font-weight: bold;
-    color: var(--primary);
+    color: var(--text-theme);
   }
   
   .total-reviews {
-    color: var(--accent-dark);
+    color: var(--text-theme);
   }
   
   .reviews-list {
@@ -282,24 +283,26 @@
   }
   
   .review-card {
-    background-color: var(--background);
+    background-color: var(--background-like);
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   }
   
   .review-header {
+    color: var(--text-theme);
     display: flex;
     justify-content: space-between;
     margin-bottom: 10px;
   }
   
   .reviewer-name {
+    color: var(--text-theme);
     font-weight: 500;
   }
   
   .review-date {
-    color: var(--accent-dark);
+    color: var(--text-theme);
     font-size: 0.9rem;
   }
   
@@ -317,50 +320,11 @@
   
   .review-text {
     line-height: 1.6;
-    color: var(--text-dark);
+    color: var(--text-theme);
   }
   
   .load-more {
+    color: var(--text-theme);
     align-self: center;
     margin-top: 20px;
-  }
-  
-  /* Responsive adjustments */
-  @media (max-width: 900px) {
-    .bakery-info-header {
-      flex-direction: column;
-      gap: 20px;
-    }
-    
-    .about-section {
-      grid-template-columns: 1fr;
-    }
-    
-    .bakery-details {
-      grid-template-columns: 1fr;
-    }
-  }
-  
-  @media (max-width: 600px) {
-    .bakery-header {
-      height: 200px;
-    }
-    
-    .bakery-logo-container {
-      width: 90px;
-      height: 90px;
-    }
-    
-    .bakery-title-section h1 {
-      font-size: 1.8rem;
-    }
-    
-    .bakery-tabs {
-      overflow-x: auto;
-    }
-    
-    .tab-button {
-      padding: 15px 15px;
-      white-space: nowrap;
-    }
   }
