@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useUser } from '../store/UserContext';
 import { useNavigate } from 'react-router-dom';
+import apiClient from '../services/api';
+import reviewService from '../services/reviewService';
 
 export const useUserProfileViewModel = () => {
   const { currentUser, logout } = useUser();
@@ -9,11 +11,11 @@ export const useUserProfileViewModel = () => {
   const [userStats, setUserStats] = useState(null);
   const [reviewHistory, setReviewHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('reviews');
   const [editMode, setEditMode] = useState(false);
   const [userInfo, setUserInfo] = useState({
-    firstName: '',
-    lastName: '',
+    username: '',
     email: ''
   });
 
@@ -22,8 +24,7 @@ export const useUserProfileViewModel = () => {
       navigate('/login');
     } else {
       setUserInfo({
-        firstName: currentUser.firstName || '',
-        lastName: currentUser.lastName || '',
+        username: currentUser.username || '',
         email: currentUser.email || ''
       });
       
@@ -32,56 +33,23 @@ export const useUserProfileViewModel = () => {
   }, [currentUser, navigate]);
 
   const fetchUserData = async () => {
+    if (!currentUser || !currentUser.id) return;
+    
     setLoading(true);
+    setError(null);
+    
     try {
-      // Mock data - in a real app, these would be API calls
-      const stats = {
-        totalReviews: 12,
-        bakeryReviews: 5,
-        productReviews: 7,
-        averageRating: 4.2,
-        mostRecentReview: '2024-04-01T12:00:00Z'
-      };
+      // Use the improved reviewService methods for fetching user reviews
+      const [recentReviews, stats] = await Promise.all([
+        reviewService.getUserRecentReviews(currentUser.id, 5),
+        reviewService.getUserReviewStats(currentUser.id)
+      ]);
       
-      const reviews = [
-        {
-          id: 1,
-          type: 'bakery',
-          itemName: 'Lagkagehuset',
-          rating: 4.5,
-          date: '2024-04-01T12:00:00Z',
-          comment: 'Great atmosphere and friendly staff!'
-        },
-        {
-          id: 2,
-          type: 'product',
-          itemName: 'Kanelsnegl (Lagkagehuset)',
-          rating: 4.8,
-          date: '2024-04-01T12:15:00Z',
-          comment: 'Best cinnamon roll in Copenhagen!'
-        },
-        {
-          id: 3,
-          type: 'bakery',
-          itemName: 'Andersen Bakery',
-          rating: 4.2,
-          date: '2024-03-22T10:30:00Z',
-          comment: 'Traditional Danish products with great quality.'
-        },
-        {
-          id: 4,
-          type: 'product',
-          itemName: 'Tebirkes (Andersen Bakery)',
-          rating: 4.1,
-          date: '2024-03-22T10:45:00Z',
-          comment: 'Crispy and well-baked, but a bit too sweet for my taste.'
-        }
-      ];
-      
+      setReviewHistory(recentReviews);
       setUserStats(stats);
-      setReviewHistory(reviews);
     } catch (error) {
       console.error('Error fetching user data:', error);
+      setError('Failed to load user data. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -97,10 +65,26 @@ export const useUserProfileViewModel = () => {
 
   const handleProfileUpdate = async () => {
     try {
-      // In a real app, this would be an API call
+      setLoading(true);
+      
+      // Call the API to update the user profile
+      const updatedUser = await apiClient.patch(`/users/update/${currentUser.id}`, {
+        username: userInfo.username,
+        email: userInfo.email
+      });
+      
+      // Update the current user in context if needed
+      // Note: This would typically be handled by your UserContext
+      
       setEditMode(false);
+      
+      // Refresh user data after update
+      await fetchUserData();
     } catch (error) {
       console.error('Error updating profile:', error);
+      setError('Failed to update profile. Please try again later.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -108,8 +92,47 @@ export const useUserProfileViewModel = () => {
     logout();
     navigate('/');
   };
+  
+  const handleDeleteReview = async (reviewId, reviewType) => {
+    if (!window.confirm(`Are you sure you want to delete this ${reviewType} review?`)) {
+      return; // User canceled the deletion
+    }
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Call the service method to delete the review
+      await reviewService.deleteReview(reviewId, reviewType);
+      
+      // Update the review history by removing the deleted review
+      setReviewHistory(prevReviews => 
+        prevReviews.filter(review => !(review.id === reviewId && review.type === reviewType))
+      );
+      
+      // Update the stats (decrement the appropriate count)
+      setUserStats(prevStats => {
+        if (!prevStats) return null;
+        
+        return {
+          ...prevStats,
+          totalReviews: prevStats.totalReviews - 1,
+          [reviewType === 'bakery' ? 'bakeryReviews' : 'productReviews']: 
+            prevStats[reviewType === 'bakery' ? 'bakeryReviews' : 'productReviews'] - 1
+        };
+      });
+      
+    } catch (error) {
+      console.error(`Error deleting ${reviewType} review:`, error);
+      setError(`Failed to delete review. ${error.message || 'Please try again later.'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const formatDate = (dateString) => {
+    if (!dateString) return '';
+    
     const date = new Date(dateString);
     return date.toLocaleDateString('en-DK', {
       year: 'numeric',
@@ -123,6 +146,7 @@ export const useUserProfileViewModel = () => {
     userStats,
     reviewHistory,
     loading,
+    error,
     activeTab,
     setActiveTab,
     editMode,
@@ -131,6 +155,7 @@ export const useUserProfileViewModel = () => {
     handleInputChange,
     handleProfileUpdate,
     handleLogout,
+    handleDeleteReview,
     formatDate,
     navigate
   };
