@@ -72,26 +72,10 @@ const Admin = () => {
     formatDate
   } = useAdminDashboardViewModel();
   
-  if (showWarning) {
-    return (
-      <div className="container">
-        <div className="card">
-          <h2>Mock Admin Access</h2>
-          <p>This is a demo environment. You can proceed to the admin panel even without proper admin privileges.</p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px' }}>
-            <Button onClick={createMockAdminUser} variant="primary">
-              Create Mock Admin User
-            </Button>
-            <Button onClick={proceedAnyway} variant="secondary">
-              Proceed Anyway
-            </Button>
-            <Button onClick={() => navigate('/')} variant="link">
-              Return Home
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
+  if (!currentUser || !currentUser.isAdmin) {
+    // If user is not an admin, redirect to home
+    navigate('/', { replace: true });
+    return null; // Return null while redirecting
   }
   
   return (
