@@ -3,24 +3,22 @@ from sqlalchemy import Column, Integer, String, Boolean, DateTime, Index
 from sqlalchemy.orm import relationship
 from . import db
 from flask_bcrypt import generate_password_hash, check_password_hash
+from datetime import datetime, timedelta
 
 class User(db.Model):
     """User model with username and password"""
     __tablename__ = 'user'  # Keep the table name for compatibility
     
     id = Column(Integer, primary_key=True)
-    
-    # Replace first/last name with username
-    username = Column(String(80), nullable=False, unique=True)
-    email = Column(String(120), unique=True, nullable=False)
-    
-    # New fields
+    username = Column(String(24), nullable=False, unique=True)
+    email = Column(String(36), unique=True, nullable=False)
     password_hash = Column(String(128), nullable=False)
     profile_picture = Column(Integer, default=1, nullable=True)
-    
-    is_admin = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    is_admin = Column(Boolean, default=False)  # Fixed indentation here
+    created_at = Column(DateTime, default=lambda: (datetime.utcnow() + timedelta(hours=2)))
+    updated_at = Column(DateTime, 
+                    default=lambda: (datetime.utcnow() + timedelta(hours=2)),
+                    onupdate=lambda: (datetime.utcnow() + timedelta(hours=2)))
     
     # Relationships - update to work with ProductReview
     bakery_reviews = relationship('BakeryReview', back_populates='user', cascade='all, delete-orphan')
