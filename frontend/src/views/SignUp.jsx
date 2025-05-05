@@ -16,33 +16,45 @@ const SignUp = () => {
         <h2>Create Account</h2>
         <p>Join CrumbCompass to start reviewing bakeries and products</p>
         
-        <form onSubmit={handleSubmit} className="signup-form">
-          <div className="form-group">
-            <label htmlFor="username">Username:</label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              required
-              minLength={3}
-              disabled={isSubmitting}
-            />
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="email">Email:</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              disabled={isSubmitting}
-            />
-          </div>
+                        <form onSubmit={handleSubmit} className="signup-form">
+                        <div className="form-group">
+                  <label htmlFor="username">Username:</label>
+                  <div className="input-wrapper">
+                    <input
+                      type="text"
+                      id="username"
+                      name="username"
+                      value={formData.username}
+                      onChange={handleChange}
+                      required
+                      minLength={3}
+                      maxLength={24}
+                      disabled={isSubmitting}
+                    />
+                    <span className="char-counter">
+                      {formData.username.length}/24
+                    </span>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="email">Email:</label>
+                  <div className="input-wrapper">
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      maxLength={36}
+                      disabled={isSubmitting}
+                    />
+                    <span className="char-counter">
+                      {formData.email.length}/36
+                    </span>
+                  </div>
+</div>
           
           <div className="form-group">
             <label htmlFor="password">Password:</label>
