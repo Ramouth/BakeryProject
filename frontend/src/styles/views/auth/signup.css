@@ -52,3 +52,23 @@
   font-size: 0.875rem;
   margin-top: 0.25rem;
 }
+
+.input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.char-counter {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  font-size: 0.75rem;
+  color: var(--text-600);
+  pointer-events: none;
+  user-select: none;
+}
+
+.input-wrapper input {
+  width: 100%;
+  padding-right: 45px; /* Make space for the counter */
+}

@@ -1,22 +1,11 @@
 import { API_BASE_URL } from '../config';
 
-/**
- * Enhanced API client for making requests to the backend
- * Features:
- * - Token-based authentication
- * - Comprehensive error handling
- * - Session timeout management
- * - Token refresh
- * - Request timeout control
- * - Request cancellation support
- * - Configurable logging
- */
 class ApiClient {
   constructor(options = {}) {
-    this.baseUrl = API_BASE_URL;
+    this.baseUrl = 'http://localhost:5000'; 
     this.tokenKey = 'access_token';
     this.refreshTokenKey = 'refresh_token';
-    this.defaultTimeout = options.timeout || 30000; // 30 seconds default
+    this.defaultTimeout = options.timeout || 30000;
     this.enableLogging = options.logging ?? process.env.NODE_ENV !== 'production';
     this.pendingRequests = new Map();
     this.refreshPromise = null;
@@ -27,32 +16,28 @@ class ApiClient {
    */
   async request(url, options = {}) {
     const requestId = Date.now().toString() + Math.random().toString(36).substring(2);
+    // Always use the absolute URL to the backend
     const fullUrl = url.startsWith('http') ? url : `${this.baseUrl}${url}`;
     const token = localStorage.getItem(this.tokenKey);
     const controller = new AbortController();
     
-    // Store abort controller to allow cancellation
     this.pendingRequests.set(requestId, controller);
     
-    // Configure request timeout
     const timeoutId = setTimeout(() => {
       controller.abort();
       this.pendingRequests.delete(requestId);
     }, options.timeout || this.defaultTimeout);
     
-    this._log(`API Request: ${options.method || 'GET'} ${url}`);
-    console.log('Making request to:', fullUrl); // Added debugging log
+    this._log(`API Request: ${options.method || 'GET'} ${fullUrl}`);
 
     const headers = {
       ...options.headers,
     };
 
-    // Only set Content-Type if body is JSON (not FormData)
     if (options.body && !(options.body instanceof FormData)) {
       headers['Content-Type'] = 'application/json';
     }
 
-    // Attach Bearer token if available
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
@@ -61,32 +46,26 @@ class ApiClient {
       const response = await fetch(fullUrl, {
         ...options,
         headers,
-        mode: 'cors', // for cross-origin requests
+        mode: 'cors',
         signal: controller.signal
       });
 
-      // Handle response status
       if (!response.ok) {
-        // Handle authentication errors
         if (response.status === 401) {
-          // Try token refresh if we have a refresh token
           const refreshToken = localStorage.getItem(this.refreshTokenKey);
           if (refreshToken && !options.isRefreshRequest) {
             try {
               await this._refreshAuth();
-              // Retry the original request with new token
               return this.request(url, options);
             } catch (refreshError) {
               this._log('Token refresh failed', refreshError);
               this._handleSessionExpiration();
             }
           } else {
-            // No refresh token or refresh failed
             this._handleSessionExpiration();
           }
         }
 
-        // Parse and throw error for other status codes
         const errorText = await response.text();
         let errorData;
 
@@ -102,7 +81,6 @@ class ApiClient {
         throw error;
       }
 
-      // Parse response based on content type
       const contentType = response.headers.get('content-type');
       if (contentType && contentType.includes('application/json')) {
         return await response.json();
@@ -111,7 +89,6 @@ class ApiClient {
       } else if (contentType && contentType.includes('application/octet-stream')) {
         return await response.blob();
       } else {
-        // Handle unexpected content types
         const text = await response.text();
         this._log('Received unexpected content type:', contentType);
         this._log('Response preview:', text.substring(0, 100) + '...');
@@ -132,12 +109,7 @@ class ApiClient {
     }
   }
 
-  /**
-   * Attempt to refresh authentication token
-   * @private
-   */
   async _refreshAuth() {
-    // Prevent multiple simultaneous refresh attempts
     if (!this.refreshPromise) {
       const refreshToken = localStorage.getItem(this.refreshTokenKey);
       
@@ -148,7 +120,7 @@ class ApiClient {
       this.refreshPromise = this.request('/auth/refresh', {
         method: 'POST',
         body: JSON.stringify({ refresh_token: refreshToken }),
-        isRefreshRequest: true // Prevents infinite refresh loops
+        isRefreshRequest: true
       })
       .then(data => {
         if (data.access_token) {
@@ -168,19 +140,12 @@ class ApiClient {
     return this.refreshPromise;
   }
 
-  /**
-   * Handle expired session by clearing tokens and redirecting
-   * @private
-   */
   _handleSessionExpiration() {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.refreshTokenKey);
     window.location.href = '/login';
   }
 
-  /**
-   * Cancel a pending request or all requests
-   */
   cancelRequest(requestId) {
     if (requestId) {
       const controller = this.pendingRequests.get(requestId);
@@ -189,16 +154,11 @@ class ApiClient {
         this.pendingRequests.delete(requestId);
       }
     } else {
-      // Cancel all pending requests
       this.pendingRequests.forEach(controller => controller.abort());
       this.pendingRequests.clear();
     }
   }
 
-  /**
-   * Logging utilities
-   * @private
-   */
   _log(...args) {
     if (this.enableLogging) {
       console.log('[ApiClient]', ...args);
@@ -213,35 +173,10 @@ class ApiClient {
    * REST API methods
    */
   get(url, options = {}) {
-    // Special case handling for problematic endpoints
-    if (url === '/categories') {
-      return this.request('http://localhost:5000/categories', options);
-    }
     return this.request(url, { ...options, method: 'GET' });
   }
 
   post(url, data, options = {}) {
-    // Special case handling for auth endpoints
-    if (url === '/auth/login') {
-      console.log('Login payload:', data);
-      // Use direct URL for auth endpoints
-      return this.request('http://localhost:5000/auth/login', {
-        ...options,
-        method: 'POST',
-        body: data instanceof FormData ? data : JSON.stringify(data),
-      });
-    }
-    
-    if (url === '/auth/register') {
-      console.log('Register payload:', data);
-      // Use direct URL for auth endpoints
-      return this.request('http://localhost:5000/auth/register', {
-        ...options,
-        method: 'POST',
-        body: data instanceof FormData ? data : JSON.stringify(data),
-      });
-    }
-    
     return this.request(url, {
       ...options,
       method: 'POST',
@@ -276,12 +211,8 @@ class ApiClient {
    * Authentication methods
    */
   login(credentials) {
-    console.log('Login credentials:', credentials);
-    console.log('Sending to:', '/auth/login');
-    
     return this.post('/auth/login', credentials)
       .then(data => {
-        console.log('Login response:', data);
         if (data.access_token) {
           localStorage.setItem(this.tokenKey, data.access_token);
           if (data.refresh_token) {
@@ -297,7 +228,6 @@ class ApiClient {
   }
 
   logout() {
-    // Optionally notify the server
     const result = this.post('/auth/logout', {})
       .catch(err => {
         this._log('Logout error (continuing anyway):', err);
@@ -305,15 +235,12 @@ class ApiClient {
       .finally(() => {
         localStorage.removeItem(this.tokenKey);
         localStorage.removeItem(this.refreshTokenKey);
-        this.cancelRequest(); // Cancel all pending requests
+        this.cancelRequest();
       });
     
     return result;
   }
 
-  /**
-   * Check if user is authenticated
-   */
   isAuthenticated() {
     return !!localStorage.getItem(this.tokenKey);
   }
