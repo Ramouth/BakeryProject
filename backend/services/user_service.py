@@ -83,7 +83,7 @@ class UserService:
 
     def update_user(self, user_id, username=None, email=None,
                     profile_picture=None, is_admin=None, password=None):
-        """Update user fields; optionally update password."""
+        """Update user fields; only update password if explicitly provided."""
         user = self.get_user_by_id(user_id)
 
         # Check duplicates if changing
@@ -103,7 +103,8 @@ class UserService:
         if is_admin is not None:
             user.is_admin = is_admin
 
-        if password:
+        # Only update password if explicitly provided
+        if password and password.strip():
             user.password_hash = generate_password_hash(password).decode('utf-8')
 
         try:

@@ -5,11 +5,11 @@ import Button from "../Button";
 const UserForm = ({ existingUser = {}, updateCallback, isSubmitting = false }) => {
   // State for form fields - using camelCase because the API expects this format
   const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    password: "defaultPassword123", // Always provide a default password
-    profilePicture: 1,
-    isAdmin: false
+    username: existingUser?.username || "",
+    email: existingUser?.email || "",
+    password: "", // Start with empty password, not defaultPassword123
+    profilePicture: existingUser?.profilePicture || 1,
+    isAdmin: existingUser?.isAdmin || false
   });
   
   const [errors, setErrors] = useState({});
@@ -21,7 +21,7 @@ const UserForm = ({ existingUser = {}, updateCallback, isSubmitting = false }) =
       setFormData({
         username: existingUser.username || "",
         email: existingUser.email || "",
-        password: "defaultPassword123", // Default password for updates
+        password: "",
         profilePicture: existingUser.profilePicture || 1,
         isAdmin: existingUser.isAdmin || false
       });
@@ -42,8 +42,8 @@ const UserForm = ({ existingUser = {}, updateCallback, isSubmitting = false }) =
       newErrors.email = "Email is invalid";
     }
     
-    // Always ensure password is provided
-    if (!formData.password.trim()) {
+    // Password is only required for new users, not for updates
+    if (!isEditing && !formData.password.trim()) {
       newErrors.password = "Password is required";
     }
     
@@ -84,64 +84,30 @@ const UserForm = ({ existingUser = {}, updateCallback, isSubmitting = false }) =
     }
     
     try {
-      // Debug the data we're about to send
-      console.log("Submitting user data:", formData);
-      
-      const url = existingUser && existingUser.id 
-        ? `http://127.0.0.1:5000/users/update/${existingUser.id}` 
-        : "http://127.0.0.1:5000/users/create";
-      
-      const method = existingUser && existingUser.id ? "PATCH" : "POST";
-      
-      // Make sure profilePicture is a number
+      // Create a copy of the form data
       const userData = {
-        ...formData,
-        profilePicture: Number(formData.profilePicture) || 1
+        username: formData.username,
+        email: formData.email,
+        profilePicture: Number(formData.profilePicture) || 1,
+        isAdmin: formData.isAdmin
       };
       
-      // Always include password in the payload
-      const response = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(userData)
-      });
-      
-      // Log the raw response for debugging
-      const responseText = await response.clone().text();
-      console.log(`User ${method} Response:`, responseText);
-      
-      if (!response.ok) {
-        let errorMessage = `HTTP error ${response.status}`;
-        try {
-          const errorData = JSON.parse(responseText);
-          errorMessage = errorData.message || errorMessage;
-        } catch (e) {
-          console.error("Could not parse error response:", responseText);
-        }
-        throw new Error(errorMessage);
+      // Only include password in the payload if it's actually been entered
+      if (formData.password && formData.password.trim() !== '') {
+        userData.password = formData.password;
       }
       
-      // Try to parse the response as JSON
-      let data;
-      try {
-        data = JSON.parse(responseText);
-      } catch (e) {
-        console.log("Response is not JSON, using text response");
-        data = { message: responseText };
-      }
+      console.log("Submitting user data:", userData);
       
-      console.log("User saved successfully:", data);
-      
+      // Call the update callback with the prepared data
       if (typeof updateCallback === 'function') {
-        updateCallback();
+        updateCallback(userData);
       }
-    } catch (error) {
-      console.error("Error saving user:", error);
+    } catch (err) {
+      console.error("Error saving user:", err);
       setErrors(prev => ({
         ...prev,
-        form: error.message || "Failed to save user. Please try again."
+        form: err.message || "Failed to save user. Please try again."
       }));
     }
   };
@@ -182,7 +148,9 @@ const UserForm = ({ existingUser = {}, updateCallback, isSubmitting = false }) =
       </div>
       
       <div className="form-group">
-        <label htmlFor="password">Password: *</label>
+        <label htmlFor="password">
+          {isEditing ? "New Password (leave blank to keep current):" : "Password: *"}
+        </label>
         <input
           type="password"
           id="password"
@@ -191,14 +159,14 @@ const UserForm = ({ existingUser = {}, updateCallback, isSubmitting = false }) =
           onChange={handleChange}
           className={errors.password ? "error" : ""}
           disabled={isSubmitting}
-          required
+          required={!isEditing} // Only required for new users
         />
         {errors.password && <div className="error-text">{errors.password}</div>}
-        <p className="help-text" style={{ fontSize: '0.8rem', color: '#666', marginTop: '4px' }}>
-          {isEditing ? 
-            "Enter a new password to change it, or keep the default for no change." : 
-            "Enter a password for the new user."}
-        </p>
+        {isEditing && (
+          <p className="help-text" style={{ fontSize: '0.8rem', color: '#666', marginTop: '4px' }}>
+            Only enter a new password if you want to change it. Leave blank to keep the current password.
+          </p>
+        )}
       </div>
       
       <div className="form-group">
