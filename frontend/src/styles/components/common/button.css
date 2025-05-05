@@ -98,7 +98,7 @@
 }
 
 .login-button {
-  background-color: var(--primary);
+  background-color: var(--text-light);
   color: white;
   padding: 8px 16px;
   border-radius: 4px;
@@ -109,7 +109,7 @@
 }
 
 .login-button:hover {
-  background-color: var(--primary-dark);
+  background-color: var(--primary);
   color: white;
   text-decoration: none;
 }
