@@ -8,7 +8,7 @@ from marshmallow import ValidationError
 from werkzeug.security import check_password_hash
 
 from schemas import UserSchema
-from services.user_service import UserService
+from services.user_service import UserService, UserNotFound, AuthenticationError
 
 auth_bp = Blueprint('auth', __name__)
 user_schema = UserSchema()
@@ -18,18 +18,6 @@ user_service = UserService()
 # === Custom Exceptions ===
 class UserAlreadyExists(Exception):
     """Raised when attempting to register with a duplicate username/email."""
-    pass
-
-class AuthenticationError(Exception):
-    """Raised when user credentials are invalid."""
-    pass
-
-class UserNotFound(Exception):
-    """Raised when a requested user cannot be found."""
-    pass
-
-class PasswordMismatch(Exception):
-    """Raised when the given current password does not match."""
     pass
 
 
@@ -48,9 +36,13 @@ def register():
             raise UserAlreadyExists("Username already exists")
             
         # Check if email already exists
-        existing_email = user_service.get_user_by_email(data['email'])
-        if existing_email:
-            raise UserAlreadyExists("Email already exists")
+        try:
+            existing_email = user_service.get_user_by_email(data['email'])
+            if existing_email:
+                raise UserAlreadyExists("Email already exists")
+        except UserNotFound:
+            # Email doesn't exist, which is what we want
+            pass
 
         user = user_service.create_user(
             username=data['username'],
@@ -85,6 +77,7 @@ def login():
     """Authenticate a user and return a JWT access token."""
     try:
         payload = request.get_json()
+        
         # Get identifier (username or email) from payload
         identifier = payload.get('username', '')
         password = payload.get('password', '')
@@ -95,27 +88,32 @@ def login():
         # Check if the identifier contains '@' to determine if it's an email
         is_email = '@' in identifier
         
+        current_app.logger.debug(f"[LOGIN] Login attempt with identifier: {identifier}, is_email: {is_email}")
+        
         try:
+            user = None
+            
             if is_email:
-                # Log that we're trying email authentication
-                current_app.logger.debug(f"[LOGIN] Attempting email authentication with: {identifier}")
-                
-                # Get user by email
-                user = user_service.get_user_by_email(identifier)
-                
-                # Verify password manually since we're bypassing authenticate_user
-                if not check_password_hash(user.password_hash, password):
-                    current_app.logger.debug(f"[LOGIN] Password verification failed for email: {identifier}")
+                # Try to get user by email
+                try:
+                    user = user_service.get_user_by_email(identifier)
+                    
+                    # Verify password
+                    if not user.check_password(password):
+                        current_app.logger.debug(f"[LOGIN] Password verification failed for email: {identifier}")
+                        raise AuthenticationError("Invalid email or password")
+                        
+                    current_app.logger.debug(f"[LOGIN] Email authentication successful for: {identifier}")
+                except UserNotFound:
+                    current_app.logger.debug(f"[LOGIN] Email not found: {identifier}")
                     raise AuthenticationError("Invalid email or password")
-                
-                current_app.logger.debug(f"[LOGIN] Email authentication successful for: {identifier}")
             else:
-                # Log that we're trying username authentication
-                current_app.logger.debug(f"[LOGIN] Attempting username authentication with: {identifier}")
-                
-                # Use the existing authenticate_user method for username
+                # Use the authenticate_user method for username
                 user = user_service.authenticate_user(identifier, password)
             
+            if not user:
+                raise AuthenticationError("Invalid credentials")
+                
             # Create token with string identity
             token = create_access_token(identity=str(user.id))
 
@@ -125,13 +123,10 @@ def login():
                 "access_token": token
             }), 200
             
-        except (UserNotFound, AuthenticationError):
-            # Consolidate error handling for user not found or auth failure
-            current_app.logger.warning(f"[LOGIN] Authentication failed for identifier: {identifier}")
-            raise AuthenticationError("Invalid credentials")
-
-    except AuthenticationError:
-        return jsonify({"message": "Invalid credentials"}), 401
+        except (UserNotFound, AuthenticationError) as e:
+            # Log the specific error for debugging
+            current_app.logger.warning(f"[LOGIN] Authentication failed for identifier: {identifier}, error: {str(e)}")
+            return jsonify({"message": "Invalid credentials"}), 401
 
     except Exception as e:
         current_app.logger.error(f"[LOGIN] unexpected error: {e}")
