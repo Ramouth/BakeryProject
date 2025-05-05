@@ -6,7 +6,7 @@ export const useFacetedSearchViewModel = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [hasSearched, setHasSearched] = useState(false);
-  const [bakeryStats, setBakeryStats] = useState({}); // Cache for bakery stats
+  const [bakeryStats, setBakeryStats] = useState({}); 
   const [appliedFilters, setAppliedFilters] = useState({
     category: '',
     product: '',

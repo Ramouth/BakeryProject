@@ -1,5 +1,7 @@
 import sys
 import os
+
+from backend.services.bakery_service import BakeryService
 # Add the parent directory to the path so imports work properly
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 

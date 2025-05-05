@@ -10,7 +10,7 @@ import BakeryProfile from './views/BakeryProfile';
 import ProductProfile from './views/ProductProfile';
 import Admin from './views/AdminDashboard';
 import BookTab from './components/BookTab';
-import CookieBanner from './components/CookieBanner'; // Import CookieBanner
+import CookieBanner from './components/CookieBanner'; 
 
 // Lazy load views for code splitting and performance
 const HomePage = lazy(() => import('./views/Homepage'));
