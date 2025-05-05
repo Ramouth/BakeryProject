@@ -61,11 +61,11 @@ export const useAdminUserViewModel = () => {
     try {
       if (currentUser?.id) {
         // Update
-        await apiClient.patch(`/users/update/${currentUser.id}`, userData, false);
+        await apiClient.patch(`/users/update/${currentUser.id}`, userData);
         showSuccess('User updated successfully!');
       } else {
         // Create
-        await apiClient.post('/users/create', userData, false);
+        await apiClient.post('/users/create', userData);
         showSuccess('User created successfully!');
       }
       
