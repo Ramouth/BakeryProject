@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useUser } from '../store/UserContext';
 import { useNotification } from '../store/NotificationContext';
 import apiClient from '../services/api';
+import { User } from '../models/User';
 
 export const useSignUpViewModel = () => {
-  const { register } = useUser();
+  const { login, setUser } = useUser();
   const { showSuccess, showError } = useNotification();
   const navigate = useNavigate();
   
@@ -49,9 +50,46 @@ export const useSignUpViewModel = () => {
       // Call the backend directly using apiClient
       const response = await apiClient.post('/auth/register', userData);
       
-      // If we get here, registration was successful
-      showSuccess("Account created successfully!");
-      navigate('/login');
+      // If registration is successful, automatically log in the user
+      if (response && response.access_token) {
+        // The registration response already contains the access token and user data
+        localStorage.setItem('access_token', response.access_token);
+        
+        // Set the user in the context
+        if (response.user) {
+          // Create a user object from the response and set it in the context
+          const user = User.fromApiResponse(response.user);
+          setUser(user);
+        } else {
+          // If for some reason we don't have user data in the response,
+          // fetch the user profile
+          try {
+            const userProfile = await apiClient.get('/auth/profile');
+            const user = User.fromApiResponse(userProfile);
+            setUser(user);
+          } catch (profileError) {
+            console.error("Error fetching user profile after registration:", profileError);
+          }
+        }
+        
+        // Show success message
+        showSuccess("Account created successfully!");
+        
+        // Navigate to the homepage
+        navigate('/', { replace: true });
+      } else {
+        // If we don't get an access token directly from registration,
+        // we need to log in manually using the credentials
+        try {
+          await login(formData.email, formData.password);
+          showSuccess("Account created successfully!");
+          navigate('/', { replace: true });
+        } catch (loginError) {
+          console.error("Auto-login failed after successful registration:", loginError);
+          showSuccess("Account created successfully! Please log in.");
+          navigate('/login');
+        }
+      }
     } catch (err) {
       console.error("Registration error details:", err);
       
