@@ -84,7 +84,7 @@ const SignUp = () => {
             />
           </div>
           
-          <div className="form-actions" style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+          <div className="form-actions" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
             <Button 
               type="submit" 
               disabled={isSubmitting}
@@ -92,13 +92,9 @@ const SignUp = () => {
               {isSubmitting ? 'Creating Account...' : 'Sign Up'}
             </Button>
             
-            <Button 
-              type="button"
-              variant="link" 
-              onClick={() => navigate('/login')}
-            >
-              Already have an account? Log in
-            </Button>
+            <p className="login-link">
+               <a href="/login" onClick={(e) => { e.preventDefault(); navigate('/login'); }}>Already have an account? Log in</a>
+            </p>
           </div>
         </form>
       </div>

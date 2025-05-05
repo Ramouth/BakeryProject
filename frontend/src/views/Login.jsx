@@ -28,7 +28,6 @@ const Login = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
-              placeholder="Enter your username or email"
             />
           </div>
           
@@ -40,7 +39,6 @@ const Login = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={isLoading}
-              placeholder="Enter your password"
             />
           </div>
           
