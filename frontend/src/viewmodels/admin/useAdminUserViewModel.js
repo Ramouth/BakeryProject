@@ -81,12 +81,14 @@ export const useAdminUserViewModel = () => {
   }, [currentUser, handleCloseModal, fetchUsers, showSuccess, showError]);
 
   const handleDeleteUser = useCallback(async (id) => {
-    if (!window.confirm('Are you sure you want to delete this user?')) {
-      return;
-    }
-
+    // No need for another confirmation here since we already confirmed in the list component
     setIsLoading(true);
     try {
+      // Ensure id is properly defined before making the API call
+      if (!id) {
+        throw new Error('User ID is required for deletion');
+      }
+      
       await apiClient.delete(`/users/delete/${id}`, false);
       showSuccess('User deleted successfully!');
       await fetchUsers();
