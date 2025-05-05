@@ -4,14 +4,16 @@
 :root[data-theme="light"] {
   /* Background */
   --background: #f7ebd4;
+  --background-like: #f7ebd4;
 
   /* Text Colors */
   --text-light: #eae9fc;
   --text-dark: #050316;
+  --text-theme: #050316;
 
   /* Primary Colors (brown/gold theme) */
   --primary-light: #CEA873;
-  --primary: #BD8A42;
+  --primary: #B59466;
   --primary-dark: #9C8059;
 
   /* Secondary Colors (Box Colors) */
@@ -40,35 +42,35 @@
 /* Dark Theme */
 :root[data-theme="dark"] {
 
-  /* IMPORTANT INFORMATION: ALL DARK THEME COLORS ARE REVERTED, MEANING "LIGHT" IS ACTUALLY "DARK" */
-
   /* Background */
   --background: #0d2c45;
+  --background-like: #f7ebd4;
 
   /* Text Colors */
-  --text-light: #050316;
-  --text-dark: #e9d6b4;
+  --text-light: #eae9fc;
+  --text-dark: #050316;
+  --text-theme: #e9d6b4;
 
-  /* Primary Colors (warm beige theme) */
-  --primary-light: #e3d2b7;
-  --primary: #cea873;
-  --primary-dark: #9c8059;
+  /* Primary Colors (brown/gold theme) */
+  --primary-light: #CEA873;
+  --primary: #B59466;
+  --primary-dark: #9C8059;
 
   /* Secondary Colors (Box Colors) */
-  --secondary-light: #163247;
-  --secondary: #113350;
-  --secondary-dark: #13395A;
+  --secondary-light: #EFE0C8;
+  --secondary: #F3E4C4;
+  --secondary-dark: #E8D4AA;
 
   /* Accent Colors (blue-grey theme) */
-  --accent-light: #c4d0dc;
-  --accent: #9ba8b5;
-  --accent-dark: #6b7885;
+  --accent-light: #a7b3be;
+  --accent: #6c7f93;
+  --accent-dark: #414c58;
 
   /* Utility Colors */
-  --error: #ff5252;
-  --success: #4caf50;
-  --warning: #ffa726;
-  --info: #03a9f4;
+  --error: #d32f2f;
+  --success: #388e3c;
+  --warning: #f57c00;
+  --info: #0288d1;
 
   /* Medal Colors */
   --gold: #FFD700;

@@ -160,7 +160,7 @@
 .rating-value {
   font-weight: bold;
   font-size: 1.1rem;
-  color: var(--primary);
+  color: var(--accent-dark);
 }
 
 .stars {

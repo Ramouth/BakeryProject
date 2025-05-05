@@ -249,7 +249,7 @@
   padding: 0.5rem;
   border: 1px solid var(--accent);
   border-radius: var(--border-radius);
-  background-color: var(--background);
+  background-color: var(--background-like);
 }
 
 .form-actions {

@@ -2,7 +2,7 @@
     max-width: 800px;
     margin: 2rem auto;
     padding: 2rem;
-    background-color: var(--background);
+    background-color: var(--secondary-light);
     border-radius: var(--border-radius);
     box-shadow: var(--shadow);
   }

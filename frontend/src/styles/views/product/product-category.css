@@ -2,18 +2,18 @@
 .category-selection-header {
   text-align: center;
   margin: -1rem auto;
-  max-width: 1200px; /* Increased to match the grid */
-  width: 100%; /* Full width to use available space */
+  max-width: 1200px; 
+  width: 100%; 
 }
 
 .category-selection-header h1 {
-  color: var(--text);
+  color: var(--text-theme);
   font-size: 2.2rem;
   margin-bottom: 0.5rem;
 }
 
 .category-selection-header p {
-  color: var(--text);
+  color: var(--text-theme);
   font-size: 1.1rem;
   margin-bottom: 2rem;
 }
@@ -24,26 +24,25 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 2rem;
   margin: 0 auto;
-  max-width: 1200px; /* Increased from 900px to use more screen space */
-  padding: 0 2rem; /* Increased padding for better spacing */
-  width: 100%; /* Full width to use available space */
+  max-width: 1200px; 
+  padding: 0 2rem; 
+  width: 100%; 
 }
 
 /* Category Card */
 .category-card {
   position: relative;
-  background-color: var(--background);
+  background-color: var(--background-like);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow);
   overflow: hidden;
   transition: all 0.3s ease;
-  height: 300px; /* Increased from 250px for better visual impact */
+  height: 300px; 
   display: flex;
   flex-direction: column;
-  min-width: 0; /* Prevent overflow in grid */
+  min-width: 0; 
 }
 
-/* Remove the hover transform effect */
 .category-card:hover {
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
@@ -56,12 +55,12 @@
   flex-grow: 1;
   text-align: center;
   position: relative;
-  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1); /* Smoother easing */
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
   z-index: 2;
 }
 
 .category-card:hover .category-content {
-  transform: translateY(-100%); /* Slide completely out of view */
+  transform: translateY(-100%);
 }
 
 .category-content::before {
@@ -77,9 +76,9 @@
 
 .category-card h2 {
   font-size: 1.8rem;
-  color: white;
+  color: var(--text-light);
   margin: 0;
-  transition: opacity 0.5s ease; /* Smoother fade */
+  transition: opacity 0.5s ease; 
   position: relative;
   z-index: 2;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
@@ -93,15 +92,15 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: var(--accent-dark);
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 1rem;
-  z-index: 1; /* Lower z-index so it appears behind the image */
+  z-index: 1; 
   overflow-y: auto;
-  opacity: 0; /* Start with opacity 0 */
-  transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1); /* Smooth fade in */
+  opacity: 0; 
+  transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1); 
 }
 
 /* Fade in the subcategory overlay when hovering */
@@ -119,7 +118,7 @@
   margin-top: 0;
   margin-bottom: 1rem;
   font-size: 1.2rem;
-  color: var(--text-dark);
+  color: var(--primary-light);
 }
 
 .subcategory-list,
@@ -146,7 +145,7 @@
 
 .subcategory-link,
 .product-list a {
-  color: var(--primary-dark);
+  color: var(--text-light);
   text-decoration: none;
   transition: color 0.3s ease;
   font-weight: 500;
