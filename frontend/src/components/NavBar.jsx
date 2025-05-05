@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useUser } from '../store/UserContext';
 import { User, Plus } from 'lucide-react';
 import ReviewModal from './ReviewModal';
@@ -7,10 +7,20 @@ import ReviewModal from './ReviewModal';
 const NavBar = () => {
   const { currentUser, logout } = useUser();
   const location = useLocation();
+  const navigate = useNavigate();
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
   const openReviewModal = () => {
-    setIsReviewModalOpen(true);
+    if (!currentUser) {
+      navigate('/login', { 
+        state: { 
+          from: location.pathname,
+          reviewIntent: true 
+        } 
+      });
+    } else {
+      setIsReviewModalOpen(true);
+    }
   };
 
   const closeReviewModal = () => {
