@@ -1,11 +1,12 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import apiClient from '../services/api';
 
 export const useFacetedSearchViewModel = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [hasSearched, setHasSearched] = useState(false); // Track if search has been performed
+  const [hasSearched, setHasSearched] = useState(false);
+  const [bakeryStats, setBakeryStats] = useState({}); // Cache for bakery stats
   const [appliedFilters, setAppliedFilters] = useState({
     category: '',
     product: '',
@@ -58,7 +59,6 @@ export const useFacetedSearchViewModel = () => {
         ]);
         
       } catch (err) {
-        console.error('Error loading initial data:', err);
         setError('Failed to load data. Please try again.');
       } finally {
         setIsLoading(false);
@@ -71,12 +71,28 @@ export const useFacetedSearchViewModel = () => {
   // Helper function to fetch bakery stats for search results
   const fetchBakeryStatsInBatches = useCallback(async (bakeries, batchSize = 2) => {
     const result = [...bakeries];
+    const bakeriesToFetch = [];
     
-    for (let i = 0; i < result.length; i += batchSize) {
-      const batch = result.slice(i, i + batchSize);
+    // First check which bakeries need fetching (not in cache)
+    for (let i = 0; i < result.length; i++) {
+      const bakery = result[i];
+      if (!bakeryStats[bakery.id]) {
+        bakeriesToFetch.push({ bakery, index: i });
+      } else {
+        // Use cached stats
+        result[i] = {
+          ...bakery,
+          ...bakeryStats[bakery.id]
+        };
+      }
+    }
+    
+    // Process only bakeries not in cache, in batches
+    for (let i = 0; i < bakeriesToFetch.length; i += batchSize) {
+      const batch = bakeriesToFetch.slice(i, i + batchSize);
       
       await Promise.all(
-        batch.map(async (bakery, index) => {
+        batch.map(async ({ bakery, index }) => {
           try {
             const statsResponse = await apiClient.get(`/bakeries/${bakery.id}/stats`, true);
             
@@ -88,9 +104,9 @@ export const useFacetedSearchViewModel = () => {
               average_rating = statsResponse.ratings.overall;
             }
             
-            result[i + index] = {
+            const bakeryWithStats = {
               ...bakery,
-              average_rating: average_rating,
+              average_rating,
               review_count: statsResponse.review_count || 0,
               ratings: statsResponse.ratings || {
                 overall: average_rating,
@@ -101,17 +117,33 @@ export const useFacetedSearchViewModel = () => {
               }
             };
             
-            // Debug log
-            console.log(`Search bakery ${bakery.id} rating: ${result[i + index].average_rating}, reviews: ${result[i + index].review_count}`);
+            // Update the cache
+            setBakeryStats(prev => ({
+              ...prev,
+              [bakery.id]: {
+                average_rating,
+                review_count: statsResponse.review_count || 0,
+                ratings: statsResponse.ratings || {
+                  overall: average_rating,
+                  service: 0,
+                  price: 0,
+                  atmosphere: 0,
+                  location: 0
+                }
+              }
+            }));
+            
+            // Update result
+            result[index] = bakeryWithStats;
           } catch (error) {
-            console.error(`Error fetching stats for bakery ${bakery.id}:`, error);
+            // Keep original bakery data if error occurs
           }
         })
       );
     }
     
     return result;
-  }, []);
+  }, [bakeryStats]);
 
   // Handle search results from faceted search component
   const handleSearch = useCallback(async (results) => {
@@ -127,7 +159,6 @@ export const useFacetedSearchViewModel = () => {
       // Show all matching results with stats
       setSearchResults(enhancedResults);
     } catch (error) {
-      console.error('Error enhancing search results:', error);
       // Still set the original results if there's an error fetching stats
       setSearchResults(results);
       setHasSearched(true);

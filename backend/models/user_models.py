@@ -11,7 +11,7 @@ class User(db.Model):
     
     id = Column(Integer, primary_key=True)
     username = Column(String(24), nullable=False, unique=True)
-    email = Column(String(36), unique=True, nullable=False)
+    email = Column(String(50), unique=True, nullable=False)
     password_hash = Column(String(128), nullable=False)
     profile_picture = Column(Integer, default=1, nullable=True)
     is_admin = Column(Boolean, default=False)  # Fixed indentation here
