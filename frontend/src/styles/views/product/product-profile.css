@@ -96,7 +96,7 @@
   border: none;
   font-size: 1rem;
   font-weight: 500;
-  color: var(--text-theme);
+  color: var(--text-dark);
   cursor: pointer;
   position: relative;
 }

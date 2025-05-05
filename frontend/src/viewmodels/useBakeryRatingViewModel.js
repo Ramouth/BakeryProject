@@ -1,8 +1,9 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useReview } from '../store/ReviewContext';
 import { useNotification } from '../store/NotificationContext';
 
 export const useBakeryRatingViewModel = () => {
+  // Extract only what we need from context
   const { 
     selectedBakery, 
     bakeryRatings, 
@@ -14,48 +15,75 @@ export const useBakeryRatingViewModel = () => {
   const { showSuccess, showError } = useNotification();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
+  // Optimize handleRatingChange to use a function updater pattern
+  // This eliminates the dependency on bakeryRatings and reduces re-renders
   const handleRatingChange = useCallback((field, value) => {
-    setBakeryRatings({
-      ...bakeryRatings,
+    setBakeryRatings(prevRatings => ({
+      ...prevRatings,
       [field]: value
-    });
-  }, [bakeryRatings, setBakeryRatings]);
+    }));
+  }, [setBakeryRatings]);
   
+  // Similarly optimize the comments change handler
   const handleCommentsChange = useCallback((e) => {
-    setBakeryRatings({
-      ...bakeryRatings,
-      comments: e.target.value
-    });
-  }, [bakeryRatings, setBakeryRatings]);
+    const newComment = e.target.value;
+    setBakeryRatings(prevRatings => ({
+      ...prevRatings,
+      comments: newComment
+    }));
+  }, [setBakeryRatings]);
   
+  // Memoize validation status
+  const isOverallRatingValid = useMemo(() => 
+    bakeryRatings && bakeryRatings.overall > 0, 
+  [bakeryRatings?.overall]);
+  
+  // Optimize submit handler by reducing dependencies
   const handleSubmit = useCallback(async () => {
+    if (!isOverallRatingValid) {
+      showError("Please provide an overall rating");
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
-      if (bakeryRatings.overall <= 0) {
-        showError("Please provide an overall rating");
-        setIsSubmitting(false);
-        return;
-      }
-      
       await submitBakeryReview();
       showSuccess("Bakery review saved successfully!");
       goToNextStep('experienceRating');
     } catch (err) {
-      showError(`Failed to submit review: ${err.message || "Please try again"}`);
+      const errorMessage = err.message || "Please try again";
+      showError(`Failed to submit review: ${errorMessage}`);
       console.error('Error submitting review:', err);
     } finally {
       setIsSubmitting(false);
     }
-  }, [bakeryRatings.overall, submitBakeryReview, showSuccess, showError, goToNextStep]);
+  }, [
+    isOverallRatingValid,
+    submitBakeryReview, 
+    showSuccess, 
+    showError, 
+    goToNextStep
+  ]);
   
-  return {
+  // Memoize the return object to prevent unnecessary re-renders of consumers
+  return useMemo(() => ({
     selectedBakery,
     bakeryRatings,
     isSubmitting,
+    isOverallRatingValid,
     handleRatingChange,
     handleCommentsChange,
     handleSubmit,
     goToNextStep
-  };
+  }), [
+    selectedBakery,
+    bakeryRatings,
+    isSubmitting,
+    isOverallRatingValid,
+    handleRatingChange,
+    handleCommentsChange,
+    handleSubmit,
+    goToNextStep
+  ]);
 };
