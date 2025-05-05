@@ -13,7 +13,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background-color: var(--primary);
+  background-color: var(--secondary-dark);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
@@ -33,7 +33,7 @@
 
 .brand-subtitle {
   font-size: 0.75rem;
-  color: var(--accent);
+  color: var(--text-dark);
 }
 
 .header-actions {
@@ -64,7 +64,7 @@
 
 .admin-sidebar {
   width: 250px;
-  background-color: var(--primary-light);
+  background-color: var(--secondary);
   height: calc(100vh - 64px);
   position: sticky;
   top: 64px;
@@ -93,14 +93,14 @@
 }
 
 .admin-sidebar nav a:hover {
-  background-color: var(--primary);
+  background-color: var(--primary-light);
   color: var(--text);
 }
 
 .admin-sidebar nav a.active {
-  background-color: var(--primary-dark);
+  background-color: var(--primary);
   color: var(--text-light);
-  border-left: 3px solid var(--secondary-dark);
+  border-left: 3px solid var(--accent-dark);
   font-weight: 500;
 }
 
@@ -124,7 +124,7 @@
 }
 
 .stat-card {
-  background-color: var(--background);
+  background-color: var(--accent);
   padding: 1.5rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -217,13 +217,13 @@
 }
 
 .table th {
-  background-color: var(--background);
+  background-color: var(--background-like);
   font-weight: 600;
   text-align: left;
 }
 
 .table tr:hover {
-  background-color: var(--background);
+  background-color: var(--secondary-dark);
 }
 
 .table .actions {
@@ -298,56 +298,6 @@
   display: flex;
   gap: 0.5rem;
 }
-
-/* Responsive table adjustments */
-@media (max-width: 768px) {
-  .table-responsive {
-    overflow-x: auto;
-  }
-  
-  .admin-table th,
-  .admin-table td {
-    white-space: nowrap;
-  }
-}
-
-/* Responsive Styles */
-@media (max-width: 768px) {
-  .admin-stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .admin-sidebar {
-    width: 200px;
-  }
-}
-
-@media (max-width: 480px) {
-  .admin-stats {
-    grid-template-columns: 1fr;
-  }
-  
-  .admin-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-  
-  .header-actions {
-    width: 100%;
-    justify-content: space-between;
-  }
-  
-  .admin-layout {
-    flex-direction: column;
-  }
-  
-  .admin-sidebar {
-    width: 100%;
-    height: auto;
-    position: static;
-  }
-
   /* Enhanced admin search styles */
 
 /* Section header with icon */
@@ -549,4 +499,4 @@
 
 .action-button.delete:hover {
   background-color: rgba(var(--error), 0.1);
-}}
+}

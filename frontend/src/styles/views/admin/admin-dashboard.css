@@ -11,7 +11,7 @@
   }
   
   .stat-card {
-    background-color: var(--background-50);
+    background-color: var(--secondary-dark);
     padding: 1.5rem;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -41,7 +41,7 @@
   }
   
   .admin-recent-activity {
-    background-color: var(--background-50);
+    background-color: var(--secondary);
     padding: 1.5rem;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);

@@ -30,7 +30,7 @@
 
 /* Button Types */
 .btn-primary {
-  background-color: var(--primary);
+  background-color: var(--primary-light);
   color: var(--text-dark);
 }
 
@@ -46,9 +46,9 @@
 }
 
 .btn-secondary {
-  background-color: var(--secondary-light);
-  color: var(--secondary-dark);
-  border: 1px solid var(--secondary);
+  background-color: var(--accent);
+  color: var(--text-light);
+  border: 1px solid var(--accent-dark);
 }
 
 .btn-secondary:hover {
@@ -88,7 +88,6 @@
   color: var(--primary-color);
   box-shadow: none;
   padding: 0.5rem 0.75rem;
-  text-decoration: underline;
   min-width: auto;
 }
 
