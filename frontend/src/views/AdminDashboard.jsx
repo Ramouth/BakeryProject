@@ -99,7 +99,7 @@ const Admin = () => {
       <div className="admin-header">
         <div className="logo-container">
           <div className="brand-name">CrumbCompass Admin</div>
-          <div className="brand-subtitle">Bakery Management System</div>
+          <div className="brand-subtitle">Management System</div>
         </div>
         <div className="header-actions">
           <div className="user-info">
