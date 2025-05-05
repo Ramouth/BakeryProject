@@ -7,7 +7,7 @@ import BakeryForm from '../../components/admin/AdminBakeryModal';
 import BakeryList from '../../components/admin/AdminBakeryList';
 import { Plus, Filter, Package, RefreshCw } from 'lucide-react';
 
-const AdminBakeryViewEnhanced = () => {
+const AdminBakeryView = () => {
   const {
     bakeries,
     isModalOpen,
@@ -46,7 +46,6 @@ const AdminBakeryViewEnhanced = () => {
 
       <div className="admin-filters">
         <div className="admin-search-container">
-          {/* Using our enhanced AdminSearchInput component */}
           <AdminSearchInput
             value={searchTerm}
             onChange={handleSearchChange}
@@ -116,4 +115,4 @@ const AdminBakeryViewEnhanced = () => {
   );
 };
 
-export default AdminBakeryViewEnhanced;
+export default AdminBakeryView;

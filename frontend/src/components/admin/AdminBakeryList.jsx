@@ -12,7 +12,7 @@ const BakeryList = ({ bakeries, onEdit, onDelete }) => {
 
   return (
     <div className="table-responsive">
-      <table className="table bakery-table">
+      <table className="table admin-table">
         <thead>
           <tr>
             <th>ID</th>
@@ -39,23 +39,23 @@ const BakeryList = ({ bakeries, onEdit, onDelete }) => {
                   <span className="text-muted">—</span>
                 )}
               </td>
-              <td className="actions">
-                <Button 
-                  variant="secondary" 
-                  size="small" 
-                  onClick={() => onEdit(bakery)}
-                  aria-label={`Edit ${bakery.name}`}
-                >
-                  Edit
-                </Button>
-                <Button 
-                  variant="danger" 
-                  size="small" 
-                  onClick={() => onDelete(bakery.id)}
-                  aria-label={`Delete ${bakery.name}`}
-                >
-                  Delete
-                </Button>
+              <td>
+                <div className="table-actions">
+                  <button 
+                    className="action-button edit"
+                    onClick={() => onEdit(bakery)}
+                    aria-label={`Edit ${bakery.name}`}
+                  >
+                    Edit
+                  </button>
+                  <button 
+                    className="action-button delete"
+                    onClick={() => onDelete(bakery.id)}
+                    aria-label={`Delete ${bakery.name}`}
+                  >
+                    Delete
+                  </button>
+                </div>
               </td>
             </tr>
           ))}

@@ -31,7 +31,7 @@ const UserList = ({ users, updateUser, updateCallback }) => {
 
   return (
     <div className="table-responsive">
-      <table className="table user-table">
+      <table className="table admin-table">
         <thead>
           <tr>
             <th>ID</th>
@@ -50,23 +50,23 @@ const UserList = ({ users, updateUser, updateCallback }) => {
               <td>{user.email}</td>
               <td>{user.isAdmin ? "Yes" : "No"}</td>
               <td>{new Date(user.created_at).toLocaleDateString()}</td>
-              <td className="actions">
-                <Button 
-                  variant="secondary" 
-                  size="small" 
-                  onClick={() => updateUser(user)}
-                  aria-label={`Edit ${user.username}`}
-                >
-                  Edit
-                </Button>
-                <Button 
-                  variant="danger" 
-                  size="small" 
-                  onClick={() => onDelete(user.id)}
-                  aria-label={`Delete ${user.username}`}
-                >
-                  Delete
-                </Button>
+              <td>
+                <div className="table-actions">
+                  <button 
+                    className="action-button edit"
+                    onClick={() => updateUser(user)}
+                    aria-label={`Edit ${user.username}`}
+                  >
+                    Edit
+                  </button>
+                  <button 
+                    className="action-button delete"
+                    onClick={() => onDelete(user.id)}
+                    aria-label={`Delete ${user.username}`}
+                  >
+                    Delete
+                  </button>
+                </div>
               </td>
             </tr>
           ))}
