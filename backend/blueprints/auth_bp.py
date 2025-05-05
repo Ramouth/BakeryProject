@@ -42,6 +42,16 @@ def register():
         payload = request.get_json()
         data = user_schema.load(payload)  # validates and deserializes
 
+        # Check if username already exists
+        existing_user = user_service.get_user_by_username(data['username'])
+        if existing_user:
+            raise UserAlreadyExists("Username already exists")
+            
+        # Check if email already exists
+        existing_email = user_service.get_user_by_email(data['email'])
+        if existing_email:
+            raise UserAlreadyExists("Email already exists")
+
         user = user_service.create_user(
             username=data['username'],
             email=data['email'],
@@ -62,8 +72,8 @@ def register():
     except ValidationError as ve:
         return jsonify({"errors": ve.messages}), 422
 
-    except UserAlreadyExists:
-        return jsonify({"message": "Username or email already taken"}), 409
+    except UserAlreadyExists as e:
+        return jsonify({"message": str(e)}), 409
 
     except Exception as e:
         current_app.logger.error(f"[REGISTER] unexpected error: {e}")
