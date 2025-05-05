@@ -78,7 +78,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: url('/src/assets/bread.jpeg');
+  background-image: url('../../../assets/bread.jpeg');
   background-size: cover;
   background-position: center;
 }
@@ -278,7 +278,7 @@
 .similar-product-img-placeholder {
   height: 120px;
   background-color: var(--primary-light);
-  background-image: url('/src/assets/bread.jpeg');
+  background-image: url('../../../assets/bread.jpeg');
   background-size: cover;
   background-position: center;
 }
