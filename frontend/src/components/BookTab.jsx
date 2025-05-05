@@ -50,10 +50,10 @@ const BookTab = () => {
         <div className="divider"></div>
         
         <div className="bug-section">
-            <button className="bug-button" disabled>
+            <a href="mailto:crumbcompass@gmail.com?subject=[Bug Report]" className="bug-button">
                 <Bug size={24} />
                     <span className="bug-label">Report</span>
-            </button>
+            </a>
         </div>
       </div>
     </div>

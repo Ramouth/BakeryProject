@@ -1,6 +1,6 @@
 /* Header Styles */
 .app-header {
-  background-color: var(--background);
+  background-color: var(--secondary-light);
   position: sticky;
   top: 0;
   width: 100%;
@@ -88,7 +88,7 @@
 .review-button {
   display: flex;
   align-items: center;
-  background-color: var(--background);
+  background-color: var(--background-like);
   color: var(--text);
   border: 1px solid var(--accent);
   border-radius: 4px;
@@ -100,7 +100,7 @@
 }
 
 .review-button:hover {
-  background-color: var(--accent-light);
+  background-color: var(--primary);
   border-color: var(--accent-dark);
 }
 
@@ -115,13 +115,16 @@
   width: 1px;
   background-color: var(--accent);
   margin-right: 8px;
+  margin-left: 8px;
+  margin-top: 2px;
+  margin-bottom: 2px;
 }
 
 .profile-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text);
+  color: var(--text-dark);
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -130,29 +133,4 @@
 
 .profile-icon:hover {
   background-color: rgba(0, 0, 0, 0.05);
-}
-
-/* Responsive styling */
-@media (max-width: 768px) {
-  .nav-links {
-    display: none;
-  }
-  
-  .header-actions {
-    gap: 10px;
-  }
-  
-  .login-button {
-    display: none;
-  }
-}
-
-@media (max-width: 480px) {
-  .header-content {
-    padding: 10px;
-  }
-  
-  .logo h1 {
-    font-size: 16px;
-  }
 }

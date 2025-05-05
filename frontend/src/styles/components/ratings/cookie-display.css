@@ -115,20 +115,3 @@
   gap: 5px;
   margin-top: 3px;
 }
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .cookie-display.cookie-large .cookie-filled,
-  .cookie-display.cookie-large .cookie-empty {
-    font-size: 1.5rem;
-  }
-  
-  .cookie-display.cookie-large .cookie-half-container {
-    width: 0.75rem;
-    height: 1.5rem;
-  }
-  
-  .cookie-display.cookie-large .cookie-half {
-    font-size: 1.5rem;
-  }
-}

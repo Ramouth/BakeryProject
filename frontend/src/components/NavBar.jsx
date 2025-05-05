@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useUser } from '../store/UserContext';
-import { User } from 'lucide-react';
+import { User, Plus } from 'lucide-react';
 import ReviewModal from './ReviewModal';
 
 const NavBar = () => {
@@ -35,7 +35,7 @@ const NavBar = () => {
           {currentUser ? (
             <>
               <button onClick={openReviewModal} className="review-button">
-                <span className="plus-icon">+</span>
+                <Plus size={16} />
                 <span className="separator"></span>
                 <span>Review</span>
               </button>
@@ -54,7 +54,7 @@ const NavBar = () => {
               </Link>
               
               <button onClick={openReviewModal} className="review-button">
-                <span className="plus-icon">+</span>
+                <Plus size={16} />
                 <span className="separator"></span>
                 <span>Review</span>
               </button>

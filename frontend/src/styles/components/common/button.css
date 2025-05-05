@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: center;
   padding: 0.6rem 1.25rem;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 0.95rem;
   letter-spacing: 0.01em;
   border-radius: 6px;
@@ -31,7 +31,7 @@
 /* Button Types */
 .btn-primary {
   background-color: var(--primary);
-  color: var(--text-light);
+  color: var(--text-dark);
 }
 
 .btn-primary:hover {
@@ -63,7 +63,7 @@
 
 .btn-danger {
   background-color: var(--error);
-  color: var(--text-light);
+  color: var(--text-dark);
 }
 
 .btn-danger:hover {
@@ -74,7 +74,7 @@
 
 .btn-success {
   background-color: var(--success);
-  color: var(--text-light);
+  color: var(--text-dark);
 }
 
 .btn-success:hover {
@@ -175,12 +175,5 @@
   to {
     transform: scale(2.5);
     opacity: 0;
-  }
-}
-
-/* Mobile Styles */
-@media (max-width: 768px) {
-  .btn-mobile-full {
-    width: 100%;
   }
 }

@@ -1,4 +1,3 @@
-/* src/styles/review-modal.css */
 .review-modal-content {
   display: flex;
   flex-direction: column;
@@ -20,7 +19,7 @@
 .review-type-button {
   flex: 1;
   padding: 10px 15px;
-  background: var(--background);
+  background: var(--accent);
   border: none;
   cursor: pointer;
   font-weight: 500;
@@ -178,32 +177,6 @@
   padding-top: 15px;
   border-top: 1px solid var(--accent);
 }
-
-/* Responsive Adjustments */
-@media (max-width: 600px) {
-  .search-input-group {
-    flex-direction: column;
-  }
-  
-  .modal-actions {
-    flex-direction: column;
-  }
-  
-  .modal-actions button {
-    width: 100%;
-  }
-  
-  .rating-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-  }
-  
-  .rating-label {
-    width: 100%;
-    margin-bottom: 3px;
-  }
-
 /* Improve styling for search results with address information */
 .result-item-name {
   font-weight: 500;
@@ -387,7 +360,7 @@
 .review-type-button {
   flex: 1;
   padding: 10px 15px;
-  background: var(--background);
+  background: var(--background-like);
   border: none;
   cursor: pointer;
   font-weight: 500;
@@ -434,7 +407,6 @@
   font-size: 0.9rem;
 }
 
-}
 .textarea-container {
 position: relative;
 width: 100%;

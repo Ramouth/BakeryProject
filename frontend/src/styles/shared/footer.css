@@ -3,7 +3,7 @@
   margin-top: auto;
   padding: 1.5rem 0;
   background: transparent;
-  color: var(--text);
+  color: var(--text-theme);
   width: 100%;
 }
 
@@ -54,16 +54,4 @@
   margin-right: 8px;
   vertical-align: middle;
   object-fit: contain;
-}
-
-@media (max-width: 768px) {
-  .footer-content {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  .social-links {
-    justify-content: center;
-    margin-top: 1rem;
-  }
 }
