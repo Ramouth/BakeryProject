@@ -3,6 +3,7 @@ import Modal from '../../components/Modal';
 import Button from '../../components/Button';
 import ProductForm from '../../components/admin/AdminProductModal';
 import ProductList from '../../components/admin/AdminProductList';
+import { ShoppingBag, Plus } from 'lucide-react';
 
 const AdminProductView = () => {
   const {
@@ -24,9 +25,16 @@ const AdminProductView = () => {
 
   return (
     <div className="section product-section">
-      <div className="section-header" style={{ marginBottom: '20px' }}>
-        <h2>Manage Products</h2>
+      <div className="section-header">
+        <div className="section-title">
+          <h2>
+            <ShoppingBag size={22} className="section-icon" />
+            Manage Products
+          </h2>
+          <p className="section-description">Add, edit, and manage products in the system</p>
+        </div>
         <Button onClick={handleOpenCreateModal} disabled={isLoading}>
+          <Plus size={18} style={{ marginRight: '8px' }} />
           Create New Product
         </Button>
       </div>

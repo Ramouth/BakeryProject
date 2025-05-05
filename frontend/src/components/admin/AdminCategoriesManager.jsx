@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAdminCategoryManager } from '../../viewmodels/admin/useAdminCategoryManager';
 import Modal from '../Modal';
 import Button from '../Button';
+import { Waypoints, Plus } from 'lucide-react';
 
 // Category Form Component
 const CategoryForm = ({ category, onSubmit, onCancel, isSubmitting }) => {
@@ -135,7 +136,10 @@ const SubcategoryManager = ({ category, subcategories, onEdit, onDelete, onAdd, 
       <h3>Subcategories for {category.name}</h3>
       
       <div className="subcategory-header">
-        <Button onClick={() => onAdd(null, category.id)}>Add Subcategory</Button>
+        <Button onClick={() => onAdd(null, category.id)}>
+          <Plus size={18} style={{ marginRight: '8px' }} />
+          Add Subcategory
+        </Button>
       </div>
       
       <div className="table-responsive">
@@ -407,8 +411,15 @@ const AdminCategoriesManager = () => {
   return (
     <div className="section category-section">
       <div className="section-header">
-        <h2>Manage Product Categories</h2>
+        <div className="section-title">
+          <h2>
+            <Waypoints size={22} className="section-icon" />
+            Manage Product Categories
+          </h2>
+          <p className="section-description">Add, edit, and manage product categories and subcategories</p>
+        </div>
         <Button onClick={() => openCategoryModal()} disabled={loading}>
+          <Plus size={18} style={{ marginRight: '8px' }} />
           Create New Category
         </Button>
       </div>
