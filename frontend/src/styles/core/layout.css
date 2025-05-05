@@ -3,7 +3,7 @@
   max-width: var(--container-width);
   margin: 20px auto;
   padding: 20px;
-  width: 85%; /* Standardizing width to match homepage content */
+  width: 85%; 
 }
 
 /* App Layout - Updated to ensure footer stays at bottom */

@@ -1,4 +1,3 @@
-# schemas/bakery_schema.py
 from . import ma
 from models.bakery_models import Bakery
 from marshmallow import fields, validate, post_dump, post_load
