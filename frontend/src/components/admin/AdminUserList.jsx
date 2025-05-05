@@ -11,24 +11,16 @@ const UserList = ({ users, updateUser, updateCallback }) => {
       console.error("Missing user ID for deletion");
       return;
     }
-
+  
+    // Use only one confirmation dialog
     if (window.confirm("Are you sure you want to delete this user?")) {
       try {
-        const options = {
-          method: "DELETE"
-        };
-        
-        const response = await fetch(`http://127.0.0.1:5000/users/delete/${id}`, options);
-        
-        if (response.status === 200) {
-          if (typeof updateCallback === 'function') {
-            updateCallback();
-          }
-        } else {
-          console.error("Failed to delete user:", await response.text());
+        // Call the updateCallback directly with the ID
+        if (typeof updateCallback === 'function') {
+          updateCallback(id);  // Pass the ID directly to the callback
         }
       } catch (error) {
-        console.error("Error deleting user:", error);
+        console.error("Error during user deletion:", error);
       }
     }
   };
