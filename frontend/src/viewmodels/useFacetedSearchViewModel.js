@@ -1,6 +1,17 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import apiClient from '../services/api';
 
+// Simple debounce utility
+const debounce = (func, delay = 500) => {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
+};
+
 export const useFacetedSearchViewModel = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -145,27 +156,45 @@ export const useFacetedSearchViewModel = () => {
     return result;
   }, [bakeryStats]);
 
+  // Create a debounced version of the search logic
+  const debouncedFetchAndProcess = useCallback(
+    debounce(async (results, setLoading, setResults, setSearched) => {
+      try {
+        // Fetch stats for each bakery in the results
+        const enhancedResults = await fetchBakeryStatsInBatches(results);
+        
+        // Set flag indicating a search has been performed
+        setSearched(true);
+        
+        // Show all matching results with stats
+        setResults(enhancedResults);
+      } catch (error) {
+        // Still set the original results if there's an error fetching stats
+        setResults(results);
+        setSearched(true);
+      } finally {
+        setLoading(false);
+      }
+    }, 500),
+    [fetchBakeryStatsInBatches]
+  );
+
   // Handle search results from faceted search component
   const handleSearch = useCallback(async (results) => {
     setIsLoading(true);
     
-    try {
-      // Fetch stats for each bakery in the results
-      const enhancedResults = await fetchBakeryStatsInBatches(results);
-      
-      // Set flag indicating a search has been performed
-      setHasSearched(true);
-      
-      // Show all matching results with stats
-      setSearchResults(enhancedResults);
-    } catch (error) {
-      // Still set the original results if there's an error fetching stats
-      setSearchResults(results);
-      setHasSearched(true);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [fetchBakeryStatsInBatches]);
+    // Use the debounced version of the fetch and process function
+    debouncedFetchAndProcess(results, setIsLoading, setSearchResults, setHasSearched);
+    
+  }, [debouncedFetchAndProcess]);
+
+  // Update a single filter with debounce
+  const updateFilter = useCallback((key, value) => {
+    setAppliedFilters(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  }, []);
 
   // Reset all filters
   const resetFilters = useCallback(() => {
@@ -230,6 +259,7 @@ export const useFacetedSearchViewModel = () => {
     availablePriceRanges,
     availableRatings,
     handleSearch,
+    updateFilter,
     resetFilters,
     formatBakeryNameForUrl,
     getBakeryRating,
