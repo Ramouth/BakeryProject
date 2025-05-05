@@ -116,7 +116,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: url('/src/assets/bageri.jpeg');
+  background-image: url('/src/assets/bageri.png');
   background-size: cover;
   background-position: center;
   color: transparent;
