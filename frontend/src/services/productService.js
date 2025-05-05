@@ -21,7 +21,7 @@ class ProductService extends BaseService {
     return response;
   }
 
-  // New methods to get categories and subcategories directly from API
+  // Updated methods to get categories and subcategories with correct paths
   async getAllCategories() {
     const response = await apiClient.get(`/categories`, true);
     return response;
@@ -34,6 +34,42 @@ class ProductService extends BaseService {
   
   async getSubcategoriesByCategory(categoryId) {
     const response = await apiClient.get(`/categories/${categoryId}/subcategories`, true);
+    return response;
+  }
+
+  // Create a new category 
+  async createCategory(categoryData) {
+    const response = await apiClient.post(`/categories/create`, categoryData);
+    return response;
+  }
+
+  // Update an existing category
+  async updateCategory(categoryId, categoryData) {
+    const response = await apiClient.patch(`/categories/update/${categoryId}`, categoryData);
+    return response;
+  }
+
+  // Delete a category
+  async deleteCategory(categoryId) {
+    const response = await apiClient.delete(`/categories/delete/${categoryId}`);
+    return response;
+  }
+
+  // Create a new subcategory
+  async createSubcategory(subcategoryData) {
+    const response = await apiClient.post(`/categories/subcategories/create`, subcategoryData);
+    return response;
+  }
+
+  // Update an existing subcategory
+  async updateSubcategory(subcategoryId, subcategoryData) {
+    const response = await apiClient.patch(`/categories/subcategories/update/${subcategoryId}`, subcategoryData);
+    return response;
+  }
+
+  // Delete a subcategory
+  async deleteSubcategory(subcategoryId) {
+    const response = await apiClient.delete(`/categories/subcategories/delete/${subcategoryId}`);
     return response;
   }
 

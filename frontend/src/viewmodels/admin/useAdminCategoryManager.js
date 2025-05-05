@@ -9,9 +9,6 @@ export const useAdminCategoryManager = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalType, setModalType] = useState('category'); // 'category' or 'subcategory'
-  const [currentItem, setCurrentItem] = useState(null);
   
   const { showSuccess, showError } = useNotification();
 
@@ -21,7 +18,7 @@ export const useAdminCategoryManager = () => {
       setError(null);
       
       // Fetch categories from API
-      const categoriesResponse = await productService.getAllCategories();
+      const categoriesResponse = await apiClient.get('/categories');
       if (categoriesResponse && categoriesResponse.categories) {
         setCategories(categoriesResponse.categories);
         
@@ -30,7 +27,7 @@ export const useAdminCategoryManager = () => {
         await Promise.all(
           categoriesResponse.categories.map(async (category) => {
             try {
-              const subcategoriesResponse = await productService.getSubcategoriesByCategory(category.id);
+              const subcategoriesResponse = await apiClient.get(`/categories/${category.id}/subcategories`);
               if (subcategoriesResponse && subcategoriesResponse.subcategories) {
                 subcategoryMap[category.id] = subcategoriesResponse.subcategories;
               }
@@ -64,38 +61,35 @@ export const useAdminCategoryManager = () => {
   };
 
   const handleOpenCategoryModal = (category = null) => {
-    setCurrentItem(category);
-    setModalType('category');
-    setIsModalOpen(true);
+    return category;
   };
 
   const handleOpenSubcategoryModal = (subcategory = null, categoryId = null) => {
-    setCurrentItem({ ...subcategory, categoryId: subcategory?.categoryId || categoryId });
-    setModalType('subcategory');
-    setIsModalOpen(true);
+    return { subcategory, categoryId };
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setCurrentItem(null);
+    // Just a placeholder for the hook
   };
 
   const handleSaveCategory = async (categoryData) => {
     try {
       setLoading(true);
       
-      if (currentItem && currentItem.id) {
+      const payload = { name: categoryData.name };
+      
+      if (categoryData.id) {
         // Update existing category
-        await apiClient.patch(`/categories/update/${currentItem.id}`, categoryData);
+        await apiClient.patch(`/categories/update/${categoryData.id}`, payload);
         showSuccess('Category updated successfully');
       } else {
         // Create new category
-        await apiClient.post('/categories/create', categoryData);
+        await apiClient.post('/categories/create', payload);
         showSuccess('Category created successfully');
       }
       
-      handleCloseModal();
       await fetchData();
+      return true;
     } catch (error) {
       showError(`Failed to save category: ${error.message}`);
       throw error;
@@ -108,18 +102,28 @@ export const useAdminCategoryManager = () => {
     try {
       setLoading(true);
       
-      if (currentItem && currentItem.id) {
+      // Prepare payload with proper structure
+      const payload = {
+        name: subcategoryData.name,
+        categoryId: subcategoryData.categoryId
+      };
+      
+      console.log("Subcategory data:", subcategoryData);
+      
+      if (subcategoryData.id) {
         // Update existing subcategory
-        await apiClient.patch(`/subcategories/update/${currentItem.id}`, subcategoryData);
+        console.log("Updating subcategory:", subcategoryData.id);
+        await apiClient.patch(`/categories/subcategories/update/${subcategoryData.id}`, payload);
         showSuccess('Subcategory updated successfully');
       } else {
         // Create new subcategory
-        await apiClient.post('/subcategories/create', subcategoryData);
+        console.log("Creating new subcategory");
+        await apiClient.post('/categories/subcategories/create', payload);
         showSuccess('Subcategory created successfully');
       }
       
-      handleCloseModal();
       await fetchData();
+      return true;
     } catch (error) {
       showError(`Failed to save subcategory: ${error.message}`);
       throw error;
@@ -129,16 +133,22 @@ export const useAdminCategoryManager = () => {
   };
 
   const handleDeleteCategory = async (categoryId) => {
-    if (!window.confirm('Are you sure you want to delete this category? This will also delete all associated subcategories.')) {
-      return;
-    }
-    
     try {
       setLoading(true);
+      
+      // Delete the category
       await apiClient.delete(`/categories/delete/${categoryId}`);
       showSuccess('Category deleted successfully');
       
-      // If the deleted category was selected, select the first remaining category
+      // Update state after successful deletion
+      setCategories(prev => prev.filter(c => c.id !== categoryId));
+      
+      // Remove subcategories for this category
+      const newSubcategories = { ...subcategories };
+      delete newSubcategories[categoryId];
+      setSubcategories(newSubcategories);
+      
+      // If the deleted category was selected, select another one
       if (selectedCategory === categoryId) {
         const remainingCategories = categories.filter(c => c.id !== categoryId);
         if (remainingCategories.length > 0) {
@@ -148,26 +158,37 @@ export const useAdminCategoryManager = () => {
         }
       }
       
-      await fetchData();
+      return true;
     } catch (error) {
       showError(`Failed to delete category: ${error.message}`);
+      throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDeleteSubcategory = async (subcategoryId) => {
-    if (!window.confirm('Are you sure you want to delete this subcategory?')) {
-      return;
-    }
-    
+  const handleDeleteSubcategory = async (subcategory) => {
     try {
       setLoading(true);
-      await apiClient.delete(`/subcategories/delete/${subcategoryId}`);
+      
+      console.log("Deleting subcategory:", subcategory);
+      
+      // Delete the subcategory
+      await apiClient.delete(`/categories/subcategories/delete/${subcategory.id}`);
       showSuccess('Subcategory deleted successfully');
-      await fetchData();
+      
+      // Update state after successful deletion
+      if (subcategory.categoryId && subcategories[subcategory.categoryId]) {
+        setSubcategories(prev => ({
+          ...prev,
+          [subcategory.categoryId]: prev[subcategory.categoryId].filter(s => s.id !== subcategory.id)
+        }));
+      }
+      
+      return true;
     } catch (error) {
       showError(`Failed to delete subcategory: ${error.message}`);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -182,9 +203,6 @@ export const useAdminCategoryManager = () => {
     loading,
     error,
     selectedCategory,
-    isModalOpen,
-    modalType,
-    currentItem,
     getCategorySubcategories,
     handleCategorySelect,
     handleOpenCategoryModal,
