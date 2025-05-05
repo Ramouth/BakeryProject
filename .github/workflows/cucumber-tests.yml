@@ -1,0 +1,26 @@
+name: Cucumber Tests
+
+on: [push, pull_request]
+
+jobs:
+  cucumber:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm install
+      - name: Start dev server
+        run: |
+          cd frontend
+          npm run dev &
+          sleep 10
+      - name: Run Cucumber tests
+        run: |
+          cd frontend
+          npm run test:cucumber
