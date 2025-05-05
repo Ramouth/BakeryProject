@@ -196,6 +196,58 @@ def search_bakeries():
         return jsonify({"message": f"Error searching bakeries: {str(e)}", "bakeries": []}), 500
 
 
+# New bulk stats endpoint
+@bakery_bp.route('/stats', methods=['GET'])
+def get_multiple_bakery_stats():
+    """
+    Get stats for multiple bakeries. Accepts a comma-separated list of bakery IDs as ?ids=1,2,3,...
+    """
+    try:
+        ids_param = request.args.get('ids')
+        if not ids_param:
+            return jsonify({"message": "Missing 'ids' query parameter"}), 400
+
+        try:
+            id_list = [int(i.strip()) for i in ids_param.split(',') if i.strip().isdigit()]
+        except ValueError:
+            return jsonify({"message": "IDs must be a comma-separated list of integers"}), 400
+
+        if not id_list:
+            return jsonify({"message": "No valid IDs provided"}), 400
+
+        stats_list = []
+        for bakery_id in id_list:
+            try:
+                stats = bakery_service.get_bakery_stats(bakery_id)
+                # Ensure keys
+                stats.setdefault('average_rating', 0)
+                stats.setdefault('review_count', 0)
+                stats.setdefault('ratings', {
+                    'overall': 0,
+                    'service': 0,
+                    'price': 0,
+                    'atmosphere': 0,
+                    'location': 0
+                })
+                stats_list.append({
+                    'bakery_id': bakery_id,
+                    **stats
+                })
+            except Exception as e:
+                app.logger.warning(f"Could not fetch stats for bakery ID {bakery_id}: {str(e)}")
+                import traceback
+                app.logger.debug(traceback.format_exc())
+                continue
+
+        return jsonify({"stats": stats_list}), 200
+
+    except Exception as e:
+        import traceback
+        app.logger.error(f"Unexpected error in /bakeries/stats: {str(e)}")
+        app.logger.error(traceback.format_exc())
+        return jsonify({"message": "Unexpected server error"}), 500
+
+
 @bakery_bp.route('/<int:bakery_id>/stats', methods=['GET'])
 def get_bakery_stats(bakery_id):
     """Get statistics for a bakery including review averages"""

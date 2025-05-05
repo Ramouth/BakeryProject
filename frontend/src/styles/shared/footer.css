@@ -4,13 +4,13 @@
   padding: 1.5rem 0;
   background: transparent;
   color: var(--text-theme);
-  width: 100%;
+  width: var(container-width);
 }
 
 .footer-content {
-  max-width: var(--container-width);
+  max-width: 40%;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 50px;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -36,7 +36,7 @@
 }
 
 .social-links a {
-  color: var(--text);
+  color: var(--text-theme);
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -44,7 +44,7 @@
 }
 
 .social-links a:hover {
-  color: var(--text);
+  color: var(--text-theme);
   text-decoration: underline;
 }
 
