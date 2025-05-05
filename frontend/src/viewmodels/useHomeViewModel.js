@@ -13,129 +13,39 @@ export const useHomeViewModel = () => {
   const [topBakeries, setTopBakeries] = useState([]);
   const [loading, setLoading] = useState(false);
   
-  const fetchBakeryStatsInBatches = useCallback(async (bakeries, batchSize = 2) => {
-    const result = [...bakeries];
-    
-    for (let i = 0; i < result.length; i += batchSize) {
-      const batch = result.slice(i, i + batchSize);
-      
-      await Promise.all(
-        batch.map(async (bakery, index) => {
-          try {
-            const statsResponse = await apiClient.get(`/bakeries/${bakery.id}/stats`, true);
-            
-            // Explicitly store average_rating in a consistent place
-            let average_rating = 0;
-            if (statsResponse && typeof statsResponse.average_rating === 'number') {
-              average_rating = statsResponse.average_rating;
-            } else if (statsResponse && statsResponse.ratings && typeof statsResponse.ratings.overall === 'number') {
-              average_rating = statsResponse.ratings.overall;
-            }
-            
-            result[i + index] = {
-              ...bakery,
-              average_rating: average_rating, // Ensure this is stored consistently
-              review_count: statsResponse.review_count || 0,
-              ratings: statsResponse.ratings || {
-                overall: average_rating, // Use the same value for consistency
-                service: 0,
-                price: 0,
-                atmosphere: 0,
-                location: 0
-              }
-            };
-            
-            // Debugging
-            console.log(`Bakery ${bakery.id} rating set to ${result[i + index].average_rating}`);
-          } catch (error) {
-            console.error(`Error fetching stats for bakery ${bakery.id}:`, error);
-          }
-        })
-      );
-    }
-    
-    return result;
-  }, []);
-  
+  // Optimized version that only fetches top 4 bakeries with their stats directly
+  // Instead of fetching all bakeries and then fetching stats for each one
   const fetchTopBakeries = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await apiClient.get('/bakeries/top?limit=4', true);
+      // Fetch only top 4 bakeries with their ratings in one go
+      const response = await apiClient.get('/bakeries/top?limit=4&includeStats=true', true);
       
       if (response && response.bakeries && response.bakeries.length > 0) {
-        // Fetch stats for all bakeries
-        let bakeriesWithStats = await fetchBakeryStatsInBatches(response.bakeries);
-        
-        // Sort by average rating (highest first)
-        bakeriesWithStats = bakeriesWithStats.sort((a, b) => {
-          const ratingA = a.average_rating || 0;
-          const ratingB = b.average_rating || 0;
-          
-          if (ratingB === ratingA) {
-            // Secondary sort by number of reviews when ratings are equal
-            const reviewsA = a.review_count || 0;
-            const reviewsB = b.review_count || 0;
-            return reviewsB - reviewsA;
-          }
-          
-          return ratingB - ratingA;
-        });
-        
-        setTopBakeries(bakeriesWithStats);
+        // Already sorted bakeries with basic stats included
+        setTopBakeries(response.bakeries);
       } else {
-        // If there's no data from /bakeries/top endpoint, fetch all bakeries
+        // Fallback: fetch a small set directly if the optimized endpoint isn't available
         try {
-          const allBakeriesResponse = await apiClient.get('/bakeries', true);
-          if (allBakeriesResponse && allBakeriesResponse.bakeries && allBakeriesResponse.bakeries.length > 0) {
-            // Fetch stats for all bakeries
-            let bakeriesWithStats = await fetchBakeryStatsInBatches(allBakeriesResponse.bakeries);
-            
-            // Sort by average rating (highest first)
-            bakeriesWithStats = bakeriesWithStats.sort((a, b) => {
-              const ratingA = a.average_rating || 0;
-              const ratingB = b.average_rating || 0;
-              return ratingB - ratingA;
-            });
-            
-            // Take only top 4
-            setTopBakeries(bakeriesWithStats.slice(0, 4));
+          const fallbackResponse = await apiClient.get('/bakeries?limit=4&sort=rating', true);
+          if (fallbackResponse && fallbackResponse.bakeries) {
+            setTopBakeries(fallbackResponse.bakeries.slice(0, 4));
           } else {
             setTopBakeries([]);
           }
         } catch (error) {
-          console.error('Error fetching all bakeries:', error);
+          console.error('Error fetching fallback bakeries:', error);
           setTopBakeries([]);
         }
       }
     } catch (error) {
       console.error('Error fetching top bakeries:', error);
       showError('Unable to load top bakeries');
-      
-      // Attempt to fetch all bakeries as a fallback
-      try {
-        const allBakeriesResponse = await apiClient.get('/bakeries', true);
-        if (allBakeriesResponse && allBakeriesResponse.bakeries && allBakeriesResponse.bakeries.length > 0) {
-          let bakeriesWithStats = await fetchBakeryStatsInBatches(allBakeriesResponse.bakeries);
-          
-          // Sort and take top 4
-          bakeriesWithStats = bakeriesWithStats.sort((a, b) => {
-            const ratingA = a.average_rating || 0;
-            const ratingB = b.average_rating || 0;
-            return ratingB - ratingA;
-          }).slice(0, 4);
-          
-          setTopBakeries(bakeriesWithStats);
-        } else {
-          setTopBakeries([]);
-        }
-      } catch (err) {
-        console.error('Error fetching fallback bakeries:', err);
-        setTopBakeries([]);
-      }
+      setTopBakeries([]);
     } finally {
       setLoading(false);
     }
-  }, [fetchBakeryStatsInBatches, showError]);
+  }, [showError]);
   
   useEffect(() => {
     resetReview();
