@@ -4,7 +4,7 @@ import { Product } from '../../models/Product';
 import { Bakery } from '../../models/Bakery';
 import { useNotification } from '../../store/NotificationContext';
 
-export const useAdminProductViewModel = () => {
+const useAdminProductViewModel = () => {
   const [products, setProducts] = useState([]);
   const [bakeries, setBakeries] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -70,24 +70,40 @@ export const useAdminProductViewModel = () => {
   const handleSaveProduct = useCallback(async (productData) => {
     setIsLoading(true);
     try {
-      // Ensure bakeryId is a number
+      // Convert all ID fields to numbers
       if (productData.bakeryId && typeof productData.bakeryId === 'string') {
         productData.bakeryId = parseInt(productData.bakeryId, 10);
       }
+      
+      if (productData.categoryId && typeof productData.categoryId === 'string') {
+        productData.categoryId = parseInt(productData.categoryId, 10);
+      }
+      
+      if (productData.subcategoryId && typeof productData.subcategoryId === 'string') {
+        productData.subcategoryId = parseInt(productData.subcategoryId, 10);
+      }
+      
+      if (!productData.categoryId) {
+        productData.subcategoryId = null;
+      }
+      
+      // Remove description field if it exists since the backend doesn't expect it
+      const { description, ...validData } = productData;
+      
+      console.log('Final product payload:', JSON.stringify(validData, null, 2));
 
       if (currentProduct?.id) {
-        // Update
-        await apiClient.patch(`/products/update/${currentProduct.id}`, productData, false);
+        await apiClient.patch(`/products/update/${currentProduct.id}`, validData, false);
         showSuccess('Product updated successfully!');
       } else {
-        // Create
-        await apiClient.post('/products/create', productData, false);
+        await apiClient.post('/products/create', validData, false);
         showSuccess('Product created successfully!');
       }
       
       handleCloseModal();
       await fetchProducts();
     } catch (err) {
+      console.error('Save error:', err);
       setError(err.message || 'Failed to save product.');
       showError(`Failed to save product: ${err.message}`);
       throw err; // Re-throw for form error handling
@@ -131,3 +147,5 @@ export const useAdminProductViewModel = () => {
     handleDeleteProduct
   };
 };
+
+export default useAdminProductViewModel;

@@ -22,7 +22,7 @@ export default function ProductList({ products, onEdit, onDelete }) {
                 <td>
                   {product.name}
                   {product.imageUrl && (
-                    <span className="has-image-indicator">📷</span>
+                    <span className="has-image-indicator"></span>
                   )}
                 </td>
                 <td>{product.bakery?.name || '-'}</td>

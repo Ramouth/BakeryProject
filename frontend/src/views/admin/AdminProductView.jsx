@@ -1,4 +1,4 @@
-import { useAdminProductViewModel } from '../../viewmodels/admin/useAdminProductViewModel';
+import useAdminProductViewModel from '../../viewmodels/admin/useAdminProductViewModel';
 import Modal from '../../components/Modal';
 import Button from '../../components/Button';
 import ProductForm from '../../components/admin/AdminProductModal';
