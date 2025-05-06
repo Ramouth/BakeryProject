@@ -191,64 +191,64 @@ const ReviewModal = ({
     }
   };
   
-  // Submit the review
-  const handleSubmitReview = async () => {
-    if (!selectedItem) {
-      showError(`Please select a ${reviewType} to review`);
-      return;
-    }
+// Submit the review
+const handleSubmitReview = async () => {
+  if (!selectedItem) {
+    showError(`Please select a ${reviewType} to review`);
+    return;
+  }
+  
+  if (overallRating === 0) {
+    showError("Please provide an overall rating");
+    return;
+  }
+  
+  setIsSubmitting(true);
+  
+  try {
+    // Prepare review data based on review type
+    let reviewData = {
+      review: comments || `Review for ${selectedItem.name}`,
+      overallRating: overallRating,
+      userId: currentUser?.id || null // Use the user's ID if logged in, null otherwise
+    };
     
-    if (overallRating === 0) {
-      showError("Please provide an overall rating");
-      return;
-    }
-    
-    setIsSubmitting(true);
-    
-    try {
-      // Prepare review data based on review type
-      let reviewData = {
-        review: comments || `Review for ${selectedItem.name}`,
-        overallRating: overallRating,
-        userId: currentUser?.id || null // Use the user's ID if logged in, null otherwise
+    if (reviewType === 'bakery') {
+      // Bakery review specific fields - explicitly set null for 0 ratings
+      reviewData = {
+        ...reviewData,
+        serviceRating: ratings.service > 0 ? ratings.service : null,
+        priceRating: ratings.price > 0 ? ratings.price : null, 
+        atmosphereRating: ratings.atmosphere > 0 ? ratings.atmosphere : null,
+        locationRating: ratings.location > 0 ? ratings.location : null,
+        bakeryId: selectedItem.id
       };
       
-      if (reviewType === 'bakery') {
-        // Bakery review specific fields
-        reviewData = {
-          ...reviewData,
-          serviceRating: ratings.service || 5,
-          priceRating: ratings.price || 5,
-          atmosphereRating: ratings.atmosphere || 5,
-          locationRating: ratings.location || 5,
-          bakeryId: selectedItem.id
-        };
-        
-        // Send to bakery reviews endpoint
-        await apiClient.post('/bakeryreviews/create', reviewData);
-      } else {
-        // Product review specific fields
-        reviewData = {
-          ...reviewData,
-          tasteRating: ratings.taste || 5,
-          priceRating: ratings.price || 5,
-          presentationRating: ratings.presentation || 5,
-          productId: selectedItem.id
-        };
-        
-        // Send to product reviews endpoint
-        await apiClient.post('/productreviews/create', reviewData);
-      }
+      // Send to bakery reviews endpoint
+      await apiClient.post('/bakeryreviews/create', reviewData);
+    } else {
+      // Product review specific fields - explicitly set null for 0 ratings
+      reviewData = {
+        ...reviewData,
+        tasteRating: ratings.taste > 0 ? ratings.taste : null,
+        priceRating: ratings.price > 0 ? ratings.price : null,
+        presentationRating: ratings.presentation > 0 ? ratings.presentation : null,
+        productId: selectedItem.id
+      };
       
-      showSuccess(`Your ${reviewType} review has been submitted!`);
-      onClose();
-    } catch (error) {
-      console.error('Review submission error:', error);
-      showError(`Failed to submit review: ${error.message || "Unknown error"}`);
-    } finally {
-      setIsSubmitting(false);
+      // Send to product reviews endpoint
+      await apiClient.post('/productreviews/create', reviewData);
     }
-  };
+    
+    showSuccess(`Your ${reviewType} review has been submitted!`);
+    onClose();
+  } catch (error) {
+    console.error('Review submission error:', error);
+    showError(`Failed to submit review: ${error.message || "Unknown error"}`);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   // Get bakery name with location
   const getBakeryName = (product) => {
