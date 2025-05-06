@@ -74,6 +74,17 @@ const useAdminProductViewModel = () => {
       if (productData.bakeryId && typeof productData.bakeryId === 'string') {
         productData.bakeryId = parseInt(productData.bakeryId, 10);
       }
+
+      if (productData.subcategoryId && !productData.categoryId) {
+        // Can't have a subcategory without a category
+        showError("You must select a category when selecting a subcategory");
+        throw new Error("Category is required when subcategory is selected");
+      }
+      
+      // Check for empty string values and convert to null
+      if (productData.categoryId === '') productData.categoryId = null;
+      if (productData.subcategoryId === '') productData.subcategoryId = null;
+      
       
       if (productData.categoryId && typeof productData.categoryId === 'string') {
         productData.categoryId = parseInt(productData.categoryId, 10);
@@ -92,12 +103,13 @@ const useAdminProductViewModel = () => {
       
       console.log('Final product payload:', JSON.stringify(validData, null, 2));
 
-      if (currentProduct?.id) {
+      if (!currentProduct?.id) {
+        const { id, ...dataWithoutId } = validData;
+        await apiClient.post('/products/create', dataWithoutId, false);
+        showSuccess('Product created successfully!');
+      } else {
         await apiClient.patch(`/products/update/${currentProduct.id}`, validData, false);
         showSuccess('Product updated successfully!');
-      } else {
-        await apiClient.post('/products/create', validData, false);
-        showSuccess('Product created successfully!');
       }
       
       handleCloseModal();

@@ -173,6 +173,7 @@ class ApiClient {
 
         // Parse and throw error for other status codes
         const errorText = await response.text();
+        console.log('API Error Response Text:', errorText); 
         let errorData;
 
         try {

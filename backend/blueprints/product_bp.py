@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, make_response
-from models import Product, Bakery
+from models import Product, Bakery, Subcategory
 from schemas import ProductSchema
 from services.product_service import ProductService
 from flask import current_app as app
@@ -87,6 +87,16 @@ def create_product():
         bakery = Bakery.query.get(data['bakeryId'])
         if not bakery:
             return jsonify({"message": "Bakery not found"}), 404
+
+        # Add validation for subcategory-category relationship
+        if data.get('subcategoryId') and not data.get('categoryId'):
+            return jsonify({"message": "Category is required when subcategory is provided"}), 400
+            
+        # If both category and subcategory are provided, check relationship
+        if data.get('subcategoryId') and data.get('categoryId'):
+            subcategory = Subcategory.query.get(data['subcategoryId'])
+            if not subcategory or subcategory.category_id != data['categoryId']:
+                return jsonify({"message": "Subcategory does not belong to the selected category"}), 400
 
         errors = product_schema.validate(data)
         if errors:
