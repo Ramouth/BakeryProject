@@ -3,7 +3,7 @@ import ProductReviewList from '../../components/admin/AdminProductReviewList';
 import ProductReviewForm from '../../components/admin/AdminProductReviewModal';
 import Modal from '../../components/Modal';
 import Button from '../../components/Button';
-import { Star, Plus } from 'lucide-react';
+import { Star, Plus, RefreshCw } from 'lucide-react';
 
 const AdminProductReviewView = () => {
   const {
@@ -13,10 +13,13 @@ const AdminProductReviewView = () => {
     isModalOpen,
     currentReview,
     isLoading,
+    isLoadingMore,
     error,
     searchTerm,
     setSearchTerm,
     filteredReviews,
+    hasMore,
+    loadMoreReviews,
     handleOpenCreateModal,
     handleOpenEditModal,
     handleCloseModal,
@@ -62,11 +65,32 @@ const AdminProductReviewView = () => {
       {isLoading && !reviews.length ? (
         <div className="loading">Loading product reviews...</div>
       ) : (
-        <ProductReviewList 
-          reviews={filteredReviews} 
-          updateReview={handleOpenEditModal} 
-          updateCallback={handleDeleteReview} 
-        />
+        <>
+          <ProductReviewList 
+            reviews={filteredReviews} 
+            updateReview={handleOpenEditModal} 
+            updateCallback={handleDeleteReview} 
+          />
+          
+          {hasMore && (
+            <div style={{ textAlign: 'center', marginTop: '20px' }}>
+              <Button 
+                onClick={loadMoreReviews} 
+                disabled={isLoadingMore}
+                variant="secondary"
+              >
+                {isLoadingMore ? (
+                  <>
+                    <RefreshCw size={16} style={{ marginRight: '8px', animation: 'spin 1s linear infinite' }} />
+                    Loading...
+                  </>
+                ) : (
+                  'Load More Reviews'
+                )}
+              </Button>
+            </div>
+          )}
+        </>
       )}
 
       <Modal 
