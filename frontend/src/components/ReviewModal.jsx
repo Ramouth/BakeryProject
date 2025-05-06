@@ -482,17 +482,16 @@ const handleSubmitReview = async () => {
                    rows="3"
                    value={comments}
                    onChange={(e) => {
-                     // Limit input to 1000 characters
-                     if (e.target.value.length <= 280) {
+                     if (e.target.value.length <= 480) {
                        setComments(e.target.value);
                      }
                    }}
-                   maxLength={280}
+                   maxLength={480}
                    placeholder={`Share your thoughts about this ${reviewType}...`}
                  />
                  <div className="character-count">
-                   <span className={comments.length > 200 ? (comments.length > 250 ? "count-warning" : "count-notice") : ""}>
-                     {comments.length}/280
+                   <span className={comments.length > 400 ? (comments.length > 450 ? "count-warning" : "count-notice") : ""}>
+                     {comments.length}/480
                    </span>
                  </div>
                </div>
