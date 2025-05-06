@@ -145,7 +145,6 @@ const BakeryProfile = () => {
           
           <div className="bakery-actions">
             <button className="btn btn-primary" onClick={openReviewModal}>Write a Review</button>
-            <button className="btn btn-secondary">Share</button>
           </div>
         </div>
 
