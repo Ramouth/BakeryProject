@@ -1,13 +1,14 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
+from flask_migrate import Migrate
 import os, datetime, logging
 from logging.handlers import RotatingFileHandler
+from dotenv import load_dotenv  # Import load_dotenv
 
 from config import DevelopmentConfig, ProductionConfig
-from models import db
-from schemas import ma
-from utils.caching import cache, configure_cache
+from extensions import db, ma, migrate, jwt, cors, cache, init_extensions
+from utils.caching import configure_cache
 
 # Blueprints
 from blueprints.bakery_bp import bakery_bp
@@ -16,6 +17,9 @@ from blueprints.review_bp import bakery_review_bp, product_review_bp
 from blueprints.user_bp import user_bp
 from blueprints.auth_bp import auth_bp
 from blueprints.category_bp import category_bp
+
+# Load environment variables from .env file
+load_dotenv()  # This loads environment variables from .env at the root
 
 def create_app(config_class=None):
     # Pick config
@@ -35,7 +39,6 @@ def create_app(config_class=None):
         'JWT_ACCESS_TOKEN_EXPIRES': datetime.timedelta(hours=1),
         'JWT_REFRESH_TOKEN_EXPIRES': datetime.timedelta(days=30),
     })
-    jwt = JWTManager(app)
 
     # —————— LOGGING ——————
     if not app.debug:
@@ -55,8 +58,8 @@ def create_app(config_class=None):
             app.logger.debug(f'{request.method} {request.path} — Headers: {dict(request.headers)}')
 
     # —————— EXTENSIONS ——————
-    db.init_app(app)
-    ma.init_app(app)
+    # Initialize all extensions
+    init_extensions(app)
     configure_cache(app)  # <-- Added from dev
 
     # —————— CORS ——————
@@ -87,9 +90,9 @@ def create_app(config_class=None):
             'error': str(e) if app.debug else None
         }), 500
 
-    # —————— DB INIT ——————
-    with app.app_context():
-        db.create_all()
+    # We no longer need db.create_all() since migrations will handle this
+    # with app.app_context():
+    #     db.create_all()
 
     return app
 

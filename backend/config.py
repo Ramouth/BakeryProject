@@ -17,7 +17,14 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Security configurations
-    SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-key-please-change-in-production')
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+    if not SECRET_KEY:
+        raise ValueError("SECRET_KEY is not set. Please provide it in the environment variables.")
+    
+    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'jwt-dev-key-please-change-in-production')
+    
+    # CORS configuration
+    ALLOWED_ORIGINS = os.environ.get('ALLOWED_ORIGINS', 'http://localhost:5173').split(',')
     
     # API configurations
     JSON_SORT_KEYS = False
@@ -33,9 +40,18 @@ class ProductionConfig(Config):
     DEBUG = False
     TESTING = False
     
-    # Override these in environment or .env file
+    # These must be set in environment variables in production
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    if not SQLALCHEMY_DATABASE_URI:
+        raise ValueError("DATABASE_URL is not set. Please provide it in the environment variables.")
+    
     SECRET_KEY = os.environ.get('SECRET_KEY')
+    if not SECRET_KEY:
+        raise ValueError("SECRET_KEY is not set. Please provide it in the environment variables.")
+    
+    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY')
+    if not JWT_SECRET_KEY:
+        raise ValueError("JWT_SECRET_KEY is not set. Please provide it in the environment variables.")
     
     # Set secure cookie options in production
     SESSION_COOKIE_SECURE = True
@@ -46,4 +62,4 @@ class ProductionConfig(Config):
 class TestingConfig(Config):
     """Testing configuration"""
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'  # Use in-memory database for testing
