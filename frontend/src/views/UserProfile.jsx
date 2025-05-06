@@ -362,11 +362,6 @@ const UserProfile = () => {
                   </div>
                   
                   <div className="additional-stats">                 
-                    <div className="stat-row">
-                      <span className="stat-label">Last Review:</span>
-                      <span className="stat-detail">{formatDate(userStats.mostRecentReview) || 'No reviews yet'}</span>
-                    </div>
-
                     {userStats.totalReviews > 0 && (
                       <div className="review-distribution">
                         <h3>Your Reviewing Activity</h3>
