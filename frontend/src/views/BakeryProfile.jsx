@@ -177,7 +177,7 @@ const BakeryProfile = () => {
                 <h2>About {bakery.name}</h2>
                 <p className="bakery-description">
                   {bakery.description || 
-                    `${bakery.name} is a quality bakery located in Copenhagen offering a range of delicious baked goods and pastries. Visit us to experience authentic Danish baking.`}
+                    `${bakery.name} is a quality bakery located at ${bakery.streetName || 'an unknown street'} offering a range of delicious baked goods and pastries. Visit us to experience authentic Danish baking.`}
                 </p>
                 
                 <div className="bakery-details">
