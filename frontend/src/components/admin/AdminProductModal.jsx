@@ -70,8 +70,17 @@ const ProductForm = ({ product, bakeries, onSubmit, onCancel, isSubmitting }) =>
   
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
-  };
+    
+    // Validate form data before submission
+    const validatedData = {
+      ...formData,
+      // Convert empty strings to null
+      categoryId: formData.categoryId || null,
+      subcategoryId: formData.subcategoryId || null,
+    };
+    
+    onSubmit(validatedData);
+};
 
   return (
     <form onSubmit={handleSubmit}>
