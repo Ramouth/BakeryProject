@@ -1,5 +1,6 @@
 import { useUserProfileViewModel } from '../viewmodels/useUserProfileViewModel';
 import Button from '../components/Button';
+import { Link } from 'react-router-dom';
 
 const UserProfile = () => {
   const {
@@ -114,6 +115,12 @@ const UserProfile = () => {
     );
   };
 
+  // Helper function to format bakery/product names for URLs
+  const formatNameForUrl = (name) => {
+    if (!name) return '';
+    return name.toLowerCase().replace(/\s+/g, '-');
+  };
+
   return (
     <div className="container">
       <div className="profile-container">
@@ -220,25 +227,54 @@ const UserProfile = () => {
                   ) : (
                     <div className="review-list">
                       {reviewHistory.map(review => (
-                        <div key={review.id} className="review-card">
+                        // Add the unique containing class here: user-profile-review-card
+                        <div key={`${review.type}-${review.id}`} className="review-card user-profile-review-card">
                           <div className="review-header">
-                            <h3 className="review-item-name">{review.itemName}</h3>
+                            <div className="review-title-section">
+                              {/* Product/Bakery Name as Link */}
+                              {review.type === 'bakery' ? (
+                                <Link 
+                                  to={`/bakery/${encodeURIComponent(formatNameForUrl(review.itemName))}`} 
+                                  className="review-item-name"
+                                >
+                                  {review.itemName}
+                                </Link>
+                              ) : (
+                                <Link 
+                                  to={`/product/${review.itemId}`} 
+                                  className="review-item-name"
+                                >
+                                  {review.itemName}
+                                </Link>
+                              )}
+                              
+                              {/* Bakery Name for Product Reviews */}
+                              {review.type === 'product' && review.bakeryName && (
+                                <Link 
+                                  to={`/bakery/${encodeURIComponent(formatNameForUrl(review.bakeryName))}`}
+                                  className="review-bakery-name"
+                                >
+                                  {review.bakeryName}
+                                </Link>
+                              )}
+                            </div>
+                            
                             <span className="review-type-badge">
                               {review.type === 'bakery' ? 'Bakery' : 'Product'}
                             </span>
                           </div>
                           
-                          <div className="review-rating">
-                            <span className="rating-value">{review.rating.toFixed(1)}</span>
+                          <div className="review-rating-row">
+                            <div className="rating-value">{review.rating.toFixed(1)}</div>
                             {renderCookieRating(review.rating)}
-                            <span className="review-date">{formatDate(review.date)}</span>
+                            <div className="review-date">{formatDate(review.date)}</div>
                           </div>
                           
                           <p className="review-comment">{review.comment}</p>
                           
                           <div className="review-actions">
                             <button 
-                              className="review-action-btn" 
+                              className="review-action-btn edit-btn"
                               onClick={() => {
                                 // Navigate to the review page with this review's ID
                                 navigate(`/${review.type}-review/${review.id}/edit`);
@@ -247,7 +283,7 @@ const UserProfile = () => {
                               Edit
                             </button>
                             <button 
-                              className="review-action-btn"
+                              className="review-action-btn delete-btn"
                               onClick={() => handleDeleteReview(review.id, review.type)}
                               disabled={loading}
                             >

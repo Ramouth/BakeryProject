@@ -48,6 +48,9 @@
 /* View styles - admin */
 @import 'views/admin/admin-dashboard.css';
 
+/* View styles - userprofile */
+@import 'views/userprofile/reviewcard.css';
+
 /* Shared styles */
 @import 'shared/review-modal.css';
 @import 'shared/notification.css';
