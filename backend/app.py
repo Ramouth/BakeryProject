@@ -4,33 +4,37 @@ from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 import os, datetime, logging
 from logging.handlers import RotatingFileHandler
-from dotenv import load_dotenv  # Import load_dotenv
+from dotenv import load_dotenv
 
-from config import DevelopmentConfig, ProductionConfig
-from extensions import db, ma, migrate, jwt, cors, cache, init_extensions
-from utils.caching import configure_cache
+from backend.config import DevelopmentConfig, ProductionConfig
+from backend.extensions import db, ma, migrate, jwt, cors, cache, init_extensions
+from backend.utils.caching import configure_cache
 
 # Blueprints
-from blueprints.bakery_bp import bakery_bp
-from blueprints.product_bp import product_bp
-from blueprints.review_bp import bakery_review_bp, product_review_bp
-from blueprints.user_bp import user_bp
-from blueprints.auth_bp import auth_bp
-from blueprints.category_bp import category_bp
+from backend.blueprints.bakery_bp import bakery_bp
+from backend.blueprints.product_bp import product_bp
+from backend.blueprints.review_bp import bakery_review_bp, product_review_bp
+from backend.blueprints.user_bp import user_bp
+from backend.blueprints.auth_bp import auth_bp
+from backend.blueprints.category_bp import category_bp
 
 # Load environment variables from .env file
-load_dotenv()  # This loads environment variables from .env at the root
+load_dotenv()
 
 def create_app(config_class=None):
-    # Pick config
+    # choose configuration
     if not config_class:
-        config_class = ProductionConfig if os.getenv('FLASK_ENV') == 'production' else DevelopmentConfig
+        config_class = (
+            ProductionConfig
+            if os.getenv('FLASK_ENV') == 'production'
+            else DevelopmentConfig
+        )
 
     app = Flask(__name__, static_folder='static')
     app.config.from_object(config_class)
     app.url_map.strict_slashes = False
 
-    # —————— JWT CONFIGURATION ——————
+    # ——— JWT configuration ———
     app.config.update({
         'JWT_TOKEN_LOCATION': ['headers'],
         'JWT_HEADER_NAME': 'Authorization',
@@ -40,10 +44,12 @@ def create_app(config_class=None):
         'JWT_REFRESH_TOKEN_EXPIRES': datetime.timedelta(days=30),
     })
 
-    # —————— LOGGING ——————
+    # ——— Logging ———
     if not app.debug:
         os.makedirs('logs', exist_ok=True)
-        handler = RotatingFileHandler('logs/bakery_app.log', maxBytes=10_240, backupCount=10)
+        handler = RotatingFileHandler(
+            'logs/bakery_app.log', maxBytes=10_240, backupCount=10
+        )
         handler.setLevel(logging.INFO)
         handler.setFormatter(logging.Formatter(
             '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
@@ -55,24 +61,25 @@ def create_app(config_class=None):
     @app.before_request
     def log_request():
         if app.debug:
-            app.logger.debug(f'{request.method} {request.path} — Headers: {dict(request.headers)}')
+            app.logger.debug(
+                f'{request.method} {request.path} — Headers: {dict(request.headers)}'
+            )
 
-    # —————— EXTENSIONS ——————
-    # Initialize all extensions
+    # ——— Initialize extensions ———
     init_extensions(app)
-    configure_cache(app)  # <-- Added from dev
+    configure_cache(app)
 
-    # —————— CORS ——————
+    # ——— CORS ———
     allowed = app.config.get('ALLOWED_ORIGINS', ['http://localhost:5173'])
     CORS(app, resources={r"/*": {
         "origins": allowed,
-        "methods": ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"],
+        "methods": ["GET","POST","PATCH","PUT","DELETE","OPTIONS"],
+        "allow_headers": ["Content-Type","Authorization"],
         "supports_credentials": True,
         "max_age": 86400
     }})
 
-    # —————— BLUEPRINTS ——————
+    # ——— Register blueprints ———
     app.register_blueprint(bakery_bp, url_prefix='/bakeries')
     app.register_blueprint(product_bp, url_prefix='/products')
     app.register_blueprint(bakery_review_bp, url_prefix='/bakeryreviews')
@@ -81,7 +88,7 @@ def create_app(config_class=None):
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(category_bp, url_prefix='/categories')
 
-    # —————— ERROR HANDLING ——————
+    # ——— Error handling ———
     @app.errorhandler(Exception)
     def catch_all(e):
         app.logger.error(f'Unhandled exception: {e}')
@@ -90,14 +97,16 @@ def create_app(config_class=None):
             'error': str(e) if app.debug else None
         }), 500
 
-    # We no longer need db.create_all() since migrations will handle this
-    # with app.app_context():
-    #     db.create_all()
+    # import models so Flask‑Migrate can detect them
+    with app.app_context():
+        from backend.models import __all_models__  # noqa
 
     return app
 
 if __name__ == '__main__':
     app = create_app()
-    app.run(host=os.getenv('HOST', '0.0.0.0'),
-            port=int(os.getenv('PORT', 5000)),
-            debug=app.debug)
+    app.run(
+        host=os.getenv('HOST', '0.0.0.0'),
+        port=int(os.getenv('PORT', 5000)),
+        debug=app.debug
+    )

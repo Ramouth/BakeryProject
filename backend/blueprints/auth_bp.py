@@ -7,8 +7,8 @@ from flask_jwt_extended import (
 from marshmallow import ValidationError
 from werkzeug.security import check_password_hash
 
-from schemas import UserSchema
-from services.user_service import UserService, UserNotFound, AuthenticationError
+from backend.schemas.user_schema import UserSchema
+from backend.services.user_service import UserService, UserNotFound, AuthenticationError
 
 auth_bp = Blueprint('auth', __name__)
 user_schema = UserSchema()
