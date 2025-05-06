@@ -1,0 +1,146 @@
+/* Scoped CSS for User Profile Review Cards */
+.user-profile-review-card {
+    background-color: var(--secondary-light);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid var(--accent-light);
+  }
+  
+  .user-profile-review-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .user-profile-review-card .review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+  }
+  
+  .user-profile-review-card .review-title-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .user-profile-review-card .review-item-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    text-decoration: none;
+    margin: 0;
+    line-height: 1.3;
+  }
+  
+  .user-profile-review-card .review-item-name:hover {
+    color: var(--primary);
+    text-decoration: underline;
+  }
+  
+  .user-profile-review-card .review-bakery-name {
+    font-size: 0.95rem;
+    color: var(--primary-dark);
+    text-decoration: none;
+    margin-top: -0.25rem;
+  }
+  
+  .user-profile-review-card .review-bakery-name:hover {
+    text-decoration: underline;
+  }
+  
+  .user-profile-review-card .review-type-badge {
+    background-color: var(--primary-light);
+    color: var(--text-dark);
+    padding: 0.35rem 0.8rem;
+    border-radius: 16px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: inline-block;
+    white-space: nowrap;
+  }
+  
+  .user-profile-review-card .review-rating-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .user-profile-review-card .rating-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+  }
+  
+  .user-profile-review-card .review-date {
+    margin-left: auto;
+    font-size: 0.9rem;
+    color: var(--accent-dark);
+  }
+  
+  .user-profile-review-card .review-comment {
+    margin: 0 0 1.25rem;
+    line-height: 1.5;
+    color: var(--text);
+  }
+  
+  .user-profile-review-card .review-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
+  
+  .user-profile-review-card .review-action-btn {
+    background: none;
+    border: none;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0.35rem 0.75rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+  }
+  
+  .user-profile-review-card .edit-btn {
+    color: var(--primary-dark);
+  }
+  
+  .user-profile-review-card .edit-btn:hover {
+    background-color: var(--primary-light);
+    color: var(--text-dark);
+  }
+  
+  .user-profile-review-card .delete-btn {
+    color: var(--error);
+  }
+  
+  .user-profile-review-card .delete-btn:hover {
+    background-color: rgba(211, 47, 47, 0.1);
+  }
+  
+  /* Media queries for responsive design */
+  @media (max-width: 600px) {
+    .user-profile-review-card .review-header {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .user-profile-review-card .review-type-badge {
+      align-self: flex-start;
+      margin-top: 0.25rem;
+    }
+    
+    .user-profile-review-card .review-rating-row {
+      flex-wrap: wrap;
+    }
+    
+    .user-profile-review-card .review-date {
+      margin-left: 0;
+      width: 100%;
+      margin-top: 0.25rem;
+    }
+  }
