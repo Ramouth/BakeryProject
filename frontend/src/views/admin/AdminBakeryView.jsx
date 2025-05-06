@@ -1,11 +1,10 @@
 import React from 'react';
-import { AdminSearchInput } from '../../components/SearchInput';
 import { useAdminBakeryViewModel } from '../../viewmodels/admin/useAdminBakeryViewModel';
 import Modal from '../../components/Modal';
 import Button from '../../components/Button';
 import BakeryForm from '../../components/admin/AdminBakeryModal';
 import BakeryList from '../../components/admin/AdminBakeryList';
-import { Plus, Filter, Package, RefreshCw } from 'lucide-react';
+import { Plus, Package } from 'lucide-react';
 
 const AdminBakeryView = () => {
   const {
@@ -24,10 +23,6 @@ const AdminBakeryView = () => {
     filteredBakeries
   } = useAdminBakeryViewModel();
 
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
-
   return (
     <div className="section bakery-section">
       <div className="section-header">
@@ -44,50 +39,24 @@ const AdminBakeryView = () => {
         </Button>
       </div>
 
-      <div className="admin-filters">
-        <div className="admin-search-container">
-          <AdminSearchInput
-            value={searchTerm}
-            onChange={handleSearchChange}
-            placeholder="Search bakeries by name..."
-            disabled={isLoading}
-          />
-        </div>
-        
-        <div className="filters-actions">
-          <Button 
-            variant="secondary"
-            size="small" 
-            onClick={() => setSearchTerm('')}
-            disabled={!searchTerm}
-          >
-            <RefreshCw size={16} style={{ marginRight: '6px' }} />
-            Reset
-          </Button>
-          
-          <Button 
-            variant="secondary"
-            size="small"
-          >
-            <Filter size={16} style={{ marginRight: '6px' }} />
-            More Filters
-          </Button>
-        </div>
+      {/* Search Input - Updated to match other admin pages */}
+      <div className="search-bar" style={{ marginBottom: '20px' }}>
+        <input
+          type="text"
+          placeholder="Search bakeries by name..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{
+            padding: '8px 12px',
+            border: '1px solid var(--accent-300)',
+            borderRadius: 'var(--border-radius)',
+            width: '100%',
+            maxWidth: '400px'
+          }}
+        />
       </div>
 
-      {error && (
-        <div className="error-message">
-          <span>{error}</span>
-        </div>
-      )}
-      
-      <div className="results-summary">
-        {searchTerm ? (
-          <p>Found {filteredBakeries.length} bakeries matching "{searchTerm}"</p>
-        ) : (
-          <p>Showing all {bakeries.length} bakeries</p>
-        )}
-      </div>
+      {error && <div className="error-message">{error}</div>}
       
       {isLoading && !bakeries.length ? (
         <div className="loading">Loading bakeries...</div>
