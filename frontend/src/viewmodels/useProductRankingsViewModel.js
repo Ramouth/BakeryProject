@@ -142,6 +142,7 @@ export const useProductRankingsViewModel = () => {
               return {
                 rank: index + 1,
                 productId: product.id,
+                productName: product.name || subcategory?.name || 'Product',
                 bakeryId: product.bakeryId,
                 bakeryName: bakery.name || 'Unknown Bakery',
                 address: formatBakeryAddress(bakery),

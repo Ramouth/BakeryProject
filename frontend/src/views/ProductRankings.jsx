@@ -14,11 +14,6 @@ const ProductRankings = () => {
     categoryId
   } = useProductRankingsViewModel();
 
-  // Format bakery name for URL
-  const formatBakeryNameForUrl = (name) => {
-    return name.toLowerCase().replace(/\s+/g, '-');
-  };
-
   // Helper function to render cookie stars (same approach as in bakery rankings)
   const renderRatingStars = (rating) => {
     // Convert to a number in case it's a string
@@ -115,32 +110,36 @@ const ProductRankings = () => {
             <div className="rankings-table">
               <div className="table-header">
                 <div className="col-rank">Rank</div>
+                <div className="col-product">Product</div>
                 <div className="col-bakery">Bakery</div>
                 <div className="col-review">Top Review</div>
                 <div className="col-rating">Rating</div>
               </div>
               
               {productRankings.map((item) => (
-                <div className={`table-row ${item.rank <= 3 ? `top-${item.rank}` : ''}`} key={item.rank}>
-                  <div className="col-rank">
-                    <span className="rank-number">{item.rank}</span>
-                  </div>
-                  <div className="col-bakery">
-                    <Link to={`/bakery/${encodeURIComponent(formatBakeryNameForUrl(item.bakeryName))}`}>
-                      <h3>{item.bakeryName}</h3>
+                <Link to={`/product/${item.productId}`} className="product-link" key={item.rank}>
+                  <div className={`table-row ${item.rank <= 3 ? `top-${item.rank}` : ''}`}>
+                    <div className="col-rank">
+                      <span className="rank-number">{item.rank}</span>
+                    </div>
+                    <div className="col-product">
+                      <h3 className="product-name">{item.productName}</h3>
+                    </div>
+                    <div className="col-bakery">
+                      <span className="bakery-name">{item.bakeryName}</span>
                       <span className="bakery-address">{item.address}</span>
-                    </Link>
-                  </div>
-                  <div className="col-review">
-                    <p>{item.topReview}</p>
-                  </div>
-                  <div className="col-rating">
-                    <div className="rating-display">
-                      {renderRatingStars(item.rating)}
-                      <span className="review-count">based on {item.reviewCount} reviews</span>
+                    </div>
+                    <div className="col-review">
+                      <p>{item.topReview}</p>
+                    </div>
+                    <div className="col-rating">
+                      <div className="rating-display">
+                        {renderRatingStars(item.rating)}
+                        <span className="review-count">based on {item.reviewCount} reviews</span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           ) : (
