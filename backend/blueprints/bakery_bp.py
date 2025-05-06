@@ -1,7 +1,8 @@
 from flask import Blueprint, request, jsonify, current_app as app, make_response
-from models import db
-from schemas import BakerySchema
-from services.bakery_service import BakeryService
+from backend.extensions import db
+from backend.schemas.bakery_schema import BakerySchema  # Assuming schema is in bakery_schema.py
+from backend.services.bakery_service import BakeryService
+
 
 # Create blueprint
 bakery_bp = Blueprint('bakery', __name__)

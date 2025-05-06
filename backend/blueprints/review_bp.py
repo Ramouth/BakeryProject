@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
-from models import db, BakeryReview, ProductReview, Bakery, Product, User
-from schemas import BakeryReviewSchema, ProductReviewSchema
-from services.review_service import ReviewService
+from backend.models import db, BakeryReview, ProductReview, Bakery, Product, User  # Adjusted model import path
+from backend.schemas import BakeryReviewSchema, ProductReviewSchema  # Adjusted schema import path
+from backend.services.review_service import ReviewService  # Adjusted service import path
 from sqlalchemy.orm import joinedload
 
 # Create blueprints
