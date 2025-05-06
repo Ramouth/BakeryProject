@@ -58,7 +58,7 @@ const ProductReviewList = ({ reviews, updateReview, updateCallback }) => {
               <td>{review.tasteRating}</td>
               <td>{review.priceRating}</td>
               <td>{review.presentationRating}</td>
-              <td>{review.username || 'Anonymous'}</td>
+              <td>{review.userId || 'Anonymous'}</td>
               <td>{review.product?.name || review.product_name || review.productName || '—'}</td>
               <td>
                 <div className="table-actions">
