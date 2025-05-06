@@ -264,13 +264,19 @@ const UserProfile = () => {
                             </span>
                           </div>
                           
-                          <div className="review-rating-row">
-                            <div className="rating-value">{review.rating.toFixed(1)}</div>
-                            {renderCookieRating(review.rating)}
-                            <div className="review-date">{formatDate(review.date)}</div>
+                          <div className="review-content">
+                            <div className="review-left">
+                              <p className="review-comment">{review.comment}</p>
+                            </div>
+                            
+                            <div className="review-right">
+                              <div className="review-rating-row">
+                                <div className="rating-value">{review.rating.toFixed(1)}</div>
+                                {renderCookieRating(review.rating)}
+                              </div>
+                              <div className="review-date">{formatDate(review.date)}</div>
+                            </div>
                           </div>
-                          
-                          <p className="review-comment">{review.comment}</p>
                           
                           <div className="review-actions">
                             <button 
