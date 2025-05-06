@@ -93,17 +93,47 @@ export const useBakeryProfileViewModel = (bakeryName) => {
       }
     };
 
+    
+
     fetchBakeryData();
     return () => { cancelled = true; };
   }, [bakeryName, bakeryMap]);
 
-  const getTopRatedProducts = useCallback(() =>
-    bakeryProducts
-      .filter(p => p.rating || p.average_rating)
-      .sort((a, b) => (b.rating || b.average_rating) - (a.rating || a.average_rating))
-      .slice(0, 3),
-    [bakeryProducts]
-  );
+  const getTopRatedProducts = useCallback(() => {
+    // If no products are available, return empty array
+    if (!bakeryProducts || bakeryProducts.length === 0) {
+      return [];
+    }
+    
+    // Create normalized objects with consistent rating values
+    const productsWithRatings = bakeryProducts.map(product => {
+      // Try to extract rating from various possible sources
+      let rating = 0;
+      if (typeof product.average_rating === 'number') {
+        rating = product.average_rating;
+      } else if (product.ratings && typeof product.ratings.overall === 'number') {
+        rating = product.ratings.overall;
+      } else if (typeof product.rating === 'number') {
+        rating = product.rating;
+      }
+      
+      return {
+        ...product,
+        normalizedRating: rating || 0
+      };
+    });
+    
+    // If no products have ratings, just return first 3 products from bakery
+    const hasAnyRatings = productsWithRatings.some(p => p.normalizedRating > 0);
+    if (!hasAnyRatings && productsWithRatings.length > 0) {
+      return productsWithRatings.slice(0, 3);
+    }
+    
+    // Otherwise return top 3 by rating
+    return productsWithRatings
+      .sort((a, b) => b.normalizedRating - a.normalizedRating)
+      .slice(0, 3);
+  }, [bakeryProducts]);
 
   const formatDate = useCallback((dateString) => {
     if (!dateString) return '';
