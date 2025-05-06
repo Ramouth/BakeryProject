@@ -74,9 +74,8 @@ def create_bakery_review():
     try:
         data = request.json
         
-        # Validate required fields (userId is optional for anonymous reviews)
-        required_fields = ['review', 'overallRating', 'serviceRating', 'priceRating', 
-                          'atmosphereRating', 'locationRating', 'bakeryId']
+        # Validate required fields only (userId is optional for anonymous reviews)
+        required_fields = ['review', 'overallRating', 'bakeryId']
         
         for field in required_fields:
             if field not in data:
@@ -88,33 +87,67 @@ def create_bakery_review():
             return jsonify({"message": "Bakery not found"}), 404
             
         # Validate user exists only if userId is provided (support anonymous reviews)
-        user = None
         if data.get('userId'):
             user = User.query.get(data['userId'])
             if not user:
                 return jsonify({"message": "User not found"}), 404
         
-        # Validate rating values
-        rating_fields = ['overallRating', 'serviceRating', 'priceRating', 
-                         'atmosphereRating', 'locationRating']
+        # Validate required overall rating
+        try:
+            overall_rating = int(data['overallRating'])
+            if overall_rating < 1 or overall_rating > 10:
+                return jsonify({"message": "overallRating must be between 1 and 10"}), 400
+        except (ValueError, TypeError):
+            return jsonify({"message": "overallRating must be a number between 1 and 10"}), 400
         
-        for field in rating_fields:
+        # Process optional rating fields - initialize as None
+        service_rating = None
+        price_rating = None
+        atmosphere_rating = None
+        location_rating = None
+        
+        # Only validate optional ratings if they're provided and not null
+        if 'serviceRating' in data and data['serviceRating'] is not None:
             try:
-                rating = int(data[field])
-                if rating < 1 or rating > 10:
-                    return jsonify({"message": f"{field} must be between 1 and 10"}), 400
+                service_rating = int(data['serviceRating'])
+                if service_rating < 1 or service_rating > 10:
+                    return jsonify({"message": "serviceRating must be between 1 and 10"}), 400
             except (ValueError, TypeError):
-                return jsonify({"message": f"{field} must be a number between 1 and 10"}), 400
+                return jsonify({"message": "serviceRating must be a number between 1 and 10"}), 400
         
-        # Create review through service
+        if 'priceRating' in data and data['priceRating'] is not None:
+            try:
+                price_rating = int(data['priceRating'])
+                if price_rating < 1 or price_rating > 10:
+                    return jsonify({"message": "priceRating must be between 1 and 10"}), 400
+            except (ValueError, TypeError):
+                return jsonify({"message": "priceRating must be a number between 1 and 10"}), 400
+        
+        if 'atmosphereRating' in data and data['atmosphereRating'] is not None:
+            try:
+                atmosphere_rating = int(data['atmosphereRating'])
+                if atmosphere_rating < 1 or atmosphere_rating > 10:
+                    return jsonify({"message": "atmosphereRating must be between 1 and 10"}), 400
+            except (ValueError, TypeError):
+                return jsonify({"message": "atmosphereRating must be a number between 1 and 10"}), 400
+        
+        if 'locationRating' in data and data['locationRating'] is not None:
+            try:
+                location_rating = int(data['locationRating'])
+                if location_rating < 1 or location_rating > 10:
+                    return jsonify({"message": "locationRating must be between 1 and 10"}), 400
+            except (ValueError, TypeError):
+                return jsonify({"message": "locationRating must be a number between 1 and 10"}), 400
+        
+        # Create review with properly handled optional fields
         review = review_service.create_bakery_review(
             review=data['review'],
-            overall_rating=int(data['overallRating']),
-            service_rating=int(data['serviceRating']),
-            price_rating=int(data['priceRating']),
-            atmosphere_rating=int(data['atmosphereRating']),
-            location_rating=int(data['locationRating']),
-            user_id=int(data['userId']) if data.get('userId') else None,  # Only pass userId if it exists
+            overall_rating=overall_rating,
+            service_rating=service_rating,
+            price_rating=price_rating,
+            atmosphere_rating=atmosphere_rating,
+            location_rating=location_rating,
+            user_id=int(data['userId']) if data.get('userId') else None,
             bakery_id=int(data['bakeryId'])
         )
         
@@ -165,22 +198,23 @@ def update_bakery_review(review_id):
         }
         
         for field, value in rating_fields.items():
-            try:
-                rating = int(value)
-                if rating < 1 or rating > 10:
-                    return jsonify({"message": f"{field} must be between 1 and 10"}), 400
-            except (ValueError, TypeError):
-                return jsonify({"message": f"{field} must be a number between 1 and 10"}), 400
+            if value is not None:
+                try:
+                    rating = int(value)
+                    if rating < 1 or rating > 10:
+                        return jsonify({"message": f"{field} must be between 1 and 10"}), 400
+                except (ValueError, TypeError):
+                    return jsonify({"message": f"{field} must be a number between 1 and 10"}), 400
         
         # Update review through service
         updated_review = review_service.update_bakery_review(
             review_id=review_id,
             review=review_text,
-            overall_rating=int(overall_rating),
-            service_rating=int(service_rating),
-            price_rating=int(price_rating),
-            atmosphere_rating=int(atmosphere_rating),
-            location_rating=int(location_rating),
+            overall_rating=int(overall_rating) if overall_rating is not None else None,
+            service_rating=int(service_rating) if service_rating is not None else None,
+            price_rating=int(price_rating) if price_rating is not None else None,
+            atmosphere_rating=int(atmosphere_rating) if atmosphere_rating is not None else None,
+            location_rating=int(location_rating) if location_rating is not None else None,
             user_id=int(user_id) if user_id else None,
             bakery_id=int(bakery_id)
         )
@@ -256,8 +290,7 @@ def create_product_review():
         data = request.json
         
         # Validate required fields (userId is optional for anonymous reviews)
-        required_fields = ['review', 'overallRating', 'tasteRating', 'priceRating', 
-                          'presentationRating', 'productId']
+        required_fields = ['review', 'overallRating', 'productId']
         
         for field in required_fields:
             if field not in data:
@@ -269,31 +302,57 @@ def create_product_review():
             return jsonify({"message": "Product not found"}), 404
             
         # Validate user exists only if userId is provided (support anonymous reviews)
-        user = None
         if data.get('userId'):
             user = User.query.get(data['userId'])
             if not user:
                 return jsonify({"message": "User not found"}), 404
         
-        # Validate rating values
-        rating_fields = ['overallRating', 'tasteRating', 'priceRating', 'presentationRating']
+        # Validate required overall rating
+        try:
+            overall_rating = int(data['overallRating'])
+            if overall_rating < 1 or overall_rating > 10:
+                return jsonify({"message": "overallRating must be between 1 and 10"}), 400
+        except (ValueError, TypeError):
+            return jsonify({"message": "overallRating must be a number between 1 and 10"}), 400
         
-        for field in rating_fields:
+        # Process optional rating fields - initialize as None
+        taste_rating = None
+        price_rating = None
+        presentation_rating = None
+        
+        # Only validate optional ratings if they're provided and not null
+        if 'tasteRating' in data and data['tasteRating'] is not None:
             try:
-                rating = int(data[field])
-                if rating < 1 or rating > 10:
-                    return jsonify({"message": f"{field} must be between 1 and 10"}), 400
+                taste_rating = int(data['tasteRating'])
+                if taste_rating < 1 or taste_rating > 10:
+                    return jsonify({"message": "tasteRating must be between 1 and 10"}), 400
             except (ValueError, TypeError):
-                return jsonify({"message": f"{field} must be a number between 1 and 10"}), 400
+                return jsonify({"message": "tasteRating must be a number between 1 and 10"}), 400
         
-        # Create review through service
+        if 'priceRating' in data and data['priceRating'] is not None:
+            try:
+                price_rating = int(data['priceRating'])
+                if price_rating < 1 or price_rating > 10:
+                    return jsonify({"message": "priceRating must be between 1 and 10"}), 400
+            except (ValueError, TypeError):
+                return jsonify({"message": "priceRating must be a number between 1 and 10"}), 400
+        
+        if 'presentationRating' in data and data['presentationRating'] is not None:
+            try:
+                presentation_rating = int(data['presentationRating'])
+                if presentation_rating < 1 or presentation_rating > 10:
+                    return jsonify({"message": "presentationRating must be between 1 and 10"}), 400
+            except (ValueError, TypeError):
+                return jsonify({"message": "presentationRating must be a number between 1 and 10"}), 400
+        
+        # Create review with properly handled optional fields
         review = review_service.create_product_review(
             review=data['review'],
-            overall_rating=int(data['overallRating']),
-            taste_rating=int(data['tasteRating']),
-            price_rating=int(data['priceRating']),
-            presentation_rating=int(data['presentationRating']),
-            user_id=int(data['userId']) if data.get('userId') else None,  # Only pass userId if it exists
+            overall_rating=overall_rating,
+            taste_rating=taste_rating,
+            price_rating=price_rating,
+            presentation_rating=presentation_rating,
+            user_id=int(data['userId']) if data.get('userId') else None,
             product_id=int(data['productId'])
         )
         
@@ -342,21 +401,22 @@ def update_product_review(review_id):
         }
         
         for field, value in rating_fields.items():
-            try:
-                rating = int(value)
-                if rating < 1 or rating > 10:
-                    return jsonify({"message": f"{field} must be between 1 and 10"}), 400
-            except (ValueError, TypeError):
-                return jsonify({"message": f"{field} must be a number between 1 and 10"}), 400
+            if value is not None:
+                try:
+                    rating = int(value)
+                    if rating < 1 or rating > 10:
+                        return jsonify({"message": f"{field} must be between 1 and 10"}), 400
+                except (ValueError, TypeError):
+                    return jsonify({"message": f"{field} must be a number between 1 and 10"}), 400
         
         # Update review through service
         updated_review = review_service.update_product_review(
             review_id=review_id,
             review=review_text,
-            overall_rating=int(overall_rating),
-            taste_rating=int(taste_rating),
-            price_rating=int(price_rating),
-            presentation_rating=int(presentation_rating),
+            overall_rating=int(overall_rating) if overall_rating is not None else None,
+            taste_rating=int(taste_rating) if taste_rating is not None else None,
+            price_rating=int(price_rating) if price_rating is not None else None,
+            presentation_rating=int(presentation_rating) if presentation_rating is not None else None,
             user_id=int(user_id) if user_id else None,
             product_id=int(product_id)
         )
