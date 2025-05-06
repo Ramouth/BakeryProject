@@ -17,7 +17,7 @@ const Login = () => {
     <div className="container">
       <div className="card">
         <h2>Login</h2>
-        <p>Enter credentials below</p>
+        <p>Enter credentials to review</p>
         
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
