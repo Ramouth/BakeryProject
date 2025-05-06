@@ -178,9 +178,9 @@ const ProductProfile = () => {
                     <div key={review.id} className="review-card">
                       <div className="review-header">
                         <span className="reviewer-name">
-                          {/* Try all possible ways to get username */}
-                          {review.username || (review.userId ? `User ${review.userId}` : 'Anonymous')}
-                        </span>
+                          {review.username || (review.user && review.user.username) || 
+                          (review.userId ? `User ${review.userId}` : 'Anonymous')}
+                      </span>
                         <span className="review-date">{formatDate(review.created_at)}</span>
                       </div>
                       <div className="review-rating">

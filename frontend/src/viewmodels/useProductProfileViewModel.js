@@ -61,16 +61,21 @@ export const useProductProfileViewModel = (productId) => {
           
           if (reviewsData && reviewsData.productReviews) {
             const reviews = reviewsData.productReviews.map(r => {
+
+              const username = r.username || 
+                    (r.user && r.user.username) || 
+                    (r.userId ? `User ${r.userId}` : 'Anonymous');
               // Map directly from API response data
               return {
                 id: r.id,
                 review: r.review,
-                username: r.username || "Anonymous",
+                username: username,
                 created_at: r.created_at,
                 overallRating: Number(r.overallRating) || 0,
                 tasteRating: Number(r.tasteRating) || 0,
                 priceRating: Number(r.priceRating) || 0,
-                presentationRating: Number(r.presentationRating) || 0
+                presentationRating: Number(r.presentationRating) || 0,
+                userId: r.userId || null
               };
             });
             
