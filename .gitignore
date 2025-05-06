@@ -45,3 +45,4 @@ backend/utils/__pycache__/
 backend/my_env/
 backend/.env
 backend/seed.py
+.env

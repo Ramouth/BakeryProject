@@ -1,8 +1,8 @@
 from flask import Blueprint, request, jsonify
-from models import Category, Subcategory
-from schemas import CategorySchema, SubcategorySchema
-from services.category_service import CategoryService, SubcategoryService
-from utils.caching import cache
+from backend.models import Category, Subcategory
+from backend.schemas import CategorySchema, SubcategorySchema
+from backend.services.category_service import CategoryService, SubcategoryService
+from backend.utils.caching import cache
 
 # Create blueprint
 category_bp = Blueprint('category', __name__)

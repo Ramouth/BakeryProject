@@ -1,9 +1,10 @@
-from flask import Blueprint, request, jsonify, make_response
-from models import Product, Bakery, Subcategory
-from schemas import ProductSchema
-from services.product_service import ProductService
+from flask import Blueprint, request, jsonify
+from backend.models import Product, Bakery, Subcategory  # Adjusted model import path
+from backend.schemas import ProductSchema  # Adjusted schema import path
+from backend.services.product_service import ProductService  # Adjusted service import path
 from flask import current_app as app
-from utils.caching import cache  
+from backend.utils.caching import cache  # Adjusted utils import path
+
 
 # Create blueprint
 product_bp = Blueprint('product', __name__)
