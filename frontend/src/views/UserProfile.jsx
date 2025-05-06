@@ -1,6 +1,31 @@
+import { useState } from 'react';
 import { useUserProfileViewModel } from '../viewmodels/useUserProfileViewModel';
 import Button from '../components/Button';
 import { Link } from 'react-router-dom';
+
+// New component for collapsible review text
+const CollapsibleReviewText = ({ text }) => {
+  const [expanded, setExpanded] = useState(false);
+  
+  // Don't add collapse functionality for short reviews
+  if (!text || text.length < 100) {
+    return <p className="review-comment">{text}</p>;
+  }
+  
+  return (
+    <div>
+      <p className={`review-comment ${expanded ? '' : 'collapsed'}`}>
+        {text}
+      </p>
+      <button 
+        className="read-more-btn" 
+        onClick={() => setExpanded(!expanded)}
+      >
+        {expanded ? 'Show less' : 'Read more'}
+      </button>
+    </div>
+  );
+};
 
 const UserProfile = () => {
   const {
@@ -264,20 +289,25 @@ const UserProfile = () => {
                             </span>
                           </div>
                           
-                          <div className="review-rating-row">
-                            <div className="rating-value">{review.rating.toFixed(1)}</div>
-                            {renderCookieRating(review.rating)}
-                            <div className="review-date">{formatDate(review.date)}</div>
+                          <div className="review-content">
+                            <div className="review-left">
+                              {/* Replace the regular paragraph with our collapsible component */}
+                              <CollapsibleReviewText text={review.comment} />
+                            </div>
+                            
+                            <div className="review-right">
+                              <div className="review-rating-row">
+                                <div className="rating-value">{review.rating.toFixed(1)}</div>
+                                {renderCookieRating(review.rating)}
+                              </div>
+                              <div className="review-date">{formatDate(review.date)}</div>
+                            </div>
                           </div>
-                          
-                          <p className="review-comment">{review.comment}</p>
                           
                           <div className="review-actions">
                             <button 
                               className="review-action-btn edit-btn"
                               onClick={() => {
-                                // Navigate to the review page with this review's ID
-                                navigate(`/${review.type}-review/${review.id}/edit`);
                               }}
                             >
                               Edit
