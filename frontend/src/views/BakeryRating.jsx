@@ -76,16 +76,16 @@ const BakeryRating = () => {
                value={bakeryRatings.comments}
                onChange={(e) => {
                  // Only update if under the character limit
-                 if (e.target.value.length <= 280) {
+                 if (e.target.value.length <= 480) {
                    handleCommentsChange(e);
                  }
                }}
-               maxLength={280}
+               maxLength={480}
                placeholder="Share your thoughts about this bakery..."
              />
              <div className="character-count">
-               <span className={bakeryRatings.comments.length > 200 ? (bakeryRatings.comments.length > 250 ? "count-warning" : "count-notice") : ""}>
-                 {bakeryRatings.comments.length}/280
+               <span className={bakeryRatings.comments.length > 400 ? (bakeryRatings.comments.length > 450 ? "count-warning" : "count-notice") : ""}>
+                 {bakeryRatings.comments.length}/480
                </span>
              </div>
            </div>
