@@ -243,7 +243,12 @@ const BakeryProfile = () => {
                   bakeryReviews.map(review => (
                     <div key={review.id} className="review-card">
                       <div className="review-header">
-                        <span className="reviewer-name">{review.username || 'Anonymous'}</span>
+                        {/* Debug the username property if it's still not showing */}
+                        {console.log("Review data:", review)}
+                        {/* Try to access username using all possible property paths */}
+                        <span className="reviewer-name">
+                          {review.username || (review.user && review.user.username) || 'Anonymous'}
+                        </span>
                         <span className="review-date">{formatDate(review.created_at)}</span>
                       </div>
                       

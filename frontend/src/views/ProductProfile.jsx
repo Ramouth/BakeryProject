@@ -168,21 +168,28 @@ const ProductProfile = () => {
               {productReviews.length === 0 ? (
                 <p>No reviews yet. Be the first to review this product!</p>
               ) : (
-                productReviews.map((review) => (
-                  <div key={review.id} className="review-card">
-                    <div className="review-header">
-                      <span className="reviewer-name">{review.username || 'Anonymous'}</span>
-                      <span className="review-date">{formatDate(review.created_at)}</span>
+                productReviews.map((review) => {
+                  // Debug each review as it's rendered
+                  console.log("Rendering review:", review);
+                  console.log("Username:", review.username);
+                  console.log("UserId:", review.userId);
+                  
+                  return (
+                    <div key={review.id} className="review-card">
+                      <div className="review-header">
+                        <span className="reviewer-name">
+                          {/* Try all possible ways to get username */}
+                          {review.username || (review.userId ? `User ${review.userId}` : 'Anonymous')}
+                        </span>
+                        <span className="review-date">{formatDate(review.created_at)}</span>
+                      </div>
+                      <div className="review-rating">
+                        {renderCookieStars(review.overallRating)}
+                      </div>
+                      <p className="review-text">{review.review}</p>
                     </div>
-                    <div className="review-rating">
-                      {renderCookieStars(review.overallRating)}
-                    </div>
-                    <p className="review-text">{review.review}</p>
-                  </div>
-                ))
-              )}
-              {productReviews.length > 0 && (
-                <button className="btn btn-secondary load-more">Load More Reviews</button>
+                  );
+                })
               )}
             </div>
           </div>
