@@ -70,6 +70,7 @@ export const useBakeryProfileViewModel = (bakeryName) => {
 
         if (!bakeryId) throw new Error('Bakery not found');
 
+        // Fetch bakery data, stats, and reviews
         const [bakeryData, statsData, productsData, reviewsData] = await Promise.all([
           apiClient.get(`/bakeries/${bakeryId}`, true),
           apiClient.get(`/bakeries/${bakeryId}/stats`, true),
@@ -79,10 +80,51 @@ export const useBakeryProfileViewModel = (bakeryName) => {
 
         if (cancelled) return;
 
+        // Process bakery and reviews data
         setBakery(Bakery.fromApiResponse(bakeryData));
         setBakeryStats(statsData);
-        setBakeryProducts((productsData.products || []).map(Product.fromApiResponse));
         setBakeryReviews((reviewsData.bakeryReviews || []).map(BakeryReview.fromApiResponse));
+
+        // Get product data
+        const products = (productsData.products || []).map(Product.fromApiResponse);
+        
+        // Fetch product reviews to extract ratings
+        const enhancedProducts = await Promise.all(
+          products.map(async (product) => {
+            try {
+              // Fetch product reviews
+              const reviewsResponse = await apiClient.get(`/productreviews/product/${product.id}`, true);
+              const reviews = reviewsResponse.productReviews || [];
+              
+              // Calculate average rating if there are reviews
+              let totalRating = 0;
+              let reviewCount = 0;
+              
+              reviews.forEach(review => {
+                if (review.overallRating) {
+                  totalRating += review.overallRating;
+                  reviewCount++;
+                }
+              });
+              
+              const avgRating = reviewCount > 0 ? totalRating / reviewCount : 0;
+              
+              // Return enhanced product with rating
+              return {
+                ...product,
+                rating: avgRating,
+                average_rating: avgRating,
+                review_count: reviewCount
+              };
+            } catch (error) {
+              console.error(`Error fetching reviews for product ${product.id}:`, error);
+              return product; // Return original product if fetch fails
+            }
+          })
+        );
+        
+        // Set products with ratings
+        setBakeryProducts(enhancedProducts);
       } catch (err) {
         if (!cancelled) {
           console.error('Error fetching bakery data:', err);
@@ -93,46 +135,23 @@ export const useBakeryProfileViewModel = (bakeryName) => {
       }
     };
 
-    
-
     fetchBakeryData();
     return () => { cancelled = true; };
   }, [bakeryName, bakeryMap]);
 
+  // Get top rated products (already sorted by rating)
   const getTopRatedProducts = useCallback(() => {
-    // If no products are available, return empty array
     if (!bakeryProducts || bakeryProducts.length === 0) {
       return [];
     }
-    
-    // Create normalized objects with consistent rating values
-    const productsWithRatings = bakeryProducts.map(product => {
-      // Try to extract rating from various possible sources
-      let rating = 0;
-      if (typeof product.average_rating === 'number') {
-        rating = product.average_rating;
-      } else if (product.ratings && typeof product.ratings.overall === 'number') {
-        rating = product.ratings.overall;
-      } else if (typeof product.rating === 'number') {
-        rating = product.rating;
-      }
-      
-      return {
-        ...product,
-        normalizedRating: rating || 0
-      };
-    });
-    
-    // If no products have ratings, just return first 3 products from bakery
-    const hasAnyRatings = productsWithRatings.some(p => p.normalizedRating > 0);
-    if (!hasAnyRatings && productsWithRatings.length > 0) {
-      return productsWithRatings.slice(0, 3);
-    }
-    
-    // Otherwise return top 3 by rating
-    return productsWithRatings
-      .sort((a, b) => b.normalizedRating - a.normalizedRating)
-      .slice(0, 3);
+
+    return [...bakeryProducts]
+      .sort((a, b) => {
+        const ratingA = a.rating || a.average_rating || 0;
+        const ratingB = b.rating || b.average_rating || 0;
+        return ratingB - ratingA;
+      })
+      .slice(0, 5);
   }, [bakeryProducts]);
 
   const formatDate = useCallback((dateString) => {
