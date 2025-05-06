@@ -236,8 +236,6 @@ const BakeryProfile = () => {
                   {renderCookieStars(ratings.overall || 0, 'large')}
                   <span className="total-reviews">{reviewCount} reviews</span>
                 </div>
-                
-                <button className="btn btn-primary" onClick={openReviewModal}>Write a Review</button>
               </div>
               
               <div className="reviews-list">
