@@ -4,10 +4,20 @@ export class Review {
       this.review = data.review;
       this.overallRating = data.overallRating;
       this.userId = data.userId;
-      this.username = data.username;
       this.created_at = data.created_at;
+      
+      // We see that username is undefined but userId exists
+      // Get the username from the user object or generate one based on userId
+      if (data.user && data.user.username) {
+        this.username = data.user.username;
+      } else if (data.userId) {
+        // If we have a userId, use it to generate a display name
+        this.username = `User ${data.userId}`;
+      } else {
+        this.username = 'Anonymous';
+      }
     }
-  
+    
     static fromApiResponse(data) {
       return new Review(data);
     }
