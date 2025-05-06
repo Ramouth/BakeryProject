@@ -67,7 +67,7 @@ const BakeryReviewList = ({ reviews, updateReview, updateCallback }) => {
               <td>{review.priceRating}</td>
               <td>{review.atmosphereRating}</td>
               <td>{review.locationRating}</td>
-              <td>{review.username || 'Anonymous'}</td>
+              <td>{review.userId || 'Anonymous'}</td>
               <td>{review.bakery?.name || review.bakery_name || review.bakeryName || '—'}</td>
               <td>
                 <div className="table-actions">
