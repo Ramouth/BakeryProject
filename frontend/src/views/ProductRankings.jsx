@@ -14,16 +14,27 @@ const ProductRankings = () => {
     categoryId
   } = useProductRankingsViewModel();
 
-  // Helper function to render cookie stars (same approach as in bakery rankings)
-  const renderRatingStars = (rating) => {
-    // Convert to a number in case it's a string
-    const numRating = parseFloat(rating);
+  // Helper function to render cookie rating
+  const renderCookieRating = (rating) => {
+    const displayRating = parseFloat(rating);
+    const fullCookies = Math.floor(displayRating);
+    const hasHalfCookie = displayRating % 1 >= 0.5;
+    const emptyCookies = 5 - fullCookies - (hasHalfCookie ? 1 : 0);
     
     return (
-      <span className="rating-with-star">
-        <span className="rating-value">{numRating}</span>
-        <span className="cookie">🍪</span>
-      </span>
+      <div className="product-cookie-display">
+        {Array(fullCookies).fill().map((_, i) => (
+          <span key={`full-${i}`} className="product-cookie-filled">🍪</span>
+        ))}
+        {hasHalfCookie && (
+          <div className="product-cookie-half-container">
+            <span className="product-cookie-half">🍪</span>
+          </div>
+        )}
+        {Array(emptyCookies).fill().map((_, i) => (
+          <span key={`empty-${i}`} className="product-cookie-empty">🍪</span>
+        ))}
+      </div>
     );
   };
 
@@ -49,27 +60,33 @@ const ProductRankings = () => {
     return 'All Categories';
   };
 
+  // Format bakery name for URL
+  const formatNameForUrl = (name) => {
+    if (!name) return '';
+    return name.toLowerCase().replace(/\s+/g, '-');
+  };
+
   // Show error message
   if (error) {
     return (
-      <div className="container">
-        <div className="error-container">
-          <p className="error-message">{error}</p>
-          <Link to="/product-categories" className="btn btn-primary">View Categories</Link>
+      <div className="product-container">
+        <div className="product-error-container">
+          <p className="product-error-message">{error}</p>
+          <Link to="/product-categories" className="product-btn product-btn-primary">View Categories</Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container">
+    <div className="product-container">
       <div className="product-rankings-header">
         <h1>Product Rankings: {getCategoryName()}</h1>
         <p>Compare the best places to get popular Danish products</p>
         
         {categoryId && (
-          <div className="category-nav">
-            <Link to="/product-categories" className="back-link">
+          <div className="product-category-nav">
+            <Link to="/product-categories" className="product-back-link">
               ← Back to Categories
             </Link>
           </div>
@@ -79,16 +96,16 @@ const ProductRankings = () => {
       {/* Subcategory Navigation */}
       <div className="product-navigation">
         {loading && subcategories.length === 0 ? (
-          <div className="loading-indicator">Loading products...</div>
+          <div className="product-loading-indicator">Loading products...</div>
         ) : subcategories.length === 0 ? (
-          <div className="no-products-message">
+          <div className="product-no-products-message">
             <p>No products found in this category.</p>
           </div>
         ) : (
           subcategories.map(item => (
             <button
               key={item.id}
-              className={`product-nav-item ${selectedSubcategoryId === item.id ? 'active' : ''}`}
+              className={`product-nav-item ${selectedSubcategoryId === item.id ? 'product-active' : ''}`}
               onClick={() => handleSubcategorySelect(item.id)}
             >
               {item.name}
@@ -99,43 +116,47 @@ const ProductRankings = () => {
 
       {/* Product Rankings List */}
       {selectedSubcategoryId && (
-        <div className="ranking-section">
-          <div className="ranking-title">
+        <div className="product-ranking-section">
+          <div className="product-ranking-title">
             <h2>{subcategory ? subcategory.name : 'Loading...'}</h2>
           </div>
           
           {loading ? (
-            <div className="loading-indicator">Loading rankings...</div>
+            <div className="product-loading-indicator">Loading rankings...</div>
           ) : productRankings.length > 0 ? (
-            <div className="rankings-table">
-              <div className="table-header">
-                <div className="col-rank">Rank</div>
-                <div className="col-product">Product</div>
-                <div className="col-bakery">Bakery</div>
-                <div className="col-review">Top Review</div>
-                <div className="col-rating">Rating</div>
-              </div>
-              
+            <div className="product-rankings-grid">
               {productRankings.map((item) => (
-                <Link to={`/product/${item.productId}`} className="product-link" key={item.rank}>
-                  <div className={`table-row ${item.rank <= 3 ? `top-${item.rank}` : ''}`}>
-                    <div className="col-rank">
-                      <span className="rank-number">{item.rank}</span>
-                    </div>
-                    <div className="col-product">
+                <Link 
+                  to={`/product/${item.productId}`} 
+                  className="product-ranking-card" 
+                  key={item.productId}
+                >
+                  <div className="product-ranking-content">
+                    <div className="product-rank-badge">{item.rank}</div>
+                    <div className="product-info">
                       <h3 className="product-name">{item.productName}</h3>
+                      <div className="product-bakery-info">
+                        <Link 
+                          to={`/bakery/${encodeURIComponent(formatNameForUrl(item.bakeryName))}`}
+                          className="product-bakery-name"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {item.bakeryName}
+                        </Link>
+                        <span className="product-postal">{item.address}</span>
+                      </div>
                     </div>
-                    <div className="col-bakery">
-                      <span className="bakery-name">{item.bakeryName}</span>
-                      <span className="bakery-address">{item.address}</span>
+                    
+                    <div className="product-review-section">
+                      <div className="product-review-heading">Top Review</div>
+                      <p className="product-review-text">{item.topReview}</p>
                     </div>
-                    <div className="col-review">
-                      <p>{item.topReview}</p>
-                    </div>
-                    <div className="col-rating">
-                      <div className="rating-display">
-                        {renderRatingStars(item.rating)}
-                        <span className="review-count">based on {item.reviewCount} reviews</span>
+                    
+                    <div className="product-rating-container">
+                      <div className="product-rating-value">{item.rating}</div>
+                      {renderCookieRating(item.rating)}
+                      <div className="product-review-count">
+                        ({item.reviewCount} {item.reviewCount === 1 ? 'review' : 'reviews'})
                       </div>
                     </div>
                   </div>
@@ -143,9 +164,9 @@ const ProductRankings = () => {
               ))}
             </div>
           ) : (
-            <div className="no-rankings-message">
+            <div className="product-no-rankings-message">
               <p>No rankings available for this product yet. Be the first to review it!</p>
-              <button className="btn btn-primary">Write a Review</button>
+              <button className="product-btn product-btn-primary">Write a Review</button>
             </div>
           )}
         </div>
