@@ -69,6 +69,12 @@ const BakeryRankings = () => {
     return name.toLowerCase().replace(/\s+/g, '-');
   };
 
+  // Get a simple bakery description
+  const getBakeryDescription = (bakery) => {
+    if (bakery.description) return bakery.description;
+    return `A wonderful bakery in Copenhagen located at ${bakery.streetName || 'an unknown street'}`;
+  };
+
   return (
     <div className="container">
       <div className="rankings-header">
@@ -120,14 +126,12 @@ const BakeryRankings = () => {
                       {bakery.zipCode ? `${bakery.streetName ? ', ' : ''}${bakery.zipCode} Copenhagen` : ''}
                     </p>
                     <p className="bakery-description">
-                    {bakery.description || `A wonderful bakery in Copenhagen located at ${bakery.streetName || 'an unknown street'} with delicious products.`}
+                      {getBakeryDescription(bakery)}
                     </p>
-                    <div className="bakery-meta">
-                      <div className="bakery-rating">
-                        <span className="rating-value">{getBakeryRating(bakery)}</span>
-                        <span className="cookie">🍪</span>
-                        <span className="review-count">({bakery.review_count || 0} reviews)</span>
-                      </div>
+                    <div className="bakery-rating">
+                      <span className="rating-value">{getBakeryRating(bakery)}</span>
+                      <span className="cookie">🍪</span>
+                      <span className="review-count">({bakery.review_count || 0} reviews)</span>
                     </div>
                   </div>
                 </Link>

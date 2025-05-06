@@ -85,6 +85,13 @@
   text-align: left;
 }
 
+/* Product link styling */
+.product-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
 .table-row {
   display: flex;
   padding: 15px;
@@ -128,7 +135,7 @@
 
 /* Table columns */
 .col-rank {
-  width: 10%;
+  width: 8%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -161,20 +168,27 @@
   color: white;
 }
 
-.col-bakery {
+.col-product {
   width: 20%;
   padding-right: 10px;
 }
 
-.col-bakery a {
-  text-decoration: none;
-  color: var(--text);
+.col-product .product-name {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--primary);
 }
 
-.col-bakery h3 {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
+.col-bakery {
+  width: 15%;
+  padding-right: 10px;
+}
+
+.col-bakery .bakery-name {
+  display: block;
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 .bakery-address {
@@ -186,7 +200,7 @@
 }
 
 .col-review {
-  width: 50%;
+  width: 42%;
   padding-right: 10px;
 }
 
@@ -220,7 +234,7 @@
   color: var(--text-dark);
 }
 
-.star {
+.star, .cookie {
   font-size: 1.3rem;
   color: var(--secondary);
 }
@@ -259,10 +273,14 @@
     right: 15px;
   }
   
-  .col-bakery, .col-review, .col-rating {
+  .col-product, .col-bakery, .col-review, .col-rating {
     width: 100%;
     margin-bottom: 10px;
     padding-right: 0;
+  }
+  
+  .col-product {
+    margin-right: 40px; /* Make space for the rank number */
   }
   
   .col-rating {
@@ -277,8 +295,6 @@
   .rating-with-star {
     justify-content: flex-start;
   }
-  
-  /* Price column removed */
   
   .product-navigation {
     flex-direction: column;

@@ -70,6 +70,7 @@ export const useBakeryProfileViewModel = (bakeryName) => {
 
         if (!bakeryId) throw new Error('Bakery not found');
 
+        // Fetch bakery data, stats, and reviews
         const [bakeryData, statsData, productsData, reviewsData] = await Promise.all([
           apiClient.get(`/bakeries/${bakeryId}`, true),
           apiClient.get(`/bakeries/${bakeryId}/stats`, true),
@@ -79,10 +80,51 @@ export const useBakeryProfileViewModel = (bakeryName) => {
 
         if (cancelled) return;
 
+        // Process bakery and reviews data
         setBakery(Bakery.fromApiResponse(bakeryData));
         setBakeryStats(statsData);
-        setBakeryProducts((productsData.products || []).map(Product.fromApiResponse));
         setBakeryReviews((reviewsData.bakeryReviews || []).map(BakeryReview.fromApiResponse));
+
+        // Get product data
+        const products = (productsData.products || []).map(Product.fromApiResponse);
+        
+        // Fetch product reviews to extract ratings
+        const enhancedProducts = await Promise.all(
+          products.map(async (product) => {
+            try {
+              // Fetch product reviews
+              const reviewsResponse = await apiClient.get(`/productreviews/product/${product.id}`, true);
+              const reviews = reviewsResponse.productReviews || [];
+              
+              // Calculate average rating if there are reviews
+              let totalRating = 0;
+              let reviewCount = 0;
+              
+              reviews.forEach(review => {
+                if (review.overallRating) {
+                  totalRating += review.overallRating;
+                  reviewCount++;
+                }
+              });
+              
+              const avgRating = reviewCount > 0 ? totalRating / reviewCount : 0;
+              
+              // Return enhanced product with rating
+              return {
+                ...product,
+                rating: avgRating,
+                average_rating: avgRating,
+                review_count: reviewCount
+              };
+            } catch (error) {
+              console.error(`Error fetching reviews for product ${product.id}:`, error);
+              return product; // Return original product if fetch fails
+            }
+          })
+        );
+        
+        // Set products with ratings
+        setBakeryProducts(enhancedProducts);
       } catch (err) {
         if (!cancelled) {
           console.error('Error fetching bakery data:', err);
@@ -97,13 +139,20 @@ export const useBakeryProfileViewModel = (bakeryName) => {
     return () => { cancelled = true; };
   }, [bakeryName, bakeryMap]);
 
-  const getTopRatedProducts = useCallback(() =>
-    bakeryProducts
-      .filter(p => p.rating || p.average_rating)
-      .sort((a, b) => (b.rating || b.average_rating) - (a.rating || a.average_rating))
-      .slice(0, 3),
-    [bakeryProducts]
-  );
+  // Get top rated products (already sorted by rating)
+  const getTopRatedProducts = useCallback(() => {
+    if (!bakeryProducts || bakeryProducts.length === 0) {
+      return [];
+    }
+
+    return [...bakeryProducts]
+      .sort((a, b) => {
+        const ratingA = a.rating || a.average_rating || 0;
+        const ratingB = b.rating || b.average_rating || 0;
+        return ratingB - ratingA;
+      })
+      .slice(0, 5);
+  }, [bakeryProducts]);
 
   const formatDate = useCallback((dateString) => {
     if (!dateString) return '';
