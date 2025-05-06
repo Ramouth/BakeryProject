@@ -105,8 +105,8 @@ const ProductForm = ({ product, bakeries, onSubmit, onCancel, isSubmitting }) =>
         </select>
       </div>
       
-     {/* Category dropdown */}
-     <div className="form-group">
+      {/* Category dropdown */}
+      <div className="form-group">
         <label htmlFor="categoryId">Category:</label>
         <select
           id="categoryId"
@@ -150,17 +150,6 @@ const ProductForm = ({ product, bakeries, onSubmit, onCancel, isSubmitting }) =>
           name="imageUrl"
           value={formData.imageUrl}
           onChange={handleChange}
-        />
-      </div>
-      
-      <div className="form-group">
-        <label htmlFor="description">Description:</label>
-        <textarea
-          id="description"
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          rows="3"
         />
       </div>
       

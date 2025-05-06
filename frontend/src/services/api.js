@@ -126,6 +126,7 @@ class ApiClient {
     }
     
     this._log(`API Request: ${options.method || 'GET'} ${url}`);
+    console.log('API Request URL:', fullUrl);  // Added debug log for URL
 
     const headers = {
       ...options.headers,
@@ -342,6 +343,16 @@ class ApiClient {
       });
     }
     
+    // Special case for products create
+    if (url === '/products/create') {
+      console.log('Product create payload:', data);
+      return this.request('http://localhost:5000/products/create', {
+        ...options,
+        method: 'POST',
+        body: data instanceof FormData ? data : JSON.stringify(data),
+      });
+    }
+    
     return this.request(url, {
       ...options,
       method: 'POST',
@@ -350,6 +361,16 @@ class ApiClient {
   }
 
   patch(url, data, options = {}) {
+    // Special case for products update
+    if (url.startsWith('/products/update/')) {
+      const productId = url.split('/').pop();
+      return this.request(`http://localhost:5000/products/update/${productId}`, {
+        ...options,
+        method: 'PATCH',
+        body: data instanceof FormData ? data : JSON.stringify(data),
+      });
+    }
+    
     return this.request(url, {
       ...options,
       method: 'PATCH',
@@ -366,6 +387,15 @@ class ApiClient {
   }
 
   delete(url, options = {}) {
+    // Special case for products delete
+    if (url.startsWith('/products/delete/')) {
+      const productId = url.split('/').pop();
+      return this.request(`http://localhost:5000/products/delete/${productId}`, {
+        ...options,
+        method: 'DELETE',
+      });
+    }
+    
     return this.request(url, {
       ...options,
       method: 'DELETE',
