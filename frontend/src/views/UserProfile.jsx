@@ -44,7 +44,8 @@ const UserProfile = () => {
     handleLogout,
     handleDeleteReview,
     formatDate,
-    navigate
+    navigate,
+    loadMoreReviews 
   } = useUserProfileViewModel();
 
   if (loading) {
@@ -323,10 +324,14 @@ const UserProfile = () => {
                         </div>
                       ))}
                       
-                      {reviewHistory.length > 0 && userStats.totalReviews > reviewHistory.length && (
+                      {reviewHistory.length > 0 && userStats?.totalReviews > reviewHistory.length && (
                         <div className="see-more-reviews">
-                          <Button variant="secondary" onClick={() => navigate('/user/reviews')}>
-                            See All {userStats.totalReviews} Reviews
+                          <Button 
+                            variant="secondary" 
+                            onClick={loadMoreReviews}
+                            disabled={loading}
+                          >
+                            {loading ? 'Loading...' : `Load More Reviews (${reviewHistory.length}/${userStats.totalReviews})`}
                           </Button>
                         </div>
                       )}
