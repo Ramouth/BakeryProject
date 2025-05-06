@@ -110,10 +110,23 @@ const ProductProfile = () => {
           )}
           <h1>{product.name}</h1>
           <div className="product-rating-summary">
-            <span className="product-rating-value">{(ratings.overall / 2).toFixed(1)}</span>
-            {renderCookieStars(ratings.overall)}
-            <span className="product-review-count">({reviewCount} reviews)</span>
+          <span className="rating-label">Overall: </span>
+          <span className="product-rating-value">{(ratings.overall / 2).toFixed(1)}</span>
+          {renderCookieStars(ratings.overall)}
+          <span className="product-review-count">({reviewCount} reviews)</span>
+        </div>
+
+          <div className="rating-details">
+        {['taste', 'price', 'presentation'].map((key) => (
+          <div key={key} className="rating-item">
+            <span className="rating-label">{key.charAt(0).toUpperCase() + key.slice(1)}:</span>
+            <span className="rating-numeric-value">
+              {(ratings[key] / 2).toFixed(1)}
+            </span>
+            {renderCookieStars(ratings[key])}
           </div>
+        ))}
+      </div>
         </div>
         <div className="product-image-container">
           {product.imageUrl ? (
@@ -142,28 +155,6 @@ const ProductProfile = () => {
       <div className="product-content">
         {activeTab === 'reviews' && (
           <div className="reviews-section">
-            <div className="reviews-summary">
-              <div className="reviews-total">
-                <span className="large-rating">{(ratings.overall / 2).toFixed(1)}</span>
-                {renderCookieStars(ratings.overall, 'large')}
-                <span className="total-reviews">{reviewCount} reviews</span>
-              </div>
-              <div className="rating-details">
-                {['overall', 'taste', 'price', 'presentation'].map((key) => (
-                  <div key={key} className="rating-item">
-                    <span className="rating-label">{key.charAt(0).toUpperCase() + key.slice(1)}:</span>
-                    <span className="rating-numeric-value">
-                      {(ratings[key] / 2).toFixed(1)}
-                    </span>
-                    {renderCookieStars(ratings[key])}
-                  </div>
-                ))}
-              </div>
-              <button className="btn btn-primary" onClick={openReviewModal}>
-                Write a Review
-              </button>
-            </div>
-
             <div className="reviews-list">
               {productReviews.length === 0 ? (
                 <p>No reviews yet. Be the first to review this product!</p>
