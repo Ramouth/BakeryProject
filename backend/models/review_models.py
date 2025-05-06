@@ -16,7 +16,7 @@ def utc_plus_2():
 class BaseReview:
     """Base class for review models with common attributes"""
     id = Column(Integer, primary_key=True)
-    review = Column(Text, nullable=False)
+    review = Column(Text, nullable=True)
     overall_rating = Column(Integer, nullable=False)
     
     # Use declared_attr for foreign keys in mixins, now nullable
@@ -39,10 +39,10 @@ class BakeryReview(db.Model, BaseReview):
     def bakery_id(cls):
         return Column(Integer, ForeignKey('bakery.id', ondelete='CASCADE'), nullable=False)
     
-    service_rating = Column(Integer, nullable=False)
-    price_rating = Column(Integer, nullable=False)
-    atmosphere_rating = Column(Integer, nullable=False)
-    location_rating = Column(Integer, nullable=False)
+    service_rating = Column(Integer, nullable=True)
+    price_rating = Column(Integer, nullable=True)
+    atmosphere_rating = Column(Integer, nullable=True)
+    location_rating = Column(Integer, nullable=True)
     
     # Relationships - optional user
     bakery = relationship('Bakery', back_populates='bakery_reviews')
@@ -51,10 +51,10 @@ class BakeryReview(db.Model, BaseReview):
     # Indexes and constraints
     __table_args__ = (
         CheckConstraint('overall_rating BETWEEN 1 AND 10', name='check_bakery_overall_rating'),
-        CheckConstraint('service_rating BETWEEN 1 AND 10', name='check_bakery_service_rating'),
-        CheckConstraint('price_rating BETWEEN 1 AND 10', name='check_bakery_price_rating'),
-        CheckConstraint('atmosphere_rating BETWEEN 1 AND 10', name='check_bakery_atmosphere_rating'),
-        CheckConstraint('location_rating BETWEEN 1 AND 10', name='check_bakery_location_rating'),
+        CheckConstraint('service_rating IS NULL OR service_rating BETWEEN 1 AND 10', name='check_bakery_service_rating'),
+        CheckConstraint('price_rating IS NULL OR price_rating BETWEEN 1 AND 10', name='check_bakery_price_rating'),
+        CheckConstraint('atmosphere_rating IS NULL OR atmosphere_rating BETWEEN 1 AND 10', name='check_bakery_atmosphere_rating'),
+        CheckConstraint('location_rating IS NULL OR location_rating BETWEEN 1 AND 10', name='check_bakery_location_rating'),
         Index('idx_bakery_review_bakery_id', 'bakery_id'),
         Index('idx_bakery_review_user_id', 'user_id'),
     )
@@ -100,9 +100,9 @@ class ProductReview(db.Model, BaseReview):
     def product_id(cls):
         return Column(Integer, ForeignKey('product.id', ondelete='CASCADE'), nullable=False)
     
-    taste_rating = Column(Integer, nullable=False)
-    price_rating = Column(Integer, nullable=False)
-    presentation_rating = Column(Integer, nullable=False)
+    taste_rating = Column(Integer, nullable=True)
+    price_rating = Column(Integer, nullable=True)
+    presentation_rating = Column(Integer, nullable=True)
     
     # Relationships - optional user
     product = relationship('Product', back_populates='product_reviews')
@@ -111,9 +111,9 @@ class ProductReview(db.Model, BaseReview):
     # Indexes and constraints
     __table_args__ = (
         CheckConstraint('overall_rating BETWEEN 1 AND 10', name='check_product_overall_rating'),
-        CheckConstraint('taste_rating BETWEEN 1 AND 10', name='check_product_taste_rating'),
-        CheckConstraint('price_rating BETWEEN 1 AND 10', name='check_product_price_rating'),
-        CheckConstraint('presentation_rating BETWEEN 1 AND 10', name='check_product_presentation_rating'),
+        CheckConstraint('taste_rating IS NULL OR taste_rating BETWEEN 1 AND 10', name='check_product_taste_rating'),
+        CheckConstraint('price_rating IS NULL OR price_rating BETWEEN 1 AND 10', name='check_product_price_rating'),
+        CheckConstraint('presentation_rating IS NULL OR presentation_rating BETWEEN 1 AND 10', name='check_product_presentation_rating'),
         Index('idx_product_review_product_id', 'product_id'),
         Index('idx_product_review_user_id', 'user_id'),
     )

@@ -45,24 +45,28 @@ class BakeryReviewSchema(ma.SQLAlchemyAutoSchema):
     # Field customizations for specific bakery review fields
     bakeryId = fields.Integer(required=True, attribute='bakery_id')
     serviceRating = fields.Integer(
-        required=True, 
+        required=False, 
         validate=validate.Range(min=1, max=10),
-        attribute='service_rating'
+        attribute='service_rating',
+        allow_none=True
     )
     priceRating = fields.Integer(
-        required=True, 
+        required=False, 
         validate=validate.Range(min=1, max=10),
-        attribute='price_rating'
+        attribute='price_rating',
+        allow_none=True
     )
     atmosphereRating = fields.Integer(
-        required=True, 
+        required=False, 
         validate=validate.Range(min=1, max=10),
-        attribute='atmosphere_rating'
+        attribute='atmosphere_rating',
+        allow_none=True
     )
     locationRating = fields.Integer(
-        required=True, 
+        required=False, 
         validate=validate.Range(min=1, max=10),
-        attribute='location_rating'
+        attribute='location_rating',
+        allow_none=True
     )
     
     # Nested fields for related objects
@@ -156,19 +160,22 @@ class ProductReviewSchema(ma.SQLAlchemyAutoSchema):
     # Field customizations for specific product review fields
     productId = fields.Integer(required=True, attribute='product_id')
     tasteRating = fields.Integer(
-        required=True, 
+        required=False, 
         validate=validate.Range(min=1, max=10),
-        attribute='taste_rating'
+        attribute='taste_rating',
+        allow_none=True
     )
     priceRating = fields.Integer(
-        required=True, 
+        required=False, 
         validate=validate.Range(min=1, max=10),
-        attribute='price_rating'
+        attribute='price_rating',
+        allow_none=True
     )
     presentationRating = fields.Integer(
-        required=True, 
+        required=False, 
         validate=validate.Range(min=1, max=10),
-        attribute='presentation_rating'
+        attribute='presentation_rating',
+        allow_none=True
     )
     
     # Nested fields for related objects
