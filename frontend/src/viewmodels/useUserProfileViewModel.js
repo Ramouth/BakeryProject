@@ -7,7 +7,7 @@ import reviewService from '../services/reviewService';
 export const useUserProfileViewModel = () => {
   const { currentUser, logout } = useUser();
   const navigate = useNavigate();
-  
+  const [reviewLimit, setReviewLimit] = useState(10);
   const [userStats, setUserStats] = useState(null);
   const [reviewHistory, setReviewHistory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,9 +39,9 @@ export const useUserProfileViewModel = () => {
     setError(null);
     
     try {
-      // Use the improved reviewService methods for fetching user reviews
+      // Use reviewLimit instead of hardcoded 15
       const [recentReviews, stats] = await Promise.all([
-        reviewService.getUserRecentReviews(currentUser.id, 5),
+        reviewService.getUserRecentReviews(currentUser.id, reviewLimit),
         reviewService.getUserReviewStats(currentUser.id)
       ]);
       
@@ -54,6 +54,25 @@ export const useUserProfileViewModel = () => {
       setLoading(false);
     }
   };
+
+  const loadMoreReviews = useCallback(async () => {
+    if (!currentUser || !currentUser.id) return;
+    
+    const newLimit = reviewLimit + 10; // Increase limit by 5
+    setReviewLimit(newLimit);
+    
+    setLoading(true);
+    try {
+      // Fetch more reviews with the increased limit
+      const moreReviews = await reviewService.getUserRecentReviews(currentUser.id, newLimit);
+      setReviewHistory(moreReviews);
+    } catch (error) {
+      console.error('Error loading more reviews:', error);
+      setError('Failed to load more reviews. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  }, [currentUser, reviewLimit]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -157,6 +176,7 @@ export const useUserProfileViewModel = () => {
     handleLogout,
     handleDeleteReview,
     formatDate,
-    navigate
+    navigate,
+    loadMoreReviews,
   };
 };
