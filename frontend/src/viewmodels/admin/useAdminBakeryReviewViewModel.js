@@ -11,13 +11,23 @@ export const useAdminBakeryReviewViewModel = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentReview, setCurrentReview] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [pageSize] = useState(50);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [allReviews, setAllReviews] = useState([]);
   const { showSuccess, showError } = useNotification();
 
-  const fetchReviews = useCallback(async () => {
-    setIsLoading(true);
+  const fetchReviews = useCallback(async (page = 1, loadMore = false) => {
+    if (loadMore) {
+      setIsLoadingMore(true);
+    } else {
+      setIsLoading(true);
+    }
     setError(null);
+    
     try {
       // Fetch reviews, bakeries, and users in parallel
       const [reviewsResponse, bakeriesResponse, usersResponse] = await Promise.all([
@@ -49,9 +59,27 @@ export const useAdminBakeryReviewViewModel = () => {
         };
       });
       
-      setReviews(bakeryReviews);
+      // Store all reviews for search filtering
+      setAllReviews(bakeryReviews);
+      
+      // Implement pagination
+      const totalPages = Math.ceil(bakeryReviews.length / pageSize);
+      setHasMore(page < totalPages);
+      
+      if (loadMore) {
+        // Add more reviews to existing ones
+        setReviews(prev => [
+          ...prev,
+          ...bakeryReviews.slice((page - 1) * pageSize, page * pageSize)
+        ]);
+      } else {
+        // First load or reset
+        setReviews(bakeryReviews.slice(0, page * pageSize));
+      }
+      
       setBakeries(bakeriesResponse.bakeries || []);
       setUsers(usersResponse.users || []);
+      setCurrentPage(page);
       
       console.log("Processed bakery reviews:", bakeryReviews);
     } catch (err) {
@@ -60,12 +88,17 @@ export const useAdminBakeryReviewViewModel = () => {
       showError('Failed to fetch data.');
     } finally {
       setIsLoading(false);
+      setIsLoadingMore(false);
     }
-  }, [showError]);
+  }, [pageSize, showError]);
 
   useEffect(() => {
     fetchReviews();
   }, [fetchReviews]);
+
+  const loadMoreReviews = useCallback(() => {
+    fetchReviews(currentPage + 1, true);
+  }, [fetchReviews, currentPage]);
 
   // Filter reviews based on search term
   const filteredReviews = useMemo(() => {
@@ -74,10 +107,15 @@ export const useAdminBakeryReviewViewModel = () => {
     }
     
     const normalizedSearchTerm = searchTerm.toLowerCase().trim();
-    return reviews.filter(review => 
+    // Filter from all reviews (not just currently displayed ones)
+    const filtered = allReviews.filter(review => 
       review.review && review.review.toLowerCase().includes(normalizedSearchTerm)
     );
-  }, [reviews, searchTerm]);
+    
+    // Reset pagination when searching
+    setHasMore(filtered.length > pageSize);
+    return filtered.slice(0, pageSize);
+  }, [reviews, allReviews, searchTerm, pageSize]);
 
   const handleOpenCreateModal = useCallback(() => {
     setCurrentReview(null);
@@ -109,7 +147,7 @@ export const useAdminBakeryReviewViewModel = () => {
       }
       
       handleCloseModal();
-      await fetchReviews();
+      await fetchReviews(1, false); // Reset to first page after changes
     } catch (err) {
       setError(err.message || 'Failed to save review.');
       showError(`Failed to save review: ${err.message}`);
@@ -128,7 +166,7 @@ export const useAdminBakeryReviewViewModel = () => {
     try {
       await apiClient.delete(`/bakeryreviews/delete/${id}`, false);
       showSuccess('Review deleted successfully!');
-      await fetchReviews();
+      await fetchReviews(1, false); // Reset to first page after deletion
     } catch (err) {
       setError(err.message || 'Failed to delete review.');
       showError(`Failed to delete review: ${err.message}`);
@@ -144,10 +182,13 @@ export const useAdminBakeryReviewViewModel = () => {
     isModalOpen,
     currentReview,
     isLoading,
+    isLoadingMore,
     error,
     searchTerm,
     setSearchTerm,
     filteredReviews,
+    hasMore,
+    loadMoreReviews,
     handleOpenCreateModal,
     handleOpenEditModal,
     handleCloseModal,

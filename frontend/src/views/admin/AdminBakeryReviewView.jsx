@@ -3,7 +3,7 @@ import BakeryReviewList from '../../components/admin/AdminBakeryReviewList';
 import BakeryReviewForm from '../../components/admin/AdminBakeryReviewModal';
 import Modal from '../../components/Modal';
 import Button from '../../components/Button';
-import { MessageCircle, Plus } from 'lucide-react';
+import { MessageCircle, Plus, RefreshCw } from 'lucide-react';
 
 const AdminBakeryReviewView = () => {
   const {
@@ -13,10 +13,13 @@ const AdminBakeryReviewView = () => {
     isModalOpen,
     currentReview,
     isLoading,
+    isLoadingMore,
     error,
     searchTerm,
     setSearchTerm,
     filteredReviews,
+    hasMore,
+    loadMoreReviews,
     handleOpenCreateModal,
     handleOpenEditModal,
     handleCloseModal,
@@ -62,11 +65,32 @@ const AdminBakeryReviewView = () => {
       {isLoading && !reviews.length ? (
         <div className="loading">Loading bakery reviews...</div>
       ) : (
-        <BakeryReviewList 
-          reviews={filteredReviews} 
-          updateReview={handleOpenEditModal} 
-          updateCallback={handleDeleteReview} 
-        />
+        <>
+          <BakeryReviewList 
+            reviews={filteredReviews} 
+            updateReview={handleOpenEditModal} 
+            updateCallback={handleDeleteReview} 
+          />
+          
+          {hasMore && (
+            <div style={{ textAlign: 'center', marginTop: '20px' }}>
+              <Button 
+                onClick={loadMoreReviews} 
+                disabled={isLoadingMore}
+                variant="secondary"
+              >
+                {isLoadingMore ? (
+                  <>
+                    <RefreshCw size={16} style={{ marginRight: '8px', animation: 'spin 1s linear infinite' }} />
+                    Loading...
+                  </>
+                ) : (
+                  'Load More Reviews'
+                )}
+              </Button>
+            </div>
+          )}
+        </>
       )}
 
       <Modal 
