@@ -308,8 +308,6 @@ const UserProfile = () => {
                             <button 
                               className="review-action-btn edit-btn"
                               onClick={() => {
-                                // Navigate to the review page with this review's ID
-                                navigate(`/${review.type}-review/${review.id}/edit`);
                               }}
                             >
                               Edit
