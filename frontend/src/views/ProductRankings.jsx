@@ -1,7 +1,8 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useProductRankingsViewModel } from '../viewmodels/useProductRankingsViewModel';
 
 const ProductRankings = () => {
+  const navigate = useNavigate();
   const {
     category,
     subcategory,
@@ -14,7 +15,6 @@ const ProductRankings = () => {
     categoryId
   } = useProductRankingsViewModel();
 
-  // Helper function to render cookie rating
   const renderCookieRating = (rating) => {
     const displayRating = parseFloat(rating);
     const fullCookies = Math.floor(displayRating);
@@ -22,17 +22,17 @@ const ProductRankings = () => {
     const emptyCookies = 5 - fullCookies - (hasHalfCookie ? 1 : 0);
     
     return (
-      <div className="product-cookie-display">
+      <div className="cookie-display cookie-small">
         {Array(fullCookies).fill().map((_, i) => (
-          <span key={`full-${i}`} className="product-cookie-filled">🍪</span>
+          <span key={`full-${i}`} className="cookie-filled">🍪</span>
         ))}
         {hasHalfCookie && (
-          <div className="product-cookie-half-container">
-            <span className="product-cookie-half">🍪</span>
+          <div className="cookie-half-container">
+            <span className="cookie-half">🍪</span>
           </div>
         )}
         {Array(emptyCookies).fill().map((_, i) => (
-          <span key={`empty-${i}`} className="product-cookie-empty">🍪</span>
+          <span key={`empty-${i}`} className="cookie-empty">🍪</span>
         ))}
       </div>
     );
@@ -105,7 +105,13 @@ const ProductRankings = () => {
           subcategories.map(item => (
             <button
               key={item.id}
-              className={`product-nav-item ${selectedSubcategoryId === item.id ? 'product-active' : ''}`}
+              className={`product-nav-item ${
+                selectedSubcategoryId === item.id || 
+                selectedSubcategoryId === String(item.id) || 
+                (selectedSubcategoryId && String(selectedSubcategoryId) === String(item.id)) 
+                  ? 'product-active' 
+                  : ''
+              }`}
               onClick={() => handleSubcategorySelect(item.id)}
             >
               {item.name}
@@ -136,13 +142,17 @@ const ProductRankings = () => {
                     <div className="product-info">
                       <h3 className="product-name">{item.productName}</h3>
                       <div className="product-bakery-info">
-                        <Link 
-                          to={`/bakery/${encodeURIComponent(formatNameForUrl(item.bakeryName))}`}
+                        {/* Fix: Change Link to span with onClick handler */}
+                        <span 
                           className="product-bakery-name"
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            navigate(`/bakery/${encodeURIComponent(formatNameForUrl(item.bakeryName))}`);
+                          }}
                         >
                           {item.bakeryName}
-                        </Link>
+                        </span>
                         <span className="product-postal">{item.address}</span>
                       </div>
                     </div>

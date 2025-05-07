@@ -60,7 +60,6 @@ const BakeryRankings = () => {
     }
     
     // Always divide by 2 to convert from 10-scale to 5-scale
-    // Backend consistently stores ratings on a 1-10 scale
     return (rating / 2).toFixed(1);
   };
 

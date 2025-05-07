@@ -60,7 +60,10 @@ export const useProductCategoryViewModel = () => {
   };
 
   const navigateToSubcategory = (categoryId, subcategoryId) => {
-    navigate(`/product-rankings/${categoryId}/${subcategoryId}`);
+    const targetSubcategoryId = subcategoryId;
+    navigate(`/product-rankings/${categoryId}/${targetSubcategoryId}`);
+    
+    console.log(`Navigating to: category=${categoryId}, subcategory=${targetSubcategoryId}`);
   };
 
   const getCategorySubcategories = (categoryId) => {

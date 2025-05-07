@@ -13,19 +13,49 @@ export const useHomeViewModel = () => {
   const [topBakeries, setTopBakeries] = useState([]);
   const [loading, setLoading] = useState(false);
   
-  // Optimized version that only fetches top 4 bakeries with their stats directly
-  // Instead of fetching all bakeries and then fetching stats for each one
+  // Fetch top bakeries and their stats
   const fetchTopBakeries = useCallback(async () => {
     setLoading(true);
     try {
-      // Fetch only top 4 bakeries with their ratings in one go
+      // Fetch top bakeries
       const response = await apiClient.get('/bakeries/top?limit=4&includeStats=true', true);
+      console.log('API response for top bakeries:', response);
       
       if (response && response.bakeries && response.bakeries.length > 0) {
-        // Already sorted bakeries with basic stats included
-        setTopBakeries(response.bakeries);
+        const bakeries = response.bakeries;
+        
+        // Fetch stats for each bakery
+        const enrichedBakeries = await Promise.all(
+          bakeries.map(async (bakery) => {
+            try {
+              // Get stats for this bakery
+              const statsResponse = await apiClient.get(`/bakeries/${bakery.id}/stats`, true);
+              console.log(`Stats for bakery ${bakery.id}:`, statsResponse);
+              
+              // Merge bakery data with stats
+              return {
+                ...bakery,
+                average_rating: statsResponse?.average_rating || 0,
+                ratings: statsResponse?.ratings || { overall: 0 },
+                review_count: statsResponse?.review_count || 0
+              };
+            } catch (error) {
+              console.error(`Error fetching stats for bakery ${bakery.id}:`, error);
+              // Return bakery with default values if stats fetch fails
+              return {
+                ...bakery,
+                average_rating: 0,
+                ratings: { overall: 0 },
+                review_count: 0
+              };
+            }
+          })
+        );
+        
+        console.log('Enriched bakeries with stats:', enrichedBakeries);
+        setTopBakeries(enrichedBakeries);
       } else {
-        // Fallback: fetch a small set directly if the optimized endpoint isn't available
+        // Fallback handling
         try {
           const fallbackResponse = await apiClient.get('/bakeries?limit=4&sort=rating', true);
           if (fallbackResponse && fallbackResponse.bakeries) {

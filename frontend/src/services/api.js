@@ -152,22 +152,43 @@ class ApiClient {
 
       // Handle response status
       if (!response.ok) {
+        // Check if this is an auth endpoint - don't redirect for login/register
+        const isAuthEndpoint = url.includes('/auth/login') || url.includes('/auth/register');
+        
         // Handle authentication errors
         if (response.status === 401) {
-          // Try token refresh if we have a refresh token
-          const refreshToken = localStorage.getItem(this.refreshTokenKey);
-          if (refreshToken && !options.isRefreshRequest) {
+          if (isAuthEndpoint) {
+            // For auth endpoints, just throw the error without redirecting
+            const errorText = await response.text();
+            console.log('Auth endpoint error:', errorText);
+            
+            let errorData;
             try {
-              await this._refreshAuth();
-              // Retry the original request with new token
-              return this.request(url, options);
-            } catch (refreshError) {
-              this._log('Token refresh failed', refreshError);
+              errorData = JSON.parse(errorText);
+            } catch {
+              errorData = { message: errorText || 'Invalid credentials' };
+            }
+            
+            const error = new Error(errorData.message || 'Authentication failed');
+            error.status = response.status;
+            error.data = errorData;
+            throw error;
+          } else {
+            // For other endpoints, try token refresh
+            const refreshToken = localStorage.getItem(this.refreshTokenKey);
+            if (refreshToken && !options.isRefreshRequest) {
+              try {
+                await this._refreshAuth();
+                // Retry the original request with new token
+                return this.request(url, options);
+              } catch (refreshError) {
+                this._log('Token refresh failed', refreshError);
+                this._handleSessionExpiration();
+              }
+            } else {
+              // No refresh token or refresh failed
               this._handleSessionExpiration();
             }
-          } else {
-            // No refresh token or refresh failed
-            this._handleSessionExpiration();
           }
         }
 
