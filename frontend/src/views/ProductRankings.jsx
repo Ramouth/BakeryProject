@@ -15,7 +15,6 @@ const ProductRankings = () => {
     categoryId
   } = useProductRankingsViewModel();
 
-  // Helper function to render cookie rating
   const renderCookieRating = (rating) => {
     const displayRating = parseFloat(rating);
     const fullCookies = Math.floor(displayRating);
@@ -23,17 +22,17 @@ const ProductRankings = () => {
     const emptyCookies = 5 - fullCookies - (hasHalfCookie ? 1 : 0);
     
     return (
-      <div className="product-cookie-display">
+      <div className="cookie-display cookie-small">
         {Array(fullCookies).fill().map((_, i) => (
-          <span key={`full-${i}`} className="product-cookie-filled">🍪</span>
+          <span key={`full-${i}`} className="cookie-filled">🍪</span>
         ))}
         {hasHalfCookie && (
-          <div className="product-cookie-half-container">
-            <span className="product-cookie-half">🍪</span>
+          <div className="cookie-half-container">
+            <span className="cookie-half">🍪</span>
           </div>
         )}
         {Array(emptyCookies).fill().map((_, i) => (
-          <span key={`empty-${i}`} className="product-cookie-empty">🍪</span>
+          <span key={`empty-${i}`} className="cookie-empty">🍪</span>
         ))}
       </div>
     );
@@ -114,9 +113,9 @@ const ProductRankings = () => {
                   : ''
               }`}
               onClick={() => handleSubcategorySelect(item.id)}
-        >
-          {item.name}
-        </button>
+            >
+              {item.name}
+            </button>
           ))
         )}
       </div>
