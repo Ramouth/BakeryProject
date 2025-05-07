@@ -27,6 +27,14 @@ const NavBar = () => {
     setIsReviewModalOpen(false);
   };
 
+  // Determine profile path based on user role
+  const getProfilePath = () => {
+    if (currentUser && currentUser.isAdmin) {
+      return '/admin-dashboard';
+    }
+    return '/profile';
+  };
+
   return (
     <header className="app-header">
       <div className="header-content">
@@ -49,7 +57,7 @@ const NavBar = () => {
                 <span className="separator"></span>
                 <span>Review</span>
               </button>
-              <Link to="/profile" className="profile-icon" title="View Profile">
+              <Link to={getProfilePath()} className="profile-icon" title={currentUser.isAdmin ? "Admin Dashboard" : "View Profile"}>
                 <User size={24} />
               </Link>
             </>
