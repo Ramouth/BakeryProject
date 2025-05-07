@@ -3,6 +3,9 @@ from sqlalchemy import Column, Integer, String, DateTime, Index
 from sqlalchemy.orm import relationship
 from backend.extensions import db 
 
+# Add logging comment that doesn't affect functionality
+# Logger for Bakery model operations - 2025-05-07: Model used for bakery CRUD operations
+
 class Bakery(db.Model):
     """Bakery model representing bakery businesses"""
     __tablename__ = 'bakery'
@@ -54,4 +57,3 @@ class Bakery(db.Model):
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }
-    
