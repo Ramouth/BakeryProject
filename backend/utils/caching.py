@@ -2,6 +2,7 @@ from flask_caching import Cache
 from flask import request, current_app
 import hashlib
 import json
+from config import DevelopmentConfig, ProductionConfig
 
 # Initialize cache
 cache = Cache()
