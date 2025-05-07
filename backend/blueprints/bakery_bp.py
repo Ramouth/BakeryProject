@@ -1,8 +1,9 @@
 from flask import Blueprint, request, jsonify, current_app as app, make_response
 from backend.extensions import db
-from backend.schemas.bakery_schema import BakerySchema  # Assuming schema is in bakery_schema.py
+from backend.schemas.bakery_schema import BakerySchema
 from backend.services.bakery_service import BakeryService
-
+from backend.services.product_service import ProductService
+from backend.schemas.product_schema import ProductSchema
 
 # Create blueprint
 bakery_bp = Blueprint('bakery', __name__)
@@ -262,8 +263,8 @@ def get_bakery_stats(bakery_id):
 @bakery_bp.route('/<int:bakery_id>/products', methods=['GET'])
 def get_bakery_products(bakery_id):
     """Get all products for a specific bakery"""
-    from services.product_service import ProductService
-    from schemas import ProductSchema
+    from backend.services.product_service import ProductService
+    from backend.schemas.product_schema import ProductSchema
 
     product_service = ProductService()
     products_schema = ProductSchema(many=True)

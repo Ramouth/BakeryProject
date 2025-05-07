@@ -16,12 +16,9 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or f"sqlite:///{default_db}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
-    # Security configurations
-    SECRET_KEY = os.environ.get('SECRET_KEY')
-    if not SECRET_KEY:
-        raise ValueError("SECRET_KEY is not set. Please provide it in the environment variables.")
-    
-    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'jwt-dev-key-please-change-in-production')
+    # Security configurations with safe defaults for development
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key'
+    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY') or 'jwt-dev-key-please-change-in-production'
     
     # CORS configuration
     ALLOWED_ORIGINS = os.environ.get('ALLOWED_ORIGINS', 'http://localhost:5173').split(',')
@@ -40,7 +37,7 @@ class ProductionConfig(Config):
     DEBUG = False
     TESTING = False
     
-    # These must be set in environment variables in production
+    # Enforce required environment variables in production
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
     if not SQLALCHEMY_DATABASE_URI:
         raise ValueError("DATABASE_URL is not set. Please provide it in the environment variables.")

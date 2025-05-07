@@ -1,11 +1,13 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager
+from flask_migrate import Migrate
 import os, datetime, logging
 from logging.handlers import RotatingFileHandler
 from dotenv import load_dotenv
 
 from backend.config import DevelopmentConfig, ProductionConfig
-from backend.extensions import db, migrate, init_extensions
+from backend.extensions import db, ma, migrate, jwt, cors, cache, init_extensions
 from backend.utils.caching import configure_cache
 
 # Blueprints
@@ -20,8 +22,7 @@ from backend.blueprints.category_bp import category_bp
 load_dotenv()
 
 def create_app(config_class=None):
-    """Application factory function."""
-    # Choose configuration
+    # choose configuration
     if not config_class:
         config_class = (
             ProductionConfig
@@ -33,7 +34,7 @@ def create_app(config_class=None):
     app.config.from_object(config_class)
     app.url_map.strict_slashes = False
 
-    # JWT configuration
+    # ——— JWT configuration ———
     app.config.update({
         'JWT_TOKEN_LOCATION': ['headers'],
         'JWT_HEADER_NAME': 'Authorization',
@@ -43,7 +44,7 @@ def create_app(config_class=None):
         'JWT_REFRESH_TOKEN_EXPIRES': datetime.timedelta(days=30),
     })
 
-    # Logging
+    # ——— Logging ———
     if not app.debug:
         os.makedirs('logs', exist_ok=True)
         handler = RotatingFileHandler(
@@ -64,23 +65,21 @@ def create_app(config_class=None):
                 f'{request.method} {request.path} — Headers: {dict(request.headers)}'
             )
 
-    # Initialize extensions
+    # ——— Initialize extensions ———
     init_extensions(app)
-    db.init_app(app)
-    migrate.init_app(app, db)
     configure_cache(app)
 
-    # CORS
+    # ——— CORS ———
     allowed = app.config.get('ALLOWED_ORIGINS', ['http://localhost:5173'])
     CORS(app, resources={r"/*": {
         "origins": allowed,
-        "methods": ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"],
+        "methods": ["GET","POST","PATCH","PUT","DELETE","OPTIONS"],
+        "allow_headers": ["Content-Type","Authorization"],
         "supports_credentials": True,
         "max_age": 86400
     }})
 
-    # Register blueprints
+    # ——— Register blueprints ———
     app.register_blueprint(bakery_bp, url_prefix='/bakeries')
     app.register_blueprint(product_bp, url_prefix='/products')
     app.register_blueprint(bakery_review_bp, url_prefix='/bakeryreviews')
@@ -89,7 +88,7 @@ def create_app(config_class=None):
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(category_bp, url_prefix='/categories')
 
-    # Error handling
+    # ——— Error handling ———
     @app.errorhandler(Exception)
     def catch_all(e):
         app.logger.error(f'Unhandled exception: {e}')
@@ -98,7 +97,7 @@ def create_app(config_class=None):
             'error': str(e) if app.debug else None
         }), 500
 
-    # Import models so Flask-Migrate can detect them
+    # import models so Flask‑Migrate can detect them
     with app.app_context():
         from backend.models import __all_models__  # noqa
 

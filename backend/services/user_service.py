@@ -2,7 +2,7 @@ from flask_bcrypt import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
 from sqlalchemy.exc import SQLAlchemyError
 
-from models import db, User
+from backend.models import db, User
 
 # Custom exceptions
 class UserAlreadyExists(Exception):

@@ -1,4 +1,4 @@
-from models import db, BakeryReview, ProductReview
+from backend.models import db, BakeryReview, ProductReview
 from sqlalchemy.exc import SQLAlchemyError
 
 class ReviewService:

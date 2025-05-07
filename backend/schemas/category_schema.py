@@ -1,5 +1,5 @@
 from . import ma
-from models.category_models import Category, Subcategory
+from backend.models.category_models import Category, Subcategory
 from marshmallow import fields, validate, post_dump
 
 class CategorySchema(ma.SQLAlchemyAutoSchema):
