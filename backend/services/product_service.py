@@ -1,6 +1,7 @@
-from backend.models import db, Product, ProductReview
+from backend.extensions import db
 from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
+from backend.models import Category, Subcategory
 
 class ProductService:
     """Service class for product-related business logic"""

@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Index
 from sqlalchemy.orm import relationship
-from . import db
+from backend.extensions import db  # Fixed import statement
 
 class Product(db.Model):
     """Product model representing bakery products."""

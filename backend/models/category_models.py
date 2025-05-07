@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime, Index
 from sqlalchemy.orm import relationship
-from . import db
+from backend.extensions import db 
 
 class Category(db.Model):
     """Category model for product categories"""

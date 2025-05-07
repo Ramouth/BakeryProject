@@ -1,4 +1,4 @@
-from . import ma
+from backend.extensions import ma 
 from backend.models.user_models import User
 from marshmallow import fields, validate
 

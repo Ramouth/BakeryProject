@@ -1,4 +1,4 @@
-from backend.models import db, Bakery, BakeryReview
+from backend.extensions import db
 from sqlalchemy.exc import SQLAlchemyError
 
 class BakeryService:

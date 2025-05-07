@@ -1,9 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Index
 from sqlalchemy.orm import relationship
-from . import db
+from backend.extensions import db  # Fixed import statement
 from flask_bcrypt import generate_password_hash, check_password_hash
-from datetime import datetime, timedelta
 
 class User(db.Model):
     """User model with username and password"""
@@ -14,7 +13,7 @@ class User(db.Model):
     email = Column(String(50), unique=True, nullable=False)
     password_hash = Column(String(128), nullable=False)
     profile_picture = Column(Integer, default=1, nullable=True)
-    is_admin = Column(Boolean, default=False)  # Fixed indentation here
+    is_admin = Column(Boolean, default=False)
     created_at = Column(DateTime, default=lambda: (datetime.utcnow() + timedelta(hours=2)))
     updated_at = Column(DateTime, 
                     default=lambda: (datetime.utcnow() + timedelta(hours=2)),
