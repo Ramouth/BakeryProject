@@ -1,4 +1,5 @@
 from backend.extensions import db
+from backend.models import Product, ProductReview
 from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 from backend.models import Category, Subcategory
