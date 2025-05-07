@@ -1,4 +1,4 @@
-from backend.schemas import ma
+from backend.extensions import ma
 from backend.models.product_models import Product
 from marshmallow import fields, validate, post_dump, post_load
 
