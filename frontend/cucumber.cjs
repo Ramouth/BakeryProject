@@ -4,4 +4,4 @@
 //     format: ['@cucumber/pretty-formatter'],
 //     paths: ['features/**/*.feature']
 //   }
-// };
+// }; 
