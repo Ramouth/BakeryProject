@@ -1,4 +1,5 @@
-from backend.extensions import db, Category, Subcategory
+from backend.extensions import db
+from backend.models import Category, Subcategory
 from sqlalchemy.exc import SQLAlchemyError
 
 class CategoryService:
