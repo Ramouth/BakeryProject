@@ -31,22 +31,27 @@ export const useLoginViewModel = () => {
   }, [navigate]);
 
   const handleSubmit = useCallback(async e => {
-    e.preventDefault();
+    if (e && typeof e.preventDefault === 'function') {
+      e.preventDefault();
+    }
+    
     setLocalError(null);
     setIsSubmitting(true);
     
     try {
       // Using email as username
       const user = await login(email, password);
-      redirectAfterLogin(user);
+      if (user) {
+        redirectAfterLogin(user);
+      } else {
+        // If login returns falsy but doesn't throw
+        setLocalError('Invalid credentials');
+        setIsSubmitting(false);
+      }
     } catch (err) {
-      // Always set the error even if the component might be unmounting
+      // Error handling for failed login
+      console.error('Login error:', err);
       setLocalError(err?.message || 'Login failed');
-      // Important: Reset the submitting state here to unblock the UI
-      setIsSubmitting(false);
-    } finally {
-      // Belt and suspenders approach - ensure isSubmitting is set to false
-      // Remove the mounted check to make sure this always runs
       setIsSubmitting(false);
     }
   }, [email, password, login, redirectAfterLogin]);
@@ -54,15 +59,16 @@ export const useLoginViewModel = () => {
   const handleMockLogin = useCallback(async () => {
     setLocalError(null);
     setIsSubmitting(true);
+    
     try {
       // Keep the same mock login credentials
       const user = await login('admin@crumbcompass.com', 'admin123');
       redirectAfterLogin(user);
     } catch (err) {
-      if (!mounted.current) return;
-      setLocalError(err?.message || 'Mock login failed');
-    } finally {
-      if (mounted.current) setIsSubmitting(false);
+      if (mounted.current) {
+        setLocalError(err?.message || 'Mock login failed');
+      }
+      setIsSubmitting(false);
     }
   }, [login, redirectAfterLogin]);
 
