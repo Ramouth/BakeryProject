@@ -39,6 +39,7 @@ const ProductCategorySelection = () => {
 
   const handleSubcategoryClick = (categoryId, subcategoryId, e) => {
     e.preventDefault();
+    console.log(`Clicked: category=${categoryId}, subcategory=${subcategoryId}`);
     navigateToSubcategory(categoryId, subcategoryId);
   };
 

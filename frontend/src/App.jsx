@@ -72,7 +72,7 @@ function App() {
                       <Route path="/product-categories" element={<ProductCategorySelection />} />
                       <Route path="/product-rankings" element={<ProductRankings />} />
                       <Route path="/product-rankings/:categoryId" element={<ProductRankings />} />
-                      <Route path="/product-rankings/:categoryId/:productId" element={<ProductRankings />} />
+                      <Route path="/product-rankings/:categoryId/:subcategoryId" element={<ProductRankings />} />
                       <Route path="/bakery/:bakeryName" element={<BakeryProfile />} />
                       <Route path="/product/:productId" element={<ProductProfile />} />
                       <Route path="/privacy-policy" element={<PrivacyPolicy />} /> {/* Add PrivacyPolicy route */}

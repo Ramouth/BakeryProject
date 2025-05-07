@@ -55,7 +55,7 @@ const HomePage = () => {
           <div className="promo-content">
             <h2>Discover Your Perfect Pastry</h2>
             <p>Explore top-rated bakery creations tailored to your taste preferences with our curated rankings.</p>
-            <Link to="/bakery-rankings" className="btn">View rankings</Link>
+            <Link to="/product-categories" className="btn">View rankings</Link>
           </div>
         </div>
       )}
@@ -167,70 +167,79 @@ const HomePage = () => {
                 <p>Loading bakeries...</p>
               </div>
             ) : topBakeries.length > 0 ? (
-              <div className="homepage-bakery-grid">
-                {topBakeries.map(bakery => (
-                  <Link 
-                    to={`/bakery/${encodeURIComponent(formatBakeryNameForUrl(bakery.name))}`} 
-                    key={bakery.id} 
-                    className="homepage-bakery-card"
-                  >
-                    <div style={{ 
-                      position: 'relative', 
-                      height: '100%', 
-                      display: 'flex', 
-                      flexDirection: 'column',
-                      overflow: 'hidden'
-                    }}>
-                      <div className="homepage-bakery-image">
-                        <div className="homepage-placeholder-image">
-                          {bakery.imageUrl ? (
-                            <img src={bakery.imageUrl} alt={bakery.name} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
-                          ) : bakery.name}
+              <>
+                <div className="homepage-bakery-grid">
+                  {topBakeries.map(bakery => (
+                    <Link 
+                      to={`/bakery/${encodeURIComponent(formatBakeryNameForUrl(bakery.name))}`} 
+                      key={bakery.id} 
+                      className="homepage-bakery-card"
+                    >
+                      <div style={{ 
+                        position: 'relative', 
+                        height: '100%', 
+                        display: 'flex', 
+                        flexDirection: 'column',
+                        overflow: 'hidden'
+                      }}>
+                        <div className="homepage-bakery-image">
+                          <div className="homepage-placeholder-image">
+                            {bakery.imageUrl ? (
+                              <img src={bakery.imageUrl} alt={bakery.name} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                            ) : bakery.name}
+                          </div>
+                        </div>
+                        
+                        <h3 style={{
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          marginBottom: '8px',
+                          marginTop: '12px'
+                        }}>
+                          {bakery.name}
+                        </h3>
+                        
+                        <p style={{ 
+                          flex: '1', 
+                          marginBottom: '75px',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          display: '-webkit-box',
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: 'vertical'
+                        }}>
+                          {getBakeryDescription(bakery)}
+                        </p>
+                        
+                        <div className="bakery-rating" style={{ 
+                          position: 'absolute', 
+                          bottom: '10px', 
+                          left: '10px',
+                          padding: '4px 8px',
+                          fontWeight: 'bold',
+                          backgroundColor: 'var(--primary-100)',
+                          filter: 'brightness(0.96)', 
+                          borderRadius: '4px',
+                          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                          zIndex: 2
+                        }}>
+                          {getDisplayRating(bakery)} 🍪 ({bakery.review_count || 0})
                         </div>
                       </div>
-                      
-                      <h3 style={{
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        marginBottom: '8px',
-                        marginTop: '12px'
-                      }}>
-                        {bakery.name}
-                      </h3>
-                      
-                      <p style={{ 
-                        flex: '1', 
-                        marginBottom: '75px',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 3,
-                        WebkitBoxOrient: 'vertical'
-                      }}>
-                        {getBakeryDescription(bakery)}
-                      </p>
-                      
-                      <div className="bakery-rating" style={{ 
-                        position: 'absolute', 
-                        bottom: '10px', 
-                        left: '10px',
-                        padding: '4px 8px',
-                        fontWeight: 'bold',
-                        backgroundColor: 'var(--primary-100)',
-                        filter: 'brightness(0.96)', 
-                        borderRadius: '4px',
-                        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-                        zIndex: 2
-                      }}>
-                        {getDisplayRating(bakery)} 🍪 ({bakery.review_count || 0})
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+                    </Link>
+                  ))}
+                </div>
+                
+                {/* View All Bakeries button */}
+                  <div className="view-all-bakeries">
+                    <Link to="/bakery-rankings" className="view-all-button">
+                      View All Bakeries
+                    </Link>
+                  </div>
+              </>
             ) : null}
           </>
         )}

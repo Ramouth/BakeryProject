@@ -21,6 +21,12 @@ class ProductService extends BaseService {
     return response;
   }
 
+  // New method to get category by ID
+  async getCategoryById(categoryId) {
+    const response = await apiClient.get(`/categories/${categoryId}`, true);
+    return response;
+  }
+
   // Updated methods to get categories and subcategories with correct paths
   async getAllCategories() {
     const response = await apiClient.get(`/categories`, true);

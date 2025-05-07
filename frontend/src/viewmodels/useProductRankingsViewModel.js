@@ -20,12 +20,13 @@ export const useProductRankingsViewModel = () => {
   // Fetch category and subcategories
   useEffect(() => {
     const fetchCategoryData = async () => {
+      console.log(`URL params - categoryId: ${categoryId}, subcategoryId: ${subcategoryId}`);
       try {
         setLoading(true);
         
         // If we have a categoryId, fetch the specific category
         if (categoryId) {
-          const categoryResponse = await productService.getById(categoryId);
+          const categoryResponse = await productService.getCategoryById(categoryId);
           if (categoryResponse) {
             setCategory(categoryResponse);
           }
@@ -35,20 +36,23 @@ export const useProductRankingsViewModel = () => {
           if (subcategoriesResponse && subcategoriesResponse.subcategories) {
             setSubcategories(subcategoriesResponse.subcategories);
             
-            // If subcategoryId is provided, set it as selected
+            // IMPORTANT: If subcategoryId is provided from URL params, always use it
             if (subcategoryId) {
+              console.log(`Setting selected subcategory ID from URL: ${subcategoryId}`);
+              console.log(`Available subcategories:`, subcategoriesResponse.subcategories.map(sc => `${sc.id} (${typeof sc.id}): ${sc.name}`));
+              console.log(`Setting selectedSubcategoryId to: ${subcategoryId} (${typeof subcategoryId})`);
               setSelectedSubcategoryId(subcategoryId);
               
               // Get the specific subcategory details
               const matchingSubcategory = subcategoriesResponse.subcategories.find(
-                sc => sc.id === subcategoryId
+                sc => sc.id === subcategoryId || String(sc.id) === subcategoryId
               );
               
               if (matchingSubcategory) {
                 setSubcategory(matchingSubcategory);
               }
             } else if (subcategoriesResponse.subcategories.length > 0) {
-              // Select the first subcategory by default
+              // Only default to first subcategory if none specified in URL
               setSelectedSubcategoryId(subcategoriesResponse.subcategories[0].id);
               setSubcategory(subcategoriesResponse.subcategories[0]);
             }
@@ -61,11 +65,12 @@ export const useProductRankingsViewModel = () => {
             
             // If subcategoryId is provided, set it as selected
             if (subcategoryId) {
+              console.log(`Setting selected subcategory ID from URL: ${subcategoryId}`);
               setSelectedSubcategoryId(subcategoryId);
               
               // Get the specific subcategory details
               const matchingSubcategory = allSubcategoriesResponse.subcategories.find(
-                sc => sc.id === subcategoryId
+                sc => sc.id === subcategoryId || String(sc.id) === subcategoryId
               );
               
               if (matchingSubcategory) {
@@ -107,6 +112,7 @@ export const useProductRankingsViewModel = () => {
       
       try {
         setLoading(true);
+        console.log(`Fetching products for subcategory: ${selectedSubcategoryId}`);
         
         // Fetch products by subcategory
         const response = await productService.getProductsBySubcategory(selectedSubcategoryId);
@@ -200,6 +206,7 @@ export const useProductRankingsViewModel = () => {
 
   // Handle subcategory selection
   const handleSubcategorySelect = (subcategoryId) => {
+    console.log(`Handling subcategory selection: ${subcategoryId}`);
     setSelectedSubcategoryId(subcategoryId);
     
     // Update URL
@@ -210,7 +217,9 @@ export const useProductRankingsViewModel = () => {
     }
     
     // Find and set the selected subcategory
-    const selectedSubcategory = subcategories.find(sc => sc.id === subcategoryId);
+    const selectedSubcategory = subcategories.find(sc => 
+      sc.id === subcategoryId || String(sc.id) === subcategoryId
+    );
     if (selectedSubcategory) {
       setSubcategory(selectedSubcategory);
     }

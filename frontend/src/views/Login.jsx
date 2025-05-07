@@ -9,8 +9,7 @@ const Login = () => {
     setPassword,
     isLoading,
     error,
-    handleSubmit,
-    handleMockLogin
+    handleSubmit
   } = useLoginViewModel();
   
   return (
@@ -19,15 +18,21 @@ const Login = () => {
         <h2>Login</h2>
         <p>Enter credentials to review</p>
         
-        <form onSubmit={handleSubmit} className="login-form">
+        <div className="login-form">
           <div className="form-group">
             <label htmlFor="email">Username or Email:</label>
             <input 
-              type="text" // Changed from type="email" to allow usernames
+              type="text"
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  document.getElementById('password').focus();
+                }
+              }}
             />
           </div>
           
@@ -39,6 +44,12 @@ const Login = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={isLoading}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleSubmit();
+                }
+              }}
             />
           </div>
           
@@ -50,13 +61,14 @@ const Login = () => {
           
           <div className="form-actions" style={{ display: 'flex', justifyContent: 'center' }}>
             <Button 
-              type="submit" 
+              type="button"
               disabled={isLoading}
+              onClick={handleSubmit}
             >
               {isLoading ? 'Logging in...' : 'Log In'}
             </Button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
