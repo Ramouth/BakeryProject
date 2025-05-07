@@ -19,7 +19,7 @@ class Config:
     print(f"Database file path: {default_db}")
 
     # Database configuration: use DATABASE_URL env var or default to the instance file
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or f"sqlite:///{default_db}"
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or f"sqlite:////{default_db}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     print(f"Using database URI: {SQLALCHEMY_DATABASE_URI}")
     
