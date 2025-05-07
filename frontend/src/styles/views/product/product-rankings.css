@@ -221,6 +221,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 150px;
   padding-left: 15px;
   border-left: 1px solid var(--accent);
 }
@@ -260,7 +261,7 @@
 
 .product-cookie-half-container {
   position: relative;
-  width: 0.6em;
+  width: 1.2rem;
   height: 1.2rem;
   overflow: hidden;
   margin: 0 1px;
@@ -269,8 +270,8 @@
 .product-cookie-half {
   position: absolute;
   font-size: 1.2rem;
-  left: 0;
-  top: 0;
+  width: 0.6rem;
+  height: 1.2rem;
 }
 
 /* Loading and Error States */

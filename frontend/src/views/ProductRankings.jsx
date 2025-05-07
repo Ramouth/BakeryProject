@@ -1,7 +1,8 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useProductRankingsViewModel } from '../viewmodels/useProductRankingsViewModel';
 
 const ProductRankings = () => {
+  const navigate = useNavigate();
   const {
     category,
     subcategory,
@@ -105,11 +106,17 @@ const ProductRankings = () => {
           subcategories.map(item => (
             <button
               key={item.id}
-              className={`product-nav-item ${selectedSubcategoryId === item.id ? 'product-active' : ''}`}
+              className={`product-nav-item ${
+                selectedSubcategoryId === item.id || 
+                selectedSubcategoryId === String(item.id) || 
+                (selectedSubcategoryId && String(selectedSubcategoryId) === String(item.id)) 
+                  ? 'product-active' 
+                  : ''
+              }`}
               onClick={() => handleSubcategorySelect(item.id)}
-            >
-              {item.name}
-            </button>
+        >
+          {item.name}
+        </button>
           ))
         )}
       </div>
@@ -136,13 +143,17 @@ const ProductRankings = () => {
                     <div className="product-info">
                       <h3 className="product-name">{item.productName}</h3>
                       <div className="product-bakery-info">
-                        <Link 
-                          to={`/bakery/${encodeURIComponent(formatNameForUrl(item.bakeryName))}`}
+                        {/* Fix: Change Link to span with onClick handler */}
+                        <span 
                           className="product-bakery-name"
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            navigate(`/bakery/${encodeURIComponent(formatNameForUrl(item.bakeryName))}`);
+                          }}
                         >
                           {item.bakeryName}
-                        </Link>
+                        </span>
                         <span className="product-postal">{item.address}</span>
                       </div>
                     </div>
