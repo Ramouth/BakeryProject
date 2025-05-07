@@ -101,6 +101,9 @@ def create_app(config_class=None):
     with app.app_context():
         from backend.models import __all_models__  # noqa
 
+    # Initialize Flask-Migrate
+    migrate = Migrate(app, db)
+
     return app
 
 if __name__ == '__main__':
