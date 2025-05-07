@@ -1,3 +1,4 @@
+import os
 from flask.cli import FlaskGroup
 from backend.app import create_app
 from backend.extensions import db
@@ -8,7 +9,6 @@ app = create_app()
 # Create a Flask CLI group
 cli = FlaskGroup(app)
 
-# Example custom CLI command
 @cli.command("db_create_all")
 def db_create_all():
     """Create all database tables."""
