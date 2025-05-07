@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime, Index, CheckConstraint
 from sqlalchemy.orm import relationship, declared_attr
-from . import db
+from backend.extensions import db 
 from datetime import datetime, timedelta
 
 def utc_plus_2():

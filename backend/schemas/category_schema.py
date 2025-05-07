@@ -1,4 +1,4 @@
-from . import ma
+from backend.extensions import ma 
 from backend.models.category_models import Category, Subcategory
 from marshmallow import fields, validate, post_dump
 

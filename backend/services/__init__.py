@@ -1,5 +1,5 @@
 # Import services to make them available when importing the services package
-from .bakery_service import BakeryService
-from .product_service import ProductService
-from .review_service import ReviewService
-from .user_service import UserService
+from  backend.services.bakery_service import BakeryService
+from  backend.services.product_service import ProductService
+from  backend.services.review_service import ReviewService
+from  backend.services.user_service import UserService

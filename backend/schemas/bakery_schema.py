@@ -1,4 +1,4 @@
-from . import ma
+from backend.extensions import ma 
 from backend.models.bakery_models import Bakery
 from marshmallow import fields, validate, post_dump, post_load
 
