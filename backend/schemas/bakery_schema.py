@@ -61,3 +61,7 @@ class BakerySchema(ma.SQLAlchemyAutoSchema):
         if 'websiteUrl' in data:
             data['website_url'] = data.pop('websiteUrl')
         return data
+    
+ 
+    
+    
