@@ -5,6 +5,8 @@ from flask_migrate import Migrate
 import os, datetime, logging
 from logging.handlers import RotatingFileHandler
 from dotenv import load_dotenv
+from sqlalchemy import event
+from flask_migrate import Migrate
 
 from backend.config import DevelopmentConfig, ProductionConfig
 from backend.extensions import db, ma, migrate, jwt, cors, cache, init_extensions
@@ -68,6 +70,17 @@ def create_app(config_class=None):
     # ——— Initialize extensions ———
     init_extensions(app)
     configure_cache(app)
+    
+    # ——— Enable SQLite foreign key constraints ———
+    if 'sqlite' in app.config.get('SQLALCHEMY_DATABASE_URI', ''):
+        def _set_sqlite_pragma(dbapi_connection, connection_record):
+            cursor = dbapi_connection.cursor()
+            cursor.execute("PRAGMA foreign_keys=ON;")
+            cursor.close()
+            app.logger.info("SQLite foreign key constraints enabled")
+            
+        with app.app_context():
+            event.listen(db.engine, "connect", _set_sqlite_pragma)
 
     # ——— CORS ———
     allowed = app.config.get('ALLOWED_ORIGINS', ['http://localhost:5173'])
@@ -100,9 +113,6 @@ def create_app(config_class=None):
     # import models so Flask‑Migrate can detect them
     with app.app_context():
         from backend.models import __all_models__  # noqa
-
-    # Initialize Flask-Migrate
-    migrate = Migrate(app, db)
 
     return app
 
