@@ -27,6 +27,10 @@ class Config:
     JSON_SORT_KEYS = False
     JSONIFY_PRETTYPRINT_REGULAR = False  # Disable pretty printing for performance
 
+    def __init__(self):
+        # Print out the database URI to confirm the configuration
+        print(f"SQLALCHEMY_DATABASE_URI: {self.SQLALCHEMY_DATABASE_URI}")
+
 class DevelopmentConfig(Config):
     """Development configuration"""
     DEBUG = True
@@ -60,3 +64,6 @@ class TestingConfig(Config):
     """Testing configuration"""
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'  # Use in-memory database for testing
+    # Optionally print the database URI for testing
+
+
