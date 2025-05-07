@@ -59,14 +59,6 @@ const BakeryRankings = () => {
       rating = bakery.ratings.overall;
     }
     
-    // Check if there are any reviews
-    const hasReviews = bakery.review_count && bakery.review_count > 0;
-    
-    // Return a dash if no reviews, otherwise return the rating
-    if (!hasReviews) {
-      return "--";
-    }
-    
     // Always divide by 2 to convert from 10-scale to 5-scale
     return (rating / 2).toFixed(1);
   };
