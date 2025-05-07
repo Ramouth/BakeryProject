@@ -4,6 +4,7 @@ from backend.schemas import ProductSchema  # Adjusted schema import path
 from backend.services.product_service import ProductService  # Adjusted service import path
 from flask import current_app as app
 from backend.utils.caching import cache  # Adjusted utils import path
+from backend.services.category_service import SubcategoryService 
 
 
 # Create blueprint
@@ -67,7 +68,6 @@ def get_products_by_category(category):
 @cache.cached(timeout=60)
 def get_products_by_subcategory_id(subcategory_id):
     """Get all products for a specific subcategory by ID"""
-    from backend.services.category_service import SubcategoryService
     subcategory_service = SubcategoryService()
     
     subcategory = subcategory_service.get_subcategory_by_id(subcategory_id)
