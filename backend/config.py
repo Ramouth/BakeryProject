@@ -9,12 +9,19 @@ class Config:
     # Determine the absolute path of the backend directory
     basedir = os.path.abspath(os.path.dirname(__file__))
 
+    # Create the backend/instance directory if it doesn't exist
+    instance_dir = os.path.join(basedir, 'instance')
+    os.makedirs(instance_dir, exist_ok=True)
+    print(f"Instance directory: {instance_dir}")
+
     # Default database file in backend/instance
-    default_db = os.path.join(basedir, 'instance', 'new_bakery_reviews.db')
+    default_db = os.path.join(instance_dir, 'new_bakery_reviews.db')
+    print(f"Database file path: {default_db}")
 
     # Database configuration: use DATABASE_URL env var or default to the instance file
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or f"sqlite:///{default_db}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    print(f"Using database URI: {SQLALCHEMY_DATABASE_URI}")
     
     # Security configurations with safe defaults for development
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key'
@@ -64,6 +71,3 @@ class TestingConfig(Config):
     """Testing configuration"""
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'  # Use in-memory database for testing
-    # Optionally print the database URI for testing
-
-
