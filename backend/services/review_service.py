@@ -1,6 +1,7 @@
 from backend.extensions import db 
 from sqlalchemy.exc import SQLAlchemyError
 from backend.models import BakeryReview, ProductReview 
+
 class ReviewService:
 
     """Service class for review-related business logic"""
