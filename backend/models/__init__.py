@@ -10,3 +10,14 @@ from .product_models import Product
 from .review_models import BakeryReview, ProductReview
 from .user_models import User
 from .category_models import Category, Subcategory
+
+# Define __all_models__ for Flask-Migrate
+__all_models__ = [
+    'Bakery',
+    'Product',
+    'BakeryReview',
+    'ProductReview',
+    'User',
+    'Category',
+    'Subcategory'
+]

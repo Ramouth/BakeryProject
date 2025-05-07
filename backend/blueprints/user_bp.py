@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
-from schemas import UserSchema
-from services.user_service import UserService
+from backend.schemas import UserSchema
+from backend.services.user_service import UserService
 
 # Create blueprint
 user_bp = Blueprint('user', __name__)

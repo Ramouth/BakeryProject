@@ -1,5 +1,5 @@
 from . import ma
-from models.bakery_models import Bakery
+from backend.models.bakery_models import Bakery
 from marshmallow import fields, validate, post_dump, post_load
 
 class BakerySchema(ma.SQLAlchemyAutoSchema):

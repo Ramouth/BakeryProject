@@ -4,8 +4,8 @@ from flask_marshmallow import Marshmallow
 ma = Marshmallow()
 
 # Import schema modules to make them available when importing the schemas package
-from .bakery_schema import BakerySchema
-from .product_schema import ProductSchema
-from .review_schema import BakeryReviewSchema, ProductReviewSchema
-from .user_schema import UserSchema
-from .category_schema import CategorySchema, SubcategorySchema
+from backend.schemas.bakery_schema import BakerySchema
+from backend.schemas.product_schema import ProductSchema
+from backend.schemas.review_schema import BakeryReviewSchema, ProductReviewSchema
+from backend.schemas.user_schema import UserSchema
+from backend.schemas.category_schema import CategorySchema, SubcategorySchema

@@ -1,4 +1,4 @@
-from models import db, Product, ProductReview
+from backend.models import db, Product, ProductReview
 from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 

@@ -1,5 +1,5 @@
 from . import ma
-from models.review_models import BakeryReview, ProductReview
+from backend.models.review_models import BakeryReview, ProductReview
 from marshmallow import fields, validate, post_dump, post_load
 
 class BaseReviewSchema:
