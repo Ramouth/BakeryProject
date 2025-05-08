@@ -1,0 +1,322 @@
+/* Container and Header */
+.product-container {
+  max-width: 800px;
+  min-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.product-rankings-header {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.product-rankings-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  color: var(--text-theme);
+}
+
+.product-rankings-header p {
+  font-size: 1.1rem;
+  color: var(--text-theme);
+}
+
+.product-category-nav {
+  margin-top: 20px;
+}
+
+.product-back-link {
+  color: var(--text-theme);
+  text-decoration: none;
+  font-weight: 500;
+  display: inline-block;
+  margin-bottom: 20px;
+}
+
+/* Subcategory Navigation */
+.product-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 30px;
+  justify-content: center;
+}
+
+.product-nav-item {
+  padding: 10px 20px;
+  background-color: var(--primary-light);
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  color: var(--text-dark);
+}
+
+.product-nav-item:hover {
+  background-color: var(--primary-dark);
+}
+
+.product-nav-item.product-active {
+  background-color: var(--accent);
+  color: var(--text-light);
+}
+
+/* Ranking Section */
+.product-ranking-section {
+  margin-top: 30px;
+}
+
+.product-ranking-title {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.product-ranking-title h2 {
+  font-size: 1.8rem;
+  color: var(--text-theme);
+  position: relative;
+  display: inline-block;
+  padding-bottom: 10px;
+}
+
+.product-ranking-title h2:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background-color: var(--accent);
+}
+
+/* Product Rankings Grid */
+.product-rankings-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+/* Product Ranking Card */
+.product-ranking-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  background-color: var(--secondary);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+}
+
+.product-ranking-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.product-ranking-content {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "info rating"
+    "review rating";
+  gap: 15px;
+}
+
+/* Rank Badge */
+.product-rank-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: var(--accent);
+  color: var(--text-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+/* First Place Special Styling */
+.product-ranking-card:first-child .product-rank-badge {
+  background-color: #ffc107;
+  color: var(--text-dark);
+}
+
+/* Product Info */
+.product-info {
+  grid-area: info;
+  padding-left: 25px; /* Make space for the rank badge */
+}
+
+.product-name {
+  font-size: 1.2rem;
+  margin: 0 0 5px 0;
+  color: var(--text-dark);
+}
+
+.product-bakery-info {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 0.9rem;
+  color: var(--text-dark);
+}
+
+.product-bakery-name {
+  color: var(--accent-dark);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.product-bakery-name:hover {
+  text-decoration: underline;
+}
+
+.product-postal {
+  color: var(--accent);
+  font-size: 0.85rem;
+}
+
+/* Review Section */
+.product-review-section {
+  grid-area: review;
+  padding-top: 10px;
+  border-top: 1px solid var(--accent);
+}
+
+.product-review-heading {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: var(--text-dark);
+}
+
+.product-review-text {
+  font-size: 0.9rem;
+  color: var(--accent);
+  margin: 0;
+  line-height: 1.4;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+}
+
+/* Rating Display */
+.product-rating-container {
+  grid-area: rating;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 150px;
+  padding-left: 15px;
+  border-left: 1px solid var(--accent);
+}
+
+.product-rating-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--text-dark);
+}
+
+.product-review-count {
+  font-size: 0.8rem;
+  color: var(--accent-light);
+  margin-top: 5px;
+}
+
+/* Cookie Rating Display */
+.product-cookie-display {
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+}
+
+.product-cookie-filled,
+.product-cookie-empty {
+  font-size: 1.2rem;
+  margin: 0 1px;
+}
+
+.product-cookie-filled {
+  opacity: 1;
+}
+
+.product-cookie-empty {
+  opacity: 0.3;
+}
+
+.product-cookie-half-container {
+  position: relative;
+  width: 1.2rem;
+  height: 1.2rem;
+  overflow: hidden;
+  margin: 0 1px;
+}
+
+.product-cookie-half {
+  position: absolute;
+  font-size: 1.2rem;
+  width: 0.6rem;
+  height: 1.2rem;
+}
+
+/* Loading and Error States */
+.product-loading-indicator {
+  text-align: center;
+  padding: 30px;
+  color: #666;
+}
+
+.product-error-container {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: var(--secondary);
+  border-radius: 8px;
+  margin: 30px 0;
+}
+
+.product-error-message {
+  color: #e74c3c;
+  margin-bottom: 20px;
+}
+
+.product-no-rankings-message {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: var(--secondary);
+  border-radius: 8px;
+}
+
+.product-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.product-btn-primary {
+  background-color: var(--primary);
+  color: var(--text-light);
+}
+
+.product-btn-primary:hover {
+  background-color: var(--primary-dark);
+}

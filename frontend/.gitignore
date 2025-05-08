@@ -22,3 +22,18 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+__pycache__/
+*.pyc
+
+# Virtual environments
+venv/
+backend/venv/
+
+# Ignore all __pycache__ in subdirectories
+backend/__pycache__/
+backend/Bakery/__pycache__/
+backend/Product/__pycache__/
+git rm -r --cached backend/__pycache__/ backend/Bakery/__pycache__/ backend/Product/ backend/venv/
+__pycache__/
+*.pyc
+

@@ -1,0 +1,321 @@
+.form-group {
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--text-dark);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--accent);
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  background-color: var(--background);
+  max-width: 350px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(var(--primary-light), 0.1);
+}
+
+.error-text {
+  color: var(--error);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Input wrapper styles for positioning icons */
+.input-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 350px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Select wrapper for dropdown fields */
+.select-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 350px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Ensure space for validation icons */
+.select-wrapper select,
+.input-wrapper input,
+.input-wrapper textarea {
+  padding-right: 36px;
+  width: 100%;
+}
+
+/* Positioning for validation icons */
+.validation-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* Success icon styling */
+.validation-icon.success {
+  color: var(--success);
+}
+
+/* Error icon styling */
+.validation-icon.error {
+  color: var(--error);
+}
+
+/* Input styling for validation states */
+input.error,
+select.error,
+textarea.error {
+  border-color: var(--error);
+  background-color: rgba(211, 47, 47, 0.05);
+}
+
+input.success,
+select.success,
+textarea.success {
+  border-color: var(--success);
+  background-color: rgba(56, 142, 60, 0.05);
+}
+
+/* Filter label with icons */
+.filter-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.filter-icon {
+  color: var(--primary-color);
+}
+
+/* Error message styling */
+.error-message {
+  background-color: rgba(211, 47, 47, 0.1);
+  border-left: 3px solid var(--error);
+  padding: 10px 15px;
+  margin-bottom: 15px;
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
+  color: var(--error);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Search button with icon styling */
+.search-results-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background-color: var(--primary);
+  color: white;
+  font-weight: 500;
+  padding: 0.875rem 2rem;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 220px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-results-button:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.search-results-button:active {
+  transform: translateY(0);
+  background-color: var(--primary-dark);
+}
+
+.search-results-button:disabled {
+  background-color: var(--accent);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  opacity: 0.7;
+}
+
+/* Search bar input styling */
+.search-bar {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 20px;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 10px 12px 10px 40px;
+  border: 1px solid var(--accent);
+  border-radius: var(--border-radius);
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.search-bar input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(189, 138, 66, 0.2);
+  outline: none;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--accent-dark);
+  pointer-events: none;
+  transition: color 0.2s ease;
+}
+
+.search-bar input:focus + .search-icon {
+  color: var(--primary-color);
+}
+
+/* Clear button for search inputs */
+.clear-button {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--accent-dark);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.clear-button:hover {
+  background-color: var(--accent-light);
+  color: var(--text-dark);
+}
+
+/* Admin-specific styling for search inputs */
+.admin-search-input {
+  width: 100%;
+  padding: 10px 40px;
+  border: 1px solid var(--accent);
+  border-radius: var(--border-radius);
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  background-color: var(--background);
+}
+
+.admin-search-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(var(--primary), 0.1);
+  outline: none;
+}
+
+/* Enhanced textarea container for character count display */
+.textarea-container {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+  max-width: 100%;
+  width: 100%;
+  padding-bottom: 25px; /* Make space for the character count */
+}
+
+.character-count {
+  position: absolute;
+  bottom: 5px;
+  right: 10px;
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.count-notice {
+  color: #f0ad4e; /* Yellow warning */
+}
+
+.count-warning {
+  color: #d9534f; /* Red warning */
+}
+
+textarea.count-notice {
+  border-color: #f0ad4e;
+}
+
+textarea.count-warning {
+  border-color: #d9534f;
+}
+
+/* Review Modal specific form styling */
+.search-input-group {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 15px;
+  align-items: stretch;
+}
+
+.search-input-group .input-wrapper {
+  flex: 1;
+}
+
+.search-input-group button {
+  white-space: nowrap;
+}
+
+.search-input {
+  height: 100%;
+  padding: 10px 12px 10px 40px;
+}
+
+/* Validation text with check/error icons */
+.form-validation {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 5px;
+  font-size: 0.85rem;
+}
+
+.form-validation.success {
+  color: var(--success);
+}
+
+.form-validation.error {
+  color: var(--error);
+}

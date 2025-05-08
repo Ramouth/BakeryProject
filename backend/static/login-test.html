@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrumbCompass Login Test</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            color: #bd8a42;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #bd8a42;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #a67935;
+        }
+        .message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <h1>CrumbCompass Login</h1>
+    <div id="login-form">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" placeholder="Enter username">
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" placeholder="Enter password">
+        </div>
+        <button id="login-button">Login</button>
+        <div id="message" class="message" style="display: none;"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginButton = document.getElementById('login-button');
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const messageDiv = document.getElementById('message');
+
+            loginButton.addEventListener('click', async function() {
+                // Reset message
+                messageDiv.style.display = 'none';
+                messageDiv.className = 'message';
+
+                // Get username and password
+                const username = usernameInput.value.trim();
+                const password = passwordInput.value.trim();
+
+                // Validate input
+                if (!username || !password) {
+                    showMessage('Please enter both username and password', 'error');
+                    return;
+                }
+
+                try {
+                    // Make login request
+                    const response = await fetch('http://127.0.0.1:5000/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            username,
+                            password
+                        }),
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.message || 'Login failed');
+                    }
+
+                    // Login successful
+                    localStorage.setItem('authToken', data.access_token);
+                    localStorage.setItem('userData', JSON.stringify(data.user));
+                    
+                    showMessage('Login successful! Token: ' + data.access_token.substring(0, 20) + '...', 'success');
+                    
+                    // Fetch protected data as a test
+                    setTimeout(() => {
+                        fetchProtectedData();
+                    }, 1000);
+                    
+                } catch (error) {
+                    showMessage(error.message || 'Login failed', 'error');
+                }
+            });
+
+            async function fetchProtectedData() {
+                try {
+                    const token = localStorage.getItem('authToken');
+                    
+                    if (!token) {
+                        showMessage('No auth token found', 'error');
+                        return;
+                    }
+                    
+                    const response = await fetch('http://127.0.0.1:5000/auth/profile', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.message || 'Failed to fetch profile');
+                    }
+                    
+                    showMessage('Successfully fetched protected data: ' + JSON.stringify(data), 'success');
+                } catch (error) {
+                    showMessage('Error fetching protected data: ' + error.message, 'error');
+                }
+            }
+
+            function showMessage(message, type) {
+                messageDiv.textContent = message;
+                messageDiv.className = 'message ' + type;
+                messageDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

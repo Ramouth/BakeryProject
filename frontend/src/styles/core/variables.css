@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css?family=Bricolage%20Grotesque:700|Bricolage%20Grotesque:400');
+
+/* Light Theme */
+:root[data-theme="light"] {
+  /* Background */
+  --background: #f7ebd4;
+  --background-like: #f7ebd4;
+
+  /* Text Colors */
+  --text-light: #eae9fc;
+  --text-dark: #050316;
+  --text-theme: #050316;
+
+  /* Primary Colors (brown/gold theme) */
+  --primary-light: #CEA873;
+  --primary: #B59466;
+  --primary-dark: #9C8059;
+
+  /* Secondary Colors (Box Colors) */
+  --secondary-light: #EFE0C8;
+  --secondary: #F3E4C4;
+  --secondary-dark: #E8D4AA;
+
+  /* Accent Colors (blue-grey theme) */
+  --accent-light: #a7b3be;
+  --accent: #6c7f93;
+  --accent-dark: #414c58;
+
+  /* Utility Colors */
+  --error: #d32f2f;
+  --success: #388e3c;
+  --warning: #f57c00;
+  --info: #0288d1;
+
+  /* Medal Colors */
+  --gold: #FFD700;
+  --silver: #C0C0C0;
+  --bronze: #CD7F32;
+
+}
+
+/* Dark Theme */
+:root[data-theme="dark"] {
+
+  /* Background */
+  --background: #0d2c45;
+  --background-like: #f7ebd4;
+
+  /* Text Colors */
+  --text-light: #eae9fc;
+  --text-dark: #050316;
+  --text-theme: #e9d6b4;
+
+  /* Primary Colors (brown/gold theme) */
+  --primary-light: #CEA873;
+  --primary: #B59466;
+  --primary-dark: #9C8059;
+
+  /* Secondary Colors (Box Colors) */
+  --secondary-light: #EFE0C8;
+  --secondary: #F3E4C4;
+  --secondary-dark: #E8D4AA;
+
+  /* Accent Colors (blue-grey theme) */
+  --accent-light: #a7b3be;
+  --accent: #6c7f93;
+  --accent-dark: #414c58;
+
+  /* Utility Colors */
+  --error: #d32f2f;
+  --success: #388e3c;
+  --warning: #f57c00;
+  --info: #0288d1;
+
+  /* Medal Colors */
+  --gold: #FFD700;
+  --silver: #C0C0C0;
+  --bronze: #CD7F32;
+
+}
+
+/* Default theme if no data-theme attribute is set */
+:root {
+  /* Layout variables */
+  --border-radius: 4px;
+  --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
+  --container-width: 800px;
+  --card-width: 400px;
+}
