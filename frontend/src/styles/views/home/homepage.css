@@ -1,0 +1,231 @@
+/* ---------------------- */
+/* Hero section with search */
+/* ---------------------- */
+.hero-section {
+  text-align: center;
+
+  padding: 2rem;
+  max-width: 900px;
+}
+
+.hero-section h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-theme);
+}
+
+/* ---------------------- */
+/* Promotional card */
+/* ---------------------- */
+.promo-card {
+  background-color: var(--accent-dark);
+  background-size: cover;
+  background-position: center;
+  color: var(--text-light);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  margin: 3rem auto;
+  max-width: 900px;
+  height: auto;
+  display: flex;
+  align-items: center;
+}
+
+.promo-content {
+  padding: 2rem;
+}
+
+.promo-content h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  max-width: 70%;
+  color: var(--text-light);
+}
+
+.promo-content p {
+  margin-bottom: 1.5rem;
+  max-width: 60%;
+  font-size: 1.1rem;
+}
+
+.promo-content .btn {
+  background-color: var(--text-light);
+  color: var(--text-dark);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+/* ---------------------- */
+/* Top bakeries section */
+/* ---------------------- */
+.top-bakeries {
+  max-width: 900px;
+  text-align: center;
+}
+
+.top-bakeries h2 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-theme);
+}
+
+.top-bakeries > p {
+  color: var(--text-theme);
+  margin-bottom: 2rem;
+}
+
+/* ---------------------- */
+/* Featured bakeries grid */
+/* ---------------------- */
+.homepage-bakery-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.homepage-bakery-card {
+  display: block;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  background-color: var(--secondary-light);
+}
+
+.homepage-bakery-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.homepage-bakery-image {
+  height: 150px;
+  background-color: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.homepage-placeholder-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url('/src/assets/bageri.png');
+  background-size: cover;
+  background-position: center;
+  color: transparent;
+}
+
+.homepage-bakery-card h3 {
+  font-size: 1.1rem;
+  margin: 1rem 1rem 0.5rem;
+  color: var(--text-dark);
+}
+
+.homepage-bakery-card p {
+  font-size: 0.85rem;
+  margin: 0 1rem 0.5rem;
+  color: var(--text-dark);
+}
+
+.homepage-bakery-card .bakery-rating {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: var(--primary);
+  margin: 0 1rem 1rem;
+}
+
+/* ---------------------- */
+/* Search results section */
+/* ---------------------- */
+.search-results-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.search-results-header h2 {
+  font-size: 1.8rem;
+  margin-bottom: -1.5rem;
+  color: var(--text-theme);
+}
+
+.search-results-count {
+  color: var(--text-theme);
+  margin-bottom: 1rem;
+}
+
+.reset-filters-button {
+  background-color: var(--secondary-light);
+  color: var(--text-light);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.reset-filters-button:hover {
+  background-color: var(--accent-dark);
+  transform: translateY(-1px);
+}
+
+/* ---------------------- */
+/* Loading state */
+/* ---------------------- */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+}
+
+.loading-spinner {
+  border: 4px solid rgba(var(--accent), 0.3);
+  border-radius: 50%;
+  border-top: 4px solid var(--primary);
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+/* View All Bakeries button */
+.view-all-bakeries {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+}
+
+.view-all-button {
+  background-color: var(--primary);
+  color: var(--text-light);
+  border: none;
+  padding: 8px 16px;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+.view-all-button:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

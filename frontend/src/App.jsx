@@ -1,56 +1,93 @@
+import { lazy, Suspense, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { UserProvider } from './store/UserContext';
+import { ReviewProvider } from './store/ReviewContext';
+import { NotificationProvider } from './store/NotificationContext';
+import NavBar from './components/NavBar';
+import Footer from './components/Footer';
+import AuthGuard from './components/AuthGuard';
+import BakeryProfile from './views/BakeryProfile';
+import ProductProfile from './views/ProductProfile';
+import Admin from './views/AdminDashboard';
+import BookTab from './components/BookTab';
+import CookieBanner from './components/CookieBanner'; 
 
-import { useState, useEffect } from "react";
-import ContactList from "./ContactList";
-import "./App.css";
-import ContactForm from "./ContactForm";
+// Lazy load views for code splitting and performance
+const HomePage = lazy(() => import('./views/Homepage'));
+const ProductRating = lazy(() => import('./views/ProductRating'));
+const BakeryRating = lazy(() => import('./views/BakeryRating'));
+const AdminDashboard = lazy(() => import('./views/AdminDashboard'));
+const Login = lazy(() => import('./views/Login'));
+const SignUp = lazy(() => import('./views/SignUp'));
+const BakeryRankings = lazy(() => import('./views/BakeryRankings'));
+const ProductRankings = lazy(() => import('./views/ProductRankings'));
+const ProductCategorySelection = lazy(() => import('./views/ProductCategorySelection'));
+const UserProfile = lazy(() => import('./views/UserProfile'));
+const PrivacyPolicy = lazy(() => import('./views/PrivacyPolicy')); // Import PrivacyPolicy
+
+// Import CSS
+import './styles/main.css';
+
+// Loading component for Suspense fallback
+const Loading = () => (
+  <div className="loading-container">
+    <div className="loading-spinner"></div>
+    <p>Loading...</p>
+  </div>
+);
 
 function App() {
-  const [contacts, setContacts] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [currentContact, setCurrentContact] = useState({})
-
+  // Initialize theme on app load
   useEffect(() => {
-    fetchContacts()
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+      localStorage.setItem('theme', 'light');
+    }
   }, []);
 
-  const fetchContacts = async () => {
-    const response = await fetch("http://127.0.0.1:5000/contacts");
-    const data = await response.json();
-    setContacts(data.contacts);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false)
-    setCurrentContact({})
-  }
-
-  const openCreateModal = () => {
-    if (!isModalOpen) setIsModalOpen(true)
-  }
-
-  const openEditModal = (contact) => {
-    if (isModalOpen) return
-    setCurrentContact(contact)
-    setIsModalOpen(true)
-  }
-
-  const onUpdate = () => {
-    closeModal()
-    fetchContacts()
-  }
-
   return (
-    <>
-      <ContactList contacts={contacts} updateContact={openEditModal} updateCallback={onUpdate} />
-      <button onClick={openCreateModal}>Create New Contact</button>
-      {isModalOpen && <div className="modal">
-        <div className="modal-content">
-          <span className="close" onClick={closeModal}>&times;</span>
-          <ContactForm existingContact={currentContact} updateCallback={onUpdate} />
-        </div>
-      </div>
-      }
-    </>
+    <Router>
+      <UserProvider>
+        <ReviewProvider>
+          <NotificationProvider>
+            <div className="app">
+              <NavBar />
+              <BookTab />
+              <CookieBanner /> {/* Add CookieBanner component */}
+
+              <div className="content-section">
+                <main className="app-content">
+                  <Suspense fallback={<Loading />}>
+                    <Routes>
+                      <Route path="/" element={<HomePage />} />
+                      <Route path="/product-rating" element={<ProductRating />} />
+                      <Route path="/bakery-rating" element={<BakeryRating />} />
+                      <Route path="/login" element={<Login />} />
+                      <Route path="/signup" element={<SignUp />} />
+                      <Route path="/profile" element={<UserProfile />} />
+                      <Route path="/bakery-rankings" element={<BakeryRankings />} />
+                      <Route path="/product-categories" element={<ProductCategorySelection />} />
+                      <Route path="/product-rankings" element={<ProductRankings />} />
+                      <Route path="/product-rankings/:categoryId" element={<ProductRankings />} />
+                      <Route path="/product-rankings/:categoryId/:subcategoryId" element={<ProductRankings />} />
+                      <Route path="/bakery/:bakeryName" element={<BakeryProfile />} />
+                      <Route path="/product/:productId" element={<ProductProfile />} />
+                      <Route path="/privacy-policy" element={<PrivacyPolicy />} /> {/* Add PrivacyPolicy route */}
+                      <Route path="/admin-dashboard/*" element={<AuthGuard><Admin /></AuthGuard>} />
+                    </Routes>
+                  </Suspense>
+                </main>
+              </div>
+
+              <Footer />
+            </div>
+          </NotificationProvider>
+        </ReviewProvider>
+      </UserProvider>
+    </Router>
   );
 }
 

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>CrumbCompass Auth Test</title>
+</head>
+<body>
+  <h1>CrumbCompass Auth Test</h1>
+  
+  <div class="tabs">
+    <div class="tab active" data-tab="login">Login</div>
+    <div class="tab" data-tab="register">Register</div>
+  </div>
+  
+  <div id="login-form" class="tab-content active">
+    <h2>Login</h2>
+    <div class="form-group">
+      <label>Username:</label>
+      <input id="username" placeholder="Enter username" autocomplete="username"/>
+    </div>
+    <div class="form-group">
+      <label>Password:</label>
+      <input id="password" type="password" placeholder="Enter password" autocomplete="current-password"/>
+    </div>
+    <button id="login-button">Login</button>
+    <div id="login-message" class="message"></div>
+  </div>
+
+  <div id="register-form" class="tab-content">
+    <h2>Register</h2>
+    <div class="form-group">
+      <label>Username:</label>
+      <input id="reg-username" placeholder="Enter username" autocomplete="username"/>
+    </div>
+    <div class="form-group">
+      <label>Email:</label>
+      <input id="reg-email" type="email" placeholder="Enter email" autocomplete="email"/>
+    </div>
+    <div class="form-group">
+      <label>Password:</label>
+      <input id="reg-password" type="password" placeholder="Enter password" autocomplete="new-password"/>
+    </div>
+    <div class="form-group">
+      <label>Admin User:</label>
+      <input id="reg-admin" type="checkbox"/>
+    </div>
+    <button id="register-button">Register</button>
+    <div id="register-message" class="message"></div>
+  </div>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Tab switching
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab, .tab-content')
+          .forEach(el => el.classList.toggle('active', el.dataset.tab === tab.dataset.tab || el === tab));
+      });
+    });
+
+    const showMessage = (el, msg, type) => {
+      el.textContent = msg;
+      el.className = 'message ' + type;
+      el.style.display = msg ? 'block' : 'none';
+    };
+
+    // LOGIN
+    const loginBtn = document.getElementById('login-button');
+    const loginMsg = document.getElementById('login-message');
+    loginBtn.onclick = async () => {
+      showMessage(loginMsg,'','');
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      if (!username || !password) 
+        return showMessage(loginMsg,'Enter both fields','error');
+
+      try {
+        const res = await fetch('/auth/login', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message);
+
+        // **STORE under accessToken**
+        localStorage.setItem('accessToken', data.access_token);
+        showMessage(loginMsg,'Login successful','success');
+
+        // **CALL fetchProfile()**
+        await fetchProfile();
+      }
+      catch(e) {
+        showMessage(loginMsg,e.message,'error');
+      }
+    };
+
+    // REGISTER
+    const regBtn = document.getElementById('register-button');
+    const regMsg = document.getElementById('register-message');
+    regBtn.onclick = async () => {
+      showMessage(regMsg,'','');
+      const username = document.getElementById('reg-username').value.trim();
+      const email    = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value.trim();
+      const isAdmin  = document.getElementById('reg-admin').checked;
+      if(!username||!email||!password)
+        return showMessage(regMsg,'Fill all fields','error');
+
+      try {
+        const res = await fetch('/auth/register', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ username, email, password, isAdmin, profilePicture:1 })
+        });
+        const data = await res.json();
+        if(!res.ok) throw new Error(data.message);
+        showMessage(regMsg,'Registered! You may now log in.','success');
+      }
+      catch(e) {
+        showMessage(regMsg,e.message,'error');
+      }
+    };
+
+    // PROTECTED PROFILE FETCH with DEBUG LOGS
+    async function fetchProfile() {
+      const token = localStorage.getItem('accessToken');
+      console.log('Token from localStorage:', token);
+
+      if (!token) {
+        return showMessage(loginMsg,'No token','error');
+      }
+
+      try {
+        console.log('Making profile request with token:', token);
+        const res = await fetch('/auth/profile', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        console.log('Profile response status:', res.status);
+
+        const data = await res.json();
+        console.log('Profile response data:', data);
+
+        if (!res.ok) throw new Error(data.message);
+        showMessage(loginMsg,'Hello, '+data.username,'success');
+      } catch (e) {
+        console.error('Profile fetch error:', e);
+        showMessage(loginMsg,'Profile fetch failed: '+e.message,'error');
+      }
+    }
+  });
+  </script>
+</body>
+</html>
