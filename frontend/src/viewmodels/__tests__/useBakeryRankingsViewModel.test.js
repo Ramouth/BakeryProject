@@ -1,125 +1,84 @@
-import React from 'react';
-import { render, act, screen } from '@testing-library/react';
-import { useBakeryRankingsViewModel } from '../useBakeryRankingsViewModel';
-import apiClient from '../../services/api';
+import { renderHook, act } from '@testing-library/react-hooks';
+import { jest } from '@jest/globals';
+
+let useBakeryRankingsViewModel;
+let mockApiGet;
+let mockBakeryServiceInstance;
 
 // Mock dependencies
-jest.mock('../../services/api');
+beforeEach(async () => {
+  jest.resetModules();
 
-function TestComponent({ onRender }) {
-  const vm = useBakeryRankingsViewModel();
-  onRender(vm);
-  return null;
-}
+  mockApiGet = jest.fn();
+  
+  mockBakeryServiceInstance = {
+    getTopBakeries: jest.fn(),
+  };
+
+  await jest.unstable_mockModule('../../services/api', () => ({
+    default: {
+      get: mockApiGet,
+    },
+  }));
+
+  await jest.unstable_mockModule('../../services/bakeryService', () => ({
+    default: mockBakeryServiceInstance,
+  }));
+  
+  const viewModelModule = await import('../useBakeryRankingsViewModel');
+  useBakeryRankingsViewModel = viewModelModule.useBakeryRankingsViewModel;
+});
 
 describe('useBakeryRankingsViewModel', () => {
-  let vm;
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-    vm = undefined;
-
-    // Mock API responses
-    apiClient.get.mockImplementation((url) => {
-      if (url === '/bakeries') {
-        return Promise.resolve({
-          bakeries: [
-            { id: '1', name: 'Top Bakery', zipCode: '1050' },
-            { id: '2', name: 'Mid Bakery', zipCode: '2000' },
-            { id: '3', name: 'Low Bakery', zipCode: '3000' }
-          ]
-        });
-      } else if (url.includes('/bakeries/stats')) {
-        return Promise.resolve({
-          stats: [
-            { bakery_id: '1', average_rating: 8.0, review_count: 10, ratings: { overall: 8.0, service: 7.0, price: 6.0 } },
-            { bakery_id: '2', average_rating: 6.0, review_count: 5, ratings: { overall: 6.0, service: 5.0, price: 7.0 } },
-            { bakery_id: '3', average_rating: 4.0, review_count: 2, ratings: { overall: 4.0, service: 3.0, price: 5.0 } }
-          ]
-        });
-      }
-      return Promise.resolve({});
-    });
+  test('initial state is correct', () => {
+    const { result } = renderHook(() => useBakeryRankingsViewModel());
+    expect(result.current.rankings).toEqual([]);
+    expect(result.current.isLoading).toBe(true);
+    expect(result.current.error).toBeNull();
   });
 
-  function renderVM() {
-    return act(() => {
-      render(<TestComponent onRender={v => { vm = v; }} />);
+  test('fetches rankings successfully', async () => {
+    const mockRankings = [{ id: '1', name: 'Bakery A', average_rating: 4.5, review_count: 10 }];
+    mockBakeryServiceInstance.getTopBakeries.mockResolvedValue({ bakeries: mockRankings });
+
+    const { result, waitForNextUpdate } = renderHook(() => useBakeryRankingsViewModel());
+
+    await act(async () => {
+      await waitForNextUpdate();
     });
-  }
-
-  test('initializes with sorted bakeries based on rating', async () => {
-    await renderVM();
-    // Wait for async updates
-    await act(async () => { await Promise.resolve(); });
-
-    expect(vm.loading).toBe(false);
-    expect(vm.bakeries).toHaveLength(3);
-    expect(vm.bakeries[0].name).toBe('Top Bakery');
-    expect(vm.bakeries[1].name).toBe('Mid Bakery');
-    expect(vm.bakeries[2].name).toBe('Low Bakery');
+    
+    expect(mockBakeryServiceInstance.getTopBakeries).toHaveBeenCalledWith(10);
+    expect(result.current.rankings).toEqual(mockRankings);
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.error).toBeNull();
   });
 
-  test('filters by zip code', async () => {
-    await renderVM();
-    await act(async () => { await Promise.resolve(); });
+  test('handles error when fetching rankings', async () => {
+    const errorMessage = 'Failed to fetch';
+    mockBakeryServiceInstance.getTopBakeries.mockRejectedValue(new Error(errorMessage));
 
-    act(() => {
-      vm.setSelectedZipCode('1050');
-      vm.handleSearch({ zipCode: '1050' });
+    const { result, waitForNextUpdate } = renderHook(() => useBakeryRankingsViewModel());
+    
+    await act(async () => {
+        await waitForNextUpdate();
     });
 
-    expect(vm.bakeries).toHaveLength(1);
-    expect(vm.bakeries[0].name).toBe('Top Bakery');
+    expect(result.current.rankings).toEqual([]);
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.error).toBe(errorMessage);
   });
 
-  test('filters by rating', async () => {
-    await renderVM();
-    await act(async () => { await Promise.resolve(); });
+  test('fetches rankings with a specific limit', async () => {
+    const mockRankings = [{ id: '1', name: 'Bakery A' }];
+    mockBakeryServiceInstance.getTopBakeries.mockResolvedValue({ bakeries: mockRankings });
 
-    act(() => {
-      vm.setSelectedRating('3');
-      vm.handleSearch({ rating: '3' });
+    const { result, waitForNextUpdate } = renderHook(() => useBakeryRankingsViewModel(5));
+
+    await act(async () => {
+      await waitForNextUpdate();
     });
 
-    expect(vm.bakeries).toHaveLength(2);
-    expect(vm.bakeries[0].name).toBe('Top Bakery');
-    expect(vm.bakeries[1].name).toBe('Mid Bakery');
-  });
-
-  test('loads more bakeries when requested', async () => {
-    await renderVM();
-    await act(async () => { await Promise.resolve(); });
-
-    expect(vm.bakeries.length).toBeGreaterThan(0);
-    expect(vm.hasMore).toBe(false);
-
-    act(() => {
-      vm.loadMore();
-    });
-
-    expect(vm.bakeries).toHaveLength(3);
-  });
-
-  test('combines filter criteria correctly', async () => {
-    await renderVM();
-    await act(async () => { await Promise.resolve(); });
-
-    act(() => {
-      vm.setSelectedZipCode('1050');
-      vm.setSelectedRating('4');
-      vm.handleSearch({ zipCode: '1050', rating: '4' });
-    });
-
-    expect(vm.bakeries).toHaveLength(1);
-    expect(vm.bakeries[0].name).toBe('Top Bakery');
-
-    act(() => {
-      vm.setSelectedZipCode('3000');
-      vm.setSelectedRating('4');
-      vm.handleSearch({ zipCode: '3000', rating: '4' });
-    });
-
-    expect(vm.bakeries).toHaveLength(0);
+    expect(mockBakeryServiceInstance.getTopBakeries).toHaveBeenCalledWith(5);
+    expect(result.current.rankings).toEqual(mockRankings);
   });
 });

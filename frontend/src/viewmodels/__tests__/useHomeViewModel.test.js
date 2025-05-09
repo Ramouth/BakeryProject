@@ -1,11 +1,11 @@
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react';
 import { useHomeViewModel } from '../useHomeViewModel';
-import apiClient from '../services/api';
+import apiClient from '../../services/api';
 import { useNotification } from '../../store/NotificationContext';
 import { useRatingResetContext } from '../../store/RatingContext';
 
 // Mock dependencies
-jest.mock('../services/api');
+jest.mock('../../services/api');
 jest.mock('../../store/NotificationContext');
 jest.mock('../../store/RatingContext');
 

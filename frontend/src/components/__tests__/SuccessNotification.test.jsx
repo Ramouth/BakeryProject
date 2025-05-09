@@ -2,7 +2,9 @@ import React from 'react';
 import { render, screen, act } from '@testing-library/react';
 import Notification from '../SuccessNotification';
 
-describe('Notification Component', () => {
+describe('SuccessNotification', () => {
+  jest.useFakeTimers(); // Ensure fake timers are used for this suite
+
   beforeEach(() => {
     jest.useFakeTimers();
   });
@@ -39,11 +41,11 @@ describe('Notification Component', () => {
     
     expect(screen.getByText('Test notification')).toBeInTheDocument();
     
-    // Fast-forward time
-    act(() => {
-      jest.advanceTimersByTime(1100);
+    act(() => { // Wrap timer advancement in act
+      jest.advanceTimersByTime(1100); // Or jest.runAllTimers();
     });
     
     expect(mockOnClose).toHaveBeenCalled();
+    expect(screen.queryByText('Test notification')).not.toBeInTheDocument(); 
   });
 });

@@ -87,36 +87,27 @@ const BakeryForm = ({ bakery = {}, onSubmit, onCancel, isSubmitting = false }) =
     }
   }, [bakery]);
 
-  // Validate a single field
-  const validateField = useCallback((name, value) => {
-    const rule = validationRules[name];
-    if (!rule) return null;
-    
-    return rule.validator(value);
-  }, []);
-
-  // Validate all form fields
-  const validateForm = useCallback(() => {
+  // Validate the whole form
+  const validateForm = useCallback(async (dataToValidate) => {
     const newErrors = {};
-    let isValid = true;
-    
-    // Log the current form state
-    console.log("Current form data for validation:", formData);
-    
-    // Check each field with its validation rule
-    Object.keys(validationRules).forEach(fieldName => {
-      const error = validateField(fieldName, formData[fieldName]);
-      if (error) {
-        newErrors[fieldName] = error;
-        isValid = false;
-        console.warn(`Validation error for ${fieldName}:`, error);
+    for (const field in validationRules) {
+      const rule = validationRules[field];
+      const value = dataToValidate[field] || ""; 
+
+      if (rule.required && !value.trim()) {
+        let fieldName = field.replace(/([A-Z])/g, ' $1').toLowerCase();
+        fieldName = fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
+        newErrors[field] = `${fieldName} is required`;
+      } else if (rule.validator) { 
+        const error = rule.validator(value);
+        if (error) {
+          newErrors[field] = error;
+        }
       }
-    });
-    
-    setErrors(newErrors);
-    console.log("Form valid:", isValid);
-    return isValid;
-  }, [formData, validateField]);
+    }
+    console.log('[AdminBakeryModal] Validated errors in validateForm:', newErrors); // DEBUG LOG
+    return newErrors;
+  }, [validationRules]);
 
   // Handle field change with validation
   const handleChange = useCallback((e) => {
@@ -136,31 +127,38 @@ const BakeryForm = ({ bakery = {}, onSubmit, onCancel, isSubmitting = false }) =
     
     // Validate field if form has been submitted once or field touched
     if (isFormSubmitted || touched[name]) {
-      const error = validateField(name, value);
+      const error = validationRules[name]?.validator(value);
       setErrors(prev => ({
         ...prev,
         [name]: error
       }));
     }
-  }, [isFormSubmitted, touched, validateField]);
+  }, [isFormSubmitted, touched]);
 
-  // Handle form submission
-  const handleSubmit = useCallback((e) => {
-    e.preventDefault();
-    setIsFormSubmitted(true);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setIsFormSubmitted(true); 
+
+    const formDataToValidate = { ...formData };
+    // console.log('Current form data for validation:', formDataToValidate); // This log already exists
+
+    const currentErrors = await validateForm(formDataToValidate); 
     
-    if (validateForm()) {
-      // Fixed: The API expects empty strings for optional fields, not null values
-      onSubmit({
-        name: formData.name.trim(),
-        zipCode: formData.zipCode.trim(),
-        streetName: formData.streetName.trim(),
-        streetNumber: formData.streetNumber.trim(),
-        imageUrl: formData.imageUrl.trim() || "",
-        websiteUrl: formData.websiteUrl.trim() || ""
-      });
+    if (Object.keys(currentErrors).length === 0) {
+      // console.log('Form valid: true'); // This log already exists
+      if (onSubmit) {
+        try {
+          await onSubmit(formDataToValidate);
+        } catch (submitError) {
+          // If onSubmit throws (e.g., API error), set a general form error
+          setErrors(prev => ({ ...prev, form: submitError.message || 'Submission failed' }));
+        }
+      }
+    } else {
+      console.log('[AdminBakeryModal] Form has errors in handleSubmit:', currentErrors); // DEBUG LOG
+      setErrors(currentErrors); 
     }
-  }, [formData, onSubmit, validateForm]);
+  };
 
   // Form is valid when there are no errors
   const isFormValid = useMemo(() => {
@@ -185,7 +183,7 @@ const BakeryForm = ({ bakery = {}, onSubmit, onCancel, isSubmitting = false }) =
           disabled={isSubmitting}
           required
         />
-        {touched.name && errors.name && (
+        { (touched.name || isFormSubmitted) && errors.name && (
           <div className="error-text">{errors.name}</div>
         )}
       </div>
@@ -204,7 +202,7 @@ const BakeryForm = ({ bakery = {}, onSubmit, onCancel, isSubmitting = false }) =
           disabled={isSubmitting}
           required
         />
-        {touched.zipCode && errors.zipCode && (
+        { (touched.zipCode || isFormSubmitted) && errors.zipCode && (
           <div className="error-text">{errors.zipCode}</div>
         )}
       </div>
@@ -222,7 +220,7 @@ const BakeryForm = ({ bakery = {}, onSubmit, onCancel, isSubmitting = false }) =
           disabled={isSubmitting}
           required
         />
-        {touched.streetName && errors.streetName && (
+        { (touched.streetName || isFormSubmitted) && errors.streetName && (
           <div className="error-text">{errors.streetName}</div>
         )}
       </div>
@@ -240,7 +238,7 @@ const BakeryForm = ({ bakery = {}, onSubmit, onCancel, isSubmitting = false }) =
           disabled={isSubmitting}
           required
         />
-        {touched.streetNumber && errors.streetNumber && (
+        { (touched.streetNumber || isFormSubmitted) && errors.streetNumber && (
           <div className="error-text">{errors.streetNumber}</div>
         )}
       </div>
@@ -280,6 +278,8 @@ const BakeryForm = ({ bakery = {}, onSubmit, onCancel, isSubmitting = false }) =
           <div className="error-text">{errors.websiteUrl}</div>
         )}
       </div>
+      
+      {errors.form && <div className="error-text form-error">{errors.form}</div>}
       
       <div className="form-actions">
         <Button type="button" variant="secondary" onClick={onCancel} disabled={isSubmitting}>

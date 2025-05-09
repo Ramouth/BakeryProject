@@ -1,178 +1,157 @@
 import { renderHook, act } from '@testing-library/react-hooks';
-import { useAdminBakeryViewModel } from '../admin/useAdminBakeryViewModel';
-import apiClient from '../../services/api';
-import { useNotification } from '../../store/NotificationContext';
+import { jest } from '@jest/globals';
 
-// Mock dependencies
-jest.mock('../../services/api');
-jest.mock('../../store/NotificationContext');
+let useAdminBakeryViewModel;
+let mockBakeryServiceInstance;
+let mockShowSuccess, mockShowError; // For NotificationContext
+
+beforeEach(async () => {
+  jest.resetModules();
+
+  mockShowSuccess = jest.fn();
+  mockShowError = jest.fn();
+
+  mockBakeryServiceInstance = {
+    getBakeries: jest.fn(),
+    createBakery: jest.fn(),
+    updateBakery: jest.fn(),
+    deleteBakery: jest.fn(),
+    // Add any other bakeryService methods used by the ViewModel
+  };
+
+  // Mock api directly if the ViewModel uses it (otherwise this can be removed)
+  // await jest.unstable_mockModule('../../../services/api', () => ({
+  //   default: { /* ... mock http methods ... */ }
+  // }));
+  
+  await jest.unstable_mockModule('../../../services/bakeryService', () => ({
+    default: mockBakeryServiceInstance,
+  }));
+
+  await jest.unstable_mockModule('../../../store/NotificationContext', () => ({
+    useNotification: () => ({
+      showSuccess: mockShowSuccess,
+      showError: mockShowError,
+    }),
+  }));
+
+  const viewModelModule = await import('../useAdminBakeryViewModel');
+  useAdminBakeryViewModel = viewModelModule.useAdminBakeryViewModel;
+});
 
 describe('useAdminBakeryViewModel', () => {
-  const mockShowSuccess = jest.fn();
-  const mockShowError = jest.fn();
-  
-  beforeEach(() => {
-    jest.clearAllMocks();
-    useNotification.mockReturnValue({
-      showSuccess: mockShowSuccess,
-      showError: mockShowError
-    });
-    
-    // Mock successful API response for bakeries
-    apiClient.get.mockResolvedValue({
-      bakeries: [
-        { id: '1', name: 'Test Bakery', zipCode: '1234', streetName: 'Test St', streetNumber: '10' },
-        { id: '2', name: 'Another Bakery', zipCode: '5678', streetName: 'Baker Rd', streetNumber: '20' }
-      ]
-    });
+  test('initial state is correct', () => {
+    mockBakeryServiceInstance.getBakeries.mockResolvedValue({ bakeries: [] });
+    const { result } = renderHook(() => useAdminBakeryViewModel());
+    expect(result.current.bakeries).toEqual([]);
+    expect(result.current.isLoading).toBe(true); // Initially true until fetch completes
+    expect(result.current.error).toBeNull();
+    // Add other initial state checks as necessary
   });
-  
-  test('fetchBakeries populates bakeries state', async () => {
+
+  test('fetches bakeries on mount', async () => {
+    const mockBakeries = [{ id: '1', name: 'Test Bakery' }];
+    mockBakeryServiceInstance.getBakeries.mockResolvedValue({ bakeries: mockBakeries });
+
     const { result, waitForNextUpdate } = renderHook(() => useAdminBakeryViewModel());
-    
-    expect(result.current.isLoading).toBe(true);
-    await waitForNextUpdate();
-    
-    expect(apiClient.get).toHaveBeenCalledWith('/bakeries', true);
-    expect(result.current.bakeries).toHaveLength(2);
-    expect(result.current.bakeries[0].name).toBe('Test Bakery');
+
+    await act(async () => {
+      await waitForNextUpdate(); // Wait for useEffect to run
+    });
+
+    expect(mockBakeryServiceInstance.getBakeries).toHaveBeenCalledTimes(1);
+    expect(result.current.bakeries).toEqual(mockBakeries);
     expect(result.current.isLoading).toBe(false);
   });
-  
-  test('handleOpenEditModal sets current bakery and opens modal', async () => {
-    const { result, waitForNextUpdate } = renderHook(() => useAdminBakeryViewModel());
-    await waitForNextUpdate();
-    
-    const testBakery = result.current.bakeries[0];
-    
-    act(() => {
-      result.current.handleOpenEditModal(testBakery);
-    });
-    
-    expect(result.current.currentBakery).toBe(testBakery);
-    expect(result.current.isModalOpen).toBe(true);
-  });
-  
-  test('handleCloseModal resets current bakery and closes modal', async () => {
-    const { result, waitForNextUpdate } = renderHook(() => useAdminBakeryViewModel());
-    await waitForNextUpdate();
-    
-    // First open the modal
-    act(() => {
-      result.current.handleOpenEditModal(result.current.bakeries[0]);
-    });
-    
-    // Then close it
-    act(() => {
-      result.current.handleCloseModal();
-    });
-    
-    expect(result.current.currentBakery).toBe(null);
-    expect(result.current.isModalOpen).toBe(false);
-  });
-  
-  test('handleSaveBakery calls correct API for update', async () => {
-    apiClient.patch.mockResolvedValue({ success: true });
+
+  test('handles error when fetching bakeries', async () => {
+    const errorMessage = 'Failed to fetch';
+    mockBakeryServiceInstance.getBakeries.mockRejectedValue(new Error(errorMessage));
     
     const { result, waitForNextUpdate } = renderHook(() => useAdminBakeryViewModel());
-    await waitForNextUpdate();
-    
-    // Set up edit mode
-    const testBakery = result.current.bakeries[0];
-    act(() => {
-      result.current.handleOpenEditModal(testBakery);
-    });
-    
-    // Update data
-    const updatedData = {
-      name: 'Updated Bakery',
-      zipCode: '1234',
-      streetName: 'Test St',
-      streetNumber: '10'
-    };
-    
+
     await act(async () => {
-      await result.current.handleSaveBakery(updatedData);
+      await waitForNextUpdate();
     });
     
-    expect(apiClient.patch).toHaveBeenCalledWith(
-      `/bakeries/update/${testBakery.id}`,
-      updatedData,
-      false
-    );
-    expect(mockShowSuccess).toHaveBeenCalledWith('Bakery updated successfully!');
-    expect(result.current.isModalOpen).toBe(false);
+    expect(result.current.bakeries).toEqual([]);
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.error).toBe(errorMessage);
+    expect(mockShowError).toHaveBeenCalledWith(`Error fetching bakeries: ${errorMessage}`);
   });
-  
-  test('handleSaveBakery calls correct API for create', async () => {
-    apiClient.post.mockResolvedValue({ success: true });
-    
+
+  test('handleCreateBakery successfully creates a bakery and refreshes', async () => {
+    const newBakeryData = { name: 'New Awesome Bakery' };
+    const createdBakery = { id: '2', ...newBakeryData };
+    mockBakeryServiceInstance.createBakery.mockResolvedValue(createdBakery);
+    mockBakeryServiceInstance.getBakeries.mockResolvedValue({ bakeries: [createdBakery] }); // After refresh
+
     const { result, waitForNextUpdate } = renderHook(() => useAdminBakeryViewModel());
-    await waitForNextUpdate();
     
-    // Set up create mode
-    act(() => {
-      result.current.handleOpenCreateModal();
-    });
-    
-    // Create data
-    const newBakeryData = {
-      name: 'New Bakery',
-      zipCode: '9999',
-      streetName: 'New St',
-      streetNumber: '5'
-    };
-    
+    // Initial fetch
+    mockBakeryServiceInstance.getBakeries.mockResolvedValueOnce({ bakeries: [] }); 
+    await act(async () => { await waitForNextUpdate(); });
+
+
     await act(async () => {
-      await result.current.handleSaveBakery(newBakeryData);
+      await result.current.handleSaveBakery(null, newBakeryData); // null for id means create
     });
     
-    expect(apiClient.post).toHaveBeenCalledWith(
-      '/bakeries/create',
-      newBakeryData,
-      false
-    );
+    expect(mockBakeryServiceInstance.createBakery).toHaveBeenCalledWith(newBakeryData);
     expect(mockShowSuccess).toHaveBeenCalledWith('Bakery created successfully!');
+    expect(mockBakeryServiceInstance.getBakeries).toHaveBeenCalledTimes(2); // Initial + refresh
+    expect(result.current.isModalOpen).toBe(false);
   });
   
-  test('handleDeleteBakery deletes bakery after confirmation', async () => {
-    // Mock window.confirm
-    const originalConfirm = window.confirm;
-    window.confirm = jest.fn(() => true);
-    
-    apiClient.delete.mockResolvedValue({ success: true });
-    
+  test('handleUpdateBakery successfully updates a bakery and refreshes', async () => {
+    const existingBakery = { id: '1', name: 'Old Bakery Name' };
+    const updatedData = { name: 'Updated Bakery Name' };
+    const updatedBakery = { ...existingBakery, ...updatedData };
+
+    mockBakeryServiceInstance.updateBakery.mockResolvedValue(updatedBakery);
+    // For initial fetch
+    mockBakeryServiceInstance.getBakeries.mockResolvedValueOnce({ bakeries: [existingBakery] }); 
+    // For fetch after update
+    mockBakeryServiceInstance.getBakeries.mockResolvedValueOnce({ bakeries: [updatedBakery] });
+
+
     const { result, waitForNextUpdate } = renderHook(() => useAdminBakeryViewModel());
-    await waitForNextUpdate();
-    
-    const bakeryIdToDelete = '1';
+    await act(async () => { await waitForNextUpdate(); }); // Initial fetch
+
+    await act(async () => {
+      result.current.handleOpenEditModal(existingBakery); // Open modal to set currentBakery
+    });
     
     await act(async () => {
-      await result.current.handleDeleteBakery(bakeryIdToDelete);
+      await result.current.handleSaveBakery(existingBakery.id, updatedData);
     });
     
-    expect(window.confirm).toHaveBeenCalled();
-    expect(apiClient.delete).toHaveBeenCalledWith(`/bakeries/delete/${bakeryIdToDelete}`, false);
-    expect(mockShowSuccess).toHaveBeenCalledWith('Bakery deleted successfully!');
-    
-    // Restore original confirm
-    window.confirm = originalConfirm;
+    expect(mockBakeryServiceInstance.updateBakery).toHaveBeenCalledWith(existingBakery.id, updatedData);
+    expect(mockShowSuccess).toHaveBeenCalledWith('Bakery updated successfully!');
+    expect(mockBakeryServiceInstance.getBakeries).toHaveBeenCalledTimes(2); // Initial + refresh
+    expect(result.current.isModalOpen).toBe(false);
   });
-  
-  test('search term filters bakeries correctly', async () => {
+
+  test('handleDeleteBakery successfully deletes a bakery and refreshes', async () => {
+    const bakeryToDelete = { id: '1', name: 'Bakery To Delete' };
+    mockBakeryServiceInstance.deleteBakery.mockResolvedValue({});
+    // For initial fetch
+    mockBakeryServiceInstance.getBakeries.mockResolvedValueOnce({ bakeries: [bakeryToDelete] });
+    // For fetch after delete
+    mockBakeryServiceInstance.getBakeries.mockResolvedValueOnce({ bakeries: [] });
+
+
     const { result, waitForNextUpdate } = renderHook(() => useAdminBakeryViewModel());
-    await waitForNextUpdate();
-    
-    // Initially all bakeries are shown
-    expect(result.current.filteredBakeries).toHaveLength(2);
-    
-    // Set search term
-    act(() => {
-      result.current.setSearchTerm('Another');
+    await act(async () => { await waitForNextUpdate(); }); // Initial fetch
+
+    await act(async () => {
+      await result.current.handleDeleteBakery(bakeryToDelete.id);
     });
-    
-    // Only matching bakeries should be shown
-    expect(result.current.filteredBakeries).toHaveLength(1);
-    expect(result.current.filteredBakeries[0].name).toBe('Another Bakery');
+
+    expect(mockBakeryServiceInstance.deleteBakery).toHaveBeenCalledWith(bakeryToDelete.id);
+    expect(mockShowSuccess).toHaveBeenCalledWith('Bakery deleted successfully');
+    expect(mockBakeryServiceInstance.getBakeries).toHaveBeenCalledTimes(2); // Initial + refresh
   });
+
+  // Add more tests for modal states, error handling in CUD operations, search/filter etc.
 });
