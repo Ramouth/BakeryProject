@@ -39,7 +39,7 @@ class User(db.Model):
     # Password methods
     def set_password(self, password):
         """Hash and set the user password"""
-        self.password_hash = generate_password_hash(password)
+        self.password_hash = generate_password_hash(password).decode('utf-8')
     
     def check_password(self, password):
         """Verify password against stored hash"""

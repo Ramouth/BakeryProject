@@ -305,4 +305,22 @@ class ReviewService extends BaseService {
   }
 }
 
-export default new ReviewService();
+// Create an instance of the service
+const reviewService = new ReviewService();
+
+// Export the instance as default
+export default reviewService;
+
+// Export specific methods as named exports for direct imports
+export const createProductReview = (reviewData) => reviewService.createProductReview(reviewData);
+export const createBakeryReview = (reviewData) => reviewService.createBakeryReview(reviewData);
+export const submitExperienceRating = async (experienceId, ratingData) => {
+  // This function is missing, so we'll implement a basic version
+  try {
+    const response = await apiClient.post(`/experiences/${experienceId}/ratings`, ratingData);
+    return response;
+  } catch (error) {
+    console.error(`Error submitting experience rating for ${experienceId}:`, error);
+    throw error;
+  }
+};
