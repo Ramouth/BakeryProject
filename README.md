@@ -110,7 +110,7 @@ docker-compose up
 cd backend
 
 # Create and activate virtual environment
-Mac/Linux: python3 -m venv venv       # Windows python -m venv venv     #To force 3.12.2: py -3.12 -m venv venv
+Mac/Linux: python3 -m venv venv       # Windows: python -m venv venv     #To force 3.12.2: py -3.12 -m venv venv
 Mac/Linux: source venv/bin/activate   # Windows: venv\Scripts\activate
 
 # Install dependencies
