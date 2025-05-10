@@ -110,14 +110,15 @@ docker-compose up
 cd backend
 
 # Create and activate virtual environment
-python -m venv venv # To force 3.12.2: py -3.12 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+Mac/Linux: python3 -m venv venv       # Windows python -m venv venv     #To force 3.12.2: py -3.12 -m venv venv
+Mac/Linux: source venv/bin/activate   # Windows: venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
 
 # Run the application
-python app.py
+Mac/Linux: python3 app.py
+Windows:   python app.py
 ```
 
 #### Frontend
