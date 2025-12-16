@@ -86,7 +86,7 @@ export const useAdminDashboardViewModel = () => {
   const createMockAdminUser = () => {
     localStorage.setItem(
       'currentUser',
-      JSON.stringify({ id: 'admin1', username: 'admin', email: 'admin@crumbcompass.com', isAdmin: true })
+      JSON.stringify({ id: 'admin1', username: 'admin', email: 'admin@example.com', isAdmin: true })
     );
     window.location.reload();
   };

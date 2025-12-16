@@ -59,10 +59,10 @@ export const useLoginViewModel = () => {
   const handleMockLogin = useCallback(async () => {
     setLocalError(null);
     setIsSubmitting(true);
-    
+
     try {
-      // Keep the same mock login credentials
-      const user = await login('admin@crumbcompass.com', 'admin123');
+      // Mock login for development/testing only
+      const user = await login('test@example.com', 'testpassword');
       redirectAfterLogin(user);
     } catch (err) {
       if (mounted.current) {
