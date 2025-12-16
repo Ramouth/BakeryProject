@@ -46,3 +46,6 @@ backend/my_env/
 backend/.env
 backend/seed.py
 .env
+
+# Sensitive values backup (never commit!)
+SENSITIVE_VALUES_BACKUP.md
